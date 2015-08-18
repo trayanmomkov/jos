@@ -15,7 +15,14 @@ import java.math.MathContext;
  */
 public class NumberBigDecimalImpl implements Number {
 
-    BigDecimal value;
+    private final BigDecimal value;
+
+    /**
+     * @param value
+     */
+    public NumberBigDecimalImpl(BigDecimal value) {
+        this.value = value;
+    }
 
     /**
      * @see java.math.BigDecimal#BigDecimal(char[] in, int offset, int len)
@@ -133,171 +140,164 @@ public class NumberBigDecimalImpl implements Number {
     /*
      * (non-Javadoc)
      * 
-     * @see info.trekto.jos.core.Number#add(info.trekto.jos.core.Number)
+     * @see java.math.BigDecimal#add(java.math.BigDecimal)
      */
     public Number add(Number augend) {
-        // TODO Auto-generated method stub
-        return null;
+        return new NumberBigDecimalImpl(value.add(((NumberBigDecimalImpl) augend).value));
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see info.trekto.jos.core.Number#subtract(info.trekto.jos.core.Number)
+     * @see java.math.BigDecimal#subtract(java.math.BigDecimal)
      */
     public Number subtract(Number subtrahend) {
-        // TODO Auto-generated method stub
-        return null;
+        return new NumberBigDecimalImpl(value.subtract(((NumberBigDecimalImpl) subtrahend).value));
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see info.trekto.jos.core.Number#multiply(info.trekto.jos.core.Number)
+     * @see java.math.BigDecimal#multiply(java.math.BigDecimal)
      */
     public Number multiply(Number multiplicand) {
-        // TODO Auto-generated method stub
-        return null;
+        return new NumberBigDecimalImpl(value.multiply(((NumberBigDecimalImpl) multiplicand).value));
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see info.trekto.jos.core.Number#divide(info.trekto.jos.core.Number)
+     * @see java.math.BigDecimal#divide(java.math.BigDecimal)
      */
     public Number divide(Number divisor) {
-        // TODO Auto-generated method stub
-        return null;
+        return new NumberBigDecimalImpl(value.divide(((NumberBigDecimalImpl) divisor).value));
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see info.trekto.jos.core.Number#divideToIntegralValue(info.trekto.jos.core.Number)
+     * @see java.math.BigDecimal#divideToIntegralValue(java.math.BigDecimal)
      */
     public Number divideToIntegralValue(Number divisor) {
-        // TODO Auto-generated method stub
-        return null;
+        return new NumberBigDecimalImpl(value.divideToIntegralValue(((NumberBigDecimalImpl) divisor).value));
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see info.trekto.jos.core.Number#remainder(info.trekto.jos.core.Number)
+     * @see java.math.BigDecimal#remainder(java.math.BigDecimal)
      */
     public Number remainder(Number divisor) {
-        // TODO Auto-generated method stub
-        return null;
+        return new NumberBigDecimalImpl(value.remainder(((NumberBigDecimalImpl) divisor).value));
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see info.trekto.jos.core.Number#divideAndRemainder(info.trekto.jos.core.Number)
+     * @see java.math.BigDecimal#divideAndRemainder(java.math.BigDecimal)
      */
     public Number[] divideAndRemainder(Number divisor) {
-        // TODO Auto-generated method stub
-        return null;
+        BigDecimal[] result = value.divideAndRemainder(((NumberBigDecimalImpl) divisor).value);
+        return new Number[] { new NumberBigDecimalImpl(result[0]), new NumberBigDecimalImpl(result[1]) };
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see info.trekto.jos.core.Number#pow(int)
+     * @see java.math.BigDecimal#pow(int)
      */
     public Number pow(int n) {
-        // TODO Auto-generated method stub
-        return null;
+        return new NumberBigDecimalImpl(value.pow(n));
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see info.trekto.jos.core.Number#abs()
+     * @see java.math.BigDecimal#abs()
      */
     public Number abs() {
-        // TODO Auto-generated method stub
-        return null;
+        return new NumberBigDecimalImpl(value.abs());
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see info.trekto.jos.core.Number#negate()
+     * @see java.math.BigDecimal#negate()
      */
     public Number negate() {
-        // TODO Auto-generated method stub
-        return null;
+        return new NumberBigDecimalImpl(value.negate());
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see info.trekto.jos.core.Number#compareTo(info.trekto.jos.core.Number)
+     * @see java.math.BigDecimal#compareTo(java.math.BigDecimal)
      */
     public int compareTo(Number val) {
-        // TODO Auto-generated method stub
-        return 0;
+        return value.compareTo(((NumberBigDecimalImpl) val).value);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see info.trekto.jos.core.Number#min(info.trekto.jos.core.Number)
+    /**
+     * Returns the minimum of this {@code Number} and {@code val}.
      */
     public Number min(Number val) {
-        // TODO Auto-generated method stub
-        return null;
+        return (compareTo(val) <= 0 ? this : val);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see info.trekto.jos.core.Number#max(info.trekto.jos.core.Number)
+    /**
+     * Returns the maximum of this {@code BigDecimal} and {@code val}.
      */
     public Number max(Number val) {
-        // TODO Auto-generated method stub
-        return null;
+        return (compareTo(val) >= 0 ? this : val);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see info.trekto.jos.core.Number#valueOf(long)
+     * @see java.math.BigDecimal#valueOf(long)
      */
     public Number valueOf(long val) {
-        // TODO Auto-generated method stub
-        return null;
+        return new NumberBigDecimalImpl(BigDecimal.valueOf(val));
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see info.trekto.jos.core.Number#valueOf(double)
+     * @see java.math.BigDecimal#valueOf(double)
      */
     public Number valueOf(double val) {
-        // TODO Auto-generated method stub
-        return null;
+        return new NumberBigDecimalImpl(BigDecimal.valueOf(val));
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see info.trekto.jos.core.Number#floatValue()
+     * @see java.math.BigDecimal#floatValue()
      */
     public float floatValue() {
-        // TODO Auto-generated method stub
-        return 0;
+        return value.floatValue();
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see info.trekto.jos.core.Number#doubleValue()
+     * @see java.math.BigDecimal#doubleValue()
      */
     public double doubleValue() {
-        // TODO Auto-generated method stub
-        return 0;
+        return value.doubleValue();
     }
 
+    public BigDecimal bigDecimalValue() {
+        return value;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return value.toString();
+    }
 }

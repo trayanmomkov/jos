@@ -1,5 +1,7 @@
 package info.trekto.jos.core;
 
+import java.math.BigDecimal;
+
 /**
  * This interface is initially extracted from java.math.BigDecimal (just a portion of its public methods) and after that
  * extended.
@@ -132,4 +134,10 @@ public interface Number {
      * @return this {@code Number} converted to a {@code double}.
      */
     public double doubleValue();
+
+    /**
+     * Converts this {@code Number} to a {@code BigDecimal}.
+     * @return this {@code Number} converted to a {@code BigDecimal}.
+     */
+    public BigDecimal bigDecimalValue();
 }
