@@ -143,7 +143,7 @@ public class NumberBigDecimalImpl implements Number {
      * @see java.math.BigDecimal#add(java.math.BigDecimal)
      */
     public Number add(Number augend) {
-        return new NumberBigDecimalImpl(value.add(((NumberBigDecimalImpl) augend).value));
+        return newNumber(value.add(((NumberBigDecimalImpl) augend).value));
     }
 
     /*
@@ -152,7 +152,7 @@ public class NumberBigDecimalImpl implements Number {
      * @see java.math.BigDecimal#subtract(java.math.BigDecimal)
      */
     public Number subtract(Number subtrahend) {
-        return new NumberBigDecimalImpl(value.subtract(((NumberBigDecimalImpl) subtrahend).value));
+        return newNumber(value.subtract(((NumberBigDecimalImpl) subtrahend).value));
     }
 
     /*
@@ -161,7 +161,8 @@ public class NumberBigDecimalImpl implements Number {
      * @see java.math.BigDecimal#multiply(java.math.BigDecimal)
      */
     public Number multiply(Number multiplicand) {
-        return new NumberBigDecimalImpl(value.multiply(((NumberBigDecimalImpl) multiplicand).value));
+        return newNumber(value.multiply(((NumberBigDecimalImpl) multiplicand).value));
+        // return new NumberBigDecimalImpl((value.multiply(((NumberBigDecimalImpl) multiplicand).value)));
     }
 
     /*
@@ -170,7 +171,8 @@ public class NumberBigDecimalImpl implements Number {
      * @see java.math.BigDecimal#divide(java.math.BigDecimal)
      */
     public Number divide(Number divisor) {
-        return new NumberBigDecimalImpl(value.divide(((NumberBigDecimalImpl) divisor).value));
+        return newNumber(value.divide(((NumberBigDecimalImpl) divisor).value));
+        // return new NumberBigDecimalImpl((value.divide(((NumberBigDecimalImpl) divisor).value)));
     }
 
     /*
@@ -179,7 +181,7 @@ public class NumberBigDecimalImpl implements Number {
      * @see java.math.BigDecimal#divideToIntegralValue(java.math.BigDecimal)
      */
     public Number divideToIntegralValue(Number divisor) {
-        return new NumberBigDecimalImpl(value.divideToIntegralValue(((NumberBigDecimalImpl) divisor).value));
+        return newNumber(value.divideToIntegralValue(((NumberBigDecimalImpl) divisor).value));
     }
 
     /*
@@ -188,7 +190,7 @@ public class NumberBigDecimalImpl implements Number {
      * @see java.math.BigDecimal#remainder(java.math.BigDecimal)
      */
     public Number remainder(Number divisor) {
-        return new NumberBigDecimalImpl(value.remainder(((NumberBigDecimalImpl) divisor).value));
+        return newNumber(value.remainder(((NumberBigDecimalImpl) divisor).value));
     }
 
     /*
@@ -198,7 +200,7 @@ public class NumberBigDecimalImpl implements Number {
      */
     public Number[] divideAndRemainder(Number divisor) {
         BigDecimal[] result = value.divideAndRemainder(((NumberBigDecimalImpl) divisor).value);
-        return new Number[] { new NumberBigDecimalImpl(result[0]), new NumberBigDecimalImpl(result[1]) };
+        return new Number[] { newNumber(result[0]), newNumber(result[1]) };
     }
 
     /*
@@ -207,7 +209,7 @@ public class NumberBigDecimalImpl implements Number {
      * @see java.math.BigDecimal#pow(int)
      */
     public Number pow(int n) {
-        return new NumberBigDecimalImpl(value.pow(n));
+        return newNumber(value.pow(n));
     }
 
     /*
@@ -216,7 +218,7 @@ public class NumberBigDecimalImpl implements Number {
      * @see java.math.BigDecimal#abs()
      */
     public Number abs() {
-        return new NumberBigDecimalImpl(value.abs());
+        return newNumber(value.abs());
     }
 
     /*
@@ -225,7 +227,7 @@ public class NumberBigDecimalImpl implements Number {
      * @see java.math.BigDecimal#negate()
      */
     public Number negate() {
-        return new NumberBigDecimalImpl(value.negate());
+        return newNumber(value.negate());
     }
 
     /*
@@ -257,7 +259,7 @@ public class NumberBigDecimalImpl implements Number {
      * @see java.math.BigDecimal#valueOf(long)
      */
     public Number valueOf(long val) {
-        return new NumberBigDecimalImpl(BigDecimal.valueOf(val));
+        return newNumber(BigDecimal.valueOf(val));
     }
 
     /*
@@ -266,7 +268,7 @@ public class NumberBigDecimalImpl implements Number {
      * @see java.math.BigDecimal#valueOf(double)
      */
     public Number valueOf(double val) {
-        return new NumberBigDecimalImpl(BigDecimal.valueOf(val));
+        return newNumber(BigDecimal.valueOf(val));
     }
 
     /*
@@ -299,5 +301,9 @@ public class NumberBigDecimalImpl implements Number {
     @Override
     public String toString() {
         return value.toString();
+    }
+
+    private NumberBigDecimalImpl newNumber(BigDecimal val) {
+        return new NumberBigDecimalImpl(val.setScale(value.precision(), BigDecimal.ROUND_HALF_EVEN));
     }
 }
