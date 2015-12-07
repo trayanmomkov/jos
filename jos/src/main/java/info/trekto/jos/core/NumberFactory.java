@@ -3,42 +3,20 @@
  */
 package info.trekto.jos.core;
 
-import info.trekto.jos.core.impl.NumberBigDecimalImpl;
-import info.trekto.jos.core.impl.NumberDoubleImpl;
-
 import java.math.BigDecimal;
-import java.math.MathContext;
 
 /**
  * @author Trayan Momkov
- * @date 19 Aug 2015
+ * @date 7 Dec 2015
  */
-public class NumberFactory {
+public interface NumberFactory {
+    public Number createNumber(BigDecimal val);
 
-    private static MathContext mathContext = new MathContext(50);
+    public Number createNumber(String val);
 
-    public static Number createNumber(BigDecimal val) {
-        return new NumberDoubleImpl(val);
-        // return new NumberBigDecimalImpl(val);
-    }
+    public Number createNumber(double val);
 
-    public static Number createNumber(String val) {
-        // return new NumberDoubleImpl(val);
-        return new NumberBigDecimalImpl(val, mathContext);
-    }
+    public Number createNumber(int val);
 
-    public static Number createNumber(double val) {
-        // return new NumberDoubleImpl(val);
-        return new NumberBigDecimalImpl(val, mathContext);
-    }
-
-    public static Number createNumber(int val) {
-        // return new NumberDoubleImpl(val);
-        return new NumberBigDecimalImpl(val, mathContext);
-    }
-
-    public static Number createNumber(long val) {
-        // return new NumberDoubleImpl(val);
-        return new NumberBigDecimalImpl(val, mathContext);
-    }
+    public Number createNumber(long val);
 }
