@@ -1,7 +1,7 @@
 /**
  * 
  */
-package info.trekto.jos.coreI.impl;
+package info.trekto.jos.core.impl;
 
 import info.trekto.jos.core.Number;
 

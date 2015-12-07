@@ -3,8 +3,8 @@
  */
 package info.trekto.jos.core;
 
-import info.trekto.jos.coreI.impl.NumberBigDecimalImpl;
-import info.trekto.jos.coreI.impl.NumberDoubleImpl;
+import info.trekto.jos.core.impl.NumberBigDecimalImpl;
+import info.trekto.jos.core.impl.NumberDoubleImpl;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
