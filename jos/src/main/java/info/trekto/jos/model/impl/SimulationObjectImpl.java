@@ -4,6 +4,7 @@
 package info.trekto.jos.model.impl;
 
 import info.trekto.jos.model.SimulationObject;
+import info.trekto.jos.numbers.Number;
 
 import java.util.List;
 

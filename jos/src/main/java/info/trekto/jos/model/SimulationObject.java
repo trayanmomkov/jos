@@ -5,6 +5,7 @@ package info.trekto.jos.model;
 
 import info.trekto.jos.model.impl.TripleInt;
 import info.trekto.jos.model.impl.TripleNumber;
+import info.trekto.jos.numbers.Number;
 
 import java.util.List;
 
@@ -45,7 +46,9 @@ public interface SimulationObject {
 
     void setLabel(String label);
 
+    /** This must be used only for visualization purposes. Trajectory list consumes memory and CPU. */
     List<TripleNumber> getTrajectory();
 
+    /** This must be used only for visualization purposes. Trajectory list consumes memory and CPU. */
     void setTrajectory(List<TripleNumber> trajectory);
 }
