@@ -1,7 +1,7 @@
 /**
  * 
  */
-package info.trekto.jos.core;
+package info.trekto.jos.model;
 
 /**
  * @author Trayan Momkov

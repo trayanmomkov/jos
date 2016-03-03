@@ -3,9 +3,9 @@
  */
 package info.trekto.jos;
 
-import info.trekto.jos.core.New;
-import info.trekto.jos.core.Number;
-import info.trekto.jos.core.NumberFactoryProxy;
+import info.trekto.jos.numbers.New;
+import info.trekto.jos.numbers.Number;
+import info.trekto.jos.numbers.NumberFactoryProxy;
 
 
 /**

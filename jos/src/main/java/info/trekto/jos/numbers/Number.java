@@ -1,4 +1,4 @@
-package info.trekto.jos.core;
+package info.trekto.jos.numbers;
 
 import java.math.BigDecimal;
 

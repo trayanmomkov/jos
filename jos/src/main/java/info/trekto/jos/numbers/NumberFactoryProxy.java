@@ -1,9 +1,9 @@
 /**
  * 
  */
-package info.trekto.jos.core;
+package info.trekto.jos.numbers;
 
-import info.trekto.jos.core.impl.DoubleNumberFactory;
+import info.trekto.jos.numbers.impl.DoubleNumberFactory;
 
 import java.math.BigDecimal;
 

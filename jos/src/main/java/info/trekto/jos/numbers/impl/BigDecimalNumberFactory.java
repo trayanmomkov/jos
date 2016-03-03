@@ -1,7 +1,7 @@
-package info.trekto.jos.core.impl;
+package info.trekto.jos.numbers.impl;
 
-import info.trekto.jos.core.Number;
-import info.trekto.jos.core.NumberFactory;
+import info.trekto.jos.numbers.Number;
+import info.trekto.jos.numbers.NumberFactory;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
