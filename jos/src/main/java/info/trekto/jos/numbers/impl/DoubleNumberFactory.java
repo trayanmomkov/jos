@@ -12,22 +12,22 @@ import java.math.BigDecimal;
 public class DoubleNumberFactory implements NumberFactory {
 
     public Number createNumber(BigDecimal val) {
-        return new NumberDoubleImpl(val);
+        return new DoubleNumberImpl(val);
     }
 
     public Number createNumber(String val) {
-        return new NumberDoubleImpl(val);
+        return new DoubleNumberImpl(val);
     }
 
     public Number createNumber(double val) {
-        return new NumberDoubleImpl(val);
+        return new DoubleNumberImpl(val);
     }
 
     public Number createNumber(int val) {
-        return new NumberDoubleImpl(val);
+        return new DoubleNumberImpl(val);
     }
 
     public Number createNumber(long val) {
-        return new NumberDoubleImpl(val);
+        return new DoubleNumberImpl(val);
     }
 }

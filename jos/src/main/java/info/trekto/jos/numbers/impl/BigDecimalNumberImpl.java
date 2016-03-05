@@ -13,126 +13,126 @@ import java.math.MathContext;
  * @author Trayan Momkov
  * @date 18 Aug 2015
  */
-public class NumberBigDecimalImpl implements Number {
+public class BigDecimalNumberImpl implements Number {
 
     private final BigDecimal value;
 
     /**
      * @param value
      */
-    public NumberBigDecimalImpl(BigDecimal value) {
+    public BigDecimalNumberImpl(BigDecimal value) {
         this.value = value;
     }
 
     /**
      * @see java.math.BigDecimal#BigDecimal(char[] in, int offset, int len)
      */
-    public NumberBigDecimalImpl(char[] in, int offset, int len) {
+    public BigDecimalNumberImpl(char[] in, int offset, int len) {
         value = new BigDecimal(in, offset, len);
     }
 
     /**
      * @see java.math.BigDecimal#BigDecimal(char[] in, int offset, int len, MathContext mc)
      */
-    public NumberBigDecimalImpl(char[] in, int offset, int len, MathContext mc) {
+    public BigDecimalNumberImpl(char[] in, int offset, int len, MathContext mc) {
         value = new BigDecimal(in, offset, len, mc);
     }
 
     /**
      * @see java.math.BigDecimal#BigDecimal(char[] in)
      */
-    public NumberBigDecimalImpl(char[] in) {
+    public BigDecimalNumberImpl(char[] in) {
         value = new BigDecimal(in);
     }
 
     /**
      * @see java.math.BigDecimal#BigDecimal(char[] in, MathContext mc)
      */
-    public NumberBigDecimalImpl(char[] in, MathContext mc) {
+    public BigDecimalNumberImpl(char[] in, MathContext mc) {
         value = new BigDecimal(in, mc);
     }
 
     /**
      * @see java.math.BigDecimal#BigDecimal(String val)
      */
-    public NumberBigDecimalImpl(String val) {
+    public BigDecimalNumberImpl(String val) {
         value = new BigDecimal(val);
     }
 
     /**
      * @see java.math.BigDecimal#BigDecimal(String val, MathContext mc)
      */
-    public NumberBigDecimalImpl(String val, MathContext mc) {
+    public BigDecimalNumberImpl(String val, MathContext mc) {
         value = new BigDecimal(val, mc);
     }
 
     /**
      * @see java.math.BigDecimal#BigDecimal(double val)
      */
-    public NumberBigDecimalImpl(double val) {
+    public BigDecimalNumberImpl(double val) {
         value = new BigDecimal(val);
     }
 
     /**
      * @see java.math.BigDecimal#BigDecimal(double val, MathContext mc)
      */
-    public NumberBigDecimalImpl(double val, MathContext mc) {
+    public BigDecimalNumberImpl(double val, MathContext mc) {
         value = new BigDecimal(val, mc);
     }
 
     /**
      * @see java.math.BigDecimal#BigDecimal(BigInteger val)
      */
-    public NumberBigDecimalImpl(BigInteger val) {
+    public BigDecimalNumberImpl(BigInteger val) {
         value = new BigDecimal(val);
     }
 
     /**
      * @see java.math.BigDecimal#BigDecimal(BigInteger val, MathContext mc)
      */
-    public NumberBigDecimalImpl(BigInteger val, MathContext mc) {
+    public BigDecimalNumberImpl(BigInteger val, MathContext mc) {
         value = new BigDecimal(val, mc);
     }
 
     /**
      * @see java.math.BigDecimal#BigDecimal(BigInteger unscaledVal, int scale)
      */
-    public NumberBigDecimalImpl(BigInteger unscaledVal, int scale) {
+    public BigDecimalNumberImpl(BigInteger unscaledVal, int scale) {
         value = new BigDecimal(unscaledVal, scale);
     }
 
     /**
      * @see java.math.BigDecimal#BigDecimal(BigInteger unscaledVal, int scale, MathContext mc)
      */
-    public NumberBigDecimalImpl(BigInteger unscaledVal, int scale, MathContext mc) {
+    public BigDecimalNumberImpl(BigInteger unscaledVal, int scale, MathContext mc) {
         value = new BigDecimal(unscaledVal, scale, mc);
     }
 
     /**
      * @see java.math.BigDecimal#BigDecimal(int val)
      */
-    public NumberBigDecimalImpl(int val) {
+    public BigDecimalNumberImpl(int val) {
         value = new BigDecimal(val);
     }
 
     /**
      * @see java.math.BigDecimal#BigDecimal(int val, MathContext mc)
      */
-    public NumberBigDecimalImpl(int val, MathContext mc) {
+    public BigDecimalNumberImpl(int val, MathContext mc) {
         value = new BigDecimal(val, mc);
     }
 
     /**
      * @see java.math.BigDecimal#BigDecimal(long val)
      */
-    public NumberBigDecimalImpl(long val) {
+    public BigDecimalNumberImpl(long val) {
         value = new BigDecimal(val);
     }
 
     /**
      * @see java.math.BigDecimal#BigDecimal(long val, MathContext mc)
      */
-    public NumberBigDecimalImpl(long val, MathContext mc) {
+    public BigDecimalNumberImpl(long val, MathContext mc) {
         value = new BigDecimal(val, mc);
     }
 
@@ -143,7 +143,7 @@ public class NumberBigDecimalImpl implements Number {
      * @see java.math.BigDecimal#add(java.math.BigDecimal)
      */
     public Number add(Number augend) {
-        return newNumber(value.add(((NumberBigDecimalImpl) augend).value));
+        return newNumber(value.add(((BigDecimalNumberImpl) augend).value));
     }
 
     /*
@@ -152,7 +152,7 @@ public class NumberBigDecimalImpl implements Number {
      * @see java.math.BigDecimal#subtract(java.math.BigDecimal)
      */
     public Number subtract(Number subtrahend) {
-        return newNumber(value.subtract(((NumberBigDecimalImpl) subtrahend).value));
+        return newNumber(value.subtract(((BigDecimalNumberImpl) subtrahend).value));
     }
 
     /*
@@ -161,7 +161,7 @@ public class NumberBigDecimalImpl implements Number {
      * @see java.math.BigDecimal#multiply(java.math.BigDecimal)
      */
     public Number multiply(Number multiplicand) {
-        return newNumber(value.multiply(((NumberBigDecimalImpl) multiplicand).value));
+        return newNumber(value.multiply(((BigDecimalNumberImpl) multiplicand).value));
         // return new NumberBigDecimalImpl((value.multiply(((NumberBigDecimalImpl) multiplicand).value)));
     }
 
@@ -171,7 +171,7 @@ public class NumberBigDecimalImpl implements Number {
      * @see java.math.BigDecimal#divide(java.math.BigDecimal)
      */
     public Number divide(Number divisor) {
-        return newNumber(value.divide(((NumberBigDecimalImpl) divisor).value));
+        return newNumber(value.divide(((BigDecimalNumberImpl) divisor).value));
         // return new NumberBigDecimalImpl((value.divide(((NumberBigDecimalImpl) divisor).value)));
     }
 
@@ -181,7 +181,7 @@ public class NumberBigDecimalImpl implements Number {
      * @see java.math.BigDecimal#divideToIntegralValue(java.math.BigDecimal)
      */
     public Number divideToIntegralValue(Number divisor) {
-        return newNumber(value.divideToIntegralValue(((NumberBigDecimalImpl) divisor).value));
+        return newNumber(value.divideToIntegralValue(((BigDecimalNumberImpl) divisor).value));
     }
 
     /*
@@ -190,7 +190,7 @@ public class NumberBigDecimalImpl implements Number {
      * @see java.math.BigDecimal#remainder(java.math.BigDecimal)
      */
     public Number remainder(Number divisor) {
-        return newNumber(value.remainder(((NumberBigDecimalImpl) divisor).value));
+        return newNumber(value.remainder(((BigDecimalNumberImpl) divisor).value));
     }
 
     /*
@@ -199,7 +199,7 @@ public class NumberBigDecimalImpl implements Number {
      * @see java.math.BigDecimal#divideAndRemainder(java.math.BigDecimal)
      */
     public Number[] divideAndRemainder(Number divisor) {
-        BigDecimal[] result = value.divideAndRemainder(((NumberBigDecimalImpl) divisor).value);
+        BigDecimal[] result = value.divideAndRemainder(((BigDecimalNumberImpl) divisor).value);
         return new Number[] { newNumber(result[0]), newNumber(result[1]) };
     }
 
@@ -236,7 +236,7 @@ public class NumberBigDecimalImpl implements Number {
      * @see java.math.BigDecimal#compareTo(java.math.BigDecimal)
      */
     public int compareTo(Number val) {
-        return value.compareTo(((NumberBigDecimalImpl) val).value);
+        return value.compareTo(((BigDecimalNumberImpl) val).value);
     }
 
     /**
@@ -303,7 +303,7 @@ public class NumberBigDecimalImpl implements Number {
         return value.toString();
     }
 
-    private NumberBigDecimalImpl newNumber(BigDecimal val) {
-        return new NumberBigDecimalImpl(val.setScale(value.precision(), BigDecimal.ROUND_HALF_EVEN));
+    private BigDecimalNumberImpl newNumber(BigDecimal val) {
+        return new BigDecimalNumberImpl(val.setScale(value.precision(), BigDecimal.ROUND_HALF_EVEN));
     }
 }

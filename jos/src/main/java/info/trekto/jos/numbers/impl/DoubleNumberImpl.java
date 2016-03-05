@@ -11,52 +11,52 @@ import java.math.BigDecimal;
  * @author Trayan Momkov
  * @date 19 Aug 2015
  */
-public class NumberDoubleImpl implements Number {
+public class DoubleNumberImpl implements Number {
 
     private final double value;
 
-    public NumberDoubleImpl(BigDecimal value) {
+    public DoubleNumberImpl(BigDecimal value) {
         this.value = value.doubleValue();
     }
 
-    public NumberDoubleImpl(String val) {
+    public DoubleNumberImpl(String val) {
         value = Double.parseDouble(val);
     }
 
-    public NumberDoubleImpl(double val) {
+    public DoubleNumberImpl(double val) {
         value = val;
     }
 
-    public NumberDoubleImpl(int val) {
+    public DoubleNumberImpl(int val) {
         value = val;
     }
 
-    public NumberDoubleImpl(long val) {
+    public DoubleNumberImpl(long val) {
         value = val;
     }
 
     public Number add(Number augend) {
-        return new NumberDoubleImpl(value + ((NumberDoubleImpl) augend).value);
+        return new DoubleNumberImpl(value + ((DoubleNumberImpl) augend).value);
     }
 
     public Number subtract(Number subtrahend) {
-        return new NumberDoubleImpl(value - (((NumberDoubleImpl) subtrahend).value));
+        return new DoubleNumberImpl(value - (((DoubleNumberImpl) subtrahend).value));
     }
 
     public Number multiply(Number multiplicand) {
-        return new NumberDoubleImpl(value * (((NumberDoubleImpl) multiplicand).value));
+        return new DoubleNumberImpl(value * (((DoubleNumberImpl) multiplicand).value));
     }
 
     public Number divide(Number divisor) {
-        return new NumberDoubleImpl(value / (((NumberDoubleImpl) divisor).value));
+        return new DoubleNumberImpl(value / (((DoubleNumberImpl) divisor).value));
     }
 
     public Number divideToIntegralValue(Number divisor) {
-        return new NumberDoubleImpl(Math.floor(value / (((NumberDoubleImpl) divisor).value)));
+        return new DoubleNumberImpl(Math.floor(value / (((DoubleNumberImpl) divisor).value)));
     }
 
     public Number remainder(Number divisor) {
-        return new NumberDoubleImpl(value % (((NumberDoubleImpl) divisor).value));
+        return new DoubleNumberImpl(value % (((DoubleNumberImpl) divisor).value));
     }
 
     public Number[] divideAndRemainder(Number divisor) {
@@ -64,21 +64,21 @@ public class NumberDoubleImpl implements Number {
     }
 
     public Number pow(int n) {
-        return new NumberDoubleImpl(Math.pow(value, n));
+        return new DoubleNumberImpl(Math.pow(value, n));
     }
 
     public Number abs() {
-        return new NumberDoubleImpl(Math.abs(value));
+        return new DoubleNumberImpl(Math.abs(value));
     }
 
     public Number negate() {
-        return new NumberDoubleImpl(-value);
+        return new DoubleNumberImpl(-value);
     }
 
     // Comparison Operations
 
     public int compareTo(Number val) {
-        return (value < ((NumberDoubleImpl) val).value) ? -1 : (value > ((NumberDoubleImpl) val).value) ? 1 : 0;
+        return (value < ((DoubleNumberImpl) val).value) ? -1 : (value > ((DoubleNumberImpl) val).value) ? 1 : 0;
     }
 
     /**
@@ -98,11 +98,11 @@ public class NumberDoubleImpl implements Number {
     // Format Converters
 
     public Number valueOf(long val) {
-        return new NumberDoubleImpl(val);
+        return new DoubleNumberImpl(val);
     }
 
     public Number valueOf(double val) {
-        return new NumberDoubleImpl(val);
+        return new DoubleNumberImpl(val);
     }
 
     public float floatValue() {

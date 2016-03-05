@@ -14,22 +14,22 @@ public class BigDecimalNumberFactory implements NumberFactory {
     private static MathContext mathContext = new MathContext(50);
 
     public Number createNumber(BigDecimal val) {
-        return new NumberBigDecimalImpl(val);
+        return new BigDecimalNumberImpl(val);
     }
 
     public Number createNumber(String val) {
-        return new NumberBigDecimalImpl(val, mathContext);
+        return new BigDecimalNumberImpl(val, mathContext);
     }
 
     public Number createNumber(double val) {
-        return new NumberBigDecimalImpl(val, mathContext);
+        return new BigDecimalNumberImpl(val, mathContext);
     }
 
     public Number createNumber(int val) {
-        return new NumberBigDecimalImpl(val, mathContext);
+        return new BigDecimalNumberImpl(val, mathContext);
     }
 
     public Number createNumber(long val) {
-        return new NumberBigDecimalImpl(val, mathContext);
+        return new BigDecimalNumberImpl(val, mathContext);
     }
 }
