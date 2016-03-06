@@ -6,6 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.SimulationLogic;
 import info.trekto.jos.model.SimulationObject;
 
@@ -16,7 +17,8 @@ import info.trekto.jos.model.SimulationObject;
 public class SimulationLogicImpl implements SimulationLogic {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    public void calculateNewValues(List<SimulationObject> objects, List<SimulationObject> targetObjects) {
+    @Override
+    public void calculateNewValues(Simulation simulation, List<SimulationObject> targetObjects) {
         logger.warn("calculateNewValues() not implemented");
         for (Iterator iterator = targetObjects.iterator(); iterator.hasNext();) {
             SimulationObject simulationObject = (SimulationObject) iterator.next();

@@ -9,5 +9,5 @@ import info.trekto.jos.model.SimulationObject;
  * @date 6.03.2016 г.1:53:20
  */
 public interface SimulationLogic {
-    void calculateNewValues(List<SimulationObject> objects, List<SimulationObject> targetObjects);
+    void calculateNewValues(Simulation simulation, List<SimulationObject> targetObjects);
 }

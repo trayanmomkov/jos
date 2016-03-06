@@ -11,10 +11,18 @@ public class SimulationProperties {
 
     private int numberOfObjects;
 
+    /**
+     * Call {@link #getNumberOfObjects}. Returns number of objects.
+     * @return
+     */
     public int getN() {
         return numberOfObjects;
     }
 
+    /**
+     * Returns number of objects.
+     * @return
+     */
     public int getNumberOfObjects() {
         return numberOfObjects;
     }
