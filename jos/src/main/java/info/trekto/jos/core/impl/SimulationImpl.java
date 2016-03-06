@@ -18,7 +18,7 @@ import info.trekto.jos.util.Utils;
 public class SimulationImpl implements Simulation {
     private Logger logger = LoggerFactory.getLogger(getClass());
     private SimulationProperties properties;
-    private int minimumObjectsPerThread;
+    private int optimalObjectsPerThread;
     private Thread[] threads = new Thread[Utils.CORES];
 
     /**
@@ -38,12 +38,12 @@ public class SimulationImpl implements Simulation {
         /** Distribute simulation objects per threads and start execution */
         int fromIndex, toIndex;
         for (int i = 0; i < Utils.CORES; i++) {
-            fromIndex = i * minimumObjectsPerThread;
+            fromIndex = i * optimalObjectsPerThread;
             if (i == Utils.CORES - 1) {
                 /** In last loop put all remaining objects to be processed by the last available thread. */
                 toIndex = objects.size();
             } else {
-                toIndex = i * minimumObjectsPerThread + minimumObjectsPerThread;
+                toIndex = i * optimalObjectsPerThread + optimalObjectsPerThread;
             }
             threads[i] = new Thread(
                     new SimulationRunnable(this, objects.subList(fromIndex, toIndex)));
@@ -88,7 +88,9 @@ public class SimulationImpl implements Simulation {
         logger.warn("init() not implemented");
         properties.setNumberOfObjects(100);
         objects = new ArrayList<SimulationObject>(properties.getN());
-        minimumObjectsPerThread = properties.getN() / Utils.CORES;
+        auxiliaryObjects = new ArrayList<SimulationObject>(properties.getN());
+        objectsForRemoval = new ArrayList<SimulationObject>();
+        optimalObjectsPerThread = properties.getN() / Utils.CORES;
         for (int i = 0; i < properties.getN(); i++) {
             objects.add(new SimulationObjectImpl());
             auxiliaryObjects.add(new SimulationObjectImpl());
