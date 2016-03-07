@@ -1,15 +1,15 @@
 package info.trekto.jos.core.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.SimulationObjectImpl;
 import info.trekto.jos.util.Utils;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Trayan Momkov
@@ -29,6 +29,9 @@ public class SimulationImpl implements Simulation {
      * we need to keep original values when calculating new values.
      * This approach prevents creation of new objects in every iteration. We create objects at the beginning of the
      * simulation and after that only remove objects when collision appear.
+     * Good candidate for implementation of the lists is LinkedList because during simulation we not add any new objects
+     * to the lists, nor we access them randomly (via indices). We only remove from them, get sublists and iterate
+     * sequentially.
      */
     private List<SimulationObject> objects;
     private List<SimulationObject> auxiliaryObjects;
@@ -72,7 +75,6 @@ public class SimulationImpl implements Simulation {
         /** Here objects remaining only in tempList must be candidates for garbage collection. */
     }
 
-    @Override
     public void startSimulation() {
         init();
         for (long i = 0; i < properties.getNumberOfIterations(); i++) {
@@ -87,9 +89,9 @@ public class SimulationImpl implements Simulation {
     private void init() {
         logger.warn("init() not implemented");
         properties.setNumberOfObjects(100);
-        objects = new ArrayList<SimulationObject>(properties.getN());
-        auxiliaryObjects = new ArrayList<SimulationObject>(properties.getN());
-        objectsForRemoval = new ArrayList<SimulationObject>();
+        objects = new LinkedList<SimulationObject>();
+        auxiliaryObjects = new LinkedList<SimulationObject>();
+        objectsForRemoval = new LinkedList<SimulationObject>();
         optimalObjectsPerThread = properties.getN() / Utils.CORES;
         for (int i = 0; i < properties.getN(); i++) {
             objects.add(new SimulationObjectImpl());
@@ -97,42 +99,42 @@ public class SimulationImpl implements Simulation {
         }
     }
 
-    @Override
+
     public SimulationProperties getProperties() {
         return properties;
     }
 
-    @Override
+
     public void setProperties(SimulationProperties properties) {
         this.properties = properties;
     }
 
-    @Override
+
     public List<SimulationObject> getObjects() {
         return objects;
     }
 
-    @Override
+
     public void setObjects(List<SimulationObject> objects) {
         this.objects = objects;
     }
 
-    @Override
+
     public List<SimulationObject> getAuxiliaryObjects() {
         return auxiliaryObjects;
     }
 
-    @Override
+
     public void setAuxiliaryObjects(List<SimulationObject> auxiliaryObjects) {
         this.auxiliaryObjects = auxiliaryObjects;
     }
 
-    @Override
+
     public List<SimulationObject> getObjectsForRemoval() {
         return objectsForRemoval;
     }
 
-    @Override
+
     public void setObjectsForRemoval(List<SimulationObject> objectsForRemoval) {
         this.objectsForRemoval = objectsForRemoval;
     }
