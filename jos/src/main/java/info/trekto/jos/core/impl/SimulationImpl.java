@@ -1,15 +1,19 @@
 package info.trekto.jos.core.impl;
 
-import info.trekto.jos.core.Simulation;
-import info.trekto.jos.model.SimulationObject;
-import info.trekto.jos.model.impl.SimulationObjectImpl;
-import info.trekto.jos.util.Utils;
-
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import info.trekto.jos.core.Simulation;
+import info.trekto.jos.model.SimulationObject;
+import info.trekto.jos.model.impl.SimulationObjectImpl;
+import info.trekto.jos.numbers.New;
+import info.trekto.jos.util.Utils;
 
 /**
  * @author Trayan Momkov
@@ -18,8 +22,8 @@ import org.slf4j.LoggerFactory;
 public class SimulationImpl implements Simulation {
     private Logger logger = LoggerFactory.getLogger(getClass());
     private SimulationProperties properties;
-    private int optimalObjectsPerThread;
     private Thread[] threads = new Thread[Utils.CORES];
+    private Map<Integer, ArrayList<Integer>> numberOfobjectsDistributionPerThread = new HashMap<>();
 
     /**
      * We cannot use array and just to mark objects as disappeared because distribution per threads will not work - we
@@ -39,18 +43,14 @@ public class SimulationImpl implements Simulation {
 
     private void doIteration() throws InterruptedException {
         /** Distribute simulation objects per threads and start execution */
-        int fromIndex, toIndex;
+        int fromIndex = 0, toIndex = 0;
+        ArrayList<Integer> distributionPerThread = getObjectsDistributionPerThread(Utils.CORES, objects.size());
         for (int i = 0; i < Utils.CORES; i++) {
-            fromIndex = i * optimalObjectsPerThread;
-            if (i == Utils.CORES - 1) {
-                /** In last loop put all remaining objects to be processed by the last available thread. */
-                toIndex = objects.size();
-            } else {
-                toIndex = i * optimalObjectsPerThread + optimalObjectsPerThread;
-            }
+            toIndex = fromIndex + distributionPerThread.get(i);
             threads[i] = new Thread(
-                    new SimulationRunnable(this, objects.subList(fromIndex, toIndex)));
+                    new SimulationRunnable(this, objects.subList(fromIndex, toIndex)), "Thread " + i);
             threads[i].start();
+            fromIndex = toIndex;
         }
 
         /** Wait for threads to finish */
@@ -72,13 +72,15 @@ public class SimulationImpl implements Simulation {
              */
             auxiliaryObjects = tempList.subList(0, objects.size());
         }
-        /** Here objects remaining only in tempList must be candidates for garbage collection. */
+        /** Here objects remaining only in tempList should be candidates for garbage collection. */
     }
 
+    @Override
     public void startSimulation() {
         init();
         for (long i = 0; i < properties.getNumberOfIterations(); i++) {
             try {
+                logger.info("\nIteration " + i);
                 doIteration();
             } catch (InterruptedException e) {
                 logger.error("One of the threads interrupted in cycle " + i, e);
@@ -88,55 +90,98 @@ public class SimulationImpl implements Simulation {
 
     private void init() {
         logger.warn("init() not implemented");
-        properties.setNumberOfObjects(100);
         objects = new LinkedList<SimulationObject>();
         auxiliaryObjects = new LinkedList<SimulationObject>();
         objectsForRemoval = new LinkedList<SimulationObject>();
-        optimalObjectsPerThread = properties.getN() / Utils.CORES;
+        // optimalObjectsPerThread = properties.getN() / Utils.CORES;
         for (int i = 0; i < properties.getN(); i++) {
-            objects.add(new SimulationObjectImpl());
-            auxiliaryObjects.add(new SimulationObjectImpl());
+            SimulationObject object = new SimulationObjectImpl();
+            object.setLabel("Obj " + i);
+            object.setX(New.num(i));
+            object.setY(New.num(i));
+            objects.add(object);
+            auxiliaryObjects.add(object);
         }
     }
 
 
+    @Override
     public SimulationProperties getProperties() {
         return properties;
     }
 
 
+    @Override
     public void setProperties(SimulationProperties properties) {
         this.properties = properties;
     }
 
 
+    @Override
     public List<SimulationObject> getObjects() {
         return objects;
     }
 
 
+    @Override
     public void setObjects(List<SimulationObject> objects) {
         this.objects = objects;
     }
 
 
+    @Override
     public List<SimulationObject> getAuxiliaryObjects() {
         return auxiliaryObjects;
     }
 
 
+    @Override
     public void setAuxiliaryObjects(List<SimulationObject> auxiliaryObjects) {
         this.auxiliaryObjects = auxiliaryObjects;
     }
 
 
+    @Override
     public List<SimulationObject> getObjectsForRemoval() {
         return objectsForRemoval;
     }
 
 
+    @Override
     public void setObjectsForRemoval(List<SimulationObject> objectsForRemoval) {
         this.objectsForRemoval = objectsForRemoval;
     }
 
+    /**
+     * Distribute objects per thread and return array which indices are thread numbers and values are objects for the
+     * given thread.
+     * For example: getObjectsDistributionPerThread(4, 10) must return [3, 3, 2, 2] that means
+     * for thread 0 - 3 objects
+     * for thread 1 - 3 objects
+     * for thread 2 - 2 objects
+     * for thread 3 - 2 objects
+     * @param numberOfThreads
+     * @param numberOfObjects
+     * @return
+     */
+    public ArrayList<Integer> getObjectsDistributionPerThread(int numberOfThreads, int numberOfObjects) {
+        if (numberOfobjectsDistributionPerThread.get(numberOfObjects) == null) {
+            numberOfobjectsDistributionPerThread.put(numberOfObjects, new ArrayList<Integer>());
+            for (int i = 0; i < numberOfThreads; i++) {
+                numberOfobjectsDistributionPerThread.get(numberOfObjects).add(0);
+            }
+            int currentThread = 0;
+            for (int i = 0; i < numberOfObjects; i++) {
+                numberOfobjectsDistributionPerThread.get(numberOfObjects).set(
+                        currentThread,
+                        numberOfobjectsDistributionPerThread.get(numberOfObjects).get(currentThread) + 1);
+                if (currentThread == numberOfThreads - 1) {
+                    currentThread = 0;
+                } else {
+                    currentThread++;
+                }
+            }
+        }
+        return numberOfobjectsDistributionPerThread.get(numberOfObjects);
+    }
 }

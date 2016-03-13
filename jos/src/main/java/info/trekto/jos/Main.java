@@ -20,7 +20,10 @@ public class Main {
         Container.setSimulation(new SimulationImpl());
         Container.setSimulationLogic(new SimulationLogicImpl());
 
-        Container.getSimulation().setProperties(new SimulationProperties());
+        SimulationProperties simulationProperties = new SimulationProperties();
+        simulationProperties.setNumberOfObjects(10);
+        simulationProperties.setNumberOfIterations(10);
+        Container.getSimulation().setProperties(simulationProperties);
         Container.getSimulation().startSimulation();
     }
 }
