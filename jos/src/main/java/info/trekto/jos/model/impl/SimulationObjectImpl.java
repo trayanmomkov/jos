@@ -3,10 +3,10 @@
  */
 package info.trekto.jos.model.impl;
 
-import java.util.List;
-
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.numbers.Number;
+
+import java.util.List;
 
 /**
  * @author Trayan Momkov
@@ -113,5 +113,12 @@ public class SimulationObjectImpl implements SimulationObject {
 
     public void setTrajectory(List<TripleNumber> trajectory) {
         this.trajectory = trajectory;
+    }
+
+    /**
+     * The magnitude of speed which is a 3D vector.
+     */
+    public Number calculateSpeedMagnitude() {
+        return speed.getX().pow(2).add(speed.getY().pow(2)).add(speed.getZ().pow(2)).sqrt();
     }
 }

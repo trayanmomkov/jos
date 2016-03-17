@@ -121,4 +121,8 @@ public class DoubleNumberImpl implements Number {
     public String toString() {
         return ((Double) value).toString();
     }
+
+    public Number sqrt() {
+        return new DoubleNumberImpl(Math.sqrt(value));
+    }
 }

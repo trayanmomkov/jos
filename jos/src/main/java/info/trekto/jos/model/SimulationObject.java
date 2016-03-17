@@ -51,4 +51,6 @@ public interface SimulationObject {
 
     /** This must be used only for visualization purposes. Trajectory list consumes memory and CPU. */
     void setTrajectory(List<TripleNumber> trajectory);
+
+    Number calculateSpeedMagnitude();
 }

@@ -8,6 +8,7 @@ import info.trekto.jos.numbers.Number;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
+import java.math.RoundingMode;
 
 /**
  * @author Trayan Momkov
@@ -16,6 +17,7 @@ import java.math.MathContext;
 public class BigDecimalNumberImpl implements Number {
 
     private final BigDecimal value;
+    private final RoundingMode roundingMode = RoundingMode.HALF_EVEN;
 
     /**
      * @param value
@@ -304,6 +306,10 @@ public class BigDecimalNumberImpl implements Number {
     }
 
     private BigDecimalNumberImpl newNumber(BigDecimal val) {
-        return new BigDecimalNumberImpl(val.setScale(value.precision(), BigDecimal.ROUND_HALF_EVEN));
+        return new BigDecimalNumberImpl(val.setScale(value.precision(), roundingMode.ordinal()));
+    }
+
+    public Number sqrt() {
+        return new BigDecimalNumberImpl(BigDecimalSqrtCalculator.sqrt(value, roundingMode));
     }
 }
