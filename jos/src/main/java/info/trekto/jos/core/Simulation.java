@@ -1,9 +1,9 @@
 package info.trekto.jos.core;
 
-import java.util.List;
-
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.model.SimulationObject;
+
+import java.util.List;
 
 /**
  * @author Trayan Momkov
@@ -17,15 +17,15 @@ public interface Simulation {
 
     void startSimulation();
 
-    public List<SimulationObject> getObjects();
+    List<SimulationObject> getObjects();
 
-    public void setObjects(List<SimulationObject> objects);
+    void setObjects(List<SimulationObject> objects);
 
-    public List<SimulationObject> getAuxiliaryObjects();
+    List<SimulationObject> getAuxiliaryObjects();
 
-    public void setAuxiliaryObjects(List<SimulationObject> auxiliaryObjects);
+    void setAuxiliaryObjects(List<SimulationObject> auxiliaryObjects);
 
-    public List<SimulationObject> getObjectsForRemoval();
+    List<SimulationObject> getObjectsForRemoval();
 
-    public void setObjectsForRemoval(List<SimulationObject> objectsForRemoval);
+    void setObjectsForRemoval(List<SimulationObject> objectsForRemoval);
 }

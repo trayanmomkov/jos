@@ -11,6 +11,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.util.Iterator;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +39,14 @@ public class FormatVersion1Writer {
         }
     }
 
-    public void appendToFile(SimulationObject simulationObject) {
+    public void appendObjectsToFile(List<SimulationObject> simulationObjects) {
+        for (Iterator iterator = simulationObjects.iterator(); iterator.hasNext();) {
+            SimulationObject simulationObject = (SimulationObject) iterator.next();
+            appendObjectToFile(simulationObject);
+        }
+    }
+
+    public void appendObjectToFile(SimulationObject simulationObject) {
         /**
          * f<<"x = \t\t"<< setprecision(VISUALISATION_PRECISION) << x << endl;
          * f<<"y = \t\t"<< setprecision(VISUALISATION_PRECISION) << y << endl;
@@ -71,8 +80,5 @@ public class FormatVersion1Writer {
         } catch (IOException e) {
             logger.error("Cannot write to file ", e);
         }
-
-
-
     }
 }

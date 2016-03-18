@@ -73,6 +73,8 @@ public class SimulationImpl implements Simulation {
             auxiliaryObjects = tempList.subList(0, objects.size());
         }
         /** Here objects remaining only in tempList must be candidates for garbage collection. */
+
+        properties.getFormatVersion1Writer().appendObjectsToFile(objects);
     }
 
     public void startSimulation() {
@@ -89,6 +91,7 @@ public class SimulationImpl implements Simulation {
     private void init() {
         logger.warn("init() not implemented");
         properties.setNumberOfObjects(100);
+        properties.setNumberOfIterations(10);
         objects = new LinkedList<SimulationObject>();
         auxiliaryObjects = new LinkedList<SimulationObject>();
         objectsForRemoval = new LinkedList<SimulationObject>();

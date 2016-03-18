@@ -6,6 +6,7 @@ package info.trekto.jos;
 import info.trekto.jos.core.impl.SimulationImpl;
 import info.trekto.jos.core.impl.SimulationLogicImpl;
 import info.trekto.jos.core.impl.SimulationProperties;
+import info.trekto.jos.io.FormatVersion1Writer;
 
 
 /**
@@ -20,7 +21,9 @@ public class Main {
         Container.setSimulation(new SimulationImpl());
         Container.setSimulationLogic(new SimulationLogicImpl());
 
-        Container.getSimulation().setProperties(new SimulationProperties());
+        SimulationProperties simulationProperties = new SimulationProperties();
+        simulationProperties.setFormatVersion1Writer(new FormatVersion1Writer("/home/bibo/Desktop/simulation.out"));
+        Container.getSimulation().setProperties(simulationProperties);
         Container.getSimulation().startSimulation();
     }
 }
