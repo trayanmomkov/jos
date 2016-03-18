@@ -133,10 +133,10 @@ public class SimulationObjectImpl implements SimulationObject {
         this.trajectory = trajectory;
     }
 
-    @Override
-    public String toString() {
-        // return "[" + label + " (" + x + ", " + y + ") speed: " + speed + " radius: " + radius + " color: (" + color
-        // + ") mass: " + mass + " motionless: " + motionless + "]";
-        return "[" + label + " (" + x + ", " + y + ")]";
+    /**
+     * The magnitude of speed which is a 3D vector.
+     */
+    public Number calculateSpeedMagnitude() {
+        return speed.getX().pow(2).add(speed.getY().pow(2)).add(speed.getZ().pow(2)).sqrt();
     }
 }

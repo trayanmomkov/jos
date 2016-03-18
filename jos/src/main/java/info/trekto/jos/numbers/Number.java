@@ -81,6 +81,12 @@ public interface Number {
      */
     public Number negate();
 
+    /**
+     * Compute the square root of the number.
+     * @return
+     */
+    public Number sqrt();
+
     // Comparison Operations
 
     /**
