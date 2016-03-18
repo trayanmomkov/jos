@@ -17,10 +17,8 @@ import org.slf4j.LoggerFactory;
 public class SimulationLogicImpl implements SimulationLogic {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Override
     public void calculateNewValues(Simulation simulation, List<SimulationObject> targetObjects) {
-        logger.warn("calculateNewValues() for thred: " + Thread.currentThread().getName() + " Target objects: "
-                + targetObjects);
+        logger.warn("calculateNewValues() not implemented");
         for (Iterator iterator = targetObjects.iterator(); iterator.hasNext();) {
             SimulationObject simulationObject = (SimulationObject) iterator.next();
 

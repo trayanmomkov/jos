@@ -1,12 +1,14 @@
 package info.trekto.jos.numbers;
 
+import org.testng.annotations.Test;
+
 public class NumberImplSpeedTest {
     public static final long N = 10000000;
 
     private static Number n1;
     private static Number n2;
 
-    // @Test
+    @Test
     public void testPerformance() {
         // System.out.println(n1.compareTo(n2));
         // System.out.println(n2.compareTo(n1));

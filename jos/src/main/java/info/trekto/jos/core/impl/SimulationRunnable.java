@@ -19,6 +19,12 @@ public class SimulationRunnable implements Runnable {
     private List<SimulationObject> targetObjects;
     private Simulation simulation;
 
+    /** Index at which is the first object calculated by this thread */
+    private int fromIndex;
+
+    /** Index after index at which is the last object calculated by this thread i.e. toIndex is not included */
+    private int toIndex;
+
     /**
      * @param objects
      * @param fromIndex Index at which is the first object calculated by this thread
@@ -34,4 +40,5 @@ public class SimulationRunnable implements Runnable {
     public void run() {
         Container.getSimulationLogic().calculateNewValues(simulation, targetObjects);
     }
+
 }

@@ -6,5 +6,4 @@ package info.trekto.jos.util;
  */
 public class Utils {
     public static final int CORES = Runtime.getRuntime().availableProcessors();
-    // public static final int CORES = 8;
 }

@@ -22,8 +22,6 @@ public class Main {
         Container.setSimulationLogic(new SimulationLogicImpl());
 
         SimulationProperties simulationProperties = new SimulationProperties();
-        simulationProperties.setNumberOfObjects(10);
-        simulationProperties.setNumberOfIterations(10);
         simulationProperties.setFormatVersion1Writer(new FormatVersion1Writer("/home/bibo/Desktop/simulation.out"));
         Container.getSimulation().setProperties(simulationProperties);
         Container.getSimulation().startSimulation();
