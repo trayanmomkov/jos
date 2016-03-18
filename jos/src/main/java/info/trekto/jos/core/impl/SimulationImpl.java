@@ -100,7 +100,7 @@ public class SimulationImpl implements Simulation {
             object.setX(New.num(i));
             object.setY(New.num(i));
             objects.add(object);
-            auxiliaryObjects.add(object);
+            auxiliaryObjects.add(new SimulationObjectImpl());
         }
     }
 

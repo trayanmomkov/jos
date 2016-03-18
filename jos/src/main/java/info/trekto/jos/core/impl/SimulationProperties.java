@@ -1,5 +1,7 @@
 package info.trekto.jos.core.impl;
 
+import info.trekto.jos.io.FormatVersion1Writer;
+
 import java.util.ArrayList;
 
 /**
@@ -10,6 +12,8 @@ public class SimulationProperties {
     private int numberOfIterations;
 
     private int numberOfObjects;
+
+    private FormatVersion1Writer formatVersion1Writer;
 
     /**
      * Call {@link #getNumberOfObjects}. Returns number of objects.
@@ -38,5 +42,17 @@ public class SimulationProperties {
 
     public void setNumberOfIterations(int numberOfIterations) {
         this.numberOfIterations = numberOfIterations;
+    }
+
+    /**
+     * Returns fireWrite for saving objects in a file.
+     * @return
+     */
+    public FormatVersion1Writer getFormatVersion1Writer() {
+        return formatVersion1Writer;
+    }
+
+    public void setFormatVersion1Writer(FormatVersion1Writer formatVersion1Writer) {
+        this.formatVersion1Writer = formatVersion1Writer;
     }
 }
