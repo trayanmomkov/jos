@@ -11,13 +11,14 @@ import java.awt.Color;
 /**
  * Container for three objects of type byte.
  * Used for representing the color of {@link SimulationObject}.
+ * Immutable.
  * @author Trayan Momkov
  * @date 3 Mar 2016
  */
 public class TripleInt {
-    private int r;
-    private int g;
-    private int b;
+    private final int r;
+    private final int g;
+    private final int b;
 
     /**
      * @param r
@@ -31,6 +32,13 @@ public class TripleInt {
         this.b = b;
     }
 
+    public TripleInt(TripleInt tripleInt) {
+        super();
+        this.r = tripleInt.getR();
+        this.g = tripleInt.getG();
+        this.b = tripleInt.getB();
+    }
+
     public Color toColor() {
         return new Color(r, g, b);
     }
@@ -39,23 +47,11 @@ public class TripleInt {
         return r;
     }
 
-    public void setR(int r) {
-        this.r = r;
-    }
-
     public int getG() {
         return g;
     }
 
-    public void setG(int g) {
-        this.g = g;
-    }
-
     public int getB() {
         return b;
-    }
-
-    public void setB(int b) {
-        this.b = b;
     }
 }

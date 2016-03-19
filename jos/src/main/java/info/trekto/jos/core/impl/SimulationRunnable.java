@@ -1,13 +1,10 @@
 package info.trekto.jos.core.impl;
 
-import java.util.List;
+import info.trekto.jos.Container;
+import info.trekto.jos.core.Simulation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import info.trekto.jos.Container;
-import info.trekto.jos.core.Simulation;
-import info.trekto.jos.model.SimulationObject;
 
 /**
  * @author Trayan Momkov
@@ -16,7 +13,8 @@ import info.trekto.jos.model.SimulationObject;
 public class SimulationRunnable implements Runnable {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    private List<SimulationObject> targetObjects;
+    private int fromIndex;
+    private int toIndex;
     private Simulation simulation;
 
     /**
@@ -25,13 +23,14 @@ public class SimulationRunnable implements Runnable {
      * @param toIndex Index after index at which is the last object calculated by this thread i.e. toIndex is not
      *            included
      */
-    public SimulationRunnable(Simulation simulation, List<SimulationObject> targetObjects) {
-        this.targetObjects = targetObjects;
+    public SimulationRunnable(Simulation simulation, int fromIndex, int toIndex) {
+        this.fromIndex = fromIndex;
+        this.toIndex = toIndex;
         this.simulation = simulation;
     }
 
     @Override
     public void run() {
-        Container.getSimulationLogic().calculateNewValues(simulation, targetObjects);
+        Container.getSimulationLogic().calculateNewValues(simulation, fromIndex, toIndex);
     }
 }

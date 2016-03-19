@@ -3,10 +3,11 @@
  */
 package info.trekto.jos.model.impl;
 
-import java.util.List;
-
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.numbers.Number;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Trayan Momkov
@@ -26,6 +27,24 @@ public class SimulationObjectImpl implements SimulationObject {
 
     /** Array with points which object passed through. */
     List<TripleNumber> trajectory;
+
+    public SimulationObjectImpl() {
+        super();
+    }
+
+    public SimulationObjectImpl(SimulationObject simulationObject) {
+        super();
+        this.color = simulationObject.getColor();
+        this.label = simulationObject.getLabel();
+        this.mass = simulationObject.getMass();
+        this.motionless = simulationObject.isMotionless();
+        this.radius = simulationObject.getRadius();
+        this.speed = simulationObject.getSpeed();
+        this.trajectory = (simulationObject.getTrajectory() == null) ? null : new ArrayList<TripleNumber>(
+                simulationObject.getTrajectory());
+        this.x = simulationObject.getX();
+        this.y = simulationObject.getY();
+    }
 
     @Override
     public Number getX() {

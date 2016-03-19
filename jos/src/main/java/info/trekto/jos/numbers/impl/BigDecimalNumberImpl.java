@@ -11,6 +11,8 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 
 /**
+ * BigDecimal implementation.
+ * Immutable.
  * @author Trayan Momkov
  * @date 18 Aug 2015
  */

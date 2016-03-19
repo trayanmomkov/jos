@@ -28,4 +28,6 @@ public interface Simulation {
     List<SimulationObject> getObjectsForRemoval();
 
     void setObjectsForRemoval(List<SimulationObject> objectsForRemoval);
+
+    int getCurrentIterationNumber();
 }

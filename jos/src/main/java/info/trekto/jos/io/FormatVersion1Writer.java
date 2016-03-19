@@ -3,6 +3,7 @@
  */
 package info.trekto.jos.io;
 
+import info.trekto.jos.Container;
 import info.trekto.jos.model.SimulationObject;
 
 import java.io.BufferedWriter;
@@ -40,13 +41,23 @@ public class FormatVersion1Writer {
     }
 
     public void appendObjectsToFile(List<SimulationObject> simulationObjects) {
-        for (Iterator iterator = simulationObjects.iterator(); iterator.hasNext();) {
-            SimulationObject simulationObject = (SimulationObject) iterator.next();
-            appendObjectToFile(simulationObject);
+        try {
+            // fileToSave<<"============================ " << N << " | " << simulationProperties.cycleCounter <<
+            // " (objects | cycle) ============================\n\n";
+            writer.write("============================ " + Container.getSimulation().getProperties().getN() + " | "
+                    + Container.getSimulation().getCurrentIterationNumber()
+                    + " (objects | cycle) ============================\n\n");
+
+            for (Iterator iterator = simulationObjects.iterator(); iterator.hasNext();) {
+                SimulationObject simulationObject = (SimulationObject) iterator.next();
+                appendObjectToFile(simulationObject);
+            }
+        } catch (IOException e) {
+            logger.error("Cannot write to file ", e);
         }
     }
 
-    public void appendObjectToFile(SimulationObject simulationObject) {
+    public void appendObjectToFile(SimulationObject simulationObject) throws IOException {
         /**
          * f<<"x = \t\t"<< setprecision(VISUALISATION_PRECISION) << x << endl;
          * f<<"y = \t\t"<< setprecision(VISUALISATION_PRECISION) << y << endl;
@@ -63,22 +74,24 @@ public class FormatVersion1Writer {
          * f<<endl;
          */
 
-        try {
-            writer.write("x = \t\t" + simulationObject.getX() + "\n");
-            writer.write("y = \t\t" + simulationObject.getY() + "\n");
-            writer.write("speed x = \t" + simulationObject.getSpeed().getX() + "\n");
-            writer.write("speed y = \t" + simulationObject.getSpeed().getY() + "\n");
-            writer.write("mag = \t\t" + simulationObject.calculateSpeedMagnitude() + "\n");
-            writer.write("mass = \t\t" + simulationObject.getMass() + "\n");
-            writer.write("radius = \t" + simulationObject.getRadius() + "\n");
+        writer.write("x = \t\t" + simulationObject.getX() + "\n");
+        writer.write("y = \t\t" + simulationObject.getY() + "\n");
+        writer.write("speed x = \t" + simulationObject.getSpeed().getX() + "\n");
+        writer.write("speed y = \t" + simulationObject.getSpeed().getY() + "\n");
+        writer.write("mag = \t\t" + simulationObject.calculateSpeedMagnitude() + "\n");
+        writer.write("mass = \t\t" + simulationObject.getMass() + "\n");
+        writer.write("radius = \t" + simulationObject.getRadius() + "\n");
+        if (simulationObject.getColor() != null) {
             writer.write("color R = \t" + simulationObject.getColor().getR() + "\n");
             writer.write("color G = \t" + simulationObject.getColor().getG() + "\n");
             writer.write("color B = \t" + simulationObject.getColor().getB() + "\n");
-            writer.write("is static = \t" + simulationObject.isMotionless() + "\n");
-            writer.write("label= \t\t'" + simulationObject.getLabel() + "'" + "\n");
-            writer.write("\n");
-        } catch (IOException e) {
-            logger.error("Cannot write to file ", e);
+        } else {
+            writer.write("color R = \t0\n");
+            writer.write("color G = \t0\n");
+            writer.write("color B = \t255\n");
         }
+        writer.write("is static = \t" + simulationObject.isMotionless() + "\n");
+        writer.write("label= \t\t'" + simulationObject.getLabel() + "'" + "\n");
+        writer.write("\n");
     }
 }

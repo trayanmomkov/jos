@@ -1,5 +1,12 @@
 package info.trekto.jos.core.impl;
 
+import info.trekto.jos.core.Simulation;
+import info.trekto.jos.model.SimulationObject;
+import info.trekto.jos.model.impl.SimulationObjectImpl;
+import info.trekto.jos.model.impl.TripleNumber;
+import info.trekto.jos.numbers.New;
+import info.trekto.jos.util.Utils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -8,12 +15,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import info.trekto.jos.core.Simulation;
-import info.trekto.jos.model.SimulationObject;
-import info.trekto.jos.model.impl.SimulationObjectImpl;
-import info.trekto.jos.numbers.New;
-import info.trekto.jos.util.Utils;
 
 /**
  * @author Trayan Momkov
@@ -24,6 +25,7 @@ public class SimulationImpl implements Simulation {
     private SimulationProperties properties;
     private Thread[] threads = new Thread[Utils.CORES];
     private Map<Integer, ArrayList<Integer>> numberOfobjectsDistributionPerThread = new HashMap<>();
+    private int iterationCounter;
 
     /**
      * We cannot use array and just to mark objects as disappeared because distribution per threads will not work - we
@@ -48,7 +50,8 @@ public class SimulationImpl implements Simulation {
         for (int i = 0; i < Utils.CORES; i++) {
             toIndex = fromIndex + distributionPerThread.get(i);
             threads[i] = new Thread(
-                    new SimulationRunnable(this, objects.subList(fromIndex, toIndex)), "Thread " + i);
+                    // new SimulationRunnable(this, objects.subList(fromIndex, toIndex)), "Thread " + i);
+                    new SimulationRunnable(this, fromIndex, toIndex), "Thread " + i);
             threads[i].start();
             fromIndex = toIndex;
         }
@@ -72,14 +75,20 @@ public class SimulationImpl implements Simulation {
              */
             auxiliaryObjects = tempList.subList(0, objects.size());
         }
-        /** Here objects remaining only in tempList should be candidates for garbage collection. */
+        /**
+         * Here (outside the scope of tempList) objects remaining only in tempList should be candidates for garbage
+         * collection.
+         */
+
+        properties.getFormatVersion1Writer().appendObjectsToFile(objects);
     }
 
     @Override
     public void startSimulation() {
         init();
-        for (long i = 0; i < properties.getNumberOfIterations(); i++) {
+        for (int i = 0; i < properties.getNumberOfIterations(); i++) {
             try {
+                iterationCounter = i + 1;
                 logger.info("\nIteration " + i);
                 doIteration();
             } catch (InterruptedException e) {
@@ -99,8 +108,9 @@ public class SimulationImpl implements Simulation {
             object.setLabel("Obj " + i);
             object.setX(New.num(i));
             object.setY(New.num(i));
+            object.setSpeed(new TripleNumber(New.num(1), New.num(0), New.num(0)));
             objects.add(object);
-            auxiliaryObjects.add(new SimulationObjectImpl());
+            auxiliaryObjects.add(new SimulationObjectImpl(object));
         }
     }
 
@@ -183,5 +193,10 @@ public class SimulationImpl implements Simulation {
             }
         }
         return numberOfobjectsDistributionPerThread.get(numberOfObjects);
+    }
+
+    @Override
+    public int getCurrentIterationNumber() {
+        return iterationCounter;
     }
 }

@@ -8,6 +8,8 @@ import info.trekto.jos.numbers.Number;
 import java.math.BigDecimal;
 
 /**
+ * Double implementation.
+ * Immutable.
  * @author Trayan Momkov
  * @date 19 Aug 2015
  */
