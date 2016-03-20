@@ -23,8 +23,9 @@ public class Main {
 
         SimulationProperties simulationProperties = new SimulationProperties();
         simulationProperties.setNumberOfObjects(10);
-        simulationProperties.setNumberOfIterations(10);
-        simulationProperties.setFormatVersion1Writer(new FormatVersion1Writer("/home/bibo/Desktop/simulation.out"));
+        simulationProperties.setNumberOfIterations(500);
+        simulationProperties.setFormatVersion1Writer(
+                new FormatVersion1Writer("/media/Data/Projects/v7.2.3.1/simulations/simulation.out"));
         Container.getSimulation().setProperties(simulationProperties);
         Container.getSimulation().startSimulation();
     }

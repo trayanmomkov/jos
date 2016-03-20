@@ -1,12 +1,5 @@
 package info.trekto.jos.core.impl;
 
-import info.trekto.jos.core.Simulation;
-import info.trekto.jos.model.SimulationObject;
-import info.trekto.jos.model.impl.SimulationObjectImpl;
-import info.trekto.jos.model.impl.TripleNumber;
-import info.trekto.jos.numbers.New;
-import info.trekto.jos.util.Utils;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -15,6 +8,13 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import info.trekto.jos.core.Simulation;
+import info.trekto.jos.model.SimulationObject;
+import info.trekto.jos.model.impl.SimulationObjectImpl;
+import info.trekto.jos.model.impl.TripleNumber;
+import info.trekto.jos.numbers.New;
+import info.trekto.jos.util.Utils;
 
 /**
  * @author Trayan Momkov
@@ -106,8 +106,10 @@ public class SimulationImpl implements Simulation {
         for (int i = 0; i < properties.getN(); i++) {
             SimulationObject object = new SimulationObjectImpl();
             object.setLabel("Obj " + i);
-            object.setX(New.num(i));
-            object.setY(New.num(i));
+            object.setX(New.num(648));
+            object.setY(New.num(1340 - i * 100));
+            object.setMass(New.num(65));
+            object.setRadius(New.num(5));
             object.setSpeed(new TripleNumber(New.num(1), New.num(0), New.num(0)));
             objects.add(object);
             auxiliaryObjects.add(new SimulationObjectImpl(object));
