@@ -95,6 +95,7 @@ public class SimulationImpl implements Simulation {
                 logger.error("One of the threads interrupted in cycle " + i, e);
             }
         }
+        properties.getFormatVersion1Writer().endFile();
     }
 
     private void init() {

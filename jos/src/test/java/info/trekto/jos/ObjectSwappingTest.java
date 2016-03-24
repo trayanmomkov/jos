@@ -7,7 +7,7 @@ import static org.junit.Assert.assertTrue;
 import info.trekto.jos.core.impl.SimulationImpl;
 import info.trekto.jos.core.impl.SimulationLogicImpl;
 import info.trekto.jos.core.impl.SimulationProperties;
-import info.trekto.jos.io.FormatVersion1Writer;
+import info.trekto.jos.io.FormatVersion1ReaderWriter;
 import info.trekto.jos.model.SimulationObject;
 
 import java.lang.reflect.Field;
@@ -37,7 +37,7 @@ public class ObjectSwappingTest {
         SimulationProperties simulationProperties = new SimulationProperties();
         simulationProperties.setNumberOfObjects(10);
         simulationProperties.setNumberOfIterations(10);
-        simulationProperties.setFormatVersion1Writer(new FormatVersion1Writer("/home/bibo/Desktop/simulation.out"));
+        simulationProperties.setFormatVersion1Writer(new FormatVersion1ReaderWriter("/home/bibo/Desktop/simulation.out"));
         Container.getSimulation().setProperties(simulationProperties);
 
         Class clazz = Container.getSimulation().getClass();

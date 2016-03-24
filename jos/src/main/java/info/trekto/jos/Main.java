@@ -6,7 +6,7 @@ package info.trekto.jos;
 import info.trekto.jos.core.impl.SimulationImpl;
 import info.trekto.jos.core.impl.SimulationLogicImpl;
 import info.trekto.jos.core.impl.SimulationProperties;
-import info.trekto.jos.io.FormatVersion1Writer;
+import info.trekto.jos.io.FormatVersion1ReaderWriter;
 
 
 /**
@@ -25,7 +25,8 @@ public class Main {
         simulationProperties.setNumberOfObjects(10);
         simulationProperties.setNumberOfIterations(500);
         simulationProperties.setFormatVersion1Writer(
-                new FormatVersion1Writer("/media/Data/Projects/v7.2.3.1/simulations/simulation.out"));
+                new FormatVersion1ReaderWriter("/media/Data/Projects/v7.2.3.1/simulations/10_objects_moving_right_RUN",
+                        "/media/Data/Projects/v7.2.3.1/simulations/simulation.out"));
         Container.getSimulation().setProperties(simulationProperties);
         Container.getSimulation().startSimulation();
     }

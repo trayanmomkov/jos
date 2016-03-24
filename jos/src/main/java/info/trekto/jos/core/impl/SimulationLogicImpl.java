@@ -1,14 +1,14 @@
 package info.trekto.jos.core.impl;
 
-import java.util.Iterator;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.SimulationLogic;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.numbers.New;
+
+import java.util.Iterator;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Trayan Momkov
@@ -27,14 +27,14 @@ public class SimulationLogicImpl implements SimulationLogic {
                 .iterator();
         for (Iterator targetObjectsIterator = simulation.getObjects().subList(fromIndex, toIndex)
                 .iterator(); targetObjectsIterator
-                        .hasNext();) {
+                .hasNext();) {
             SimulationObject simulationObject = (SimulationObject) targetObjectsIterator.next();
             SimulationObject simulationAuxiliaryObject = (SimulationObject) targetAuxiliaryObjectsIterator.next();
             for (Iterator allObjectsIterator = simulation.getObjects().iterator(); allObjectsIterator.hasNext();) {
                 SimulationObject simulationObject2 = (SimulationObject) allObjectsIterator.next();
 
             }
-            simulationAuxiliaryObject.setX(simulationObject.getX().add(New.num(2)));
+            simulationAuxiliaryObject.setX(simulationObject.getX().add(New.num(1)));
             // simulationAuxiliaryObject.setY(simulationObject.getY().multiply(New.num(10)));
             // simulationAuxiliaryObject.setSpeed(new TripleNumber(
             // simulationObject.getSpeed().getX().add(New.num(2)),
