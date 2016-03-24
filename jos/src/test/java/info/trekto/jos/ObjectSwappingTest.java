@@ -37,7 +37,8 @@ public class ObjectSwappingTest {
         SimulationProperties simulationProperties = new SimulationProperties();
         simulationProperties.setNumberOfObjects(10);
         simulationProperties.setNumberOfIterations(10);
-        simulationProperties.setFormatVersion1Writer(new FormatVersion1ReaderWriter("/home/bibo/Desktop/simulation.out"));
+        simulationProperties.setFormatVersion1Writer(new FormatVersion1ReaderWriter("simulation",
+                "simulation.out"));
         Container.getSimulation().setProperties(simulationProperties);
 
         Class clazz = Container.getSimulation().getClass();

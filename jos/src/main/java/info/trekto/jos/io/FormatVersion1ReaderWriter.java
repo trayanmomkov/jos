@@ -135,7 +135,7 @@ public class FormatVersion1ReaderWriter {
 
         String line;
         Matcher matcher;
-        String spaceAndNumber = "\\s+([-e\\d\\.]+)";
+        String spaceAndNumber = "\\s+([+-e\\d\\.]+)";
 
         try {
             simulationObject.setX(New.num(Pattern.compile("x =" + spaceAndNumber).matcher(reader.readLine()).group(1)));
