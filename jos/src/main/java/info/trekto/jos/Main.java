@@ -25,8 +25,8 @@ public class Main {
         simulationProperties.setNumberOfObjects(10);
         simulationProperties.setNumberOfIterations(500);
         simulationProperties.setFormatVersion1Writer(
-                new FormatVersion1ReaderWriter("/media/Data/Projects/v7.2.3.1/simulations/10_objects_moving_right_RUN",
-                        "/media/Data/Projects/v7.2.3.1/simulations/simulation.out"));
+                new FormatVersion1ReaderWriter("/media/Data/Projects/v7.2.3.1/simulations/PSC_5_RUN"));
+        // simulationProperties.getFormatVersion1Writer().readObjectFromFile();
         Container.getSimulation().setProperties(simulationProperties);
         Container.getSimulation().startSimulation();
     }
