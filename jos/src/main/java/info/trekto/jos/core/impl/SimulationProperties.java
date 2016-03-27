@@ -17,6 +17,10 @@ public class SimulationProperties {
 
     private FormatVersion1ReaderWriter formatVersion1ReaderWriter;
 
+    public boolean isInfiniteSimulation() {
+        return numberOfIterations == -1;
+    }
+
     /**
      * Call {@link #getNumberOfObjects}. Returns number of objects.
      * @return

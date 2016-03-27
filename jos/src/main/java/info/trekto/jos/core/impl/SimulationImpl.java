@@ -84,11 +84,19 @@ public class SimulationImpl implements Simulation {
     @Override
     public void startSimulation() {
         init();
-        for (int i = 0; i < properties.getNumberOfIterations(); i++) {
+        for (int i = 0; properties.isInfiniteSimulation() || i < properties.getNumberOfIterations(); i++) {
             try {
                 iterationCounter = i + 1;
-                logger.info("\nIteration " + i);
+
+                if (i % 10 == 0) {
+                    logger.info("Iteration " + i);
+                }
                 doIteration();
+
+                /** On every 100 iterations flush to disk */
+                if (i % 100 == 0) {
+                    properties.getFormatVersion1Writer().flushToDisk();
+                }
             } catch (InterruptedException e) {
                 logger.error("One of the threads interrupted in cycle " + i, e);
             }

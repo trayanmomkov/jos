@@ -42,15 +42,26 @@ public class FormatVersion1ReaderWriter {
     // private FileInputStream fileInputStream;
     private BufferedReader reader;
 
+    private File inputFile;
+
     /**
      * 
      */
     public FormatVersion1ReaderWriter(String inputFile) {
         try {
-            reader = Files.newBufferedReader(new File(inputFile).toPath(), charset);
+            this.inputFile = new File(inputFile);
+            reader = Files.newBufferedReader(this.inputFile.toPath(), charset);
             // writer = Files.newBufferedWriter(new File(outputFile).toPath(), charset);
         } catch (IOException e) {
             logger.error("Cannot open file " + inputFile, e);
+        }
+    }
+
+    public void flushToDisk() {
+        try {
+            writer.flush();
+        } catch (IOException e) {
+            logger.error("Error during flush to disk", e);
         }
     }
 
@@ -222,7 +233,17 @@ public class FormatVersion1ReaderWriter {
             // output file name: simulations/PSC_5.out
             properties.setOutputFile(match("output file name:[\\s\\t]+(.+)",
                     reader.readLine()));
-            writer = Files.newBufferedWriter(new File(properties.getOutputFile()).toPath(), charset);
+
+            String outputFilePath;
+            Matcher matcher = Pattern.compile("simulations(/.+)").matcher(properties.getOutputFile());
+            if (matcher.matches()) {
+                outputFilePath = inputFile.getParent() + matcher.group(1);
+            } else if (properties.getOutputFile().startsWith("/")) {
+                outputFilePath = properties.getOutputFile();
+            } else {
+                outputFilePath = inputFile.getParent() + properties.getOutputFile();
+            }
+            writer = Files.newBufferedWriter(new File(outputFilePath).toPath(), charset);
 
             // number of objects: 399
             properties.setNumberOfObjects(Integer.valueOf(match("number of objects:[\\s\\t]+(\\d+).*",

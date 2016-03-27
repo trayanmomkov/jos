@@ -22,8 +22,8 @@ public class Main {
         Container.setSimulationLogic(new SimulationLogicImpl());
 
         SimulationProperties simulationProperties = new SimulationProperties();
-        simulationProperties.setNumberOfObjects(10);
-        simulationProperties.setNumberOfIterations(500);
+        // simulationProperties.setNumberOfObjects(10);
+        // simulationProperties.setNumberOfIterations(500);
         simulationProperties.setFormatVersion1Writer(
                 new FormatVersion1ReaderWriter("/media/Data/Projects/v7.2.3.1/simulations/PSC_5_RUN"));
         // simulationProperties.getFormatVersion1Writer().readObjectFromFile();

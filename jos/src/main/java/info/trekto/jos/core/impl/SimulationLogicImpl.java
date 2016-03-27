@@ -34,7 +34,7 @@ public class SimulationLogicImpl implements SimulationLogic {
                 SimulationObject simulationObject2 = (SimulationObject) allObjectsIterator.next();
 
             }
-            simulationAuxiliaryObject.setX(simulationObject.getX().add(New.num(1)));
+            simulationAuxiliaryObject.setX(simulationObject.getX().add(New.num(10000)));
             // simulationAuxiliaryObject.setY(simulationObject.getY().multiply(New.num(10)));
             // simulationAuxiliaryObject.setSpeed(new TripleNumber(
             // simulationObject.getSpeed().getX().add(New.num(2)),
