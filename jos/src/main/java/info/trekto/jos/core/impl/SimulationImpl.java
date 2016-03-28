@@ -84,12 +84,19 @@ public class SimulationImpl implements Simulation {
     @Override
     public void startSimulation() {
         init();
+
+        long startTime = System.nanoTime();
+
         for (int i = 0; properties.isInfiniteSimulation() || i < properties.getNumberOfIterations(); i++) {
             try {
                 iterationCounter = i + 1;
 
                 if (i % 10 == 0) {
-                    logger.info("Iteration " + i);
+                    long endTime = System.nanoTime();
+                    long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
+                    startTime = System.nanoTime();
+                    logger.info("Iteration " + i + "\t" + (duration / 1000000) + " ms");
+                    System.out.println("Iteration " + i + "\t" + (duration / 1000000) + " ms");
                 }
                 doIteration();
 

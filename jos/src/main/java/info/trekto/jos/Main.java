@@ -19,15 +19,17 @@ public class Main {
      */
     public static void main(String[] args) {
         Container.setSimulation(new SimulationImpl());
-        Container.setSimulationLogic(new SimulationLogicImpl());
+
 
         SimulationProperties simulationProperties = new SimulationProperties();
         // simulationProperties.setNumberOfObjects(10);
         // simulationProperties.setNumberOfIterations(500);
         simulationProperties.setFormatVersion1Writer(
-                new FormatVersion1ReaderWriter("/media/Data/Projects/v7.2.3.1/simulations/PSC_5_RUN"));
+                new FormatVersion1ReaderWriter(args[0]));
         // simulationProperties.getFormatVersion1Writer().readObjectFromFile();
+
         Container.getSimulation().setProperties(simulationProperties);
+        Container.setSimulationLogic(new SimulationLogicImpl());
         Container.getSimulation().startSimulation();
     }
 }

@@ -173,7 +173,8 @@ public class FormatVersion1ReaderWriter {
                     reader.readLine())));
 
             // seconds per cycle: 10
-            reader.readLine();
+            properties.setNanoSecondsPerIteration(Integer.valueOf(match("seconds per cycle:[\\s\\t]+([-\\d]+).*",
+                    reader.readLine())) * ScientificConstants.NANOSECONDS_IN_ONE_SECOND);
 
             // simulation time: -1 (Depend from numberOfCycles and secondsPerCycle and vice versa, -1 mean no value)
             reader.readLine();
@@ -277,10 +278,11 @@ public class FormatVersion1ReaderWriter {
         // is static = 0
         // label= '1'
 
-        String spaceAndNumber = "[\\s\\t]+([\\+-e\\d\\.]+)";
+        String spaceAndNumber = "[\\s\\t]+([\\+-eE\\d\\.]+)";
         try {
             simulationObject.setX(New.num(match("x =" + spaceAndNumber, reader.readLine())));
             simulationObject.setY(New.num(match("y =" + spaceAndNumber, reader.readLine())));
+            simulationObject.setZ(Number.ZERO);
             simulationObject.setSpeed(new TripleNumber(
                     New.num(match("speed x =" + spaceAndNumber, reader.readLine())),
                     New.num(match("speed y =" + spaceAndNumber, reader.readLine())),

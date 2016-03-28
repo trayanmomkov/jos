@@ -11,6 +11,8 @@ import java.util.ArrayList;
 public class SimulationProperties {
     private int numberOfIterations;
 
+    private int nanoSecondsPerIteration;
+
     private int numberOfObjects;
 
     private String outputFile;
@@ -68,5 +70,13 @@ public class SimulationProperties {
 
     public void setOutputFile(String outputFile) {
         this.outputFile = outputFile;
+    }
+
+    public int getNanoSecondsPerIteration() {
+        return nanoSecondsPerIteration;
+    }
+
+    public void setNanoSecondsPerIteration(int nanoSecondsPerIteration) {
+        this.nanoSecondsPerIteration = nanoSecondsPerIteration;
     }
 }

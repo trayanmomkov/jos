@@ -16,6 +16,7 @@ import java.util.List;
 public class SimulationObjectImpl implements SimulationObject {
     Number x;
     Number y;
+    Number z;
     TripleNumber speed;
     Number radius;
     TripleInt color;
@@ -68,6 +69,14 @@ public class SimulationObjectImpl implements SimulationObject {
         this.y = y;
     }
 
+
+    public Number getZ() {
+        return z;
+    }
+
+    public void setZ(Number z) {
+        this.z = z;
+    }
 
     @Override
     public TripleNumber getSpeed() {

@@ -22,6 +22,10 @@ public interface SimulationObject {
 
     void setY(Number y);
 
+    Number getZ();
+
+    void setZ(Number z);
+
     TripleNumber getSpeed();
 
     void setSpeed(TripleNumber speed);
