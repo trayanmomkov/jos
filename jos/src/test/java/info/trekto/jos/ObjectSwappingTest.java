@@ -14,7 +14,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -37,8 +36,7 @@ public class ObjectSwappingTest {
         SimulationProperties simulationProperties = new SimulationProperties();
         simulationProperties.setNumberOfObjects(10);
         simulationProperties.setNumberOfIterations(10);
-        simulationProperties.setFormatVersion1Writer(new FormatVersion1ReaderWriter("simulation",
-                "simulation.out"));
+        simulationProperties.setFormatVersion1Writer(new FormatVersion1ReaderWriter("simulation"));
         Container.getSimulation().setProperties(simulationProperties);
 
         Class clazz = Container.getSimulation().getClass();
@@ -95,8 +93,8 @@ public class ObjectSwappingTest {
 
     private List<Integer> getObjectsIds(List<SimulationObject> objects) {
         List<Integer> objectsIds = new ArrayList<>();
-        for (Iterator iterator = objects.iterator(); iterator.hasNext();) {
-            SimulationObject simulationObject = (SimulationObject) iterator.next();
+        for (Object element : objects) {
+            SimulationObject simulationObject = (SimulationObject) element;
             // logger.info("obj id: " + System.identityHashCode(simulationObject));
             objectsIds.add(System.identityHashCode(simulationObject));
         }

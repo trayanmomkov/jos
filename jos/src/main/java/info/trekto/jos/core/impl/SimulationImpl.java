@@ -3,11 +3,9 @@ package info.trekto.jos.core.impl;
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.SimulationObjectImpl;
-import info.trekto.jos.util.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -19,23 +17,24 @@ import org.slf4j.LoggerFactory;
  * @date 6.03.2016 г.1:53:36
  */
 public class SimulationImpl implements Simulation {
+
     private Logger logger = LoggerFactory.getLogger(getClass());
     private SimulationProperties properties;
-    private Thread[] threads = new Thread[Utils.CORES];
+    private Thread[] threads;
     private Map<Integer, ArrayList<Integer>> numberOfobjectsDistributionPerThread = new HashMap<>();
     private int iterationCounter;
 
     /**
-     * We cannot use array and just to mark objects as disappeared because distribution per threads will not work - we
-     * will not be able to distribute objects equally per thread. We need to remove objects from lists.
-     * We need second auxiliary list in which to store objects with new values. When calculation finished just swap
-     * lists. Auxiliary list must contain another objects (not just references to original ones). This is need because
-     * we need to keep original values when calculating new values.
-     * This approach prevents creation of new objects in every iteration. We create objects at the beginning of the
-     * simulation and after that only remove objects when collision appear.
-     * Good candidate for implementation of the lists is LinkedList because during simulation we not add any new objects
-     * to the lists, nor we access them randomly (via indices). We only remove from them, get sublists and iterate
-     * sequentially.
+     * We cannot use array and just to mark objects as disappeared because distribution per threads
+     * will not work - we will not be able to distribute objects equally per thread. We need to
+     * remove objects from lists. We need second auxiliary list in which to store objects with new
+     * values. When calculation finished just swap lists. Auxiliary list must contain another
+     * objects (not just references to original ones). This is need because we need to keep original
+     * values when calculating new values. This approach prevents creation of new objects in every
+     * iteration. We create objects at the beginning of the simulation and after that only remove
+     * objects when collision appear. Good candidate for implementation of the lists is LinkedList
+     * because during simulation we not add any new objects to the lists, nor we access them
+     * randomly (via indices). We only remove from them, get sublists and iterate sequentially.
      */
     private List<SimulationObject> objects;
     private List<SimulationObject> auxiliaryObjects;
@@ -43,20 +42,23 @@ public class SimulationImpl implements Simulation {
 
     private void doIteration() throws InterruptedException {
         /** Distribute simulation objects per threads and start execution */
-        int fromIndex = 0, toIndex = 0;
-        ArrayList<Integer> distributionPerThread = getObjectsDistributionPerThread(Utils.CORES, objects.size());
-        for (int i = 0; i < Utils.CORES; i++) {
-            toIndex = fromIndex + distributionPerThread.get(i);
-            threads[i] = new Thread(
-                    // new SimulationRunnable(this, objects.subList(fromIndex, toIndex)), "Thread " + i);
-                    new SimulationRunnable(this, fromIndex, toIndex), "Thread " + i);
-            threads[i].start();
-            fromIndex = toIndex;
-        }
+        if (properties.getNumberOfThreads() == 1) {
+            new SimulationRunnable(this, 0, objects.size()).run();
+        } else {
+            int fromIndex = 0, toIndex = 0;
+            ArrayList<Integer> distributionPerThread = getObjectsDistributionPerThread(properties.getNumberOfThreads(),
+                    objects.size());
+            for (int i = 0; i < properties.getNumberOfThreads(); i++) {
+                toIndex = fromIndex + distributionPerThread.get(i);
+                threads[i] = new Thread(new SimulationRunnable(this, fromIndex, toIndex));
+                threads[i].start();
+                fromIndex = toIndex;
+            }
 
-        /** Wait for threads to finish */
-        for (int i = 0; i < threads.length; i++) {
-            threads[i].join();
+            /** Wait for threads to finish */
+            for (Thread thread : threads) {
+                thread.join();
+            }
         }
 
         /** Remove disappeared because of collision objects */
@@ -68,14 +70,14 @@ public class SimulationImpl implements Simulation {
             objects = auxiliaryObjects;
 
             /**
-             * Make size of auxiliary to match that of objects list. Objects in auxiliaryObjects now have old values but
-             * they will be replaced in next iteration
+             * Make size of auxiliary to match that of objects list. Objects in auxiliaryObjects now
+             * have old values but they will be replaced in next iteration
              */
             auxiliaryObjects = tempList.subList(0, objects.size());
         }
         /**
-         * Here (outside the scope of tempList) objects remaining only in tempList should be candidates for garbage
-         * collection.
+         * Here (outside the scope of tempList) objects remaining only in tempList should be
+         * candidates for garbage collection.
          */
 
         properties.getFormatVersion1Writer().appendObjectsToFile(objects);
@@ -113,11 +115,12 @@ public class SimulationImpl implements Simulation {
 
     private void init() {
         properties.getFormatVersion1Writer().readProperties(properties);
+        threads = new Thread[properties.getNumberOfThreads()];
         logger.warn("init() not implemented");
-        objects = new LinkedList<SimulationObject>();
-        auxiliaryObjects = new LinkedList<SimulationObject>();
-        objectsForRemoval = new LinkedList<SimulationObject>();
-        // optimalObjectsPerThread = properties.getN() / Utils.CORES;
+        objects = new ArrayList<SimulationObject>();
+        auxiliaryObjects = new ArrayList<SimulationObject>();
+        objectsForRemoval = new ArrayList<SimulationObject>();
+        // optimalObjectsPerThread = properties.getN() / properties.getNumberOfThreads();
         for (int i = 0; i < properties.getN(); i++) {
             SimulationObject object = properties.getFormatVersion1Writer().readObjectFromFile();
             // object.setLabel("Obj " + i);
@@ -131,48 +134,40 @@ public class SimulationImpl implements Simulation {
         }
     }
 
-
     @Override
     public SimulationProperties getProperties() {
         return properties;
     }
-
 
     @Override
     public void setProperties(SimulationProperties properties) {
         this.properties = properties;
     }
 
-
     @Override
     public List<SimulationObject> getObjects() {
         return objects;
     }
-
 
     @Override
     public void setObjects(List<SimulationObject> objects) {
         this.objects = objects;
     }
 
-
     @Override
     public List<SimulationObject> getAuxiliaryObjects() {
         return auxiliaryObjects;
     }
-
 
     @Override
     public void setAuxiliaryObjects(List<SimulationObject> auxiliaryObjects) {
         this.auxiliaryObjects = auxiliaryObjects;
     }
 
-
     @Override
     public List<SimulationObject> getObjectsForRemoval() {
         return objectsForRemoval;
     }
-
 
     @Override
     public void setObjectsForRemoval(List<SimulationObject> objectsForRemoval) {

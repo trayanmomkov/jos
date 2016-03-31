@@ -1,6 +1,7 @@
 package info.trekto.jos.core.impl;
 
 import info.trekto.jos.io.FormatVersion1ReaderWriter;
+import info.trekto.jos.util.Utils;
 
 import java.util.ArrayList;
 
@@ -18,6 +19,8 @@ public class SimulationProperties {
     private String outputFile;
 
     private FormatVersion1ReaderWriter formatVersion1ReaderWriter;
+
+    private int numberOfThreads = Utils.CORES;
 
     public boolean isInfiniteSimulation() {
         return numberOfIterations == -1;
@@ -78,5 +81,13 @@ public class SimulationProperties {
 
     public void setNanoSecondsPerIteration(int nanoSecondsPerIteration) {
         this.nanoSecondsPerIteration = nanoSecondsPerIteration;
+    }
+
+    public int getNumberOfThreads() {
+        return numberOfThreads;
+    }
+
+    public void setNumberOfThreads(int numberOfThreads) {
+        this.numberOfThreads = numberOfThreads;
     }
 }
