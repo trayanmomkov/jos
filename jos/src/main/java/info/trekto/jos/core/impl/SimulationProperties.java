@@ -22,6 +22,12 @@ public class SimulationProperties {
 
     private int numberOfThreads = Utils.CORES;
 
+    private boolean saveToFile = false;
+
+    private boolean benchmarkMode = false;
+
+    private int writerBufferSize = 0;
+
     public boolean isInfiniteSimulation() {
         return numberOfIterations == -1;
     }
@@ -89,5 +95,29 @@ public class SimulationProperties {
 
     public void setNumberOfThreads(int numberOfThreads) {
         this.numberOfThreads = numberOfThreads;
+    }
+
+    public boolean isSaveToFile() {
+        return saveToFile;
+    }
+
+    public void setSaveToFile(boolean saveToFile) {
+        this.saveToFile = saveToFile;
+    }
+
+    public boolean isBenchmarkMode() {
+        return benchmarkMode;
+    }
+
+    public void setBenchmarkMode(boolean benchmarkMode) {
+        this.benchmarkMode = benchmarkMode;
+    }
+
+    public int getWriterBufferSize() {
+        return writerBufferSize;
+    }
+
+    public void setWriterBufferSize(int writerBufferSize) {
+        this.writerBufferSize = writerBufferSize;
     }
 }

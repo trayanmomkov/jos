@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,13 +56,25 @@ public class FormatVersion1ReaderWriter {
         }
     }
 
-    public void flushToDisk() {
-        try {
-            writer.flush();
-        } catch (IOException e) {
-            logger.error("Error during flush to disk", e);
-        }
-    }
+    //    public FormatVersion1ReaderWriter(InputStream inputStream) {
+    //        try {
+    //            this.inputFile = new File(inputFile);
+    //            reader = Files.newBufferedReader(this.inputFile.toPath(), charset);
+    //            reader = new BufferedInputStream(inputStream);
+    //            getClass().getResource(name)
+    //            // writer = Files.newBufferedWriter(new File(outputFile).toPath(), charset);
+    //        } catch (IOException e) {
+    //            logger.error("Cannot open file " + inputFile, e);
+    //        }
+    //    }
+
+    //    public void flushToDisk() {
+    //        try {
+    //            writer.flush();
+    //        } catch (IOException e) {
+    //            logger.error("Error during flush to disk", e);
+    //        }
+    //    }
 
     public void appendObjectsToFile(List<SimulationObject> simulationObjects) {
         try {
@@ -73,8 +84,8 @@ public class FormatVersion1ReaderWriter {
                     + Container.getSimulation().getCurrentIterationNumber()
                     + " (objects | cycle) ============================\n\n");
 
-            for (Iterator iterator = simulationObjects.iterator(); iterator.hasNext();) {
-                SimulationObject simulationObject = (SimulationObject) iterator.next();
+            for (Object element : simulationObjects) {
+                SimulationObject simulationObject = (SimulationObject) element;
                 appendObjectToFile(simulationObject);
             }
         } catch (IOException e) {
@@ -244,7 +255,13 @@ public class FormatVersion1ReaderWriter {
             } else {
                 outputFilePath = inputFile.getParent() + properties.getOutputFile();
             }
-            writer = Files.newBufferedWriter(new File(outputFilePath).toPath(), charset);
+
+            if (properties.getWriterBufferSize() == 0) {
+                writer = Files.newBufferedWriter(new File(outputFilePath).toPath(), charset);
+            } else {
+                writer = new BufferedWriter(Files.newBufferedWriter(new File(outputFilePath).toPath(), charset),
+                        properties.getWriterBufferSize());
+            }
 
             // number of objects: 399
             properties.setNumberOfObjects(Integer.valueOf(match("number of objects:[\\s\\t]+(\\d+).*",

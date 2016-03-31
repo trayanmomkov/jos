@@ -26,6 +26,7 @@ public class Main {
         // simulationProperties.setNumberOfIterations(500);
         simulationProperties.setFormatVersion1Writer(
                 new FormatVersion1ReaderWriter(args[0]));
+        simulationProperties.getFormatVersion1Writer().readProperties(simulationProperties);
         // simulationProperties.getFormatVersion1Writer().readObjectFromFile();
 
         Container.getSimulation().setProperties(simulationProperties);

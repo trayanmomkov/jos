@@ -15,7 +15,11 @@ public interface Simulation {
 
     SimulationProperties getProperties();
 
-    void startSimulation();
+    /**
+     * 
+     * @return nanoseconds of execution excluding init and closing file.
+     */
+    long startSimulation();
 
     List<SimulationObject> getObjects();
 

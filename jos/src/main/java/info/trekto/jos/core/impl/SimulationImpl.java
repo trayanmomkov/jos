@@ -9,16 +9,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * @author Trayan Momkov
  * @date 6.03.2016 г.1:53:36
  */
 public class SimulationImpl implements Simulation {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    //    private Logger logger = LoggerFactory.getLogger(getClass());
     private SimulationProperties properties;
     private Thread[] threads;
     private Map<Integer, ArrayList<Integer>> numberOfobjectsDistributionPerThread = new HashMap<>();
@@ -80,43 +77,52 @@ public class SimulationImpl implements Simulation {
          * candidates for garbage collection.
          */
 
-        properties.getFormatVersion1Writer().appendObjectsToFile(objects);
+        if (properties.isSaveToFile()) {
+            properties.getFormatVersion1Writer().appendObjectsToFile(objects);
+        }
     }
 
     @Override
-    public void startSimulation() {
+    public long startSimulation() {
         init();
 
-        long startTime = System.nanoTime();
+        long globalStartTime = System.nanoTime();
+        long startTime = globalStartTime;
+        long endTime;
 
         for (int i = 0; properties.isInfiniteSimulation() || i < properties.getNumberOfIterations(); i++) {
             try {
                 iterationCounter = i + 1;
 
-                if (i % 10 == 0) {
-                    long endTime = System.nanoTime();
+                if (properties.isBenchmarkMode() && i % 10 == 0) {
+                    endTime = System.nanoTime();
                     long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
-                    startTime = System.nanoTime();
-                    logger.info("Iteration " + i + "\t" + (duration / 1000000) + " ms");
+                    //                    logger.info("Iteration " + i + "\t" + (duration / 1000000) + " ms");
                     System.out.println("Iteration " + i + "\t" + (duration / 1000000) + " ms");
+                    startTime = System.nanoTime();
                 }
                 doIteration();
 
-                /** On every 100 iterations flush to disk */
-                if (i % 100 == 0) {
-                    properties.getFormatVersion1Writer().flushToDisk();
-                }
+                //                /** On every 100 iterations flush to disk */
+                //                if (i % 100 == 0) {
+                //                    properties.getFormatVersion1Writer().flushToDisk();
+                //                }
             } catch (InterruptedException e) {
-                logger.error("One of the threads interrupted in cycle " + i, e);
+                //                logger.error("One of the threads interrupted in cycle " + i, e);
+                e.printStackTrace();
             }
         }
+
+        endTime = System.nanoTime();
+
         properties.getFormatVersion1Writer().endFile();
+
+        return endTime - globalStartTime;
     }
 
     private void init() {
-        properties.getFormatVersion1Writer().readProperties(properties);
         threads = new Thread[properties.getNumberOfThreads()];
-        logger.warn("init() not implemented");
+        //        logger.warn("init() not implemented");
         objects = new ArrayList<SimulationObject>();
         auxiliaryObjects = new ArrayList<SimulationObject>();
         objectsForRemoval = new ArrayList<SimulationObject>();

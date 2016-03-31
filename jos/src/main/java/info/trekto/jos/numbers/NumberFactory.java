@@ -19,4 +19,9 @@ public interface NumberFactory {
     public Number createNumber(int val);
 
     public Number createNumber(long val);
+
+    public enum NumberType {
+        DOUBLE,
+        BIG_DECIMAL;
+    }
 }
