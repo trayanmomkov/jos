@@ -35,29 +35,22 @@ public class Benchmark {
         if (args.length > 0 && args[0] != null) {
             inputFileName = args[0];
         }
+
+        /** Double */
         benchmark.runBenchmark(numberOfObjects, 100, 1, NumberType.DOUBLE, 0, inputFileName);
-        benchmark.runBenchmark(numberOfObjects, 100, 2, NumberType.DOUBLE, 0, inputFileName);
-        benchmark.runBenchmark(numberOfObjects, 100, 4, NumberType.DOUBLE, 0, inputFileName);
-        benchmark.runBenchmark(numberOfObjects, 100, 8, NumberType.DOUBLE, 0, inputFileName);
-        benchmark.runBenchmark(numberOfObjects, 100, 16, NumberType.DOUBLE, 0, inputFileName);
-        benchmark.runBenchmark(numberOfObjects, 100, 32, NumberType.DOUBLE, 0, inputFileName);
+        if (Utils.CORES > 2) {
+            benchmark.runBenchmark(numberOfObjects, 100, Utils.CORES / 2, NumberType.DOUBLE, 0, inputFileName);
+        }
+        benchmark.runBenchmark(numberOfObjects, 100, Utils.CORES, NumberType.DOUBLE, 0, inputFileName);
+        benchmark.runBenchmark(numberOfObjects, 100, Utils.CORES * 2, NumberType.DOUBLE, 0, inputFileName);
 
+        /** BigDecimal */
         benchmark.runBenchmark(numberOfObjects, 100, 1, NumberType.BIG_DECIMAL, 0, inputFileName);
-        benchmark.runBenchmark(numberOfObjects, 100, 2, NumberType.BIG_DECIMAL, 0, inputFileName);
-        benchmark.runBenchmark(numberOfObjects, 100, 4, NumberType.BIG_DECIMAL, 0, inputFileName);
-        benchmark.runBenchmark(numberOfObjects, 100, 8, NumberType.BIG_DECIMAL, 0, inputFileName);
-        benchmark.runBenchmark(numberOfObjects, 100, 16, NumberType.BIG_DECIMAL, 0, inputFileName);
-        benchmark.runBenchmark(numberOfObjects, 100, 32, NumberType.BIG_DECIMAL, 0, inputFileName);
-
-        //        benchmark.runBenchmark(numberOfObjects, 2000, 1, NumberType.DOUBLE, 0, inputFileName);
-        //        benchmark.runBenchmark(numberOfObjects, 2000, 2, NumberType.DOUBLE, 0, inputFileName);
-        //        benchmark.runBenchmark(numberOfObjects, 2000, 4, NumberType.DOUBLE, 0, inputFileName);
-        //        benchmark.runBenchmark(numberOfObjects, 2000, 8, NumberType.DOUBLE, 0, inputFileName);
-        //
-        //        benchmark.runBenchmark(numberOfObjects, 2000, 1, NumberType.BIG_DECIMAL, 0, inputFileName);
-        //        benchmark.runBenchmark(numberOfObjects, 2000, 2, NumberType.BIG_DECIMAL, 0, inputFileName);
-        //        benchmark.runBenchmark(numberOfObjects, 2000, 4, NumberType.BIG_DECIMAL, 0, inputFileName);
-        //        benchmark.runBenchmark(numberOfObjects, 2000, 8, NumberType.BIG_DECIMAL, 0, inputFileName);
+        if (Utils.CORES > 2) {
+            benchmark.runBenchmark(numberOfObjects, 100, Utils.CORES / 2, NumberType.BIG_DECIMAL, 0, inputFileName);
+        }
+        benchmark.runBenchmark(numberOfObjects, 100, Utils.CORES, NumberType.BIG_DECIMAL, 0, inputFileName);
+        benchmark.runBenchmark(numberOfObjects, 100, Utils.CORES * 2, NumberType.BIG_DECIMAL, 0, inputFileName);
     }
 
     private void runBenchmark(int numberOfObjects, int numberOfIterations, int numberOfThreads,
@@ -84,7 +77,11 @@ public class Benchmark {
         printConfiguration(simulationProperties, numberType);
         long durationInNanoseconds = Container.getSimulation().startSimulation();
 
-        System.out.println("Total time: " + "\t" + (durationInNanoseconds / 1000000) + " ms");
+        System.out.print("Total time: " + "\t" + (durationInNanoseconds / 1000000) + " ms");
+        if (simulationProperties.getNumberOfThreads() == Utils.CORES) {
+            System.out.print(" <<<<<<");
+        }
+        System.out.println();
 
     }
 
