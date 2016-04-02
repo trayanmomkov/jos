@@ -28,6 +28,7 @@ public class Main {
                 new FormatVersion1ReaderWriter(args[0]));
         simulationProperties.getFormatVersion1Writer().readProperties(simulationProperties);
         // simulationProperties.getFormatVersion1Writer().readObjectFromFile();
+        simulationProperties.setBenchmarkMode(true);
 
         Container.getSimulation().setProperties(simulationProperties);
         Container.setSimulationLogic(new SimulationLogicImpl());

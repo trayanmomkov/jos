@@ -32,6 +32,9 @@ public class Benchmark {
         int numberOfObjects = 12800;
         //        String inputFileName = "/PSC_5_6400_objects_RUN";
         String inputFileName = "/PSC_5_12800_objects_RUN";
+        if (args.length > 0 && args[0] != null) {
+            inputFileName = args[0];
+        }
         benchmark.runBenchmark(numberOfObjects, 100, 1, NumberType.DOUBLE, 0, inputFileName);
         benchmark.runBenchmark(numberOfObjects, 100, 2, NumberType.DOUBLE, 0, inputFileName);
         benchmark.runBenchmark(numberOfObjects, 100, 4, NumberType.DOUBLE, 0, inputFileName);
