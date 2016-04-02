@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package info.trekto.jos.benchmark;
 
@@ -44,7 +44,7 @@ public class Benchmark {
         benchmark.runBenchmark(numberOfObjects, 100, Utils.CORES, NumberType.DOUBLE, 0, inputFileName);
         benchmark.runBenchmark(numberOfObjects, 100, Utils.CORES * 2, NumberType.DOUBLE, 0, inputFileName);
 
-        /** BigDecimal */
+        /** BigDecimal faster in JRE 1.8 */
         benchmark.runBenchmark(numberOfObjects, 100, 1, NumberType.BIG_DECIMAL, 0, inputFileName);
         if (Utils.CORES > 2) {
             benchmark.runBenchmark(numberOfObjects, 100, Utils.CORES / 2, NumberType.BIG_DECIMAL, 0, inputFileName);
@@ -214,7 +214,7 @@ public class Benchmark {
             e.printStackTrace();
         }
     }
-    //     public static void main(String args[]) throws Exception {      
+    //     public static void main(String args[]) throws Exception {
     //        setFinalStatic(Boolean.class.getField("FALSE"), true);
     //
     //        System.out.format("Everything is %s", false); // "Everything is true"
