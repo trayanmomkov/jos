@@ -2,3 +2,5 @@
 *.prefs
 .project
 .classpath
+/nbactions.xml
+org.eclipse.jdt.core.prefs
