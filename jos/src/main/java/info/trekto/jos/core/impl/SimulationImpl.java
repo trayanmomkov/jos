@@ -3,6 +3,9 @@ package info.trekto.jos.core.impl;
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.SimulationObjectImpl;
+import info.trekto.jos.numbers.NumberFactoryProxy;
+import info.trekto.jos.numbers.impl.BigDecimalNumberFactory;
+import info.trekto.jos.numbers.impl.DoubleNumberFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -121,6 +124,18 @@ public class SimulationImpl implements Simulation {
     }
 
     private void init() {
+        switch (properties.getNumberType()) {
+            case DOUBLE:
+                NumberFactoryProxy.setFactory(new DoubleNumberFactory());
+                break;
+            case BIG_DECIMAL:
+                NumberFactoryProxy.setFactory(new BigDecimalNumberFactory());
+                break;
+            default:
+                NumberFactoryProxy.setFactory(new DoubleNumberFactory());
+                break;
+        }
+
         threads = new Thread[properties.getNumberOfThreads()];
         //        logger.warn("init() not implemented");
         objects = new ArrayList<SimulationObject>();

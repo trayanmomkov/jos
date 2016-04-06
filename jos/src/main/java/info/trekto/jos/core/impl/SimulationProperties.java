@@ -1,6 +1,7 @@
 package info.trekto.jos.core.impl;
 
 import info.trekto.jos.io.FormatVersion1ReaderWriter;
+import info.trekto.jos.numbers.NumberFactory.NumberType;
 import info.trekto.jos.util.Utils;
 
 import java.util.ArrayList;
@@ -25,6 +26,8 @@ public class SimulationProperties {
     private boolean saveToFile = false;
 
     private boolean benchmarkMode = false;
+
+    private NumberType numberType;
 
     private int writerBufferSize = 0;
 
@@ -119,5 +122,19 @@ public class SimulationProperties {
 
     public void setWriterBufferSize(int writerBufferSize) {
         this.writerBufferSize = writerBufferSize;
+    }
+
+    /**
+     * @return the numberType
+     */
+    public NumberType getNumberType() {
+        return numberType;
+    }
+
+    /**
+     * @param numberType the numberType to set
+     */
+    public void setNumberType(NumberType numberType) {
+        this.numberType = numberType;
     }
 }

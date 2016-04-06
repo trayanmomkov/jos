@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package info.trekto.jos.numbers;
 
@@ -19,6 +19,14 @@ public class NumberFactoryProxy {
      */
     // private static NumberFactory factory = new BigDecimalNumberFactory();
     private static NumberFactory factory = new DoubleNumberFactory();
+
+    public static NumberFactory getFactory() {
+        return factory;
+    }
+
+    public static void setFactory(NumberFactory factory) {
+        NumberFactoryProxy.factory = factory;
+    }
 
     public static Number createNumber(BigDecimal val) {
         return factory.createNumber(val);
