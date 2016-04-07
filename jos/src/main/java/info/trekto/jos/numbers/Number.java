@@ -16,6 +16,7 @@ public interface Number {
     public static final Number THREE = NumberFactoryProxy.createNumber(3);
     public static final Number FOUR = NumberFactoryProxy.createNumber(4);
     public static final Number RATIO_FOUR_THREE = FOUR.divide(THREE);
+    public static final Number BILLION = NumberFactoryProxy.createNumber(1000000000);
 
     // Arithmetic Operations
     /**

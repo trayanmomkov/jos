@@ -1,6 +1,9 @@
 package info.trekto.jos.core.impl;
 
+import info.trekto.jos.formulas.ForceCalculator.ForceCalculatorType;
 import info.trekto.jos.io.FormatVersion1ReaderWriter;
+import info.trekto.jos.numbers.New;
+import info.trekto.jos.numbers.Number;
 import info.trekto.jos.numbers.NumberFactory.NumberType;
 import info.trekto.jos.util.Utils;
 
@@ -14,6 +17,7 @@ public class SimulationProperties {
     private int numberOfIterations;
 
     private int nanoSecondsPerIteration;
+    private Number secondsPerIteration;
 
     private int numberOfObjects;
 
@@ -28,6 +32,7 @@ public class SimulationProperties {
     private boolean benchmarkMode = false;
 
     private NumberType numberType;
+    private ForceCalculatorType forceCalculatorType;
 
     private int writerBufferSize = 0;
 
@@ -90,6 +95,7 @@ public class SimulationProperties {
 
     public void setNanoSecondsPerIteration(int nanoSecondsPerIteration) {
         this.nanoSecondsPerIteration = nanoSecondsPerIteration;
+        this.secondsPerIteration = New.num(nanoSecondsPerIteration).divide(Number.BILLION);
     }
 
     public int getNumberOfThreads() {
@@ -124,6 +130,10 @@ public class SimulationProperties {
         this.writerBufferSize = writerBufferSize;
     }
 
+    public Number getSecondsPerIteration() {
+        return secondsPerIteration;
+    }
+
     /**
      * @return the numberType
      */
@@ -136,5 +146,19 @@ public class SimulationProperties {
      */
     public void setNumberType(NumberType numberType) {
         this.numberType = numberType;
+    }
+
+    /**
+     * @return the forceCalculatorType
+     */
+    public ForceCalculatorType getForceCalculatorType() {
+        return forceCalculatorType;
+    }
+
+    /**
+     * @param forceCalculatorType the forceCalculatorType to set
+     */
+    public void setForceCalculatorType(ForceCalculatorType forceCalculatorType) {
+        this.forceCalculatorType = forceCalculatorType;
     }
 }

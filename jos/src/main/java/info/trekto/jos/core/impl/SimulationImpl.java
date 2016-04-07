@@ -1,6 +1,8 @@
 package info.trekto.jos.core.impl;
 
 import info.trekto.jos.core.Simulation;
+import info.trekto.jos.formulas.ForceCalculator;
+import info.trekto.jos.formulas.NewtonGravity;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.SimulationObjectImpl;
 import info.trekto.jos.numbers.NumberFactoryProxy;
@@ -11,6 +13,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang3.NotImplementedException;
 
 /**
  * @author Trayan Momkov
@@ -23,6 +27,7 @@ public class SimulationImpl implements Simulation {
     private Thread[] threads;
     private Map<Integer, ArrayList<Integer>> numberOfobjectsDistributionPerThread = new HashMap<>();
     private int iterationCounter;
+    private ForceCalculator forceCalculator;
 
     /**
      * We cannot use array and just to mark objects as disappeared because distribution per threads
@@ -35,6 +40,8 @@ public class SimulationImpl implements Simulation {
      * objects when collision appear. Good candidate for implementation of the lists is LinkedList
      * because during simulation we not add any new objects to the lists, nor we access them
      * randomly (via indices). We only remove from them, get sublists and iterate sequentially.
+     * But getting sublist is done by indices in every iteration. On the other hand removing objects
+     * happens relatively rarely so ArrayList is faster than LinkedList.
      */
     private List<SimulationObject> objects;
     private List<SimulationObject> auxiliaryObjects;
@@ -136,20 +143,27 @@ public class SimulationImpl implements Simulation {
                 break;
         }
 
+        /** This is need because we don't know the type of secondsPerItaration field before number factory is set */
+        properties.setNanoSecondsPerIteration(properties.getNanoSecondsPerIteration());
+
+        switch (properties.getForceCalculatorType()) {
+            case NEWTON_LAW_OF_GRAVITATION:
+                forceCalculator = new NewtonGravity();
+                break;
+            case COULOMB_LAW_ELECTRICALLY:
+                throw new NotImplementedException("COULOMB_LAW_ELECTRICALLY is not implemented");
+                //                break;
+            default:
+                forceCalculator = new NewtonGravity();
+                break;
+        }
+
         threads = new Thread[properties.getNumberOfThreads()];
-        //        logger.warn("init() not implemented");
         objects = new ArrayList<SimulationObject>();
         auxiliaryObjects = new ArrayList<SimulationObject>();
         objectsForRemoval = new ArrayList<SimulationObject>();
-        // optimalObjectsPerThread = properties.getN() / properties.getNumberOfThreads();
         for (int i = 0; i < properties.getN(); i++) {
             SimulationObject object = properties.getFormatVersion1Writer().readObjectFromFile();
-            // object.setLabel("Obj " + i);
-            // object.setX(New.num(648));
-            // object.setY(New.num(1340 - i * 100));
-            // object.setMass(New.num(65));
-            // object.setRadius(New.num(5));
-            // object.setSpeed(new TripleNumber(New.num(1), New.num(0), New.num(0)));
             objects.add(object);
             auxiliaryObjects.add(new SimulationObjectImpl(object));
         }
@@ -231,5 +245,10 @@ public class SimulationImpl implements Simulation {
     @Override
     public int getCurrentIterationNumber() {
         return iterationCounter;
+    }
+
+    @Override
+    public ForceCalculator getForceCalculator() {
+        return forceCalculator;
     }
 }

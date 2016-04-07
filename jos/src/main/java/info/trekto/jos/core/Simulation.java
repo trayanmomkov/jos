@@ -1,6 +1,7 @@
 package info.trekto.jos.core;
 
 import info.trekto.jos.core.impl.SimulationProperties;
+import info.trekto.jos.formulas.ForceCalculator;
 import info.trekto.jos.model.SimulationObject;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public interface Simulation {
     SimulationProperties getProperties();
 
     /**
-     * 
+     *
      * @return nanoseconds of execution excluding init and closing file.
      */
     long startSimulation();
@@ -34,4 +35,6 @@ public interface Simulation {
     void setObjectsForRemoval(List<SimulationObject> objectsForRemoval);
 
     int getCurrentIterationNumber();
+
+    ForceCalculator getForceCalculator();
 }

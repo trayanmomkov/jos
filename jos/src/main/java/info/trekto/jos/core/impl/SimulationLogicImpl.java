@@ -3,8 +3,9 @@ package info.trekto.jos.core.impl;
 import info.trekto.jos.Container;
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.SimulationLogic;
+import info.trekto.jos.formulas.CommonFormulas;
 import info.trekto.jos.model.SimulationObject;
-import info.trekto.jos.numbers.New;
+import info.trekto.jos.model.impl.TripleNumber;
 import info.trekto.jos.numbers.Number;
 
 import java.util.Iterator;
@@ -18,11 +19,11 @@ import org.slf4j.LoggerFactory;
  */
 public class SimulationLogicImpl implements SimulationLogic {
     private Logger logger = LoggerFactory.getLogger(getClass());
-    private Number nanoSecondsPerIteration;
+    private Number secondsPerIteration;
 
     public SimulationLogicImpl() {
         super();
-        nanoSecondsPerIteration = New.num(Container.getSimulation().getProperties().getNanoSecondsPerIteration());
+        secondsPerIteration = Container.getSimulation().getProperties().getSecondsPerIteration();
     }
 
     @Override
@@ -31,37 +32,61 @@ public class SimulationLogicImpl implements SimulationLogic {
         // logger.info("calculateNewValues() for thred: " + Thread.currentThread().getName() + " Target objects: "
         // + simulation.getObjects().subList(fromIndex, toIndex));
 
-        Iterator targetAuxiliaryObjectsIterator = simulation.getAuxiliaryObjects().subList(fromIndex, toIndex)
-                .iterator();
-        for (Iterator targetObjectsIterator = simulation.getObjects().subList(fromIndex, toIndex)
-                .iterator(); targetObjectsIterator
-                .hasNext();) {
-            SimulationObject simulationObject = (SimulationObject) targetObjectsIterator.next();
-            SimulationObject simulationAuxiliaryObject = (SimulationObject) targetAuxiliaryObjectsIterator.next();
+        Iterator<SimulationObject> targetAuxiliaryObjectsIterator = simulation.getAuxiliaryObjects()
+                .subList(fromIndex, toIndex).iterator();
+        for (SimulationObject currentSimulationObject : simulation.getObjects().subList(fromIndex, toIndex)) {
+            SimulationObject simulationAuxiliaryObject = targetAuxiliaryObjectsIterator.next();
 
-            moveSimulationObjects(simulationObject, simulationAuxiliaryObject);
+            /** Move objects */
+            moveSimulationObjects(currentSimulationObject, simulationAuxiliaryObject);
 
-            for (Iterator allObjectsIterator = simulation.getObjects().iterator(); allObjectsIterator.hasNext();) {
-                SimulationObject simulationObject2 = (SimulationObject) allObjectsIterator.next();
+            /** Calculate acceleration */
+            TripleNumber acceleration = new TripleNumber(Number.ZERO, Number.ZERO, Number.ZERO);
+            for (SimulationObject tempSimulationObject : simulation.getObjects()) {
+                /** Calculate force */
+                TripleNumber force = simulation.getForceCalculator().caclulateForceAsVector(currentSimulationObject,
+                        tempSimulationObject,
+                        CommonFormulas.calculateDistance(currentSimulationObject, tempSimulationObject));
 
+                /** Add to current acceleration */
+                acceleration = addAcceleration(currentSimulationObject, acceleration, force);
             }
-            simulationAuxiliaryObject.setX(simulationObject.getX().add(New.num(10000)));
-            // simulationAuxiliaryObject.setY(simulationObject.getY().multiply(New.num(10)));
-            // simulationAuxiliaryObject.setSpeed(new TripleNumber(
-            // simulationObject.getSpeed().getX().add(New.num(2)),
-            // New.num(0),
-            // New.num(0))
-            // );
+
+            /** Change speed */
+            changeSpeed(currentSimulationObject, simulationAuxiliaryObject, acceleration);
         }
     }
 
-    private void moveSimulationObjects(SimulationObject simulationObject, SimulationObject simulationAuxiliaryObject) {
+    private void moveSimulationObjects(SimulationObject currentSimulationObject,
+                                       SimulationObject simulationAuxiliaryObject) {
         // members[i]->x = members[i]->x + members[i]->speed.x * simulationProperties.secondsPerCycle;
-        simulationAuxiliaryObject.setX(simulationObject.getX().add(
-                simulationObject.getSpeed().getX().multiply(nanoSecondsPerIteration)));
-        simulationAuxiliaryObject.setY(simulationObject.getY().add(
-                simulationObject.getSpeed().getY().multiply(nanoSecondsPerIteration)));
-        simulationAuxiliaryObject.setZ(simulationObject.getZ().add(
-                simulationObject.getSpeed().getZ().multiply(nanoSecondsPerIteration)));
+        simulationAuxiliaryObject.setX(currentSimulationObject.getX().add(
+                currentSimulationObject.getSpeed().getX().multiply(secondsPerIteration)));
+        simulationAuxiliaryObject.setY(currentSimulationObject.getY().add(
+                currentSimulationObject.getSpeed().getY().multiply(secondsPerIteration)));
+        simulationAuxiliaryObject.setZ(currentSimulationObject.getZ().add(
+                currentSimulationObject.getSpeed().getZ().multiply(secondsPerIteration)));
+    }
+
+    private TripleNumber addAcceleration(SimulationObject currentSimulationObject, TripleNumber oldAcceleration,
+                                         TripleNumber force) {
+        //      ax = Fx / m
+        Number accelerationX = oldAcceleration.getX().add(force.getX().divide(currentSimulationObject.getMass()));
+        Number accelerationY = oldAcceleration.getY().add(force.getY().divide(currentSimulationObject.getMass()));
+        Number accelerationZ = oldAcceleration.getZ().add(force.getZ().divide(currentSimulationObject.getMass()));
+        return new TripleNumber(accelerationX, accelerationY, accelerationZ);
+    }
+
+    private void changeSpeed(SimulationObject currentSimulationObject, SimulationObject simulationAuxiliaryObject,
+                             TripleNumber acceleration) {
+        //            members[i]->speed.x += a.x * simulationProperties.secondsPerCycle;//* t;
+        Number speedX = currentSimulationObject.getSpeed().getX()
+                .add(acceleration.getX().multiply(secondsPerIteration));
+        Number speedY = currentSimulationObject.getSpeed().getY()
+                .add(acceleration.getY().multiply(secondsPerIteration));
+        Number speedZ = currentSimulationObject.getSpeed().getZ()
+                .add(acceleration.getZ().multiply(secondsPerIteration));
+
+        simulationAuxiliaryObject.setSpeed(new TripleNumber(speedX, speedY, speedZ));
     }
 }

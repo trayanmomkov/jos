@@ -7,6 +7,7 @@ import info.trekto.jos.Container;
 import info.trekto.jos.core.impl.SimulationImpl;
 import info.trekto.jos.core.impl.SimulationLogicImpl;
 import info.trekto.jos.core.impl.SimulationProperties;
+import info.trekto.jos.formulas.ForceCalculator.ForceCalculatorType;
 import info.trekto.jos.io.FormatVersion1ReaderWriter;
 import info.trekto.jos.numbers.NumberFactory;
 import info.trekto.jos.numbers.NumberFactory.NumberType;
@@ -22,7 +23,7 @@ public class Benchmark {
     public static void main(String[] args) {
         Benchmark benchmark = new Benchmark();
         //        int numberOfObjects = 6400;
-        int numberOfObjects = 12800;
+        int numberOfObjects = 1000;
         //        String inputFileName = "/PSC_5_6400_objects_RUN";
         String inputFileName = "/PSC_5_12800_objects_RUN";
         if (args.length > 0 && args[0] != null) {
@@ -30,12 +31,12 @@ public class Benchmark {
         }
 
         /** Double */
-        benchmark.runBenchmark(numberOfObjects, 100, 1, NumberType.DOUBLE, 0, inputFileName);
-        if (Utils.CORES > 2) {
-            benchmark.runBenchmark(numberOfObjects, 100, Utils.CORES / 2, NumberType.DOUBLE, 0, inputFileName);
-        }
-        benchmark.runBenchmark(numberOfObjects, 100, Utils.CORES, NumberType.DOUBLE, 0, inputFileName);
-        benchmark.runBenchmark(numberOfObjects, 100, Utils.CORES * 2, NumberType.DOUBLE, 0, inputFileName);
+        //        benchmark.runBenchmark(numberOfObjects, 100, 1, NumberType.DOUBLE, 0, inputFileName);
+        //        if (Utils.CORES > 2) {
+        //            benchmark.runBenchmark(numberOfObjects, 100, Utils.CORES / 2, NumberType.DOUBLE, 0, inputFileName);
+        //        }
+        //        benchmark.runBenchmark(numberOfObjects, 100, Utils.CORES, NumberType.DOUBLE, 0, inputFileName);
+        //        benchmark.runBenchmark(numberOfObjects, 100, Utils.CORES * 2, NumberType.DOUBLE, 0, inputFileName);
 
         /** BigDecimal faster in JRE 1.8 */
         benchmark.runBenchmark(numberOfObjects, 100, 1, NumberType.BIG_DECIMAL, 0, inputFileName);
@@ -64,6 +65,7 @@ public class Benchmark {
         simulationProperties.setWriterBufferSize(writerBufferSize);
         simulationProperties.setBenchmarkMode(true);
         simulationProperties.setNumberType(numberType);
+        simulationProperties.setForceCalculatorType(ForceCalculatorType.NEWTON_LAW_OF_GRAVITATION);
 
         Container.getSimulation().setProperties(simulationProperties);
         Container.setSimulationLogic(new SimulationLogicImpl());
