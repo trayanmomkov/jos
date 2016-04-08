@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package info.trekto.jos.numbers;
 
@@ -11,6 +11,14 @@ import java.math.BigDecimal;
  * @date 7 Dec 2015
  */
 public class New {
+    public static Number ZERO;
+    public static Number ONE;
+    public static Number TWO;
+    public static Number THREE;
+    public static Number FOUR;
+    public static Number RATIO_FOUR_THREE;
+    public static Number BILLION;
+
     public static Number num(BigDecimal val) {
         return NumberFactoryProxy.createNumber(val);
     }

@@ -3,6 +3,7 @@
  */
 package info.trekto.jos.numbers;
 
+import info.trekto.jos.formulas.ScientificConstants;
 import info.trekto.jos.numbers.impl.DoubleNumberFactory;
 
 import java.math.BigDecimal;
@@ -20,12 +21,24 @@ public class NumberFactoryProxy {
     // private static NumberFactory factory = new BigDecimalNumberFactory();
     private static NumberFactory factory = new DoubleNumberFactory();
 
+    private static void calculateConstants() {
+        New.ZERO = NumberFactoryProxy.createNumber(0);
+        New.ONE = NumberFactoryProxy.createNumber(1);
+        New.TWO = NumberFactoryProxy.createNumber(2);
+        New.THREE = NumberFactoryProxy.createNumber(3);
+        New.FOUR = NumberFactoryProxy.createNumber(4);
+        New.RATIO_FOUR_THREE = New.FOUR.divide(New.THREE);
+        New.BILLION = NumberFactoryProxy.createNumber(1000000000);
+    }
+
     public static NumberFactory getFactory() {
         return factory;
     }
 
     public static void setFactory(NumberFactory factory) {
         NumberFactoryProxy.factory = factory;
+        calculateConstants();
+        ScientificConstants.setConstants();
     }
 
     public static Number createNumber(BigDecimal val) {

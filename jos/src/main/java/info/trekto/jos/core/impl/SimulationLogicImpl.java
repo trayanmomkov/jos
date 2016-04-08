@@ -6,19 +6,17 @@ import info.trekto.jos.core.SimulationLogic;
 import info.trekto.jos.formulas.CommonFormulas;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.TripleNumber;
+import info.trekto.jos.numbers.New;
 import info.trekto.jos.numbers.Number;
 
 import java.util.Iterator;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Trayan Momkov
  * @date 6.03.2016 г.1:53:42
  */
 public class SimulationLogicImpl implements SimulationLogic {
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    //    private Logger logger = LoggerFactory.getLogger(getClass());
     private Number secondsPerIteration;
 
     public SimulationLogicImpl() {
@@ -41,8 +39,11 @@ public class SimulationLogicImpl implements SimulationLogic {
             moveSimulationObjects(currentSimulationObject, simulationAuxiliaryObject);
 
             /** Calculate acceleration */
-            TripleNumber acceleration = new TripleNumber(Number.ZERO, Number.ZERO, Number.ZERO);
+            TripleNumber acceleration = new TripleNumber(New.ZERO, New.ZERO, New.ZERO);
             for (SimulationObject tempSimulationObject : simulation.getObjects()) {
+                if (tempSimulationObject == currentSimulationObject) {
+                    continue;
+                }
                 /** Calculate force */
                 TripleNumber force = simulation.getForceCalculator().caclulateForceAsVector(currentSimulationObject,
                         tempSimulationObject,

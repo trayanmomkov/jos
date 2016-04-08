@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package info.trekto.jos;
 
@@ -9,6 +9,7 @@ import info.trekto.jos.core.impl.SimulationLogicImpl;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.io.FormatVersion1ReaderWriter;
 import info.trekto.jos.model.SimulationObject;
+import info.trekto.jos.util.Utils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -16,8 +17,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
 /**
@@ -25,7 +24,7 @@ import org.testng.annotations.Test;
  * @date 18 Mar 2016
  */
 public class ObjectSwappingTest {
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    //    private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Test
     public void test() throws NoSuchMethodException, SecurityException, IllegalAccessException,
@@ -66,7 +65,7 @@ public class ObjectSwappingTest {
 
         /** Do iterations and check whether objects in the two lists swap */
         for (long i = 0; i < simulationProperties.getNumberOfIterations(); i++) {
-            logger.info("\nIteration " + i);
+            Utils.log("\nIteration " + i);
             doIterationMethod.invoke(Container.getSimulation());
 
             if (i % 2 == 0) {

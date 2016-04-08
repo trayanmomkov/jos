@@ -1,14 +1,12 @@
 package info.trekto.jos;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import info.trekto.jos.core.impl.SimulationImpl;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import info.trekto.jos.core.impl.SimulationImpl;
-
 public class ObjectsDistributionPerThreadTest {
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    //    private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Test
     public void testGetObjectsDistributionPerThread() {
@@ -80,4 +78,3 @@ public class ObjectsDistributionPerThreadTest {
         Assert.assertEquals(simulation.getObjectsDistributionPerThread(5, 12).toString(), "[3, 3, 2, 2, 2]");
     }
 }
-

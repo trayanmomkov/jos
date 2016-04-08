@@ -5,6 +5,9 @@ import info.trekto.jos.io.FormatVersion1ReaderWriter;
 import info.trekto.jos.numbers.New;
 import info.trekto.jos.numbers.Number;
 import info.trekto.jos.numbers.NumberFactory.NumberType;
+import info.trekto.jos.numbers.NumberFactoryProxy;
+import info.trekto.jos.numbers.impl.BigDecimalNumberFactory;
+import info.trekto.jos.numbers.impl.DoubleNumberFactory;
 import info.trekto.jos.util.Utils;
 
 import java.util.ArrayList;
@@ -95,7 +98,7 @@ public class SimulationProperties {
 
     public void setNanoSecondsPerIteration(int nanoSecondsPerIteration) {
         this.nanoSecondsPerIteration = nanoSecondsPerIteration;
-        this.secondsPerIteration = New.num(nanoSecondsPerIteration).divide(Number.BILLION);
+        this.secondsPerIteration = New.num(nanoSecondsPerIteration).divide(New.BILLION);
     }
 
     public int getNumberOfThreads() {
@@ -146,6 +149,18 @@ public class SimulationProperties {
      */
     public void setNumberType(NumberType numberType) {
         this.numberType = numberType;
+
+        switch (numberType) {
+            case DOUBLE:
+                NumberFactoryProxy.setFactory(new DoubleNumberFactory());
+                break;
+            case BIG_DECIMAL:
+                NumberFactoryProxy.setFactory(new BigDecimalNumberFactory());
+                break;
+            default:
+                NumberFactoryProxy.setFactory(new DoubleNumberFactory());
+                break;
+        }
     }
 
     /**

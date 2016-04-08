@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package info.trekto.jos.io;
 
@@ -11,7 +11,7 @@ import info.trekto.jos.model.impl.SimulationObjectImpl;
 import info.trekto.jos.model.impl.TripleInt;
 import info.trekto.jos.model.impl.TripleNumber;
 import info.trekto.jos.numbers.New;
-import info.trekto.jos.numbers.Number;
+import info.trekto.jos.util.Utils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -23,15 +23,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * @author Trayan Momkov
  * @date 18 Mar 2016
  */
 public class FormatVersion1ReaderWriter {
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    //    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private Charset charset = Charset.forName("UTF-8");
 
@@ -44,7 +41,7 @@ public class FormatVersion1ReaderWriter {
     private File inputFile;
 
     /**
-     * 
+     *
      */
     public FormatVersion1ReaderWriter(String inputFile) {
         try {
@@ -52,7 +49,7 @@ public class FormatVersion1ReaderWriter {
             reader = Files.newBufferedReader(this.inputFile.toPath(), charset);
             // writer = Files.newBufferedWriter(new File(outputFile).toPath(), charset);
         } catch (IOException e) {
-            logger.error("Cannot open file " + inputFile, e);
+            Utils.log("Cannot open file " + inputFile, e);
         }
     }
 
@@ -89,7 +86,7 @@ public class FormatVersion1ReaderWriter {
                 appendObjectToFile(simulationObject);
             }
         } catch (IOException e) {
-            logger.error("Cannot write to file ", e);
+            Utils.log("Cannot write to file ", e);
         }
     }
 
@@ -136,7 +133,7 @@ public class FormatVersion1ReaderWriter {
             writer.write("END\n");
             writer.close();
         } catch (IOException e) {
-            logger.error("Error while closing file.", e);
+            Utils.log("Error while closing file.", e);
         } finally {
         }
     }
@@ -274,7 +271,7 @@ public class FormatVersion1ReaderWriter {
 
             // x = 79673559
         } catch (IOException e) {
-            logger.error("Cannot read properties from file", e);
+            Utils.log("Cannot read properties from file", e);
         }
 
     }
@@ -299,11 +296,11 @@ public class FormatVersion1ReaderWriter {
         try {
             simulationObject.setX(New.num(match("x =" + spaceAndNumber, reader.readLine())));
             simulationObject.setY(New.num(match("y =" + spaceAndNumber, reader.readLine())));
-            simulationObject.setZ(Number.ZERO);
+            simulationObject.setZ(New.ZERO);
             simulationObject.setSpeed(new TripleNumber(
                     New.num(match("speed x =" + spaceAndNumber, reader.readLine())),
                     New.num(match("speed y =" + spaceAndNumber, reader.readLine())),
-                    Number.ZERO));
+                    New.ZERO));
             reader.readLine();
             /** We don't need megnitude */
 
@@ -319,7 +316,7 @@ public class FormatVersion1ReaderWriter {
             String mass = match("mass =" + spaceAndNumber, reader.readLine());
             if ("-1".equals(mass)) {
                 simulationObject
-                        .setMass(Number.RATIO_FOUR_THREE.multiply(ScientificConstants.PI).multiply(
+                        .setMass(New.RATIO_FOUR_THREE.multiply(ScientificConstants.PI).multiply(
                                 simulationObject.getRadius().pow(3)));
             } else {
                 simulationObject
@@ -339,7 +336,7 @@ public class FormatVersion1ReaderWriter {
 
             reader.readLine();
         } catch (IOException e) {
-            logger.error("Cannot read object from file", e);
+            Utils.log("Cannot read object from file", e);
         }
 
         return simulationObject;

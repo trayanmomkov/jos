@@ -1,6 +1,7 @@
 package info.trekto.jos.core;
 
 import info.trekto.jos.core.impl.SimulationProperties;
+import info.trekto.jos.exceptions.SimulationException;
 import info.trekto.jos.formulas.ForceCalculator;
 import info.trekto.jos.model.SimulationObject;
 
@@ -19,8 +20,9 @@ public interface Simulation {
     /**
      *
      * @return nanoseconds of execution excluding init and closing file.
+     * @throws SimulationException
      */
-    long startSimulation();
+    long startSimulation() throws SimulationException;
 
     List<SimulationObject> getObjects();
 

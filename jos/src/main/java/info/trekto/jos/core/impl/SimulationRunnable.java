@@ -3,15 +3,12 @@ package info.trekto.jos.core.impl;
 import info.trekto.jos.Container;
 import info.trekto.jos.core.Simulation;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * @author Trayan Momkov
  * @date 6.03.2016 г.1:53:54
  */
 public class SimulationRunnable implements Runnable {
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    //    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private int fromIndex;
     private int toIndex;

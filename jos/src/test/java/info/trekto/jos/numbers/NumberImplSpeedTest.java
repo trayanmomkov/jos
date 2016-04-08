@@ -32,14 +32,14 @@ public class NumberImplSpeedTest {
         }
 
         long sum = 0;
-        for (int i = 0; i < times.length; i++) {
-            sum += times[i];
+        for (long time : times) {
+            sum += time;
         }
         System.out.println("Average: " + (sum / times.length / 1000 / 1000));
     }
 
     private static void calculate() {
         n1 = n1.multiply(n2);
-        n1 = n1.divide(NumberFactoryProxy.createNumber(10));
+        n1 = n1.divide(New.num(10));
     }
 }

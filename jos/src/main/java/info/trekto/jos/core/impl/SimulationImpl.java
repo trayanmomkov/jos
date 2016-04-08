@@ -1,13 +1,14 @@
 package info.trekto.jos.core.impl;
 
 import info.trekto.jos.core.Simulation;
+import info.trekto.jos.exceptions.SimulationException;
+import info.trekto.jos.formulas.CommonFormulas;
 import info.trekto.jos.formulas.ForceCalculator;
 import info.trekto.jos.formulas.NewtonGravity;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.SimulationObjectImpl;
-import info.trekto.jos.numbers.NumberFactoryProxy;
-import info.trekto.jos.numbers.impl.BigDecimalNumberFactory;
-import info.trekto.jos.numbers.impl.DoubleNumberFactory;
+import info.trekto.jos.numbers.Number;
+import info.trekto.jos.util.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -93,18 +94,19 @@ public class SimulationImpl implements Simulation {
     }
 
     @Override
-    public long startSimulation() {
+    public long startSimulation() throws SimulationException {
         init();
 
         long globalStartTime = System.nanoTime();
         long startTime = globalStartTime;
         long endTime;
 
+        Utils.log("Start simulation...");
         for (int i = 0; properties.isInfiniteSimulation() || i < properties.getNumberOfIterations(); i++) {
             try {
                 iterationCounter = i + 1;
 
-                if (properties.isBenchmarkMode() && i % 10 == 0) {
+                if (i != 0 && properties.isBenchmarkMode() && i % 1 == 0) {
                     endTime = System.nanoTime();
                     long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
                     //                    logger.info("Iteration " + i + "\t" + (duration / 1000000) + " ms");
@@ -130,18 +132,29 @@ public class SimulationImpl implements Simulation {
         return endTime - globalStartTime;
     }
 
-    private void init() {
-        switch (properties.getNumberType()) {
-            case DOUBLE:
-                NumberFactoryProxy.setFactory(new DoubleNumberFactory());
-                break;
-            case BIG_DECIMAL:
-                NumberFactoryProxy.setFactory(new BigDecimalNumberFactory());
-                break;
-            default:
-                NumberFactoryProxy.setFactory(new DoubleNumberFactory());
-                break;
+    private boolean collisionExists() {
+        boolean collision = false;
+        OUTER_LOOP: for (Object element : objects) {
+            SimulationObject object = (SimulationObject) element;
+            for (Object element2 : objects) {
+                SimulationObject object2 = (SimulationObject) element2;
+                if (object == object2) {
+                    continue;
+                }
+                // distance between centres
+                Number distance = CommonFormulas.calculateDistance(object, object2);
+
+                if (distance.compareTo(object.getRadius().add(object2.getRadius())) < 0) {
+                    collision = true;
+                    break OUTER_LOOP;
+                }
+            }
         }
+        return collision;
+    }
+
+    private void init() throws SimulationException {
+        Utils.log("Initialize simulation...");
 
         /** This is need because we don't know the type of secondsPerItaration field before number factory is set */
         properties.setNanoSecondsPerIteration(properties.getNanoSecondsPerIteration());
@@ -167,6 +180,10 @@ public class SimulationImpl implements Simulation {
             objects.add(object);
             auxiliaryObjects.add(new SimulationObjectImpl(object));
         }
+        if (collisionExists()) {
+            throw new SimulationException("Initial collision exists!");
+        }
+        Utils.log("Done.\n");
     }
 
     @Override

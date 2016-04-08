@@ -9,15 +9,6 @@ import java.math.BigDecimal;
  * @date 18 Aug 2015
  */
 public interface Number {
-
-    public static final Number ZERO = NumberFactoryProxy.createNumber(0);
-    public static final Number ONE = NumberFactoryProxy.createNumber(1);
-    public static final Number TWO = NumberFactoryProxy.createNumber(2);
-    public static final Number THREE = NumberFactoryProxy.createNumber(3);
-    public static final Number FOUR = NumberFactoryProxy.createNumber(4);
-    public static final Number RATIO_FOUR_THREE = FOUR.divide(THREE);
-    public static final Number BILLION = NumberFactoryProxy.createNumber(1000000000);
-
     // Arithmetic Operations
     /**
      * Returns a Number whose value is {@code (this + augend)}.
