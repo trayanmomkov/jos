@@ -88,7 +88,7 @@ public class SimulationImpl implements Simulation {
          * candidates for garbage collection.
          */
 
-        if (properties.isSaveToFile()) {
+        if (properties.isSaveToFile() && !properties.isBenchmarkMode()) {
             properties.getFormatVersion1Writer().appendObjectsToFile(objects);
         }
     }

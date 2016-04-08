@@ -67,6 +67,9 @@ public class Benchmark {
         SimulationProperties simulationProperties = new SimulationProperties();
         simulationProperties.setNumberType(numberType);
 
+        Utils.log(inputFileName);
+        Utils.log(getClass().getResource(inputFileName));
+        Utils.log(getClass().getResource(inputFileName).getPath());
         simulationProperties.setFormatVersion1Writer(new FormatVersion1ReaderWriter(getClass().getResource(
                 inputFileName).getPath()));
         simulationProperties.getFormatVersion1Writer().readProperties(simulationProperties);
@@ -76,6 +79,7 @@ public class Benchmark {
         simulationProperties.setNumberOfThreads(numberOfThreads);
         simulationProperties.setWriterBufferSize(writerBufferSize);
         simulationProperties.setBenchmarkMode(true);
+        simulationProperties.setSaveToFile(false);
         simulationProperties.setForceCalculatorType(ForceCalculatorType.NEWTON_LAW_OF_GRAVITATION);
 
         Container.getSimulation().setProperties(simulationProperties);
