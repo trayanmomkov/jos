@@ -15,6 +15,7 @@ public class CommonFormulas {
     public static Number calculateDistance(SimulationObject object1, SimulationObject object2) {
         Number x = object2.getX().subtract(object1.getX());
         Number y = object2.getY().subtract(object1.getY());
-        return (x.multiply(x).add(y.multiply(y))).sqrt();
+        Number z = object2.getZ().subtract(object1.getZ());
+        return (x.multiply(x).add(y.multiply(y)).add(z.multiply(z))).sqrt();
     }
 }
