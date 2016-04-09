@@ -3,11 +3,11 @@
  */
 package info.trekto.jos.model.impl;
 
-import info.trekto.jos.model.SimulationObject;
-import info.trekto.jos.numbers.Number;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import info.trekto.jos.model.SimulationObject;
+import info.trekto.jos.numbers.Number;
 
 /**
  * @author Trayan Momkov
@@ -70,10 +70,12 @@ public class SimulationObjectImpl implements SimulationObject {
     }
 
 
+    @Override
     public Number getZ() {
         return z;
     }
 
+    @Override
     public void setZ(Number z) {
         this.z = z;
     }
@@ -164,7 +166,9 @@ public class SimulationObjectImpl implements SimulationObject {
     /**
      * The magnitude of speed which is a 3D vector.
      */
+    @Override
     public Number calculateSpeedMagnitude() {
-        return speed.getX().pow(2).add(speed.getY().pow(2)).add(speed.getZ().pow(2)).sqrt();
+        return speed.getX().multiply(speed.getX()).add(speed.getY().multiply(speed.getY()))
+                .add(speed.getZ().multiply(speed.getZ())).sqrt();
     }
 }

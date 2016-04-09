@@ -1,5 +1,7 @@
 package info.trekto.jos.core.impl;
 
+import java.util.ArrayList;
+
 import info.trekto.jos.formulas.ForceCalculator.ForceCalculatorType;
 import info.trekto.jos.io.FormatVersion1ReaderWriter;
 import info.trekto.jos.numbers.New;
@@ -8,9 +10,8 @@ import info.trekto.jos.numbers.NumberFactory.NumberType;
 import info.trekto.jos.numbers.NumberFactoryProxy;
 import info.trekto.jos.numbers.impl.BigDecimalNumberFactory;
 import info.trekto.jos.numbers.impl.DoubleNumberFactory;
+import info.trekto.jos.numbers.impl.FloatNumberFactory;
 import info.trekto.jos.util.Utils;
-
-import java.util.ArrayList;
 
 /**
  * @author Trayan Momkov
@@ -151,6 +152,9 @@ public class SimulationProperties {
         this.numberType = numberType;
 
         switch (numberType) {
+            case FLOAT:
+                NumberFactoryProxy.setFactory(new FloatNumberFactory());
+                break;
             case DOUBLE:
                 NumberFactoryProxy.setFactory(new DoubleNumberFactory());
                 break;

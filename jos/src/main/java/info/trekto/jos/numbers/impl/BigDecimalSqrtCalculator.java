@@ -47,18 +47,15 @@ public class BigDecimalSqrtCalculator {
     protected static BigDecimal BigDecimalTWO = new BigDecimal(2);
     protected static BigDecimal BigDecimalFOUR = new BigDecimal(4);
 
-    public static BigInteger sqrt(BigInteger number)
-    {
+    public static BigInteger sqrt(BigInteger number) {
         return sqrt(number, BigIntegerONE);
     }
 
-    public static BigDecimal sqrt(BigDecimal number, RoundingMode rounding)
-    {
+    public static BigDecimal sqrt(BigDecimal number, RoundingMode rounding) {
         return sqrt(number, BigDecimalONE, rounding);
     }
 
-    protected static BigInteger sqrt(BigInteger number, BigInteger guess)
-    {
+    protected static BigInteger sqrt(BigInteger number, BigInteger guess) {
         // ((n/g) + g)/2: until same result twice in a row
         // BigInteger result = number.divide(guess).add(guess).divide(BigIntegerTWO);
         // if(result.compareTo(guess) == 0)
@@ -71,8 +68,7 @@ public class BigDecimalSqrtCalculator {
         BigInteger flipA = result;
         BigInteger flipB = result;
         boolean first = true;
-        while (result.compareTo(guess) != 0)
-        {
+        while (result.compareTo(guess) != 0) {
             if (!first)
                 guess = result;
             else
@@ -90,13 +86,17 @@ public class BigDecimalSqrtCalculator {
 
     }
 
-    public static BigDecimal sqrt(BigDecimal number, BigDecimal guess, RoundingMode rounding)
-    {
+    public static BigDecimal sqrt(BigDecimal number, BigDecimal guess, RoundingMode rounding) {
+        if (number.compareTo(BigDecimalZERO) == 0) {
+            return BigDecimalZERO;
+        }
+
         BigDecimal result = BigDecimalZERO;
         BigDecimal flipA = result;
         BigDecimal flipB = result;
         boolean first = true;
         while (result.compareTo(guess) != 0)
+
         {
             if (!first)
                 guess = result;

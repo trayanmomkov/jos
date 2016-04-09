@@ -1,5 +1,12 @@
 package info.trekto.jos.core.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.NotImplementedException;
+
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.exceptions.SimulationException;
 import info.trekto.jos.formulas.CommonFormulas;
@@ -10,20 +17,13 @@ import info.trekto.jos.model.impl.SimulationObjectImpl;
 import info.trekto.jos.numbers.Number;
 import info.trekto.jos.util.Utils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.NotImplementedException;
-
 /**
  * @author Trayan Momkov
  * @date 6.03.2016 г.1:53:36
  */
 public class SimulationImpl implements Simulation {
 
-    //    private Logger logger = LoggerFactory.getLogger(getClass());
+    // private Logger logger = LoggerFactory.getLogger(getClass());
     private SimulationProperties properties;
     private Thread[] threads;
     private Map<Integer, ArrayList<Integer>> numberOfobjectsDistributionPerThread = new HashMap<>();
@@ -109,26 +109,28 @@ public class SimulationImpl implements Simulation {
                 if (i != 0 && properties.isBenchmarkMode() && i % 1 == 0) {
                     endTime = System.nanoTime();
                     long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
-                    //                    logger.info("Iteration " + i + "\t" + (duration / 1000000) + " ms");
+                    // logger.info("Iteration " + i + "\t" + (duration / 1000000) + " ms");
                     System.out.println("Iteration " + i + "\t" + (duration / 1000000) + " ms");
                     startTime = System.nanoTime();
                 }
                 doIteration();
 
-                //                /** On every 100 iterations flush to disk */
-                //                if (i % 100 == 0) {
-                //                    properties.getFormatVersion1Writer().flushToDisk();
-                //                }
+                // /** On every 100 iterations flush to disk */
+                // if (i % 100 == 0) {
+                // properties.getFormatVersion1Writer().flushToDisk();
+                // }
             } catch (InterruptedException e) {
-                //                logger.error("One of the threads interrupted in cycle " + i, e);
+                // logger.error("One of the threads interrupted in cycle " + i, e);
                 e.printStackTrace();
             }
         }
 
         endTime = System.nanoTime();
 
-        properties.getFormatVersion1Writer().endFile();
-
+        if (properties.isSaveToFile() && !properties.isBenchmarkMode()) {
+            properties.getFormatVersion1Writer().endFile();
+        }
+        Utils.log("End of simulation.");
         return endTime - globalStartTime;
     }
 
@@ -165,7 +167,7 @@ public class SimulationImpl implements Simulation {
                 break;
             case COULOMB_LAW_ELECTRICALLY:
                 throw new NotImplementedException("COULOMB_LAW_ELECTRICALLY is not implemented");
-                //                break;
+                // break;
             default:
                 forceCalculator = new NewtonGravity();
                 break;

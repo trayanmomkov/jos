@@ -3,16 +3,6 @@
  */
 package info.trekto.jos.io;
 
-import info.trekto.jos.Container;
-import info.trekto.jos.core.impl.SimulationProperties;
-import info.trekto.jos.formulas.ScientificConstants;
-import info.trekto.jos.model.SimulationObject;
-import info.trekto.jos.model.impl.SimulationObjectImpl;
-import info.trekto.jos.model.impl.TripleInt;
-import info.trekto.jos.model.impl.TripleNumber;
-import info.trekto.jos.numbers.New;
-import info.trekto.jos.util.Utils;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -23,12 +13,23 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import info.trekto.jos.Container;
+import info.trekto.jos.core.impl.SimulationProperties;
+import info.trekto.jos.formulas.ForceCalculator.ForceCalculatorType;
+import info.trekto.jos.formulas.ScientificConstants;
+import info.trekto.jos.model.SimulationObject;
+import info.trekto.jos.model.impl.SimulationObjectImpl;
+import info.trekto.jos.model.impl.TripleInt;
+import info.trekto.jos.model.impl.TripleNumber;
+import info.trekto.jos.numbers.New;
+import info.trekto.jos.util.Utils;
+
 /**
  * @author Trayan Momkov
  * @date 18 Mar 2016
  */
 public class FormatVersion1ReaderWriter {
-    //    private Logger logger = LoggerFactory.getLogger(getClass());
+    // private Logger logger = LoggerFactory.getLogger(getClass());
 
     private Charset charset = Charset.forName("UTF-8");
 
@@ -53,25 +54,25 @@ public class FormatVersion1ReaderWriter {
         }
     }
 
-    //    public FormatVersion1ReaderWriter(InputStream inputStream) {
-    //        try {
-    //            this.inputFile = new File(inputFile);
-    //            reader = Files.newBufferedReader(this.inputFile.toPath(), charset);
-    //            reader = new BufferedInputStream(inputStream);
-    //            getClass().getResource(name)
-    //            // writer = Files.newBufferedWriter(new File(outputFile).toPath(), charset);
-    //        } catch (IOException e) {
-    //            logger.error("Cannot open file " + inputFile, e);
-    //        }
-    //    }
+    // public FormatVersion1ReaderWriter(InputStream inputStream) {
+    // try {
+    // this.inputFile = new File(inputFile);
+    // reader = Files.newBufferedReader(this.inputFile.toPath(), charset);
+    // reader = new BufferedInputStream(inputStream);
+    // getClass().getResource(name)
+    // // writer = Files.newBufferedWriter(new File(outputFile).toPath(), charset);
+    // } catch (IOException e) {
+    // logger.error("Cannot open file " + inputFile, e);
+    // }
+    // }
 
-    //    public void flushToDisk() {
-    //        try {
-    //            writer.flush();
-    //        } catch (IOException e) {
-    //            logger.error("Error during flush to disk", e);
-    //        }
-    //    }
+    // public void flushToDisk() {
+    // try {
+    // writer.flush();
+    // } catch (IOException e) {
+    // logger.error("Error during flush to disk", e);
+    // }
+    // }
 
     public void appendObjectsToFile(List<SimulationObject> simulationObjects) {
         try {
@@ -148,7 +149,12 @@ public class FormatVersion1ReaderWriter {
         return m.group(gorupNumber);
     }
 
+    private void setDefaultValues(SimulationProperties properties) {
+        properties.setForceCalculatorType(ForceCalculatorType.NEWTON_LAW_OF_GRAVITATION);
+    }
+
     public void readProperties(SimulationProperties properties) {
+        setDefaultValues(properties);
 
         try {
 
@@ -237,7 +243,8 @@ public class FormatVersion1ReaderWriter {
             reader.readLine();
 
             // saving data: 0 (1 = true, 0 = false)
-            reader.readLine();
+            properties.setSaveToFile("1".equals(match("saving data:[\\s\\t]+([01]).*",
+                    reader.readLine())));
 
             // output file name: simulations/PSC_5.out
             properties.setOutputFile(match("output file name:[\\s\\t]+(.+)",

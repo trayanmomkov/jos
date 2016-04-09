@@ -21,7 +21,6 @@ public interface NumberFactory {
     public Number createNumber(long val);
 
     public enum NumberType {
-        DOUBLE,
-        BIG_DECIMAL;
+        FLOAT, DOUBLE, BIG_DECIMAL;
     }
 }

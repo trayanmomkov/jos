@@ -8,6 +8,7 @@ import info.trekto.jos.core.impl.SimulationLogicImpl;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.exceptions.SimulationException;
 import info.trekto.jos.io.FormatVersion1ReaderWriter;
+import info.trekto.jos.numbers.NumberFactory.NumberType;
 
 
 /**
@@ -22,19 +23,16 @@ public class Main {
     public static void main(String[] args) throws SimulationException {
         Container.setSimulation(new SimulationImpl());
 
-
         SimulationProperties simulationProperties = new SimulationProperties();
-        // simulationProperties.setNumberOfObjects(10);
-        // simulationProperties.setNumberOfIterations(500);
+        // simulationProperties.setNumberType(NumberType.DOUBLE);
+        // simulationProperties.setNumberType(NumberType.FLOAT);
+        simulationProperties.setNumberType(NumberType.BIG_DECIMAL);
         simulationProperties.setFormatVersion1Writer(
                 new FormatVersion1ReaderWriter(args[0]));
         simulationProperties.getFormatVersion1Writer().readProperties(simulationProperties);
-        // simulationProperties.getFormatVersion1Writer().readObjectFromFile();
-        simulationProperties.setBenchmarkMode(true);
 
         Container.getSimulation().setProperties(simulationProperties);
         Container.setSimulationLogic(new SimulationLogicImpl());
         Container.getSimulation().startSimulation();
-
     }
 }
