@@ -3,10 +3,10 @@
  */
 package info.trekto.jos.numbers;
 
+import java.math.BigDecimal;
+
 import info.trekto.jos.formulas.ScientificConstants;
 import info.trekto.jos.numbers.impl.DoubleNumberFactory;
-
-import java.math.BigDecimal;
 
 /**
  * In this class you can change the number factory and respectively type of every number in the program.
@@ -22,13 +22,13 @@ public class NumberFactoryProxy {
     private static NumberFactory factory = new DoubleNumberFactory();
 
     private static void calculateConstants() {
-        New.ZERO = NumberFactoryProxy.createNumber(0);
-        New.ONE = NumberFactoryProxy.createNumber(1);
-        New.TWO = NumberFactoryProxy.createNumber(2);
-        New.THREE = NumberFactoryProxy.createNumber(3);
-        New.FOUR = NumberFactoryProxy.createNumber(4);
+        New.ZERO = NumberFactoryProxy.createNumber("0");
+        New.ONE = NumberFactoryProxy.createNumber("1");
+        New.TWO = NumberFactoryProxy.createNumber("2");
+        New.THREE = NumberFactoryProxy.createNumber("3");
+        New.FOUR = NumberFactoryProxy.createNumber("4");
         New.RATIO_FOUR_THREE = New.FOUR.divide(New.THREE);
-        New.BILLION = NumberFactoryProxy.createNumber(1000000000);
+        New.BILLION = NumberFactoryProxy.createNumber("1000000000");
     }
 
     public static NumberFactory getFactory() {

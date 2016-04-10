@@ -1,5 +1,7 @@
 package info.trekto.jos.core.impl;
 
+import java.util.Iterator;
+
 import info.trekto.jos.Container;
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.SimulationLogic;
@@ -9,14 +11,12 @@ import info.trekto.jos.model.impl.TripleNumber;
 import info.trekto.jos.numbers.New;
 import info.trekto.jos.numbers.Number;
 
-import java.util.Iterator;
-
 /**
  * @author Trayan Momkov
  * @date 6.03.2016 г.1:53:42
  */
 public class SimulationLogicImpl implements SimulationLogic {
-    //    private Logger logger = LoggerFactory.getLogger(getClass());
+    // private Logger logger = LoggerFactory.getLogger(getClass());
     private Number secondsPerIteration;
 
     public SimulationLogicImpl() {
@@ -71,7 +71,7 @@ public class SimulationLogicImpl implements SimulationLogic {
 
     private TripleNumber addAcceleration(SimulationObject currentSimulationObject, TripleNumber oldAcceleration,
                                          TripleNumber force) {
-        //      ax = Fx / m
+        // ax = Fx / m
         Number accelerationX = oldAcceleration.getX().add(force.getX().divide(currentSimulationObject.getMass()));
         Number accelerationY = oldAcceleration.getY().add(force.getY().divide(currentSimulationObject.getMass()));
         Number accelerationZ = oldAcceleration.getZ().add(force.getZ().divide(currentSimulationObject.getMass()));
@@ -80,7 +80,7 @@ public class SimulationLogicImpl implements SimulationLogic {
 
     private void changeSpeed(SimulationObject currentSimulationObject, SimulationObject simulationAuxiliaryObject,
                              TripleNumber acceleration) {
-        //            members[i]->speed.x += a.x * simulationProperties.secondsPerCycle;//* t;
+        // members[i]->speed.x += a.x * simulationProperties.secondsPerCycle;//* t;
         Number speedX = currentSimulationObject.getSpeed().getX()
                 .add(acceleration.getX().multiply(secondsPerIteration));
         Number speedY = currentSimulationObject.getSpeed().getY()

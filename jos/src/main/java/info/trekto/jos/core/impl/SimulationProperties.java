@@ -1,5 +1,6 @@
 package info.trekto.jos.core.impl;
 
+import java.math.MathContext;
 import java.util.ArrayList;
 
 import info.trekto.jos.formulas.ForceCalculator.ForceCalculatorType;
@@ -37,6 +38,7 @@ public class SimulationProperties {
 
     private NumberType numberType;
     private ForceCalculatorType forceCalculatorType;
+    private int precision;
 
     private int writerBufferSize = 0;
 
@@ -150,21 +152,6 @@ public class SimulationProperties {
      */
     public void setNumberType(NumberType numberType) {
         this.numberType = numberType;
-
-        switch (numberType) {
-            case FLOAT:
-                NumberFactoryProxy.setFactory(new FloatNumberFactory());
-                break;
-            case DOUBLE:
-                NumberFactoryProxy.setFactory(new DoubleNumberFactory());
-                break;
-            case BIG_DECIMAL:
-                NumberFactoryProxy.setFactory(new BigDecimalNumberFactory());
-                break;
-            default:
-                NumberFactoryProxy.setFactory(new DoubleNumberFactory());
-                break;
-        }
     }
 
     /**
@@ -179,5 +166,32 @@ public class SimulationProperties {
      */
     public void setForceCalculatorType(ForceCalculatorType forceCalculatorType) {
         this.forceCalculatorType = forceCalculatorType;
+    }
+
+    public int getPrecision() {
+        return precision;
+    }
+
+    /**
+     * Number of digits to be used for an operation; results are rounded to this precision
+     * @param precision
+     */
+    public void setPrecision(int precision) {
+        this.precision = precision;
+
+        switch (numberType) {
+            case FLOAT:
+                NumberFactoryProxy.setFactory(new FloatNumberFactory());
+                break;
+            case DOUBLE:
+                NumberFactoryProxy.setFactory(new DoubleNumberFactory());
+                break;
+            case BIG_DECIMAL:
+                NumberFactoryProxy.setFactory(new BigDecimalNumberFactory(new MathContext(precision)));
+                break;
+            default:
+                NumberFactoryProxy.setFactory(new DoubleNumberFactory());
+                break;
+        }
     }
 }

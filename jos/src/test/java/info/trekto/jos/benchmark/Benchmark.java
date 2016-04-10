@@ -92,39 +92,39 @@ public class Benchmark {
         if (simulationProperties.getNumberOfThreads() == Utils.CORES) {
             System.out.print(" <<<<<<");
         }
-        System.out.println();
+        Utils.log();
 
     }
 
     private void printConfiguration(SimulationProperties properties, NumberFactory.NumberType numberType) {
-        System.out.println("\n\nJRE version: " + System.getProperty("java.specification.version"));
-        System.out.println("JVM  implementation name: " + System.getProperty("java.vm.name"));
-        //        System.out.println("JVM implementation version: " + System.getProperty("java.vm.version"));
-        //        System.out.println("The Name of JIT compiler to use: " + System.getProperty("java.compiler"));
+        Utils.log("\n\nJRE version: " + System.getProperty("java.specification.version"));
+        Utils.log("JVM  implementation name: " + System.getProperty("java.vm.name"));
+        //        Utils.log("JVM implementation version: " + System.getProperty("java.vm.version"));
+        //        Utils.log("The Name of JIT compiler to use: " + System.getProperty("java.compiler"));
 
-        System.out.println("Free memory (Mbytes): " + Runtime.getRuntime().freeMemory() / (1024 * 1024));
+        Utils.log("Free memory (Mbytes): " + Runtime.getRuntime().freeMemory() / (1024 * 1024));
 
         /* This will return Long.MAX_VALUE if there is no preset limit */
         long maxMemory = Runtime.getRuntime().maxMemory();
         /* Maximum amount of memory the JVM will attempt to use */
-        System.out.println("Maximum memory (Mbytes): "
+        Utils.log("Maximum memory (Mbytes): "
                 + (maxMemory == Long.MAX_VALUE ? "no limit" : maxMemory / (1024 * 1024)));
 
         /* Total memory currently available to the JVM */
-        System.out.println("Total memory available to JVM (Mbytes): " + Runtime.getRuntime().totalMemory()
+        Utils.log("Total memory available to JVM (Mbytes): " + Runtime.getRuntime().totalMemory()
                 / (1024 * 1024));
 
-        System.out.println("The name of OS name: " + System.getProperty("os.name"));
-        System.out.println("The version of OS: " + System.getProperty("os.version"));
-        System.out.println("The OS architecture: " + System.getProperty("os.arch"));
-        System.out.println("Host machine native word size: " + System.getProperty("sun.arch.data.model"));
+        Utils.log("The name of OS name: " + System.getProperty("os.name"));
+        Utils.log("The version of OS: " + System.getProperty("os.version"));
+        Utils.log("The OS architecture: " + System.getProperty("os.arch"));
+        Utils.log("Host machine native word size: " + System.getProperty("sun.arch.data.model"));
 
-        System.out.println("Number of cores: " + Utils.CORES);
-        System.out.println("Number of runnig threads: " + properties.getNumberOfThreads());
-        System.out.println("Number of objects: " + properties.getNumberOfObjects());
-        System.out.println("Number of iterations: " + properties.getNumberOfIterations());
-        System.out.println("Number implementation: " + numberType);
-        System.out.println("Writer buffer size: " + properties.getWriterBufferSize());
+        Utils.log("Number of cores: " + Utils.CORES);
+        Utils.log("Number of runnig threads: " + properties.getNumberOfThreads());
+        Utils.log("Number of objects: " + properties.getNumberOfObjects());
+        Utils.log("Number of iterations: " + properties.getNumberOfIterations());
+        Utils.log("Number implementation: " + numberType);
+        Utils.log("Writer buffer size: " + properties.getWriterBufferSize());
     }
 
     //    private void setFactory(NumberFactory numberFactory) {

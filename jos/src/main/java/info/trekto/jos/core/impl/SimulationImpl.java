@@ -97,11 +97,11 @@ public class SimulationImpl implements Simulation {
     public long startSimulation() throws SimulationException {
         init();
 
+        Utils.log("\nStart simulation...");
         long globalStartTime = System.nanoTime();
         long startTime = globalStartTime;
         long endTime;
 
-        Utils.log("Start simulation...");
         for (int i = 0; properties.isInfiniteSimulation() || i < properties.getNumberOfIterations(); i++) {
             try {
                 iterationCounter = i + 1;
@@ -110,7 +110,7 @@ public class SimulationImpl implements Simulation {
                     endTime = System.nanoTime();
                     long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
                     // logger.info("Iteration " + i + "\t" + (duration / 1000000) + " ms");
-                    System.out.println("Iteration " + i + "\t" + (duration / 1000000) + " ms");
+                    Utils.log("Iteration " + i + "\t" + (duration / 1000000) + " ms");
                     startTime = System.nanoTime();
                 }
                 doIteration();
@@ -186,6 +186,8 @@ public class SimulationImpl implements Simulation {
             throw new SimulationException("Initial collision exists!");
         }
         Utils.log("Done.\n");
+
+        Utils.printConfiguration(properties);
     }
 
     @Override

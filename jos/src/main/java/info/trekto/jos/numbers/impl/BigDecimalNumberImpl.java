@@ -3,12 +3,12 @@
  */
 package info.trekto.jos.numbers.impl;
 
-import info.trekto.jos.numbers.Number;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
+
+import info.trekto.jos.numbers.Number;
 
 /**
  * BigDecimal implementation.
@@ -326,7 +326,12 @@ public class BigDecimalNumberImpl implements Number {
     }
 
     private BigDecimalNumberImpl newNumber(BigDecimal val) {
-        return new BigDecimalNumberImpl(val.setScale(value.precision(), roundingMode.ordinal()));
+        // return new BigDecimalNumberImpl(val.setScale(value.precision(), roundingMode));
+        if (value.precision() > val.precision()) {
+            return new BigDecimalNumberImpl(val.setScale(value.precision(), roundingMode));
+        } else {
+            return new BigDecimalNumberImpl(val.setScale(val.precision(), roundingMode));
+        }
     }
 
     @Override

@@ -160,7 +160,8 @@ public class FormatVersion1ReaderWriter {
 
             // precision: 32 Arithmetic precision in digits after point. 0 = infinite precision; -1 = native floating
             // point type double
-            reader.readLine();
+            properties.setPrecision(Integer.valueOf(match("precision:[\\s\\t]+([\\d]+).*",
+                    reader.readLine())));
 
             // window size: 1280 1024 in pixels
             reader.readLine();
