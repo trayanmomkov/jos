@@ -195,7 +195,8 @@ public class FormatVersion1ReaderWriter {
             reader.readLine();
 
             // real time: 1 (1 = true, 0 = false) Show simulation in real time
-            reader.readLine();
+            properties.setRealTimeVisualization("1".equals(match("real time:[\\s\\t]+([01]).*",
+                    reader.readLine())));
 
             // playing: 0 0 (1 = true, 0 = false) Whether to read data form file and play it; Second digit toggles
             // recording mode

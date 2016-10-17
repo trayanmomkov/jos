@@ -41,9 +41,9 @@ public class Utils {
         log("Total memory available to JVM (Mbytes): " + Runtime.getRuntime().totalMemory()
                 / (1024 * 1024));
 
-        log("The name of OS name: " + System.getProperty("os.name"));
-        log("The version of OS: " + System.getProperty("os.version"));
-        log("The OS architecture: " + System.getProperty("os.arch"));
+        log("OS name: " + System.getProperty("os.name"));
+        log("OS version: " + System.getProperty("os.version"));
+        log("OS architecture: " + System.getProperty("os.arch"));
         log("Host machine native word size: " + System.getProperty("sun.arch.data.model"));
 
         log("Number of cores: " + CORES);

@@ -1,11 +1,12 @@
 package info.trekto.jos.core;
 
+import java.util.List;
+import java.util.Observer;
+
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.exceptions.SimulationException;
 import info.trekto.jos.formulas.ForceCalculator;
 import info.trekto.jos.model.SimulationObject;
-
-import java.util.List;
 
 /**
  * @author Trayan Momkov
@@ -39,4 +40,6 @@ public interface Simulation {
     int getCurrentIterationNumber();
 
     ForceCalculator getForceCalculator();
+
+    void addObserver(Observer o);
 }

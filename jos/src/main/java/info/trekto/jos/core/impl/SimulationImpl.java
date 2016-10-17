@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
 
 import org.apache.commons.lang3.NotImplementedException;
 
@@ -21,7 +22,7 @@ import info.trekto.jos.util.Utils;
  * @author Trayan Momkov
  * @date 6.03.2016 г.1:53:36
  */
-public class SimulationImpl implements Simulation {
+public class SimulationImpl extends Observable implements Simulation {
 
     // private Logger logger = LoggerFactory.getLogger(getClass());
     private SimulationProperties properties;
@@ -113,6 +114,12 @@ public class SimulationImpl implements Simulation {
                     Utils.log("Iteration " + i + "\t" + (duration / 1000000) + " ms");
                     startTime = System.nanoTime();
                 }
+
+                if (properties.isRealTimeVisualization()) {
+                    setChanged();
+                    notifyObservers(objects);
+                }
+
                 doIteration();
 
                 // /** On every 100 iterations flush to disk */

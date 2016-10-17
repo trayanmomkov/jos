@@ -42,6 +42,8 @@ public class SimulationProperties {
 
     private int writerBufferSize = 0;
 
+    private boolean realTimeVisualization = false;
+
     public boolean isInfiniteSimulation() {
         return numberOfIterations == -1;
     }
@@ -193,5 +195,19 @@ public class SimulationProperties {
                 NumberFactoryProxy.setFactory(new DoubleNumberFactory());
                 break;
         }
+    }
+
+    /**
+     * @return the realTimeVisualization
+     */
+    public boolean isRealTimeVisualization() {
+        return realTimeVisualization;
+    }
+
+    /**
+     * @param realTimeVisualization the realTimeVisualization to set
+     */
+    public void setRealTimeVisualization(boolean realTimeVisualization) {
+        this.realTimeVisualization = realTimeVisualization;
     }
 }
