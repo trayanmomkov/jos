@@ -44,6 +44,8 @@ public class SimulationProperties {
 
     private boolean realTimeVisualization = false;
 
+    private int playingSpeed = 1;
+
     public boolean isInfiniteSimulation() {
         return numberOfIterations == -1;
     }
@@ -209,5 +211,19 @@ public class SimulationProperties {
      */
     public void setRealTimeVisualization(boolean realTimeVisualization) {
         this.realTimeVisualization = realTimeVisualization;
+    }
+
+    /**
+     * @return the playingSpeed
+     */
+    public int getPlayingSpeed() {
+        return playingSpeed;
+    }
+
+    /**
+     * @param playingSpeed the playingSpeed to set
+     */
+    public void setPlayingSpeed(int playingSpeed) {
+        this.playingSpeed = playingSpeed;
     }
 }

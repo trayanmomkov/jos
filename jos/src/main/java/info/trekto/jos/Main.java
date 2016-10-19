@@ -28,9 +28,9 @@ public class Main {
         Visualizer visualizer = new VisuaizerImpl();
 
         SimulationProperties simulationProperties = new SimulationProperties();
-        // simulationProperties.setNumberType(NumberType.DOUBLE);
+        simulationProperties.setNumberType(NumberType.DOUBLE);
         // simulationProperties.setNumberType(NumberType.FLOAT);
-        simulationProperties.setNumberType(NumberType.BIG_DECIMAL);
+        //        simulationProperties.setNumberType(NumberType.BIG_DECIMAL);
         simulationProperties.setFormatVersion1Writer(
                 new FormatVersion1ReaderWriter(args[0]));
         simulationProperties.getFormatVersion1Writer().readProperties(simulationProperties);

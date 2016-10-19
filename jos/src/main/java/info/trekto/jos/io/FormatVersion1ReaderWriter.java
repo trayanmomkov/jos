@@ -204,7 +204,8 @@ public class FormatVersion1ReaderWriter {
 
             // playing speed: 25 in real time mode indicates 1 per how many cycle to be saved in file; in playing mode
             // indicates how many cycles to be skipped in each visualisation step
-            reader.readLine();
+            properties.setPlayingSpeed(Integer.valueOf(match("playing speed:[\\s\\t]+([\\d]+).*",
+                    reader.readLine())));
 
             // sleep mseconds: 0 miliseconds, how long to sleep for every amount of cycles to prevent system overheat
             // for long simulations (0 = no sleep)

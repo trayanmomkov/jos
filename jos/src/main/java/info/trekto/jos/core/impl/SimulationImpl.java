@@ -115,7 +115,7 @@ public class SimulationImpl extends Observable implements Simulation {
                     startTime = System.nanoTime();
                 }
 
-                if (properties.isRealTimeVisualization()) {
+                if (properties.isRealTimeVisualization() && i % properties.getPlayingSpeed() == 0) {
                     setChanged();
                     notifyObservers(objects);
                 }

@@ -7,9 +7,12 @@ import java.awt.Color;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Shape;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.geom.AffineTransform;
 import java.util.List;
 
 /**
@@ -20,6 +23,8 @@ import java.util.List;
 public class VisualizationFrame extends Frame {
 
     private List<Shape> shapes;
+    private int displayWidth;
+    private int displayHeight;
 
     /**
      * Instantiates an Example01 object.
@@ -39,7 +44,10 @@ public class VisualizationFrame extends Frame {
         super("Java 2D Example01");
 
         //Set the size for the frame.
-        setSize(400, 300);
+        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        displayWidth = gd.getDisplayMode().getWidth();
+        displayHeight = gd.getDisplayMode().getHeight();
+        setSize(displayWidth, displayHeight);
 
         //We need to turn on the visibility of our frame
         //by setting the Visible parameter to true.
@@ -66,29 +74,35 @@ public class VisualizationFrame extends Frame {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setTransform(AffineTransform.getScaleInstance(0.2, 0.2));
         //Here is how we used to draw a square with width
         //of 200, height of 200, and starting at x=50, y=50.
         g.setColor(Color.red);
-        g.drawRect(50, 50, 200, 200);
+        g.drawRect(50, 50, 60, 60);
 
         //Let's set the Color to blue and then use the Graphics2D
         //object to draw a rectangle, offset from the square.
         //So far, we've not done anything using Graphics2D that
         //we could not also do using Graphics.  (We are actually
         //using Graphics2D methods inherited from Graphics.)
-        Graphics2D g2d = (Graphics2D) g;
+
         g2d.setColor(Color.blue);
-        g2d.drawRect(75, 75, 300, 200);
+        g2d.drawRect(75, 75, 80, 80);
 
         if (shapes != null) {
             for (Object element : shapes) {
                 Shape shape = (Shape) element;
+                //                System.out.println("Drawing shape: x:" + shape.getBounds2D().getX() + " y:" + shape.getBounds2D().getY()
+                //                        + " widht: " + shape.getBounds2D().getWidth() + " height:" + shape.getBounds2D().getHeight());
                 g2d.draw(shape);
             }
+            //            System.out.println("========================================");
         }
     }
 
     public void draw(List<Shape> shapes) {
         this.shapes = shapes;
+        repaint();
     }
 }
