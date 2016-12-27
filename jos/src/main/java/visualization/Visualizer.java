@@ -11,5 +11,17 @@ import java.util.Observer;
  *
  */
 public interface Visualizer extends Observer {
+    void closeWindow();
 
+    void zoomIn();
+
+    void zoomOut();
+
+    void translateLeft();
+
+    void translateUp();
+
+    void translateRight();
+
+    void translateDown();
 }

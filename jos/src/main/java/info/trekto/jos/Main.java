@@ -10,7 +10,7 @@ import info.trekto.jos.exceptions.SimulationException;
 import info.trekto.jos.io.FormatVersion1ReaderWriter;
 import info.trekto.jos.numbers.NumberFactory.NumberType;
 import visualization.Visualizer;
-import visualization.java2dgraphics.VisuaizerImpl;
+import visualization.java2dgraphics.VisualizerImpl;
 
 
 /**
@@ -25,7 +25,7 @@ public class Main {
     public static void main(String[] args) throws SimulationException {
         Container.setSimulation(new SimulationImpl());
 
-        Visualizer visualizer = new VisuaizerImpl();
+        Visualizer visualizer = new VisualizerImpl();
 
         SimulationProperties simulationProperties = new SimulationProperties();
         simulationProperties.setNumberType(NumberType.DOUBLE);

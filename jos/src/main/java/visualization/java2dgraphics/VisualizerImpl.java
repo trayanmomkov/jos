@@ -23,20 +23,20 @@ import visualization.Visualizer;
  * @date 2016-окт-17 23:13
  *
  */
-public class VisuaizerImpl implements Visualizer {
+public class VisualizerImpl implements Visualizer {
 
     private VisualizationPanel visualizationPanel;
+    private final JFrame frame;
 
-    public VisuaizerImpl() {
-        final JFrame frame = new JFrame("Simple Double Buffer") {
-            @Override
-            public void processWindowEvent(java.awt.event.WindowEvent e) {
-                super.processWindowEvent(e);
-                if (e.getID() == java.awt.event.WindowEvent.WINDOW_CLOSING) {
-                    System.exit(-1);
-                }
-            }
-        };
+    @Override
+    public void closeWindow() {
+        System.out.println("Release graphic resources.");
+        frame.dispose();
+    }
+
+    public VisualizerImpl() {
+        frame = new VisualizationFrame(this, "Simple Double Buffer");
+        frame.addKeyListener(new VisualizationKeyListener(this));
 
         /** Get window dimension */
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
@@ -55,15 +55,50 @@ public class VisuaizerImpl implements Visualizer {
      */
     @Override
     public void update(Observable o, Object arg) {
+        visualizationPanel.draw(createShapes((List<SimulationObject>) arg));
+    }
+
+    private List<Shape> createShapes(List<SimulationObject> simulationObjects) {
         List<Shape> shapes = new ArrayList<>();
-        for (SimulationObject simulationObject : (List<SimulationObject>) arg) {
+        for (SimulationObject simulationObject : simulationObjects) {
             Ellipse2D ellipse = new Ellipse2D.Double();
             ellipse.setFrame(simulationObject.getX().doubleValue(), simulationObject.getY().doubleValue(),
                     simulationObject.getRadius().doubleValue() * 2,
                     simulationObject.getRadius().doubleValue() * 2);
+
             shapes.add(ellipse);
         }
-        visualizationPanel.draw(shapes);
+        return shapes;
+    }
+
+    @Override
+    public void zoomIn() {
+        visualizationPanel.zoomIn();
+    }
+
+    @Override
+    public void zoomOut() {
+        visualizationPanel.zoomOut();
+    }
+
+    @Override
+    public void translateLeft() {
+        visualizationPanel.translateLeft();
+    }
+
+    @Override
+    public void translateUp() {
+        visualizationPanel.translateUp();
+    }
+
+    @Override
+    public void translateRight() {
+        visualizationPanel.translateRight();
+    }
+
+    @Override
+    public void translateDown() {
+        visualizationPanel.translateDown();
     }
 
 }
