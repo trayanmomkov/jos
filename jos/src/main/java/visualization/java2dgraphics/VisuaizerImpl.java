@@ -3,11 +3,17 @@
  */
 package visualization.java2dgraphics;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
+
+import javax.swing.JFrame;
 
 import info.trekto.jos.model.SimulationObject;
 import visualization.Visualizer;
@@ -19,10 +25,29 @@ import visualization.Visualizer;
  */
 public class VisuaizerImpl implements Visualizer {
 
-    private VisualizationFrame visualizationFrame;
+    private VisualizationPanel visualizationPanel;
 
     public VisuaizerImpl() {
-        visualizationFrame = new VisualizationFrame();
+        final JFrame frame = new JFrame("Simple Double Buffer") {
+            @Override
+            public void processWindowEvent(java.awt.event.WindowEvent e) {
+                super.processWindowEvent(e);
+                if (e.getID() == java.awt.event.WindowEvent.WINDOW_CLOSING) {
+                    System.exit(-1);
+                }
+            }
+        };
+
+        /** Get window dimension */
+        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        int displayWidth = gd.getDisplayMode().getWidth();
+        int displayHeight = gd.getDisplayMode().getHeight();
+
+        frame.setSize(new Dimension(displayWidth, displayHeight));
+        frame.setBackground(Color.WHITE);
+        visualizationPanel = new VisualizationPanel(Color.WHITE);
+        frame.add(visualizationPanel);
+        frame.setVisible(true);
     }
 
     /* (non-Javadoc)
@@ -38,7 +63,7 @@ public class VisuaizerImpl implements Visualizer {
                     simulationObject.getRadius().doubleValue() * 2);
             shapes.add(ellipse);
         }
-        visualizationFrame.draw(shapes);
+        visualizationPanel.draw(shapes);
     }
 
 }

@@ -51,7 +51,7 @@ public class Utils {
         log("Number of runnig threads: " + properties.getNumberOfThreads());
         log("Number of objects: " + properties.getNumberOfObjects());
         log("Number of iterations: " + properties.getNumberOfIterations());
-        log("Number implementation: " + properties.getNumberType());
+        log("'Number' implementation: " + properties.getNumberType());
         log("Writer buffer size: " + properties.getWriterBufferSize());
     }
 }
