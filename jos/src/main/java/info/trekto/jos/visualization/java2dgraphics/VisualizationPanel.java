@@ -1,7 +1,7 @@
 /**
  *
  */
-package visualization.java2dgraphics;
+package info.trekto.jos.visualization.java2dgraphics;
 
 import java.awt.Color;
 import java.awt.Dimension;

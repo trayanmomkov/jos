@@ -1,7 +1,7 @@
 /**
  *
  */
-package visualization.java2dgraphics;
+package info.trekto.jos.visualization.java2dgraphics;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -16,7 +16,7 @@ import java.util.Observable;
 import javax.swing.JFrame;
 
 import info.trekto.jos.model.SimulationObject;
-import visualization.Visualizer;
+import info.trekto.jos.visualization.Visualizer;
 
 /**
  * @author Trayan Momkov

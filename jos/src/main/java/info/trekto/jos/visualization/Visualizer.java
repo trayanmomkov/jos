@@ -1,7 +1,7 @@
 /**
  *
  */
-package visualization;
+package info.trekto.jos.visualization;
 
 import java.util.Observer;
 

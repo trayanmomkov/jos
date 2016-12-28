@@ -1,12 +1,12 @@
 /**
  *
  */
-package visualization.java2dgraphics;
+package info.trekto.jos.visualization.java2dgraphics;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import visualization.Visualizer;
+import info.trekto.jos.visualization.Visualizer;
 
 /**
  * @author Trayan Momkov
