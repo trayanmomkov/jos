@@ -5,6 +5,10 @@
  */
 package info.trekto.jos.gui;
 
+import java.net.URISyntaxException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author bibo
@@ -15,7 +19,14 @@ public class MainFrame extends javax.swing.JFrame {
      * Creates new form MainFrame
      */
     public MainFrame() {
-        initComponents();
+        try {
+            initComponents();
+            String currentJrePath = System.getProperty("java.home");
+            String currentApplicationPath = MainFrame.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+            commandLineTextArea.setText(currentJrePath + " " + currentApplicationPath);
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
