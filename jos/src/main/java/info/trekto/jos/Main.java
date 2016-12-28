@@ -9,8 +9,8 @@ import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.exceptions.SimulationException;
 import info.trekto.jos.io.FormatVersion1ReaderWriter;
 import info.trekto.jos.numbers.NumberFactory.NumberType;
-import visualization.Visualizer;
-import visualization.java2dgraphics.VisualizerImpl;
+import info.trekto.jos.visualization.Visualizer;
+import info.trekto.jos.visualization.java2dgraphics.VisualizerImpl;
 
 
 /**
