@@ -1,12 +1,11 @@
 package info.trekto.jos.core;
 
-import java.util.List;
-import java.util.Observer;
-
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.exceptions.SimulationException;
 import info.trekto.jos.formulas.ForceCalculator;
 import info.trekto.jos.model.SimulationObject;
+import java.util.List;
+import java.util.Observer;
 
 /**
  * @author Trayan Momkov
@@ -27,15 +26,7 @@ public interface Simulation {
 
     List<SimulationObject> getObjects();
 
-    void setObjects(List<SimulationObject> objects);
-
     List<SimulationObject> getAuxiliaryObjects();
-
-    void setAuxiliaryObjects(List<SimulationObject> auxiliaryObjects);
-
-    List<SimulationObject> getObjectsForRemoval();
-
-    void setObjectsForRemoval(List<SimulationObject> objectsForRemoval);
 
     int getCurrentIterationNumber();
 

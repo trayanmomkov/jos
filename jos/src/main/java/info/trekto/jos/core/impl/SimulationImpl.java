@@ -30,7 +30,7 @@ public class SimulationImpl extends Observable implements Simulation {
     private ForceCalculator forceCalculator;
 
     /**
-     * We cannot use array and just to mark objects as disappeared because distribution per threads
+     * We cannot use array and just mark objects as disappeared because distribution per threads
      * will not work - we will not be able to distribute objects equally per thread. We need to
      * remove objects from lists. We need second auxiliary list in which to store objects with new
      * values. When calculation finished just swap lists. Auxiliary list must contain another
@@ -38,9 +38,9 @@ public class SimulationImpl extends Observable implements Simulation {
      * values when calculating new values. This approach prevents creation of new objects in every
      * iteration. We create objects at the beginning of the simulation and after that only remove
      * objects when collision appear. Good candidate for implementation of the lists is LinkedList
-     * because during simulation we not add any new objects to the lists, nor we access them
-     * randomly (via indices). We only remove from them, get sublists and iterate sequentially. But
-     * getting sublist is done by indices in every iteration. On the other hand removing objects
+     * because during simulation we will not add any new objects to the lists, nor we will access
+     * themrandomly (via indices). We only remove from them, get sublists and iterate sequentially.
+     * But getting sublist is done by indices in every iteration. On the other hand removing objects
      * happens relatively rarely so ArrayList is faster than LinkedList.
      */
     private List<SimulationObject> objects;
@@ -220,28 +220,8 @@ public class SimulationImpl extends Observable implements Simulation {
     }
 
     @Override
-    public void setObjects(List<SimulationObject> objects) {
-        this.objects = objects;
-    }
-
-    @Override
     public List<SimulationObject> getAuxiliaryObjects() {
         return auxiliaryObjects;
-    }
-
-    @Override
-    public void setAuxiliaryObjects(List<SimulationObject> auxiliaryObjects) {
-        this.auxiliaryObjects = auxiliaryObjects;
-    }
-
-    @Override
-    public List<SimulationObject> getObjectsForRemoval() {
-        return objectsForRemoval;
-    }
-
-    @Override
-    public void setObjectsForRemoval(List<SimulationObject> objectsForRemoval) {
-        this.objectsForRemoval = objectsForRemoval;
     }
 
     /**
