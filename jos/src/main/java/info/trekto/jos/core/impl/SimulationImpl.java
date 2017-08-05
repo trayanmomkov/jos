@@ -1,13 +1,5 @@
 package info.trekto.jos.core.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Observable;
-
-import org.apache.commons.lang3.NotImplementedException;
-
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.exceptions.SimulationException;
 import info.trekto.jos.formulas.CommonFormulas;
@@ -17,6 +9,12 @@ import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.SimulationObjectImpl;
 import info.trekto.jos.numbers.Number;
 import info.trekto.jos.util.Utils;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Observable;
+import org.apache.commons.lang3.NotImplementedException;
 
 /**
  * @author Trayan Momkov
@@ -41,8 +39,8 @@ public class SimulationImpl extends Observable implements Simulation {
      * iteration. We create objects at the beginning of the simulation and after that only remove
      * objects when collision appear. Good candidate for implementation of the lists is LinkedList
      * because during simulation we not add any new objects to the lists, nor we access them
-     * randomly (via indices). We only remove from them, get sublists and iterate sequentially.
-     * But getting sublist is done by indices in every iteration. On the other hand removing objects
+     * randomly (via indices). We only remove from them, get sublists and iterate sequentially. But
+     * getting sublist is done by indices in every iteration. On the other hand removing objects
      * happens relatively rarely so ArrayList is faster than LinkedList.
      */
     private List<SimulationObject> objects;
@@ -50,7 +48,9 @@ public class SimulationImpl extends Observable implements Simulation {
     private List<SimulationObject> objectsForRemoval;
 
     private void doIteration() throws InterruptedException {
-        /** Distribute simulation objects per threads and start execution */
+        /**
+         * Distribute simulation objects per threads and start execution
+         */
         if (properties.getNumberOfThreads() == 1) {
             new SimulationRunnable(this, 0, objects.size()).run();
         } else {
@@ -64,16 +64,22 @@ public class SimulationImpl extends Observable implements Simulation {
                 fromIndex = toIndex;
             }
 
-            /** Wait for threads to finish */
+            /**
+             * Wait for threads to finish
+             */
             for (Thread thread : threads) {
                 thread.join();
             }
         }
 
-        /** Remove disappeared because of collision objects */
+        /**
+         * Remove disappeared because of collision objects
+         */
         auxiliaryObjects.removeAll(objectsForRemoval);
 
-        /** Swap lists */
+        /**
+         * Swap lists
+         */
         {
             List<SimulationObject> tempList = objects;
             objects = auxiliaryObjects;
@@ -107,7 +113,7 @@ public class SimulationImpl extends Observable implements Simulation {
             try {
                 iterationCounter = i + 1;
 
-                if (i != 0 && properties.isBenchmarkMode() && i % 1 == 0) {
+                if (properties.isBenchmarkMode() && i != 0 && i % 10000 == 0) {
                     endTime = System.nanoTime();
                     long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
                     // logger.info("Iteration " + i + "\t" + (duration / 1000000) + " ms");
@@ -142,8 +148,7 @@ public class SimulationImpl extends Observable implements Simulation {
     }
 
     private boolean collisionExists() {
-        boolean collision = false;
-        OUTER_LOOP: for (Object element : objects) {
+        for (Object element : objects) {
             SimulationObject object = (SimulationObject) element;
             for (Object element2 : objects) {
                 SimulationObject object2 = (SimulationObject) element2;
@@ -154,18 +159,20 @@ public class SimulationImpl extends Observable implements Simulation {
                 Number distance = CommonFormulas.calculateDistance(object, object2);
 
                 if (distance.compareTo(object.getRadius().add(object2.getRadius())) < 0) {
-                    collision = true;
-                    break OUTER_LOOP;
+                    return true;
                 }
             }
         }
-        return collision;
+        return false;
     }
 
     private void init() throws SimulationException {
         Utils.log("Initialize simulation...");
 
-        /** This is need because we don't know the type of secondsPerItaration field before number factory is set */
+        /**
+         * This is need because we don't know the type of secondsPerItaration field before number
+         * factory is set
+         */
         properties.setNanoSecondsPerIteration(properties.getNanoSecondsPerIteration());
 
         switch (properties.getForceCalculatorType()) {
@@ -174,7 +181,7 @@ public class SimulationImpl extends Observable implements Simulation {
                 break;
             case COULOMB_LAW_ELECTRICALLY:
                 throw new NotImplementedException("COULOMB_LAW_ELECTRICALLY is not implemented");
-                // break;
+            // break;
             default:
                 forceCalculator = new NewtonGravity();
                 break;
@@ -238,13 +245,11 @@ public class SimulationImpl extends Observable implements Simulation {
     }
 
     /**
-     * Distribute objects per thread and return array which indices are thread numbers and values are objects for the
-     * given thread.
-     * For example: getObjectsDistributionPerThread(4, 10) must return [3, 3, 2, 2] that means
-     * for thread 0 - 3 objects
-     * for thread 1 - 3 objects
-     * for thread 2 - 2 objects
-     * for thread 3 - 2 objects
+     * Distribute objects per thread and return array which indices are thread numbers and values
+     * are objects for the given thread. For example: getObjectsDistributionPerThread(4, 10) must
+     * return [3, 3, 2, 2] that means for thread 0 - 3 objects for thread 1 - 3 objects for thread 2
+     * - 2 objects for thread 3 - 2 objects
+     *
      * @param numberOfThreads
      * @param numberOfObjects
      * @return

@@ -3,6 +3,9 @@
  */
 package info.trekto.jos.visualization.java2dgraphics;
 
+import info.trekto.jos.Container;
+import info.trekto.jos.model.SimulationObject;
+import info.trekto.jos.visualization.Visualizer;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GraphicsDevice;
@@ -12,11 +15,7 @@ import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
-
 import javax.swing.JFrame;
-
-import info.trekto.jos.model.SimulationObject;
-import info.trekto.jos.visualization.Visualizer;
 
 /**
  * @author Trayan Momkov
@@ -26,7 +25,7 @@ import info.trekto.jos.visualization.Visualizer;
 public class VisualizerImpl implements Visualizer {
 
     private VisualizationPanel visualizationPanel;
-    private final JFrame frame;
+    private JFrame frame = null;
 
     @Override
     public void closeWindow() {
@@ -35,19 +34,23 @@ public class VisualizerImpl implements Visualizer {
     }
 
     public VisualizerImpl() {
-        frame = new VisualizationFrame(this, "Simple Double Buffer");
-        frame.addKeyListener(new VisualizationKeyListener(this));
+        if (Container.getSimulation().getProperties().isRealTimeVisualization()) {
+            frame = new VisualizationFrame(this, "Simple Double Buffer");
+            frame.addKeyListener(new VisualizationKeyListener(this));
 
-        /** Get window dimension */
-        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        int displayWidth = gd.getDisplayMode().getWidth();
-        int displayHeight = gd.getDisplayMode().getHeight();
+            /**
+             * Get window dimension
+             */
+            GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+            int displayWidth = gd.getDisplayMode().getWidth();
+            int displayHeight = gd.getDisplayMode().getHeight();
 
-        frame.setSize(new Dimension(displayWidth, displayHeight));
-        frame.setBackground(Color.WHITE);
-        visualizationPanel = new VisualizationPanel(Color.WHITE);
-        frame.add(visualizationPanel);
-        frame.setVisible(true);
+            frame.setSize(new Dimension(displayWidth, displayHeight));
+            frame.setBackground(Color.WHITE);
+            visualizationPanel = new VisualizationPanel(Color.WHITE);
+            frame.add(visualizationPanel);
+            frame.setVisible(true);
+        }
     }
 
     /* (non-Javadoc)

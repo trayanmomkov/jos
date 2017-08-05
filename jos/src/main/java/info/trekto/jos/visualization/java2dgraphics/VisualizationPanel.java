@@ -50,7 +50,6 @@ public class VisualizationPanel extends JPanel {
         final Dimension dimension = getSize();
         if (image == null) {
             /** Double-buffer: clear the offscreen image. */
-            System.out.println("Double-buffer: clear the offscreen image.");
             image = createImage(dimension.width, dimension.height);
             //            image = new BufferedImage(dimension.width, dimension.height, BufferedImage.TYPE_INT_RGB);
         }
