@@ -34,7 +34,7 @@ public class VisualizerImpl implements Visualizer {
     }
 
     public VisualizerImpl() {
-        if (Container.getSimulation().getProperties().isRealTimeVisualization()) {
+        if (Container.getProperties().isRealTimeVisualization()) {
             frame = new VisualizationFrame(this, "Simple Double Buffer");
             frame.addKeyListener(new VisualizationKeyListener(this));
 

@@ -1,19 +1,20 @@
 /**
- * 
+ *
  */
 package info.trekto.jos.model.impl;
 
+import info.trekto.jos.model.SimulationObject;
+import info.trekto.jos.numbers.New;
+import info.trekto.jos.numbers.Number;
 import java.util.ArrayList;
 import java.util.List;
-
-import info.trekto.jos.model.SimulationObject;
-import info.trekto.jos.numbers.Number;
 
 /**
  * @author Trayan Momkov
  * @date 3 Mar 2016
  */
 public class SimulationObjectImpl implements SimulationObject {
+
     Number x;
     Number y;
     Number z;
@@ -22,19 +23,24 @@ public class SimulationObjectImpl implements SimulationObject {
     TripleInt color;
     Number mass;
 
-    /** Whether the object is static */
+    /**
+     * Whether the object is static
+     */
     boolean motionless = false;
     String label;
 
-    /** Array with points which object passed through. */
+    /**
+     * Array with points which object passed through.
+     */
     List<TripleNumber> trajectory;
 
     public SimulationObjectImpl() {
-        super();
+        this.x = New.ZERO;
+        this.y = New.ZERO;
+        this.z = New.ZERO;
     }
 
     public SimulationObjectImpl(SimulationObject simulationObject) {
-        super();
         this.color = simulationObject.getColor();
         this.label = simulationObject.getLabel();
         this.mass = simulationObject.getMass();
@@ -45,6 +51,7 @@ public class SimulationObjectImpl implements SimulationObject {
                 simulationObject.getTrajectory());
         this.x = simulationObject.getX();
         this.y = simulationObject.getY();
+        this.z = simulationObject.getZ();
     }
 
     @Override
@@ -57,18 +64,15 @@ public class SimulationObjectImpl implements SimulationObject {
         this.x = x;
     }
 
-
     @Override
     public Number getY() {
         return y;
     }
 
-
     @Override
     public void setY(Number y) {
         this.y = y;
     }
-
 
     @Override
     public Number getZ() {
@@ -85,78 +89,65 @@ public class SimulationObjectImpl implements SimulationObject {
         return speed;
     }
 
-
     @Override
     public void setSpeed(TripleNumber speed) {
         this.speed = speed;
     }
-
 
     @Override
     public Number getRadius() {
         return radius;
     }
 
-
     @Override
     public void setRadius(Number radius) {
         this.radius = radius;
     }
-
 
     @Override
     public TripleInt getColor() {
         return color;
     }
 
-
     @Override
     public void setColor(TripleInt color) {
         this.color = color;
     }
-
 
     @Override
     public Number getMass() {
         return mass;
     }
 
-
     @Override
     public void setMass(Number mass) {
         this.mass = mass;
     }
-
 
     @Override
     public boolean isMotionless() {
         return motionless;
     }
 
-
     @Override
     public void setMotionless(boolean motionless) {
         this.motionless = motionless;
     }
-
 
     @Override
     public String getLabel() {
         return label;
     }
 
-
     @Override
     public void setLabel(String label) {
         this.label = label;
     }
 
-
     @Override
     public List<TripleNumber> getTrajectory() {
         return trajectory;
     }
-
 
     @Override
     public void setTrajectory(List<TripleNumber> trajectory) {

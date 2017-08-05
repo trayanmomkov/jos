@@ -18,10 +18,12 @@ import java.util.Observable;
 import org.apache.commons.lang3.NotImplementedException;
 
 /**
+ * This implementation uses fork/join Java framework introduced in Java 7.
+ *
  * @author Trayan Momkov
- * @date 6.03.2016 г.1:53:36
+ * @date 2017-May-18
  */
-public class SimulationImpl extends Observable implements Simulation {
+public class SimulationForkJoinImpl extends Observable implements Simulation {
 
     // private Logger logger = LoggerFactory.getLogger(getClass());
     private SimulationProperties properties = Container.getProperties();
@@ -53,24 +55,9 @@ public class SimulationImpl extends Observable implements Simulation {
          * Distribute simulation objects per threads and start execution
          */
         if (properties.getNumberOfThreads() == 1) {
-            new SimulationRunnable(this, 0, objects.size()).run();
+            Container.getSimulationLogic().calculateNewValues(this, 0, objects.size());
         } else {
-            int fromIndex = 0, toIndex = 0;
-            ArrayList<Integer> distributionPerThread = getObjectsDistributionPerThread(properties.getNumberOfThreads(),
-                    objects.size());
-            for (int i = 0; i < properties.getNumberOfThreads(); i++) {
-                toIndex = fromIndex + distributionPerThread.get(i);
-                threads[i] = new Thread(new SimulationRunnable(this, fromIndex, toIndex));
-                threads[i].start();
-                fromIndex = toIndex;
-            }
-
-            /**
-             * Wait for threads to finish
-             */
-            for (Thread thread : threads) {
-                thread.join();
-            }
+            new SimulationRecursiveAction(0, objects.size()).compute();
         }
 
         /**
@@ -129,9 +116,9 @@ public class SimulationImpl extends Observable implements Simulation {
                 doIteration();
 
                 // /** On every 100 iterations flush to disk */
-//                 if (i % 100 == 0) {
-//                     properties.getFormatVersion1Writer().flushToDisk();
-//                 }
+                // if (i % 100 == 0) {
+                // properties.getFormatVersion1Writer().flushToDisk();
+                // }
             } catch (InterruptedException e) {
                 // logger.error("One of the threads interrupted in cycle " + i, e);
                 e.printStackTrace();
@@ -212,37 +199,6 @@ public class SimulationImpl extends Observable implements Simulation {
     @Override
     public List<SimulationObject> getAuxiliaryObjects() {
         return auxiliaryObjects;
-    }
-
-    /**
-     * Distribute objects per thread and return array which indices are thread numbers and values
-     * are objects for the given thread. For example: getObjectsDistributionPerThread(4, 10) must
-     * return [3, 3, 2, 2] that means for thread 0 - 3 objects for thread 1 - 3 objects for thread 2
-     * - 2 objects for thread 3 - 2 objects
-     *
-     * @param numberOfThreads
-     * @param numberOfObjects
-     * @return
-     */
-    public ArrayList<Integer> getObjectsDistributionPerThread(int numberOfThreads, int numberOfObjects) {
-        if (numberOfobjectsDistributionPerThread.get(numberOfObjects) == null) {
-            numberOfobjectsDistributionPerThread.put(numberOfObjects, new ArrayList<Integer>());
-            for (int i = 0; i < numberOfThreads; i++) {
-                numberOfobjectsDistributionPerThread.get(numberOfObjects).add(0);
-            }
-            int currentThread = 0;
-            for (int i = 0; i < numberOfObjects; i++) {
-                numberOfobjectsDistributionPerThread.get(numberOfObjects).set(
-                        currentThread,
-                        numberOfobjectsDistributionPerThread.get(numberOfObjects).get(currentThread) + 1);
-                if (currentThread == numberOfThreads - 1) {
-                    currentThread = 0;
-                } else {
-                    currentThread++;
-                }
-            }
-        }
-        return numberOfobjectsDistributionPerThread.get(numberOfObjects);
     }
 
     @Override

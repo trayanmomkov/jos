@@ -1,6 +1,5 @@
 package info.trekto.jos.core;
 
-import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.exceptions.SimulationException;
 import info.trekto.jos.formulas.ForceCalculator;
 import info.trekto.jos.model.SimulationObject;
@@ -12,10 +11,6 @@ import java.util.Observer;
  * @date 6.03.2016 г.1:52:10
  */
 public interface Simulation {
-
-    void setProperties(SimulationProperties simulationProperties);
-
-    SimulationProperties getProperties();
 
     /**
      *

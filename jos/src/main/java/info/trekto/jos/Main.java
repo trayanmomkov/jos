@@ -3,7 +3,7 @@
  */
 package info.trekto.jos;
 
-import info.trekto.jos.core.impl.SimulationImpl;
+import info.trekto.jos.core.impl.SimulationForkJoinImpl;
 import info.trekto.jos.core.impl.SimulationLogicImpl;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.exceptions.SimulationException;
@@ -22,18 +22,18 @@ public class Main {
      * @throws SimulationException
      */
     public static void main(String[] args) throws SimulationException {
-        Container.setSimulation(new SimulationImpl());
+        Container.setProperties(new SimulationProperties());
+//        Container.setSimulation(new SimulationImpl());
+        Container.setSimulation(new SimulationForkJoinImpl());
 
-        SimulationProperties simulationProperties = new SimulationProperties();
-        simulationProperties.setNumberType(NumberType.DOUBLE);
+        Container.getProperties().setNumberType(NumberType.DOUBLE);
         // simulationProperties.setNumberType(NumberType.FLOAT);
         //        simulationProperties.setNumberType(NumberType.BIG_DECIMAL);
-        simulationProperties.setFormatVersion1Writer(
+        Container.getProperties().setFormatVersion1Writer(
                 new FormatVersion1ReaderWriter(args[0]));
-        simulationProperties.getFormatVersion1Writer().readProperties(simulationProperties);
+        Container.getProperties().getFormatVersion1Writer().readProperties(Container.getProperties());
 
-        simulationProperties.setBenchmarkMode(true);
-        Container.getSimulation().setProperties(simulationProperties);
+        Container.getProperties().setBenchmarkMode(true);
         Visualizer visualizer = new VisualizerImpl();
         Container.getSimulation().addObserver(visualizer);
         Container.setSimulationLogic(new SimulationLogicImpl());

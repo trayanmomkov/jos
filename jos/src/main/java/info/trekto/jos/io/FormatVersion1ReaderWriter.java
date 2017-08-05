@@ -3,16 +3,6 @@
  */
 package info.trekto.jos.io;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import info.trekto.jos.Container;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.formulas.ForceCalculator.ForceCalculatorType;
@@ -23,6 +13,15 @@ import info.trekto.jos.model.impl.TripleInt;
 import info.trekto.jos.model.impl.TripleNumber;
 import info.trekto.jos.numbers.New;
 import info.trekto.jos.util.Utils;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Trayan Momkov
@@ -65,7 +64,6 @@ public class FormatVersion1ReaderWriter {
     // logger.error("Cannot open file " + inputFile, e);
     // }
     // }
-
     // public void flushToDisk() {
     // try {
     // writer.flush();
@@ -73,12 +71,11 @@ public class FormatVersion1ReaderWriter {
     // logger.error("Error during flush to disk", e);
     // }
     // }
-
     public void appendObjectsToFile(List<SimulationObject> simulationObjects) {
         try {
             // fileToSave<<"============================ " << N << " | " << simulationProperties.cycleCounter <<
             // " (objects | cycle) ============================\n\n";
-            writer.write("============================ " + Container.getSimulation().getProperties().getN() + " | "
+            writer.write("============================ " + Container.getProperties().getN() + " | "
                     + Container.getSimulation().getCurrentIterationNumber()
                     + " (objects | cycle) ============================\n\n");
 
@@ -93,19 +90,16 @@ public class FormatVersion1ReaderWriter {
 
     public void appendObjectToFile(SimulationObject simulationObject) throws IOException {
         /**
-         * f<<"x = \t\t"<< setprecision(VISUALISATION_PRECISION) << x << endl;
-         * f<<"y = \t\t"<< setprecision(VISUALISATION_PRECISION) << y << endl;
-         * f<<"speed x = \t"<< setprecision(VISUALISATION_PRECISION) << speed.x << endl;
-         * f<<"speed y = \t"<< setprecision(VISUALISATION_PRECISION) << speed.y << endl;
-         * f<<"mag = \t\t"<< setprecision(VISUALISATION_PRECISION) << getSpeedMagnitude() << endl;
-         * f<<"mass = \t\t"<< setprecision(VISUALISATION_PRECISION) << mass << endl;
-         * f<<"radius = \t"<< setprecision(VISUALISATION_PRECISION) << radius << endl;
-         * f<<"color R = \t"<<(int)color.r<<endl;
-         * f<<"color G = \t"<<(int)color.g<<endl;
-         * f<<"color B = \t"<<(int)color.b<<endl;
-         * f<<"is static = \t"<<statical<<endl;
-         * f<<"label= \t\t'"<<label<<"'"<<endl;
-         * f<<endl;
+         * f<<"x = \t\t"<< setprecision(VISUALISATION_PRECISION) << x << endl; f<<"y = \t\t"<<
+         * setprecision(VISUALISATION_PRECISION) << y << endl; f<<"speed x = \t"<<
+         * setprecision(VISUALISATION_PRECISION) << speed.x << endl; f<<"speed y = \t"<<
+         * setprecision(VISUALISATION_PRECISION) << speed.y << endl; f<<"mag = \t\t"<<
+         * setprecision(VISUALISATION_PRECISION) << getSpeedMagnitude() << endl; f<<"mass = \t\t"<<
+         * setprecision(VISUALISATION_PRECISION) << mass << endl; f<<"radius = \t"<<
+         * setprecision(VISUALISATION_PRECISION) << radius << endl; f<<"color R =
+         * \t"<<(int)color.r<<endl; f<<"color G = \t"<<(int)color.g<<endl; f<<"color B =
+         * \t"<<(int)color.b<<endl; f<<"is static = \t"<<statical<<endl; f<<"label=
+         * \t\t'"<<label<<"'"<<endl; f<<endl;
          */
 
         writer.write("x = \t\t" + simulationObject.getX() + "\n");
@@ -301,7 +295,6 @@ public class FormatVersion1ReaderWriter {
         // color B = 128
         // is static = 0
         // label= '1'
-
         String spaceAndNumber = "[\\s\\t]+([\\+-eE\\d\\.]+)";
         try {
             simulationObject.setX(New.num(match("x =" + spaceAndNumber, reader.readLine())));
@@ -312,13 +305,14 @@ public class FormatVersion1ReaderWriter {
                     New.num(match("speed y =" + spaceAndNumber, reader.readLine())),
                     New.ZERO));
             reader.readLine();
-            /** We don't need megnitude */
+            /**
+             * We don't need megnitude
+             */
 
             // If we want to calculate mass for solid sphere from its radius
             // Volume of sphere = 4/3 * pi * r^3, where r is radius
             // Consider density is 1
             // For 2D we decrease radius for better looking, but not correct looking
-
             // ten = 10;
             // temp_radius = radius / ten;
             // if (mass == -1)
@@ -327,7 +321,7 @@ public class FormatVersion1ReaderWriter {
             if ("-1".equals(mass)) {
                 simulationObject
                         .setMass(New.RATIO_FOUR_THREE.multiply(ScientificConstants.PI).multiply(
-                                simulationObject.getRadius().pow(3)));
+                                        simulationObject.getRadius().pow(3)));
             } else {
                 simulationObject
                         .setMass(New.num(mass));
@@ -335,14 +329,12 @@ public class FormatVersion1ReaderWriter {
             simulationObject.setRadius(New.num(match("radius =" + spaceAndNumber, reader.readLine())));
             simulationObject
                     .setColor(new TripleInt(
-                            Integer.valueOf(match("color R =" + spaceAndNumber, reader.readLine())),
-                            Integer.valueOf(match("color G =" + spaceAndNumber, reader.readLine())),
-                            Integer.valueOf(match("color B =" + spaceAndNumber, reader.readLine()))));
+                                    Integer.valueOf(match("color R =" + spaceAndNumber, reader.readLine())),
+                                    Integer.valueOf(match("color G =" + spaceAndNumber, reader.readLine())),
+                                    Integer.valueOf(match("color B =" + spaceAndNumber, reader.readLine()))));
             simulationObject
                     .setMotionless(Boolean.valueOf(match("is static =" + spaceAndNumber, reader.readLine())));
             simulationObject.setLabel(match("label=[\\s\\t]+(.+)", reader.readLine()));
-
-
 
             reader.readLine();
         } catch (IOException e) {
