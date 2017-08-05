@@ -12,7 +12,6 @@ import info.trekto.jos.numbers.NumberFactory.NumberType;
 import info.trekto.jos.visualization.Visualizer;
 import info.trekto.jos.visualization.java2dgraphics.VisualizerImpl;
 
-
 /**
  * @author Trayan Momkov
  */
@@ -25,8 +24,6 @@ public class Main {
     public static void main(String[] args) throws SimulationException {
         Container.setSimulation(new SimulationImpl());
 
-        Visualizer visualizer = new VisualizerImpl();
-
         SimulationProperties simulationProperties = new SimulationProperties();
         simulationProperties.setNumberType(NumberType.DOUBLE);
         // simulationProperties.setNumberType(NumberType.FLOAT);
@@ -35,7 +32,9 @@ public class Main {
                 new FormatVersion1ReaderWriter(args[0]));
         simulationProperties.getFormatVersion1Writer().readProperties(simulationProperties);
 
+        simulationProperties.setBenchmarkMode(true);
         Container.getSimulation().setProperties(simulationProperties);
+        Visualizer visualizer = new VisualizerImpl();
         Container.getSimulation().addObserver(visualizer);
         Container.setSimulationLogic(new SimulationLogicImpl());
         Container.getSimulation().startSimulation();
