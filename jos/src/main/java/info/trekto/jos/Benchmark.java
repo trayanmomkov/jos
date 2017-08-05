@@ -33,7 +33,9 @@ public class Benchmark {
             inputFileName = args[0];
         }
 
-        /** Double */
+        /**
+         * Double
+         */
         benchmark.runBenchmark(numberOfObjects, NUMBER_OF_ITERATIONS, 1, NumberType.DOUBLE, 0, inputFileName);
         if (Utils.CORES > 2) {
             benchmark.runBenchmark(numberOfObjects, NUMBER_OF_ITERATIONS, Utils.CORES / 2, NumberType.DOUBLE, 0,
@@ -43,7 +45,9 @@ public class Benchmark {
         benchmark.runBenchmark(numberOfObjects, NUMBER_OF_ITERATIONS, Utils.CORES * 2, NumberType.DOUBLE, 0,
                 inputFileName);
 
-        /** BigDecimal faster in JRE 1.8 */
+        /**
+         * BigDecimal faster in JRE 1.8
+         */
         benchmark.runBenchmark(numberOfObjects, NUMBER_OF_ITERATIONS, 1, NumberType.BIG_DECIMAL, 0, inputFileName);
         if (Utils.CORES > 2) {
             benchmark.runBenchmark(numberOfObjects, NUMBER_OF_ITERATIONS, Utils.CORES / 2, NumberType.BIG_DECIMAL, 0,
@@ -56,8 +60,8 @@ public class Benchmark {
     }
 
     private void runBenchmark(int numberOfObjects, int numberOfIterations, int numberOfThreads,
-                              NumberFactory.NumberType numberType, int writerBufferSize, String inputFileName)
-                                      throws SimulationException {
+            NumberFactory.NumberType numberType, int writerBufferSize, String inputFileName)
+            throws SimulationException {
         // setNumberFactory(numberType);
 
         Container.setSimulation(new SimulationImpl());
@@ -76,7 +80,7 @@ public class Benchmark {
         simulationProperties.setSaveToFile(false);
         simulationProperties.setForceCalculatorType(ForceCalculatorType.NEWTON_LAW_OF_GRAVITATION);
 
-        Container.getSimulation().setProperties(simulationProperties);
+        Container.setProperties(simulationProperties);
         Container.setSimulationLogic(new SimulationLogicImpl());
 
         Utils.printConfiguration(simulationProperties);
