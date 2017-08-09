@@ -260,14 +260,7 @@ public class FormatVersion1ReaderWriter {
                     reader.readLine()));
 
             String outputFilePath;
-            Matcher matcher = Pattern.compile("simulations(/.+)").matcher(properties.getOutputFile());
-            if (matcher.matches()) {
-                outputFilePath = inputFile.getParent() + matcher.group(1);
-            } else if (properties.getOutputFile().startsWith("/")) {
-                outputFilePath = properties.getOutputFile();
-            } else {
-                outputFilePath = inputFile.getParent() + properties.getOutputFile();
-            }
+            outputFilePath = inputFile.getParent() + "/" + properties.getOutputFile();
 
             if (properties.getWriterBufferSize() == 0) {
                 writer = Files.newBufferedWriter(new File(outputFilePath).toPath(), charset);

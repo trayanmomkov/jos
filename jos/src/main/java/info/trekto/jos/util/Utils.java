@@ -24,6 +24,9 @@ public class Utils {
     }
 
     public static void printConfiguration(SimulationProperties properties) {
+        if (properties.isBenchmarkMode() || !properties.isSaveToFile()) {
+            log("███ NOT SAVING TO FILE! ███");
+        }
         log("JRE version: " + System.getProperty("java.specification.version"));
         log("JVM  implementation name: " + System.getProperty("java.vm.name"));
         // log("JVM implementation version: " + System.getProperty("java.vm.version"));
