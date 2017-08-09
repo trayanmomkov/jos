@@ -17,7 +17,6 @@ import info.trekto.jos.util.Utils;
 /**
  * @author Trayan Momkov
  * @date 31 Mar 2016
- *
  */
 public class Benchmark {
 
@@ -82,7 +81,7 @@ public class Benchmark {
         simulationProperties.setSaveToFile(false);
         simulationProperties.setForceCalculatorType(ForceCalculatorType.NEWTON_LAW_OF_GRAVITATION);
 
-        Container.getSimulation().setProperties(simulationProperties);
+        Container.setProperties(simulationProperties);
         Container.setSimulationLogic(new SimulationLogicImpl());
 
         printConfiguration(simulationProperties, numberType);

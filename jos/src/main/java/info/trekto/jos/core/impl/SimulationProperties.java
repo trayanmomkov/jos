@@ -1,8 +1,6 @@
 package info.trekto.jos.core.impl;
 
-import java.math.MathContext;
-import java.util.ArrayList;
-
+import info.trekto.jos.exceptions.SimulationRuntimeException;
 import info.trekto.jos.formulas.ForceCalculator.ForceCalculatorType;
 import info.trekto.jos.io.FormatVersion1ReaderWriter;
 import info.trekto.jos.numbers.New;
@@ -13,6 +11,9 @@ import info.trekto.jos.numbers.impl.BigDecimalNumberFactory;
 import info.trekto.jos.numbers.impl.DoubleNumberFactory;
 import info.trekto.jos.numbers.impl.FloatNumberFactory;
 import info.trekto.jos.util.Utils;
+
+import java.math.MathContext;
+import java.util.ArrayList;
 
 /**
  * @author Trayan Momkov
@@ -38,7 +39,7 @@ public class SimulationProperties {
 
     private NumberType numberType;
     private ForceCalculatorType forceCalculatorType;
-    private int precision;
+    private Integer precision;
 
     private int writerBufferSize = 0;
 
@@ -52,6 +53,7 @@ public class SimulationProperties {
 
     /**
      * Call {@link #getNumberOfObjects}. Returns number of objects.
+     *
      * @return
      */
     public int getN() {
@@ -60,13 +62,16 @@ public class SimulationProperties {
 
     /**
      * Returns number of objects.
+     *
      * @return
      */
     public int getNumberOfObjects() {
         return numberOfObjects;
     }
 
-    /** Java {@link ArrayList} is limited to Integer.MAX_VALUE */
+    /**
+     * Java {@link ArrayList} is limited to Integer.MAX_VALUE
+     */
     public void setNumberOfObjects(int numberOfObjects) {
         this.numberOfObjects = numberOfObjects;
     }
@@ -81,6 +86,7 @@ public class SimulationProperties {
 
     /**
      * Returns fireWrite for saving objects in a file.
+     *
      * @return
      */
     public FormatVersion1ReaderWriter getFormatVersion1Writer() {
@@ -178,25 +184,11 @@ public class SimulationProperties {
 
     /**
      * Number of digits to be used for an operation; results are rounded to this precision
+     *
      * @param precision
      */
     public void setPrecision(int precision) {
         this.precision = precision;
-
-        switch (numberType) {
-            case FLOAT:
-                NumberFactoryProxy.setFactory(new FloatNumberFactory());
-                break;
-            case DOUBLE:
-                NumberFactoryProxy.setFactory(new DoubleNumberFactory());
-                break;
-            case BIG_DECIMAL:
-                NumberFactoryProxy.setFactory(new BigDecimalNumberFactory(new MathContext(precision)));
-                break;
-            default:
-                NumberFactoryProxy.setFactory(new DoubleNumberFactory());
-                break;
-        }
     }
 
     /**
@@ -225,5 +217,25 @@ public class SimulationProperties {
      */
     public void setPlayingSpeed(int playingSpeed) {
         this.playingSpeed = playingSpeed;
+    }
+
+    public void createNumberFactory() {
+        switch (numberType) {
+            case FLOAT:
+                NumberFactoryProxy.setFactory(new FloatNumberFactory());
+                break;
+            case DOUBLE:
+                NumberFactoryProxy.setFactory(new DoubleNumberFactory());
+                break;
+            case BIG_DECIMAL:
+                if (precision == null) {
+                    throw new SimulationRuntimeException("Precision is not set!");
+                }
+                NumberFactoryProxy.setFactory(new BigDecimalNumberFactory(new MathContext(precision)));
+                break;
+            default:
+                NumberFactoryProxy.setFactory(new DoubleNumberFactory());
+                break;
+        }
     }
 }
