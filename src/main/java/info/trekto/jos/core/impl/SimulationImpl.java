@@ -21,6 +21,7 @@ import org.apache.commons.lang3.NotImplementedException;
  * @author Trayan Momkov
  * @date 6.03.2016 г.1:53:36
  */
+ @Deprecated(forRemoval = true)
 public class SimulationImpl extends Observable implements Simulation {
 
     // private Logger logger = LoggerFactory.getLogger(getClass());
@@ -40,7 +41,7 @@ public class SimulationImpl extends Observable implements Simulation {
      * iteration. We create objects at the beginning of the simulation and after that only remove
      * objects when collision appear. Good candidate for implementation of the lists is LinkedList
      * because during simulation we will not add any new objects to the lists, nor we will access
-     * themrandomly (via indices). We only remove from them, get sublists and iterate sequentially.
+     * them randomly (via indices). We only remove from them, get sublists and iterate sequentially.
      * But getting sublist is done by indices in every iteration. On the other hand removing objects
      * happens relatively rarely so ArrayList is faster than LinkedList.
      */

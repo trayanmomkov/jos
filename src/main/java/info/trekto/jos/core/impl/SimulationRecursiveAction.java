@@ -28,8 +28,9 @@ public class SimulationRecursiveAction extends RecursiveAction {
             Container.getSimulationLogic().calculateNewValues(Container.getSimulation(), fromIndex, toIndex);
         } else {
             List<RecursiveAction> subtasks = new ArrayList<>();
-            subtasks.add(new SimulationRecursiveAction(fromIndex, fromIndex + ((toIndex - fromIndex) / 2)));
-            subtasks.add(new SimulationRecursiveAction(fromIndex + ((toIndex - fromIndex) / 2), toIndex));
+            int middle = fromIndex + ((toIndex - fromIndex) / 2);
+            subtasks.add(new SimulationRecursiveAction(fromIndex, middle));
+            subtasks.add(new SimulationRecursiveAction(middle, toIndex));
             ForkJoinTask.invokeAll(subtasks);
         }
     }

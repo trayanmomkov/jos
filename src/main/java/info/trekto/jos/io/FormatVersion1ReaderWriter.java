@@ -256,11 +256,14 @@ public class FormatVersion1ReaderWriter {
                     reader.readLine())));
 
             // output file name: simulations/PSC_5.out
-            properties.setOutputFile(match("output file name" + keyValueSeparator + "(.+)",
-                    reader.readLine()));
+            String outputFilename = match("output file name" + keyValueSeparator + "([^\\s]+).*", reader.readLine());
+            if (outputFilename.equals("default")) {
+                outputFilename = inputFile.toPath() + ".out";
+            }
+            properties.setOutputFile(outputFilename);
 
             String outputFilePath;
-            outputFilePath = inputFile.getParent() + "/" + properties.getOutputFile();
+            outputFilePath = properties.getOutputFile();
 
             if (properties.getWriterBufferSize() == 0) {
                 writer = Files.newBufferedWriter(new File(outputFilePath).toPath(), charset);
