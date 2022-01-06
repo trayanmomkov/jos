@@ -1,0 +1,10 @@
+/target
+/jos/target
+*.prefs
+org.eclipse.jdt.core.prefs
+/jos/.idea
+compiler.xml
+/test-output
+/jos/test-output
+*.idea/*
+*.iml

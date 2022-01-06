@@ -1,0 +1,191 @@
+numbers type:		DOUBLE		Possible values: FLOAT, DOUBLE, BIG_DECIMAL
+precision:		32		Arithmetic precision in digits after point. 0 = infinite precision; -1 = native floating point type double
+window size:		1280 1024	in pixels
+
+bounce from screen:	0		(1 = true, 0 = false)	Whether objects bounce from the window borders
+bounce from each other:	0		(1 = true, 0 = false)	Whether objects bounce from each other
+gravity:		1		(1 = true, 0 = false)	Whether gravitation law is in force
+absorbtion:		1		(1 = true, 0 = false)	Whether one object can swallow (absorb) another
+restitution:		1		[0, 1] perfectly inelastic = 0 to 1 = perfectly elastic Coeficient of objects elasticity.
+
+number of cycles:	200000		-1 = infinite loop
+seconds per cycle:	1
+simulation time:	-1		(Depend from numberOfCycles and secondsPerCycle and vice versa, -1 mean no value)
+real time:		0		(1 = true, 0 = false)	Show simulation in real time
+playing:		1 0		(1 = true, 0 = false)	Whether to read data form file and play it; Second digit toggles recording mode
+playing speed:		60		in real time mode indicates 1 per how many cycle to be saved in file; in playing mode indicates how many cycles to be skipped in each visualisation step
+sleep mseconds:		0		miliseconds, how long to sleep for every amount of cycles to prevent system overheat for long simulations (0 = no sleep)
+cycles before sleep:	0		number of cycles before sleep to prevent system overheat for long simulations
+
+3D:			0		(1 = 3D, 0 = 2D)	Whether visualization to be 3D or 2D.
+scene translation:	0 0 2.7e-6		(x, y, z)
+scene rotation:		0 0 0 0		1 0 0 292		x, y, z, angle		axis of rotation, vector and angle of rotation in degrees
+perspective:		45 0 0.1 100	fovy - field of view angle, in degrees, in the y direction; aspect - aspect ratio, 0 = default; zNear - Distance from the viewer to the near clipping plane (>0); zFar - Distance from the viewer to the far clipping plane (>0)
+interaction plane:	2		(1 = xz; 2 = xy, 3 = yz)
+
+trajectory lenght:	0		Number of point remembered for trajectory. 0 = no trajectory is drawn; -1 = no limit, keep all points
+trajectory width:	1		Width of lines linking trajectory points
+showing labels:		0		Whether to show object labels.
+
+saving data:		0		(1 = true, 0 = false)
+output file name:	simulations/PSC_5.out
+number of objects:	12
+
+Objects:
+
+x = 		40
+y = 		40
+speed x = 	0.001
+speed y = 	0
+mag = 		1
+mass = 		1e5
+radius = 	10
+color R = 	0
+color G = 	0
+color B = 	255
+is static = 	0
+label= 		'1'
+
+x = 		140
+y = 		140
+speed x = 	-0.001
+speed y = 	0
+mag = 		1
+mass = 		1e5
+radius = 	10
+color R = 	0
+color G = 	0
+color B = 	255
+is static = 	0
+label= 		'2'
+
+x = 		240
+y = 		240
+speed x = 	0.001
+speed y = 	0.02
+mag = 		1
+mass = 		1e9
+radius = 	10
+color R = 	0
+color G = 	0
+color B = 	255
+is static = 	0
+label= 		'3'
+
+x = 		340
+y = 		340
+speed x = 	0.011
+speed y = 	0
+mag = 		1
+mass = 		2e5
+radius = 	11
+color R = 	0
+color G = 	0
+color B = 	255
+is static = 	0
+label= 		'4'
+
+x = 		440
+y = 		440
+speed x = 	-0.001
+speed y = 	0
+mag = 		1
+mass = 		1e5
+radius = 	10
+color R = 	0
+color G = 	0
+color B = 	255
+is static = 	0
+label= 		'5'
+
+x = 		540
+y = 		540
+speed x = 	0.011
+speed y = 	0.03
+mag = 		1
+mass = 		1e9
+radius = 	6
+color R = 	0
+color G = 	0
+color B = 	255
+is static = 	0
+label= 		'6'
+
+x = 		640
+y = 		640
+speed x = 	0.001
+speed y = 	0
+mag = 		1
+mass = 		1e5
+radius = 	10
+color R = 	0
+color G = 	0
+color B = 	255
+is static = 	0
+label= 		'7'
+
+x = 		740
+y = 		740
+speed x = 	-0.001
+speed y = 	0
+mag = 		1
+mass = 		1e5
+radius = 	10
+color R = 	0
+color G = 	0
+color B = 	255
+is static = 	0
+label= 		'8'
+
+x = 		840
+y = 		840
+speed x = 	0.101
+speed y = 	0.32
+mag = 		1
+mass = 		5e8
+radius = 	20
+color R = 	0
+color G = 	0
+color B = 	255
+is static = 	0
+label= 		'9'
+
+x = 		940
+y = 		940
+speed x = 	0.201
+speed y = 	0.22
+mag = 		1
+mass = 		1e9
+radius = 	12
+color R = 	0
+color G = 	0
+color B = 	255
+is static = 	0
+label= 		'10'
+
+x = 		1111
+y = 		1111
+speed x = 	0.101
+speed y = 	0.32
+mag = 		1
+mass = 		5e8
+radius = 	20
+color R = 	0
+color G = 	0
+color B = 	255
+is static = 	0
+label= 		'11'
+
+x = 		1234
+y = 		1234
+speed x = 	0.201
+speed y = 	0.22
+mag = 		1
+mass = 		1e9
+radius = 	10
+color R = 	0
+color G = 	0
+color B = 	255
+is static = 	0
+label= 		'12'
+
