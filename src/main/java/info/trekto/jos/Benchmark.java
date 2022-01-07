@@ -1,17 +1,18 @@
-/**
- *
- */
 package info.trekto.jos;
 
-import info.trekto.jos.core.impl.SimulationImpl;
+import info.trekto.jos.core.Simulation;
+import info.trekto.jos.core.impl.SimulationForkJoinImpl;
 import info.trekto.jos.core.impl.SimulationLogicImpl;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.exceptions.SimulationException;
 import info.trekto.jos.formulas.ForceCalculator.ForceCalculatorType;
 import info.trekto.jos.io.FormatVersion1ReaderWriter;
 import info.trekto.jos.numbers.NumberFactory;
-import info.trekto.jos.numbers.NumberFactory.NumberType;
 import info.trekto.jos.util.Utils;
+
+import static info.trekto.jos.numbers.NumberFactory.NumberType.BIG_DECIMAL;
+import static info.trekto.jos.numbers.NumberFactory.NumberType.DOUBLE;
+import static info.trekto.jos.util.Utils.CORES;
 
 /**
  * @author Trayan Momkov
@@ -19,61 +20,47 @@ import info.trekto.jos.util.Utils;
  */
 public class Benchmark {
 
-    private static final int NUMBER_OF_ITERATIONS = 10;
-
     public static void main(String[] args) throws SimulationException {
         Benchmark benchmark = new Benchmark();
         // int numberOfObjects = 6400;
         // int numberOfObjects = 12800;
-        int numberOfObjects = 400;
+//        int numberOfObjects = 400;
         // String inputFileName = "/PSC_5_6400_objects_RUN";
         // String inputFileName = "/PSC_5_12800_objects_RUN";
-        String inputFileName = "/PSC_5_400_objects_RUN";
-        if (args.length > 0 && args[0] != null) {
-            inputFileName = args[0];
+        String inputFileName = "/PSC_5_10_objects_Java2D_RUN";
+        
+        if (args.length == 0) {
+            System.err.println("Missing input file. Please pass it as program argument.");
+            return;
         }
+        inputFileName = args[0];
 
-        /**
-         * Double
-         */
-        benchmark.runBenchmark(numberOfObjects, NUMBER_OF_ITERATIONS, 1, NumberType.DOUBLE, 0, inputFileName);
-        if (Utils.CORES > 2) {
-            benchmark.runBenchmark(numberOfObjects, NUMBER_OF_ITERATIONS, Utils.CORES / 2, NumberType.DOUBLE, 0,
-                    inputFileName);
+        /* Double */
+        benchmark.runBenchmark(new SimulationForkJoinImpl(), 1, DOUBLE, 0, inputFileName);
+        benchmark.runBenchmark(new SimulationForkJoinImpl(), 1, DOUBLE, 0, inputFileName);
+        if (CORES > 2) {
+            benchmark.runBenchmark(new SimulationForkJoinImpl(), CORES / 2, DOUBLE, 0, inputFileName);
         }
-        benchmark.runBenchmark(numberOfObjects, NUMBER_OF_ITERATIONS, Utils.CORES, NumberType.DOUBLE, 0, inputFileName);
-        benchmark.runBenchmark(numberOfObjects, NUMBER_OF_ITERATIONS, Utils.CORES * 2, NumberType.DOUBLE, 0,
-                inputFileName);
+        benchmark.runBenchmark(new SimulationForkJoinImpl(), CORES, DOUBLE, 0, inputFileName);
+        benchmark.runBenchmark(new SimulationForkJoinImpl(), CORES * 2, DOUBLE, 0, inputFileName);
 
-        /**
-         * BigDecimal faster in JRE 1.8
-         */
-        benchmark.runBenchmark(numberOfObjects, NUMBER_OF_ITERATIONS, 1, NumberType.BIG_DECIMAL, 0, inputFileName);
-        if (Utils.CORES > 2) {
-            benchmark.runBenchmark(numberOfObjects, NUMBER_OF_ITERATIONS, Utils.CORES / 2, NumberType.BIG_DECIMAL, 0,
-                    inputFileName);
+        /* BigDecimal faster in JRE 1.8 */
+        benchmark.runBenchmark(new SimulationForkJoinImpl(), 1, BIG_DECIMAL, 0, inputFileName);
+        if (CORES > 2) {
+            benchmark.runBenchmark(new SimulationForkJoinImpl(), CORES / 2, BIG_DECIMAL, 0, inputFileName);
         }
-        benchmark.runBenchmark(numberOfObjects, NUMBER_OF_ITERATIONS, Utils.CORES, NumberType.BIG_DECIMAL, 0,
-                inputFileName);
-        benchmark.runBenchmark(numberOfObjects, NUMBER_OF_ITERATIONS, Utils.CORES * 2, NumberType.BIG_DECIMAL, 0,
-                inputFileName);
+        benchmark.runBenchmark(new SimulationForkJoinImpl(), CORES, BIG_DECIMAL, 0, inputFileName);
+        benchmark.runBenchmark(new SimulationForkJoinImpl(), CORES * 2, BIG_DECIMAL, 0, inputFileName);
+        benchmark.runBenchmark(new SimulationForkJoinImpl(), 1, DOUBLE, 0, inputFileName);
     }
 
-    private void runBenchmark(int numberOfObjects, int numberOfIterations, int numberOfThreads,
-            NumberFactory.NumberType numberType, int writerBufferSize, String inputFileName)
-            throws SimulationException {
-        // setNumberFactory(numberType);
+    private void runBenchmark(Simulation simulation, int numberOfThreads, NumberFactory.NumberType numberType, int writerBufferSize,
+                              String inputFileName) throws SimulationException {
+        Container.setSimulation(simulation);
 
-        Container.setSimulation(new SimulationImpl());
-
-        SimulationProperties simulationProperties = new SimulationProperties();
+        SimulationProperties simulationProperties = FormatVersion1ReaderWriter.readProperties(inputFileName);
         simulationProperties.setNumberType(numberType);
-        simulationProperties.setFormatVersion1Writer(new FormatVersion1ReaderWriter(getClass().getResource(
-                inputFileName).getPath()));
-        simulationProperties.getFormatVersion1Writer().readProperties(simulationProperties);
 
-        simulationProperties.setNumberOfObjects(numberOfObjects);
-        simulationProperties.setNumberOfIterations(numberOfIterations);
         simulationProperties.setNumberOfThreads(numberOfThreads);
         simulationProperties.setWriterBufferSize(writerBufferSize);
         simulationProperties.setBenchmarkMode(true);
@@ -82,16 +69,16 @@ public class Benchmark {
 
         Container.setProperties(simulationProperties);
         Container.setSimulationLogic(new SimulationLogicImpl());
-
+        
         Utils.printConfiguration(simulationProperties);
+        
         long durationInNanoseconds = Container.getSimulation().startSimulation();
 
         System.out.print("Total time: " + "\t" + (durationInNanoseconds / 1000000) + " ms");
-        if (simulationProperties.getNumberOfThreads() == Utils.CORES) {
+        if (simulationProperties.getNumberOfThreads() == CORES) {
             System.out.print(" <<<<<<");
         }
         Utils.log();
-
     }
 
     // private void setFactory(NumberFactory numberFactory) {

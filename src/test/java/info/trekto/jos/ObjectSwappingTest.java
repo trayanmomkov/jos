@@ -32,10 +32,9 @@ public class ObjectSwappingTest {
         Container.setSimulation(new SimulationImpl());
         Container.setSimulationLogic(new SimulationLogicImpl());
 
-        SimulationProperties simulationProperties = new SimulationProperties();
+        SimulationProperties simulationProperties = FormatVersion1ReaderWriter.readProperties("simulation");
         simulationProperties.setNumberOfObjects(10);
         simulationProperties.setNumberOfIterations(10);
-        simulationProperties.setFormatVersion1Writer(new FormatVersion1ReaderWriter("simulation"));
         Container.setProperties(simulationProperties);
 
         Class clazz = Container.getSimulation().getClass();

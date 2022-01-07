@@ -8,11 +8,11 @@ gravity:		1		(1 = true, 0 = false)	Whether gravitation law is in force
 absorbtion:		1		(1 = true, 0 = false)	Whether one object can swallow (absorb) another
 restitution:		1		[0, 1] perfectly inelastic = 0 to 1 = perfectly elastic Coeficient of objects elasticity.
 
-number of cycles:	10000		-1 = infinite loop
+number of cycles:	200000		-1 = infinite loop
 seconds per cycle:	1
 simulation time:	-1		(Depend from numberOfCycles and secondsPerCycle and vice versa, -1 mean no value)
 real time:		0		(1 = true, 0 = false)	Show simulation in real time
-playing:		1 0		(1 = true, 0 = false)	Whether to read data form file and play it; Second digit toggles recording mode
+playing:		0 0		(1 = true, 0 = false)	Whether to read data form file and play it; Second digit toggles recording mode
 playing speed:		60		in real time mode indicates 1 per how many cycle to be saved in file; in playing mode indicates how many cycles to be skipped in each visualisation step
 sleep mseconds:		0		miliseconds, how long to sleep for every amount of cycles to prevent system overheat for long simulations (0 = no sleep)
 cycles before sleep:	0		number of cycles before sleep to prevent system overheat for long simulations
@@ -23,7 +23,7 @@ scene rotation:		0 0 0 0		1 0 0 292		x, y, z, angle		axis of rotation, vector an
 perspective:		45 0 0.1 100	fovy - field of view angle, in degrees, in the y direction; aspect - aspect ratio, 0 = default; zNear - Distance from the viewer to the near clipping plane (>0); zFar - Distance from the viewer to the far clipping plane (>0)
 interaction plane:	2		(1 = xz; 2 = xy, 3 = yz)
 
-trajectory lenght:	0		Number of point remembered for trajectory. 0 = no trajectory is drawn; -1 = no limit, keep all points
+trajectory length:	0		Number of point remembered for trajectory. 0 = no trajectory is drawn; -1 = no limit, keep all points
 trajectory width:	1		Width of lines linking trajectory points
 showing labels:		0		Whether to show object labels.
 

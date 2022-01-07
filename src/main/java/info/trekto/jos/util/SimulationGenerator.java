@@ -106,7 +106,7 @@ public class SimulationGenerator {
                 "perspective:\t\t45 0 0.1 100\tfovy - field of view angle, in degrees, in the y direction; aspect - aspect ratio, 0 = default; zNear - Distance from the viewer to the near clipping plane (>0); zFar - Distance from the viewer to the far clipping plane (>0)\n" +
                 "interaction plane:\t2\t\t(1 = xz; 2 = xy, 3 = yz)\n" +
                 "\n" +
-                "trajectory lenght:\t0\t\tNumber of point remembered for trajectory. 0 = no trajectory is drawn; -1 = no limit, keep all points\n" +
+                "trajectory length:\t0\t\tNumber of point remembered for trajectory. 0 = no trajectory is drawn; -1 = no limit, keep all points\n" +
                 "trajectory width:\t1\t\tWidth of lines linking trajectory points\n" +
                 "showing labels:\t\t0\t\tWhether to show object labels.\n" +
                 "\n" +

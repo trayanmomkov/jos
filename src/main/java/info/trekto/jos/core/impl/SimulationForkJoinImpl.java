@@ -26,7 +26,7 @@ import org.apache.commons.lang3.NotImplementedException;
 public class SimulationForkJoinImpl extends Observable implements Simulation {
 
     // private Logger logger = LoggerFactory.getLogger(getClass());
-    private SimulationProperties properties = Container.getProperties();
+//    private SimulationProperties properties = Container.getProperties();
     private Thread[] threads;
     private Map<Integer, ArrayList<Integer>> numberOfobjectsDistributionPerThread = new HashMap<>();
     private int iterationCounter;
@@ -54,7 +54,7 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
         /**
          * Distribute simulation objects per threads and start execution
          */
-        if (properties.getNumberOfThreads() == 1) {
+        if (Container.getProperties().getNumberOfThreads() == 1) {
             Container.getSimulationLogic().calculateNewValues(this, 0, objects.size());
         } else {
             new SimulationRecursiveAction(0, objects.size()).compute();
@@ -82,8 +82,8 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
          * candidates for garbage collection.
          */
 
-        if (properties.isSaveToFile() && !properties.isBenchmarkMode()) {
-            properties.getFormatVersion1Writer().appendObjectsToFile(objects);
+        if (Container.getProperties().isSaveToFile() && !Container.getProperties().isBenchmarkMode()) {
+            Container.getProperties().getFormatVersion1Writer().appendObjectsToFile(objects);
         }
     }
 
@@ -96,19 +96,22 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
         long startTime = globalStartTime;
         long endTime;
 
-        for (int i = 0; properties.isInfiniteSimulation() || i < properties.getNumberOfIterations(); i++) {
+        for (int i = 0; Container.getProperties().isInfiniteSimulation() || i < Container.getProperties().getNumberOfIterations(); i++) {
             try {
                 iterationCounter = i + 1;
 
-                if (properties.isBenchmarkMode() && i != 0 && i % 10000 == 0) {
-                    endTime = System.nanoTime();
-                    long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
-                    // logger.info("Iteration " + i + "\t" + (duration / 1000000) + " ms");
-                    Utils.log("Iteration " + i + "\t" + (duration / 1000000) + " ms");
-                    startTime = System.nanoTime();
+                if (i % 1000 == 0 && !Container.getProperties().isBenchmarkMode()) {
+                    Utils.log("Iteration " + i);
+//                    if (Container.getProperties().isBenchmarkMode()) {
+//                        endTime = System.nanoTime();
+//                        long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
+//                        // logger.info("Iteration " + i + "\t" + (duration / 1000000) + " ms");
+//                        Utils.log("\t" + (duration / 1000000) + " ms");
+//                        startTime = System.nanoTime();
+//                    }
                 }
 
-                if (properties.isRealTimeVisualization() && i % properties.getPlayingSpeed() == 0) {
+                if (Container.getProperties().isRealTimeVisualization() && i % Container.getProperties().getPlayingSpeed() == 0) {
                     setChanged();
                     notifyObservers(objects);
                 }
@@ -117,7 +120,7 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
 
                 // /** On every 100 iterations flush to disk */
                 // if (i % 100 == 0) {
-                // properties.getFormatVersion1Writer().flushToDisk();
+                // Container.getProperties().getFormatVersion1Writer().flushToDisk();
                 // }
             } catch (InterruptedException e) {
                 // logger.error("One of the threads interrupted in cycle " + i, e);
@@ -127,8 +130,8 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
 
         endTime = System.nanoTime();
 
-        if (properties.isSaveToFile() && !properties.isBenchmarkMode()) {
-            properties.getFormatVersion1Writer().endFile();
+        if (Container.getProperties().isSaveToFile() && !Container.getProperties().isBenchmarkMode()) {
+            Container.getProperties().getFormatVersion1Writer().endFile();
         }
         Utils.log("End of simulation.");
         return endTime - globalStartTime;
@@ -160,9 +163,9 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
          * This is need because we don't know the type of secondsPerItaration field before number
          * factory is set
          */
-        properties.setNanoSecondsPerIteration(properties.getNanoSecondsPerIteration());
+        Container.getProperties().setNanoSecondsPerIteration(Container.getProperties().getNanoSecondsPerIteration());
 
-        switch (properties.getForceCalculatorType()) {
+        switch (Container.getProperties().getForceCalculatorType()) {
             case NEWTON_LAW_OF_GRAVITATION:
                 forceCalculator = new NewtonGravity();
                 break;
@@ -174,21 +177,21 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
                 break;
         }
 
-        threads = new Thread[properties.getNumberOfThreads()];
+        threads = new Thread[Container.getProperties().getNumberOfThreads()];
         objects = new ArrayList<SimulationObject>();
         auxiliaryObjects = new ArrayList<SimulationObject>();
 //        objectsForRemoval = new ArrayList<SimulationObject>();
-        for (int i = 0; i < properties.getN(); i++) {
-            SimulationObject object = properties.getFormatVersion1Writer().readObjectFromFile();
-            objects.add(object);
-            auxiliaryObjects.add(new SimulationObjectImpl(object));
+
+        for (SimulationObject simulationObject : Container.getProperties().getInitialObjects()) {
+            objects.add(new SimulationObjectImpl(simulationObject));
+            auxiliaryObjects.add(new SimulationObjectImpl(simulationObject));
         }
         if (collisionExists()) {
             throw new SimulationException("Initial collision exists!");
         }
         Utils.log("Done.\n");
 
-        Utils.printConfiguration(properties);
+        Utils.printConfiguration(Container.getProperties());
     }
 
     @Override

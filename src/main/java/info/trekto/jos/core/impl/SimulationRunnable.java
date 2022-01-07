@@ -15,7 +15,6 @@ public class SimulationRunnable implements Runnable {
     private Simulation simulation;
 
     /**
-     * @param objects
      * @param fromIndex Index at which is the first object calculated by this thread
      * @param toIndex Index after index at which is the last object calculated by this thread i.e. toIndex is not
      *            included

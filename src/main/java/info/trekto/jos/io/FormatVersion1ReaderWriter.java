@@ -14,13 +14,17 @@ import info.trekto.jos.model.impl.TripleNumber;
 import info.trekto.jos.numbers.New;
 import info.trekto.jos.numbers.NumberFactory;
 import info.trekto.jos.util.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,32 +34,49 @@ import java.util.regex.Pattern;
  * @date 18 Mar 2016
  */
 public class FormatVersion1ReaderWriter {
-    // private Logger logger = LoggerFactory.getLogger(getClass());
+     private static final Logger logger = LoggerFactory.getLogger(FormatVersion1ReaderWriter.class);
 
     public static final String keyValueSeparator = ":[\\s\\t]+";
 
-    private Charset charset = Charset.forName("UTF-8");
+    public FormatVersion1ReaderWriter(String inputFilePath, SimulationProperties properties, Charset charset) throws IOException {
+        try {
+            File inputFile = new File(inputFilePath);
+            reader = Files.newBufferedReader(inputFile.toPath(), charset);
+            // writer = Files.newBufferedWriter(new File(outputFile).toPath(), charset);
+        } catch (IOException e) {
+            Utils.log("Cannot open file " + inputFilePath, e);
+        }
+    
+        if (properties.getWriterBufferSize() == 0) {
+            writer = Files.newBufferedWriter(new File(properties.getOutputFile()).toPath(), charset);
+        } else {
+            writer = new BufferedWriter(Files.newBufferedWriter(new File(properties.getOutputFile()).toPath(), charset),
+                                        properties.getWriterBufferSize());
+        }
+    }
+
+    //    private Charset charset = Charset.forName("UTF-8");
 
     // private FileOutputStream fileOutputStream;
-    private BufferedWriter writer;
+    private final BufferedWriter writer;
 
     // private FileInputStream fileInputStream;
     private BufferedReader reader;
 
-    private File inputFile;
+//    private File inputFile;
 
     /**
      *
      */
-    public FormatVersion1ReaderWriter(String inputFile) {
-        try {
-            this.inputFile = new File(inputFile);
-            reader = Files.newBufferedReader(this.inputFile.toPath(), charset);
-            // writer = Files.newBufferedWriter(new File(outputFile).toPath(), charset);
-        } catch (IOException e) {
-            Utils.log("Cannot open file " + inputFile, e);
-        }
-    }
+//    public FormatVersion1ReaderWriter(String inputFile) {
+//        try {
+//            this.inputFile = new File(inputFile);
+//            reader = Files.newBufferedReader(this.inputFile.toPath(), charset);
+//            // writer = Files.newBufferedWriter(new File(outputFile).toPath(), charset);
+//        } catch (IOException e) {
+//            Utils.log("Cannot open file " + inputFile, e);
+//        }
+//    }
 
     // public FormatVersion1ReaderWriter(InputStream inputStream) {
     // try {
@@ -80,8 +101,8 @@ public class FormatVersion1ReaderWriter {
             // fileToSave<<"============================ " << N << " | " << simulationProperties.cycleCounter <<
             // " (objects | cycle) ============================\n\n";
             writer.write("============================ " + Container.getProperties().getN() + " | "
-                    + Container.getSimulation().getCurrentIterationNumber()
-                    + " (objects | cycle) ============================\n\n");
+                                 + Container.getSimulation().getCurrentIterationNumber()
+                                 + " (objects | cycle) ============================\n\n");
 
             for (Object element : simulationObjects) {
                 SimulationObject simulationObject = (SimulationObject) element;
@@ -133,41 +154,61 @@ public class FormatVersion1ReaderWriter {
             writer.close();
         } catch (IOException e) {
             Utils.log("Error while closing file.", e);
-        } finally {
         }
     }
 
-    private String match(String pattern, String input) {
+    private static String match(String pattern, String input) {
         return match(pattern, input, 1);
     }
 
-    private String match(String pattern, String input, int gorupNumber) {
+    private static String match(String pattern, String input, int groupNumber) {
         Matcher m = Pattern.compile(pattern).matcher(input);
-        m.matches();
-        return m.group(gorupNumber);
+        if (m.matches() && m.groupCount() >= groupNumber) {
+            return m.group(groupNumber);
+        } else {
+            logger.error("Cannot match pattern: '" + pattern + "' in string: '" + input +"' or there is no group: " + groupNumber);
+            return "";
+        }
     }
 
-    private void setDefaultValues(SimulationProperties properties) {
-        properties.setForceCalculatorType(ForceCalculatorType.NEWTON_LAW_OF_GRAVITATION);
+//    private void setDefaultValues(SimulationProperties properties) {
+//        properties.setForceCalculatorType(ForceCalculatorType.NEWTON_LAW_OF_GRAVITATION);
+//    }
+
+    public static SimulationProperties readProperties(String inputFilePath) {
+        return readProperties(inputFilePath, null);
     }
 
-    public void readProperties(SimulationProperties properties) {
-        setDefaultValues(properties);
+    public static SimulationProperties readProperties(String inputFilePath, Charset charset) {
+        if (charset == null) {
+            charset = StandardCharsets.UTF_8;
+        }
+        BufferedReader reader;
+        try {
+            File inputFile = new File(inputFilePath);
+            reader = Files.newBufferedReader(inputFile.toPath(), charset);
+            // writer = Files.newBufferedWriter(new File(outputFile).toPath(), charset);
+        } catch (IOException e) {
+            Utils.log("Cannot open file " + inputFilePath, e);
+            return null;
+        }
+
+        SimulationProperties properties = new SimulationProperties();
 
         try {
 
             /* Numbers type */
             properties.setNumberType(NumberFactory.NumberType.valueOf(match("numbers type" + keyValueSeparator + "([\\w_]+).*",
-                    reader.readLine())));
+                                                                            reader.readLine())));
 
             // precision: 32 Arithmetic precision in digits after point. 0 = infinite precision; -1 = native floating
             // point type double
             properties.setPrecision(Integer.valueOf(match("precision" + keyValueSeparator + "([\\d]+).*",
-                    reader.readLine())));
+                                                          reader.readLine())));
 
             /* At this point we know numbers type and precision so we must create NumberFactory
              * because the rest of the method create numbers. */
-            Container.getProperties().createNumberFactory();
+            properties.createNumberFactory();
 
             // window size: 1280 1024 in pixels
             reader.readLine();
@@ -191,18 +232,18 @@ public class FormatVersion1ReaderWriter {
 
             // number of cycles: -1 -1 = infinite loop
             properties.setNumberOfIterations(Integer.valueOf(match("number of cycles" + keyValueSeparator + "([-\\d]+).*",
-                    reader.readLine())));
+                                                                   reader.readLine())));
 
             // seconds per cycle: 10
             properties.setNanoSecondsPerIteration(Integer.valueOf(match("seconds per cycle" + keyValueSeparator + "([-\\d]+).*",
-                    reader.readLine())) * ScientificConstants.NANOSECONDS_IN_ONE_SECOND);
+                                                                        reader.readLine())) * ScientificConstants.NANOSECONDS_IN_ONE_SECOND);
 
             // simulation time: -1 (Depend from numberOfCycles and secondsPerCycle and vice versa, -1 mean no value)
             reader.readLine();
 
             // real time: 1 (1 = true, 0 = false) Show simulation in real time
             properties.setRealTimeVisualization("1".equals(match("real time" + keyValueSeparator + "([01]).*",
-                    reader.readLine())));
+                                                                 reader.readLine())));
 
             // playing: 0 0 (1 = true, 0 = false) Whether to read data form file and play it; Second digit toggles
             // recording mode
@@ -211,7 +252,7 @@ public class FormatVersion1ReaderWriter {
             // playing speed: 25 in real time mode indicates 1 per how many cycle to be saved in file; in playing mode
             // indicates how many cycles to be skipped in each visualisation step
             properties.setPlayingSpeed(Integer.valueOf(match("playing speed" + keyValueSeparator + "([\\d]+).*",
-                    reader.readLine())));
+                                                             reader.readLine())));
 
             // sleep mseconds: 0 miliseconds, how long to sleep for every amount of cycles to prevent system overheat
             // for long simulations (0 = no sleep)
@@ -240,7 +281,7 @@ public class FormatVersion1ReaderWriter {
             reader.readLine();
             reader.readLine();
 
-            // trajectory lenght: 0 Number of point remembered for trajectory. 0 = no trajectory is drawn; -1 = no
+            // trajectory length: 0 Number of point remembered for trajectory. 0 = no trajectory is drawn; -1 = no
             // limit, keep all points
             reader.readLine();
 
@@ -253,42 +294,42 @@ public class FormatVersion1ReaderWriter {
 
             // saving data: 0 (1 = true, 0 = false)
             properties.setSaveToFile("1".equals(match("saving data" + keyValueSeparator + "([01]).*",
-                    reader.readLine())));
+                                                      reader.readLine())));
 
             // output file name: simulations/PSC_5.out
             String outputFilename = match("output file name" + keyValueSeparator + "([^\\s]+).*", reader.readLine());
             if (outputFilename.equals("default")) {
-                outputFilename = inputFile.toPath() + ".out";
+                outputFilename = inputFilePath + ".out";
             }
             properties.setOutputFile(outputFilename);
 
-            String outputFilePath;
-            outputFilePath = properties.getOutputFile();
-
-            if (properties.getWriterBufferSize() == 0) {
-                writer = Files.newBufferedWriter(new File(outputFilePath).toPath(), charset);
-            } else {
-                writer = new BufferedWriter(Files.newBufferedWriter(new File(outputFilePath).toPath(), charset),
-                        properties.getWriterBufferSize());
-            }
-
             // number of objects: 399
             properties.setNumberOfObjects(Integer.valueOf(match("number of objects" + keyValueSeparator + "(\\d+).*",
-                    reader.readLine())));
+                                                                reader.readLine())));
             reader.readLine();
 
             // Objects:
             reader.readLine();
             reader.readLine();
-
-            // x = 79673559
+            
+            properties.setInitialObjects(new ArrayList<>());
+            for (int i = 0; i < properties.getN(); i++) {
+                properties.getInitialObjects().add(readObjectFromFile(reader));
+            }
         } catch (IOException e) {
             Utils.log("Cannot read properties from file", e);
         }
 
+        try {
+            properties.setFormatVersion1Writer(new FormatVersion1ReaderWriter(inputFilePath, properties, charset));
+        } catch (IOException ex) {
+            logger.error("Cannot open output file!", ex);
+        }
+
+        return properties;
     }
 
-    public SimulationObject readObjectFromFile() {
+    public static SimulationObject readObjectFromFile(BufferedReader reader) {
         SimulationObject simulationObject = new SimulationObjectImpl();
 
         // x = 648

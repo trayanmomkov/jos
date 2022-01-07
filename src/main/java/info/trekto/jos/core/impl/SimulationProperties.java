@@ -3,6 +3,7 @@ package info.trekto.jos.core.impl;
 import info.trekto.jos.exceptions.SimulationRuntimeException;
 import info.trekto.jos.formulas.ForceCalculator.ForceCalculatorType;
 import info.trekto.jos.io.FormatVersion1ReaderWriter;
+import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.numbers.New;
 import info.trekto.jos.numbers.Number;
 import info.trekto.jos.numbers.NumberFactory.NumberType;
@@ -14,6 +15,8 @@ import info.trekto.jos.util.Utils;
 
 import java.math.MathContext;
 import java.util.ArrayList;
+
+import static info.trekto.jos.formulas.ForceCalculator.ForceCalculatorType.NEWTON_LAW_OF_GRAVITATION;
 
 /**
  * @author Trayan Momkov
@@ -38,7 +41,7 @@ public class SimulationProperties {
     private boolean benchmarkMode = false;
 
     private NumberType numberType;
-    private ForceCalculatorType forceCalculatorType;
+    private ForceCalculatorType forceCalculatorType = NEWTON_LAW_OF_GRAVITATION;
     private Integer precision;
 
     private int writerBufferSize = 0;
@@ -46,6 +49,8 @@ public class SimulationProperties {
     private boolean realTimeVisualization = false;
 
     private int playingSpeed = 1;
+    
+    private ArrayList<SimulationObject> initialObjects;
 
     public boolean isInfiniteSimulation() {
         return numberOfIterations == -1;
@@ -237,5 +242,13 @@ public class SimulationProperties {
                 NumberFactoryProxy.setFactory(new DoubleNumberFactory());
                 break;
         }
+    }
+
+    public ArrayList<SimulationObject> getInitialObjects() {
+        return initialObjects;
+    }
+
+    public void setInitialObjects(ArrayList<SimulationObject> initialObjects) {
+        this.initialObjects = initialObjects;
     }
 }

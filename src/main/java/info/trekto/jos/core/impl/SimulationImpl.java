@@ -192,10 +192,9 @@ public class SimulationImpl extends Observable implements Simulation {
         objects = new ArrayList<SimulationObject>();
         auxiliaryObjects = new ArrayList<SimulationObject>();
 //        objectsForRemoval = new ArrayList<SimulationObject>();
-        for (int i = 0; i < properties.getN(); i++) {
-            SimulationObject object = properties.getFormatVersion1Writer().readObjectFromFile();
-            objects.add(object);
-            auxiliaryObjects.add(new SimulationObjectImpl(object));
+        for (SimulationObject simulationObject : Container.getProperties().getInitialObjects()) {
+            objects.add(new SimulationObjectImpl(simulationObject));
+            auxiliaryObjects.add(new SimulationObjectImpl(simulationObject));
         }
         if (collisionExists()) {
             throw new SimulationException("Initial collision exists!");

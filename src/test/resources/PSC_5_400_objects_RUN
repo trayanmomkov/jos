@@ -22,7 +22,7 @@ scene rotation:		0 0 0 0		1 0 0 292		x, y, z, angle		axis of rotation, vector an
 perspective:		45 0 0.1 100	fovy - field of view angle, in degrees, in the y direction; aspect - aspect ratio, 0 = default; zNear - Distance from the viewer to the near clipping plane (>0); zFar - Distance from the viewer to the far clipping plane (>0)
 interaction plane:	2		(1 = xz; 2 = xy, 3 = yz)
 
-trajectory lenght:	0		Number of point remembered for trajectory. 0 = no trajectory is drawn; -1 = no limit, keep all points
+trajectory length:	0		Number of point remembered for trajectory. 0 = no trajectory is drawn; -1 = no limit, keep all points
 trajectory width:	1		Width of lines linking trajectory points
 showing labels:		0		Whether to show object labels.
 
