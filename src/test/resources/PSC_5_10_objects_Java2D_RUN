@@ -8,7 +8,7 @@ gravity:		1		(1 = true, 0 = false)	Whether gravitation law is in force
 absorbtion:		1		(1 = true, 0 = false)	Whether one object can swallow (absorb) another
 restitution:		1		[0, 1] perfectly inelastic = 0 to 1 = perfectly elastic Coeficient of objects elasticity.
 
-number of cycles:	200000		-1 = infinite loop
+number of cycles:	10000		-1 = infinite loop
 seconds per cycle:	1
 simulation time:	-1		(Depend from numberOfCycles and secondsPerCycle and vice versa, -1 mean no value)
 real time:		0		(1 = true, 0 = false)	Show simulation in real time

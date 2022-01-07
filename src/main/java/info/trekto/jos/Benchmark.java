@@ -3,12 +3,14 @@ package info.trekto.jos;
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.impl.SimulationForkJoinImpl;
 import info.trekto.jos.core.impl.SimulationLogicImpl;
-import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.exceptions.SimulationException;
 import info.trekto.jos.formulas.ForceCalculator.ForceCalculatorType;
 import info.trekto.jos.io.FormatVersion1ReaderWriter;
 import info.trekto.jos.numbers.NumberFactory;
-import info.trekto.jos.util.Utils;
+import info.trekto.jos.visualization.Visualizer;
+import info.trekto.jos.visualization.java2dgraphics.VisualizerImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static info.trekto.jos.numbers.NumberFactory.NumberType.BIG_DECIMAL;
 import static info.trekto.jos.numbers.NumberFactory.NumberType.DOUBLE;
@@ -19,6 +21,7 @@ import static info.trekto.jos.util.Utils.CORES;
  * @date 31 Mar 2016
  */
 public class Benchmark {
+    private static final Logger logger = LoggerFactory.getLogger(Benchmark.class);
 
     public static void main(String[] args) throws SimulationException {
         Benchmark benchmark = new Benchmark();
@@ -28,7 +31,7 @@ public class Benchmark {
         // String inputFileName = "/PSC_5_6400_objects_RUN";
         // String inputFileName = "/PSC_5_12800_objects_RUN";
         String inputFileName = "/PSC_5_10_objects_Java2D_RUN";
-        
+
         if (args.length == 0) {
             System.err.println("Missing input file. Please pass it as program argument.");
             return;
@@ -56,29 +59,38 @@ public class Benchmark {
 
     private void runBenchmark(Simulation simulation, int numberOfThreads, NumberFactory.NumberType numberType, int writerBufferSize,
                               String inputFileName) throws SimulationException {
-        Container.setSimulation(simulation);
+                              
+        Container.readerWriter = new FormatVersion1ReaderWriter();
+        Container.simulation = simulation;
 
-        SimulationProperties simulationProperties = FormatVersion1ReaderWriter.readProperties(inputFileName);
-        simulationProperties.setNumberType(numberType);
+        Container.properties = Container.readerWriter.readProperties(inputFileName);
+        Container.readerWriter.initReaderAndWriter(inputFileName, Container.properties);
+        Visualizer visualizer = new VisualizerImpl();
+        Container.simulation.addObserver(visualizer);
+        Container.simulationLogic = new SimulationLogicImpl();
 
-        simulationProperties.setNumberOfThreads(numberOfThreads);
-        simulationProperties.setWriterBufferSize(writerBufferSize);
-        simulationProperties.setBenchmarkMode(true);
-        simulationProperties.setSaveToFile(false);
-        simulationProperties.setForceCalculatorType(ForceCalculatorType.NEWTON_LAW_OF_GRAVITATION);
+        Container.properties.setNumberType(numberType);
+        Container.properties.setNumberOfThreads(numberOfThreads);
+        Container.properties.setWriterBufferSize(writerBufferSize);
+        Container.properties.setBenchmarkMode(true);
+        Container.properties.setSaveToFile(false);
+        Container.properties.setForceCalculatorType(ForceCalculatorType.NEWTON_LAW_OF_GRAVITATION);
 
-        Container.setProperties(simulationProperties);
-        Container.setSimulationLogic(new SimulationLogicImpl());
-        
-        Utils.printConfiguration(simulationProperties);
-        
-        long durationInNanoseconds = Container.getSimulation().startSimulation();
+        Container.simulationLogic = new SimulationLogicImpl();
 
-        System.out.print("Total time: " + "\t" + (durationInNanoseconds / 1000000) + " ms");
-        if (simulationProperties.getNumberOfThreads() == CORES) {
+//        logger.info("Precision (number of digits to be used): " + Container.properties.getPrecision());
+//        logger.info("Number of runnig threads: " + Container.properties.getNumberOfThreads());
+//        logger.info("'Number' implementation: " + Container.properties.getNumberType());
+
+        long durationInNanoseconds = Container.simulation.startSimulation();
+
+        System.out.print("Precision (number of digits to be used): " + Container.properties.getPrecision() +
+        "\tNumber of runnig threads: " + Container.properties.getNumberOfThreads() +
+        "\t'Number' implementation: " + Container.properties.getNumberType() +
+        "\tTotal time: " + "\t" + (durationInNanoseconds / 1000000) + " ms");
+        if (Container.properties.getNumberOfThreads() == CORES) {
             System.out.print(" <<<<<<");
         }
-        Utils.log();
     }
 
     // private void setFactory(NumberFactory numberFactory) {

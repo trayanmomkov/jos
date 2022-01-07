@@ -7,6 +7,7 @@ import info.trekto.jos.formulas.CommonFormulas;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.TripleNumber;
 import info.trekto.jos.numbers.Number;
+
 import java.util.Iterator;
 
 /**
@@ -20,7 +21,7 @@ public class SimulationLogicImpl implements SimulationLogic {
 
     public SimulationLogicImpl() {
         super();
-        secondsPerIteration = Container.getProperties().getSecondsPerIteration();
+        secondsPerIteration = Container.properties.getSecondsPerIteration();
     }
 
     @Override
@@ -51,8 +52,8 @@ public class SimulationLogicImpl implements SimulationLogic {
                  * Calculate force
                  */
                 TripleNumber force = simulation.getForceCalculator().caclulateForceAsVector(currentSimulationObject,
-                        tempSimulationObject,
-                        CommonFormulas.calculateDistance(currentSimulationObject, tempSimulationObject));
+                                                                                            tempSimulationObject,
+                                                                                            CommonFormulas.calculateDistance(currentSimulationObject, tempSimulationObject));
 
                 /**
                  * Add to current acceleration
@@ -68,7 +69,7 @@ public class SimulationLogicImpl implements SimulationLogic {
     }
 
     private void moveSimulationObjects(SimulationObject currentSimulationObject,
-            SimulationObject simulationAuxiliaryObject) {
+                                       SimulationObject simulationAuxiliaryObject) {
         // members[i]->x = members[i]->x + members[i]->speed.x * simulationProperties.secondsPerCycle;
         simulationAuxiliaryObject.setX(currentSimulationObject.getX().add(
                 currentSimulationObject.getSpeed().getX().multiply(secondsPerIteration)));
@@ -79,7 +80,7 @@ public class SimulationLogicImpl implements SimulationLogic {
     }
 
     private TripleNumber addAcceleration(SimulationObject currentSimulationObject, TripleNumber oldAcceleration,
-            TripleNumber force) {
+                                         TripleNumber force) {
         // ax = Fx / m
         Number accelerationX = oldAcceleration.getX().add(force.getX().divide(currentSimulationObject.getMass()));
         Number accelerationY = oldAcceleration.getY().add(force.getY().divide(currentSimulationObject.getMass()));
@@ -88,7 +89,7 @@ public class SimulationLogicImpl implements SimulationLogic {
     }
 
     private void changeSpeed(SimulationObject currentSimulationObject, SimulationObject simulationAuxiliaryObject,
-            TripleNumber acceleration) {
+                             TripleNumber acceleration) {
         // members[i]->speed.x += a.x * simulationProperties.secondsPerCycle;//* t;
         Number speedX = currentSimulationObject.getSpeed().getX()
                 .add(acceleration.getX().multiply(secondsPerIteration));

@@ -1,11 +1,11 @@
 /**
- * 
+ *
  */
 package info.trekto.jos.numbers.impl;
 
-import java.math.BigDecimal;
-
 import info.trekto.jos.numbers.Number;
+
+import java.math.BigDecimal;
 
 /**
  * Double implementation.
@@ -69,7 +69,7 @@ public class FloatNumberImpl implements Number {
 
     @Override
     public Number[] divideAndRemainder(Number divisor) {
-        return new Number[] { divideToIntegralValue(divisor), remainder(divisor) };
+        return new Number[]{divideToIntegralValue(divisor), remainder(divisor)};
     }
 
     @Override

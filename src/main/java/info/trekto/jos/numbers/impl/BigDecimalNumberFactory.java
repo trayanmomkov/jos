@@ -1,10 +1,10 @@
 package info.trekto.jos.numbers.impl;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-
 import info.trekto.jos.numbers.Number;
 import info.trekto.jos.numbers.NumberFactory;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
 
 /**
  * @author Trayan Momkov

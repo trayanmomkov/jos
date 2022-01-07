@@ -1,13 +1,13 @@
 package info.trekto.jos.core.impl;
 
 import info.trekto.jos.Container;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 
 /**
- *
  * @author Trayan Momkov
  * @date 2017-Aug-5 21:22:53
  */
@@ -25,7 +25,7 @@ public class SimulationRecursiveAction extends RecursiveAction {
     @Override
     protected void compute() {
         if (toIndex - fromIndex <= THRESHOLD) {
-            Container.getSimulationLogic().calculateNewValues(Container.getSimulation(), fromIndex, toIndex);
+            Container.simulationLogic.calculateNewValues(Container.simulation, fromIndex, toIndex);
         } else {
             List<RecursiveAction> subtasks = new ArrayList<>();
             int middle = fromIndex + ((toIndex - fromIndex) / 2);

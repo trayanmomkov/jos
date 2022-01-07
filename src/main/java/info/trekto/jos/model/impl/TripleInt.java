@@ -1,11 +1,11 @@
 /**
- * 
+ *
  */
 package info.trekto.jos.model.impl;
 
 import info.trekto.jos.model.SimulationObject;
 
-import java.awt.Color;
+import java.awt.*;
 
 
 /**

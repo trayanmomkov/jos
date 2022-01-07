@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package info.trekto.jos.numbers;
 

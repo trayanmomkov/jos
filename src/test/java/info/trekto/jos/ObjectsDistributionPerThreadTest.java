@@ -1,7 +1,6 @@
 package info.trekto.jos;
 
 import info.trekto.jos.core.impl.SimulationImpl;
-
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

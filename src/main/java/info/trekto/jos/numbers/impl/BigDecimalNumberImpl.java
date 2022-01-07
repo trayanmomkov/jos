@@ -1,14 +1,14 @@
 /**
- * 
+ *
  */
 package info.trekto.jos.numbers.impl;
+
+import info.trekto.jos.numbers.Number;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
-
-import info.trekto.jos.numbers.Number;
 
 /**
  * BigDecimal implementation.
@@ -143,7 +143,7 @@ public class BigDecimalNumberImpl implements Number {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.math.BigDecimal#add(java.math.BigDecimal)
      */
     @Override
@@ -153,7 +153,7 @@ public class BigDecimalNumberImpl implements Number {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.math.BigDecimal#subtract(java.math.BigDecimal)
      */
     @Override
@@ -163,7 +163,7 @@ public class BigDecimalNumberImpl implements Number {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.math.BigDecimal#multiply(java.math.BigDecimal)
      */
     @Override
@@ -174,7 +174,7 @@ public class BigDecimalNumberImpl implements Number {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.math.BigDecimal#divide(java.math.BigDecimal)
      */
     @Override
@@ -185,7 +185,7 @@ public class BigDecimalNumberImpl implements Number {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.math.BigDecimal#divideToIntegralValue(java.math.BigDecimal)
      */
     @Override
@@ -195,7 +195,7 @@ public class BigDecimalNumberImpl implements Number {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.math.BigDecimal#remainder(java.math.BigDecimal)
      */
     @Override
@@ -205,18 +205,18 @@ public class BigDecimalNumberImpl implements Number {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.math.BigDecimal#divideAndRemainder(java.math.BigDecimal)
      */
     @Override
     public Number[] divideAndRemainder(Number divisor) {
         BigDecimal[] result = value.divideAndRemainder(((BigDecimalNumberImpl) divisor).value);
-        return new Number[] { newNumber(result[0]), newNumber(result[1]) };
+        return new Number[]{newNumber(result[0]), newNumber(result[1])};
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.math.BigDecimal#pow(int)
      */
     @Override
@@ -226,7 +226,7 @@ public class BigDecimalNumberImpl implements Number {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.math.BigDecimal#abs()
      */
     @Override
@@ -236,7 +236,7 @@ public class BigDecimalNumberImpl implements Number {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.math.BigDecimal#negate()
      */
     @Override
@@ -246,7 +246,7 @@ public class BigDecimalNumberImpl implements Number {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.math.BigDecimal#compareTo(java.math.BigDecimal)
      */
     @Override
@@ -272,7 +272,7 @@ public class BigDecimalNumberImpl implements Number {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.math.BigDecimal#valueOf(long)
      */
     @Override
@@ -282,7 +282,7 @@ public class BigDecimalNumberImpl implements Number {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.math.BigDecimal#valueOf(double)
      */
     @Override
@@ -292,7 +292,7 @@ public class BigDecimalNumberImpl implements Number {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.math.BigDecimal#floatValue()
      */
     @Override
@@ -302,7 +302,7 @@ public class BigDecimalNumberImpl implements Number {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.math.BigDecimal#doubleValue()
      */
     @Override
@@ -317,7 +317,7 @@ public class BigDecimalNumberImpl implements Number {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override

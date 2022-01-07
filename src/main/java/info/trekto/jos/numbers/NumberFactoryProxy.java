@@ -3,10 +3,10 @@
  */
 package info.trekto.jos.numbers;
 
-import java.math.BigDecimal;
-
 import info.trekto.jos.formulas.ScientificConstants;
 import info.trekto.jos.numbers.impl.DoubleNumberFactory;
+
+import java.math.BigDecimal;
 
 /**
  * In this class you can change the number factory and respectively type of every number in the program.

@@ -3,17 +3,9 @@
  */
 package info.trekto.jos.visualization.java2dgraphics;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.Image;
-import java.awt.Shape;
+import javax.swing.*;
+import java.awt.*;
 import java.util.List;
-
-import javax.swing.JPanel;
 
 /**
  * @author Trayan Momkov

@@ -3,6 +3,7 @@ package info.trekto.jos.core;
 import info.trekto.jos.exceptions.SimulationException;
 import info.trekto.jos.formulas.ForceCalculator;
 import info.trekto.jos.model.SimulationObject;
+
 import java.util.List;
 import java.util.Observer;
 
@@ -13,7 +14,6 @@ import java.util.Observer;
 public interface Simulation {
 
     /**
-     *
      * @return nanoseconds of execution excluding init and closing file.
      * @throws SimulationException
      */

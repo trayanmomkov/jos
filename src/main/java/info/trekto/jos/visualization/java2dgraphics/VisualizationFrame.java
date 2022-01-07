@@ -3,11 +3,10 @@
  */
 package info.trekto.jos.visualization.java2dgraphics;
 
-import java.awt.event.WindowEvent;
-
-import javax.swing.JFrame;
-
 import info.trekto.jos.visualization.Visualizer;
+
+import javax.swing.*;
+import java.awt.event.WindowEvent;
 
 /**
  * @author Trayan Momkov

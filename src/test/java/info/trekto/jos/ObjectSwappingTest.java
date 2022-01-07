@@ -3,12 +3,14 @@
  */
 package info.trekto.jos;
 
-import info.trekto.jos.core.impl.SimulationImpl;
+import info.trekto.jos.core.impl.SimulationForkJoinImpl;
 import info.trekto.jos.core.impl.SimulationLogicImpl;
-import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.io.FormatVersion1ReaderWriter;
 import info.trekto.jos.model.SimulationObject;
-import info.trekto.jos.util.Utils;
+import info.trekto.jos.visualization.Visualizer;
+import info.trekto.jos.visualization.java2dgraphics.VisualizerImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
 import java.lang.reflect.Field;
@@ -24,65 +26,69 @@ import static org.junit.Assert.assertTrue;
  * @date 18 Mar 2016
  */
 public class ObjectSwappingTest {
-    //    private Logger logger = LoggerFactory.getLogger(getClass());
+    private static final Logger logger = LoggerFactory.getLogger(ObjectSwappingTest.class);
 
     @Test
     public void test() throws NoSuchMethodException, SecurityException, IllegalAccessException,
             IllegalArgumentException, InvocationTargetException, NoSuchFieldException {
-        Container.setSimulation(new SimulationImpl());
-        Container.setSimulationLogic(new SimulationLogicImpl());
+            
+        Container.readerWriter = new FormatVersion1ReaderWriter();
+        Container.simulation = new SimulationForkJoinImpl();
 
-        SimulationProperties simulationProperties = FormatVersion1ReaderWriter.readProperties("simulation");
-        simulationProperties.setNumberOfObjects(10);
-        simulationProperties.setNumberOfIterations(10);
-        Container.setProperties(simulationProperties);
+        Container.properties = Container.readerWriter.readProperties("src/test/resources/PSC_5_10_objects_Java2D_RUN");
+        Container.readerWriter.initReaderAndWriter("src/test/resources/PSC_5_10_objects_Java2D_RUN", Container.properties);
+        Visualizer visualizer = new VisualizerImpl();
+        Container.simulation.addObserver(visualizer);
+        Container.simulationLogic = new SimulationLogicImpl();
+            
+            
+        Container.properties.setNumberOfObjects(10);
+        Container.properties.setNumberOfIterations(10);
 
-        Class clazz = Container.getSimulation().getClass();
+        Class clazz = Container.simulation.getClass();
 
         Method initMethod = clazz.getDeclaredMethod("init");
         Method doIterationMethod = clazz.getDeclaredMethod("doIteration");
-        // logger.info(initMethod.getName() + " is " + Modifier.toString(initMethod.getModifiers()));
 
         initMethod.setAccessible(true);
         doIterationMethod.setAccessible(true);
-        initMethod.invoke(Container.getSimulation());
+        initMethod.invoke(Container.simulation);
 
-        List<Integer> originalObjectsIds = new ArrayList<>();
-        List<Integer> auxiliaryObjectsIds = new ArrayList<>();
+        List<Integer> originalObjectsIds;
+        List<Integer> auxiliaryObjectsIds;
 
         /** Get ids of first (original) objects */
-        originalObjectsIds = getObjectsIds(Container.getSimulation().getObjects());
+        originalObjectsIds = getObjectsIds(Container.simulation.getObjects());
 
         Field auxiliaryObjectsField = clazz.getDeclaredField("auxiliaryObjects");
         auxiliaryObjectsField.setAccessible(true);
 
-        List<SimulationObject> auxiliaryObjects = (List<SimulationObject>) auxiliaryObjectsField.get(Container
-                .getSimulation());
+        List<SimulationObject> auxiliaryObjects = (List<SimulationObject>) auxiliaryObjectsField.get(Container.simulation);
 
         /** Get ids of auxiliary objects */
         auxiliaryObjectsIds = getObjectsIds(auxiliaryObjects);
 
         /** Do iterations and check whether objects in the two lists swap */
-        for (long i = 0; i < simulationProperties.getNumberOfIterations(); i++) {
-            Utils.log("\nIteration " + i);
-            doIterationMethod.invoke(Container.getSimulation());
+        for (long i = 0; i < Container.properties.getNumberOfIterations(); i++) {
+            logger.info("\nIteration " + i);
+            doIterationMethod.invoke(Container.simulation);
 
             if (i % 2 == 0) {
-                List<Integer> actualObjects = getObjectsIds(Container.getSimulation().getObjects());
+                List<Integer> actualObjects = getObjectsIds(Container.simulation.getObjects());
                 assertTrue(auxiliaryObjectsIds.containsAll(actualObjects));
                 assertTrue(actualObjects.containsAll(auxiliaryObjectsIds));
 
                 actualObjects = getObjectsIds((List<SimulationObject>) auxiliaryObjectsField.get(Container
-                        .getSimulation()));
+                                                                                                         .simulation));
                 assertTrue(originalObjectsIds.containsAll(actualObjects));
                 assertTrue(actualObjects.containsAll(originalObjectsIds));
             } else {
                 List<Integer> actualObjects = getObjectsIds((List<SimulationObject>) auxiliaryObjectsField
-                        .get(Container.getSimulation()));
+                        .get(Container.simulation));
                 assertTrue(auxiliaryObjectsIds.containsAll(actualObjects));
                 assertTrue(actualObjects.containsAll(auxiliaryObjectsIds));
 
-                actualObjects = getObjectsIds(Container.getSimulation().getObjects());
+                actualObjects = getObjectsIds(Container.simulation.getObjects());
                 assertTrue(originalObjectsIds.containsAll(actualObjects));
                 assertTrue(actualObjects.containsAll(originalObjectsIds));
             }

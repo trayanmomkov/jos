@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package info.trekto.jos.numbers.impl;
 
@@ -62,7 +62,7 @@ public class DoubleNumberImpl implements Number {
     }
 
     public Number[] divideAndRemainder(Number divisor) {
-        return new Number[] { divideToIntegralValue(divisor), remainder(divisor) };
+        return new Number[]{divideToIntegralValue(divisor), remainder(divisor)};
     }
 
     public Number pow(int n) {

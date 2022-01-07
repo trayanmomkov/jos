@@ -16,8 +16,8 @@ public class SimulationRunnable implements Runnable {
 
     /**
      * @param fromIndex Index at which is the first object calculated by this thread
-     * @param toIndex Index after index at which is the last object calculated by this thread i.e. toIndex is not
-     *            included
+     * @param toIndex   Index after index at which is the last object calculated by this thread i.e. toIndex is not
+     *                  included
      */
     public SimulationRunnable(Simulation simulation, int fromIndex, int toIndex) {
         this.fromIndex = fromIndex;
@@ -27,6 +27,6 @@ public class SimulationRunnable implements Runnable {
 
     @Override
     public void run() {
-        Container.getSimulationLogic().calculateNewValues(simulation, fromIndex, toIndex);
+        Container.simulationLogic.calculateNewValues(simulation, fromIndex, toIndex);
     }
 }

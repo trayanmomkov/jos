@@ -1,9 +1,9 @@
 package info.trekto.jos.numbers.impl;
 
-import java.math.BigDecimal;
-
 import info.trekto.jos.numbers.Number;
 import info.trekto.jos.numbers.NumberFactory;
+
+import java.math.BigDecimal;
 
 /**
  * @author Trayan Momkov

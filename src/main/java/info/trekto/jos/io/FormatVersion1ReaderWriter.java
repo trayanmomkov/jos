@@ -5,7 +5,6 @@ package info.trekto.jos.io;
 
 import info.trekto.jos.Container;
 import info.trekto.jos.core.impl.SimulationProperties;
-import info.trekto.jos.formulas.ForceCalculator.ForceCalculatorType;
 import info.trekto.jos.formulas.ScientificConstants;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.SimulationObjectImpl;
@@ -13,7 +12,6 @@ import info.trekto.jos.model.impl.TripleInt;
 import info.trekto.jos.model.impl.TripleNumber;
 import info.trekto.jos.numbers.New;
 import info.trekto.jos.numbers.NumberFactory;
-import info.trekto.jos.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,37 +31,49 @@ import java.util.regex.Pattern;
  * @author Trayan Momkov
  * @date 18 Mar 2016
  */
-public class FormatVersion1ReaderWriter {
-     private static final Logger logger = LoggerFactory.getLogger(FormatVersion1ReaderWriter.class);
-
+public class FormatVersion1ReaderWriter implements ReaderWriter {
     public static final String keyValueSeparator = ":[\\s\\t]+";
+    private static final Logger logger = LoggerFactory.getLogger(FormatVersion1ReaderWriter.class);
+    private BufferedWriter writer;
+    private BufferedReader reader;
+    
+    private static String match(String pattern, String input) {
+        return match(pattern, input, 1);
+    }
 
-    public FormatVersion1ReaderWriter(String inputFilePath, SimulationProperties properties, Charset charset) throws IOException {
+    private static String match(String pattern, String input, int groupNumber) {
+        Matcher m = Pattern.compile(pattern).matcher(input);
+        if (m.matches() && m.groupCount() >= groupNumber) {
+            return m.group(groupNumber);
+        } else {
+            logger.error("Cannot match pattern: '" + pattern + "' in string: '" + input + "' or there is no group: " + groupNumber);
+            return "";
+        }
+    }
+
+    public void initReaderAndWriter(String inputFilePath, SimulationProperties properties) {
+        initReaderAndWriter(inputFilePath, properties, StandardCharsets.UTF_8);
+    }
+
+    public void initReaderAndWriter(String inputFilePath, SimulationProperties properties, Charset charset) {
         try {
             File inputFile = new File(inputFilePath);
             reader = Files.newBufferedReader(inputFile.toPath(), charset);
             // writer = Files.newBufferedWriter(new File(outputFile).toPath(), charset);
         } catch (IOException e) {
-            Utils.log("Cannot open file " + inputFilePath, e);
+            logger.info("Cannot open input file " + inputFilePath, e);
         }
-    
-        if (properties.getWriterBufferSize() == 0) {
-            writer = Files.newBufferedWriter(new File(properties.getOutputFile()).toPath(), charset);
-        } else {
-            writer = new BufferedWriter(Files.newBufferedWriter(new File(properties.getOutputFile()).toPath(), charset),
-                                        properties.getWriterBufferSize());
+        try {
+            if (properties.getWriterBufferSize() == 0) {
+                writer = Files.newBufferedWriter(new File(properties.getOutputFile()).toPath(), charset);
+            } else {
+                writer = new BufferedWriter(Files.newBufferedWriter(new File(properties.getOutputFile()).toPath(), charset),
+                                            properties.getWriterBufferSize());
+            }
+        } catch (IOException e) {
+            logger.info("Cannot open output file " + inputFilePath, e);
         }
     }
-
-    //    private Charset charset = Charset.forName("UTF-8");
-
-    // private FileOutputStream fileOutputStream;
-    private final BufferedWriter writer;
-
-    // private FileInputStream fileInputStream;
-    private BufferedReader reader;
-
-//    private File inputFile;
 
     /**
      *
@@ -74,7 +84,7 @@ public class FormatVersion1ReaderWriter {
 //            reader = Files.newBufferedReader(this.inputFile.toPath(), charset);
 //            // writer = Files.newBufferedWriter(new File(outputFile).toPath(), charset);
 //        } catch (IOException e) {
-//            Utils.log("Cannot open file " + inputFile, e);
+//            logger.info("Cannot open file " + inputFile, e);
 //        }
 //    }
 
@@ -100,8 +110,8 @@ public class FormatVersion1ReaderWriter {
         try {
             // fileToSave<<"============================ " << N << " | " << simulationProperties.cycleCounter <<
             // " (objects | cycle) ============================\n\n";
-            writer.write("============================ " + Container.getProperties().getN() + " | "
-                                 + Container.getSimulation().getCurrentIterationNumber()
+            writer.write("============================ " + Container.properties.getN() + " | "
+                                 + Container.simulation.getCurrentIterationNumber()
                                  + " (objects | cycle) ============================\n\n");
 
             for (Object element : simulationObjects) {
@@ -109,7 +119,7 @@ public class FormatVersion1ReaderWriter {
                 appendObjectToFile(simulationObject);
             }
         } catch (IOException e) {
-            Utils.log("Cannot write to file ", e);
+            logger.info("Cannot write to file ", e);
         }
     }
 
@@ -148,38 +158,24 @@ public class FormatVersion1ReaderWriter {
         writer.write("\n");
     }
 
+//    private void setDefaultValues(SimulationProperties properties) {
+//        properties.setForceCalculatorType(ForceCalculatorType.NEWTON_LAW_OF_GRAVITATION);
+//    }
+
     public void endFile() {
         try {
             writer.write("END\n");
             writer.close();
         } catch (IOException e) {
-            Utils.log("Error while closing file.", e);
+            logger.info("Error while closing file.", e);
         }
     }
 
-    private static String match(String pattern, String input) {
-        return match(pattern, input, 1);
-    }
-
-    private static String match(String pattern, String input, int groupNumber) {
-        Matcher m = Pattern.compile(pattern).matcher(input);
-        if (m.matches() && m.groupCount() >= groupNumber) {
-            return m.group(groupNumber);
-        } else {
-            logger.error("Cannot match pattern: '" + pattern + "' in string: '" + input +"' or there is no group: " + groupNumber);
-            return "";
-        }
-    }
-
-//    private void setDefaultValues(SimulationProperties properties) {
-//        properties.setForceCalculatorType(ForceCalculatorType.NEWTON_LAW_OF_GRAVITATION);
-//    }
-
-    public static SimulationProperties readProperties(String inputFilePath) {
+    public SimulationProperties readProperties(String inputFilePath) {
         return readProperties(inputFilePath, null);
     }
 
-    public static SimulationProperties readProperties(String inputFilePath, Charset charset) {
+    public SimulationProperties readProperties(String inputFilePath, Charset charset) {
         if (charset == null) {
             charset = StandardCharsets.UTF_8;
         }
@@ -189,7 +185,7 @@ public class FormatVersion1ReaderWriter {
             reader = Files.newBufferedReader(inputFile.toPath(), charset);
             // writer = Files.newBufferedWriter(new File(outputFile).toPath(), charset);
         } catch (IOException e) {
-            Utils.log("Cannot open file " + inputFilePath, e);
+            logger.info("Cannot open file " + inputFilePath, e);
             return null;
         }
 
@@ -311,24 +307,18 @@ public class FormatVersion1ReaderWriter {
             // Objects:
             reader.readLine();
             reader.readLine();
-            
+
             properties.setInitialObjects(new ArrayList<>());
             for (int i = 0; i < properties.getN(); i++) {
                 properties.getInitialObjects().add(readObjectFromFile(reader));
             }
         } catch (IOException e) {
-            Utils.log("Cannot read properties from file", e);
-        }
-
-        try {
-            properties.setFormatVersion1Writer(new FormatVersion1ReaderWriter(inputFilePath, properties, charset));
-        } catch (IOException ex) {
-            logger.error("Cannot open output file!", ex);
+            logger.info("Cannot read properties from file", e);
         }
 
         return properties;
     }
-
+    
     public static SimulationObject readObjectFromFile(BufferedReader reader) {
         SimulationObject simulationObject = new SimulationObjectImpl();
 
@@ -387,7 +377,7 @@ public class FormatVersion1ReaderWriter {
 
             reader.readLine();
         } catch (IOException e) {
-            Utils.log("Cannot read object from file", e);
+            logger.info("Cannot read object from file", e);
         }
 
         return simulationObject;

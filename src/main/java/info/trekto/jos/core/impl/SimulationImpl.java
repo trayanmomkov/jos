@@ -10,22 +10,22 @@ import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.SimulationObjectImpl;
 import info.trekto.jos.numbers.Number;
 import info.trekto.jos.util.Utils;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Observable;
 import org.apache.commons.lang3.NotImplementedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 /**
  * @author Trayan Momkov
  * @date 6.03.2016 г.1:53:36
  */
- @Deprecated(forRemoval = true)
+@Deprecated(forRemoval = true)
 public class SimulationImpl extends Observable implements Simulation {
+    private static final Logger logger = LoggerFactory.getLogger(SimulationImpl.class);
 
     // private Logger logger = LoggerFactory.getLogger(getClass());
-    private SimulationProperties properties = Container.getProperties();
+    private SimulationProperties properties = Container.properties;
     private Thread[] threads;
     private Map<Integer, ArrayList<Integer>> numberOfobjectsDistributionPerThread = new HashMap<>();
     private int iterationCounter;
@@ -58,7 +58,7 @@ public class SimulationImpl extends Observable implements Simulation {
         } else {
             int fromIndex = 0, toIndex = 0;
             ArrayList<Integer> distributionPerThread = getObjectsDistributionPerThread(properties.getNumberOfThreads(),
-                    objects.size());
+                                                                                       objects.size());
             for (int i = 0; i < properties.getNumberOfThreads(); i++) {
                 toIndex = fromIndex + distributionPerThread.get(i);
                 threads[i] = new Thread(new SimulationRunnable(this, fromIndex, toIndex));
@@ -97,7 +97,7 @@ public class SimulationImpl extends Observable implements Simulation {
          */
 
         if (properties.isSaveToFile() && !properties.isBenchmarkMode()) {
-            properties.getFormatVersion1Writer().appendObjectsToFile(objects);
+            Container.readerWriter.appendObjectsToFile(objects);
         }
     }
 
@@ -105,7 +105,7 @@ public class SimulationImpl extends Observable implements Simulation {
     public long startSimulation() throws SimulationException {
         init();
 
-        Utils.log("\nStart simulation...");
+        logger.info("\nStart simulation...");
         long globalStartTime = System.nanoTime();
         long startTime = globalStartTime;
         long endTime;
@@ -118,7 +118,7 @@ public class SimulationImpl extends Observable implements Simulation {
                     endTime = System.nanoTime();
                     long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
                     // logger.info("Iteration " + i + "\t" + (duration / 1000000) + " ms");
-                    Utils.log("Iteration " + i + "\t" + (duration / 1000000) + " ms");
+                    logger.info("Iteration " + i + "\t" + (duration / 1000000) + " ms");
                     startTime = System.nanoTime();
                 }
 
@@ -131,7 +131,7 @@ public class SimulationImpl extends Observable implements Simulation {
 
                 // /** On every 100 iterations flush to disk */
 //                 if (i % 100 == 0) {
-//                     properties.getFormatVersion1Writer().flushToDisk();
+//                     Container.readerWriter.flushToDisk();
 //                 }
             } catch (InterruptedException e) {
                 // logger.error("One of the threads interrupted in cycle " + i, e);
@@ -142,9 +142,9 @@ public class SimulationImpl extends Observable implements Simulation {
         endTime = System.nanoTime();
 
         if (properties.isSaveToFile() && !properties.isBenchmarkMode()) {
-            properties.getFormatVersion1Writer().endFile();
+            Container.readerWriter.endFile();
         }
-        Utils.log("End of simulation.");
+        logger.info("End of simulation.");
         return endTime - globalStartTime;
     }
 
@@ -168,7 +168,7 @@ public class SimulationImpl extends Observable implements Simulation {
     }
 
     private void init() throws SimulationException {
-        Utils.log("Initialize simulation...");
+        logger.info("Initialize simulation...");
 
         /**
          * This is need because we don't know the type of secondsPerItaration field before number
@@ -182,7 +182,7 @@ public class SimulationImpl extends Observable implements Simulation {
                 break;
             case COULOMB_LAW_ELECTRICALLY:
                 throw new NotImplementedException("COULOMB_LAW_ELECTRICALLY is not implemented");
-            // break;
+                // break;
             default:
                 forceCalculator = new NewtonGravity();
                 break;
@@ -192,16 +192,16 @@ public class SimulationImpl extends Observable implements Simulation {
         objects = new ArrayList<SimulationObject>();
         auxiliaryObjects = new ArrayList<SimulationObject>();
 //        objectsForRemoval = new ArrayList<SimulationObject>();
-        for (SimulationObject simulationObject : Container.getProperties().getInitialObjects()) {
+        for (SimulationObject simulationObject : Container.properties.getInitialObjects()) {
             objects.add(new SimulationObjectImpl(simulationObject));
             auxiliaryObjects.add(new SimulationObjectImpl(simulationObject));
         }
         if (collisionExists()) {
             throw new SimulationException("Initial collision exists!");
         }
-        Utils.log("Done.\n");
+        logger.info("Done.\n");
 
-        Utils.printConfiguration(properties);
+//        Utils.printConfiguration(properties);
     }
 
     @Override

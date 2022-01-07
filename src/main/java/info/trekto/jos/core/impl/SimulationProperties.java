@@ -2,7 +2,6 @@ package info.trekto.jos.core.impl;
 
 import info.trekto.jos.exceptions.SimulationRuntimeException;
 import info.trekto.jos.formulas.ForceCalculator.ForceCalculatorType;
-import info.trekto.jos.io.FormatVersion1ReaderWriter;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.numbers.New;
 import info.trekto.jos.numbers.Number;
@@ -32,8 +31,6 @@ public class SimulationProperties {
 
     private String outputFile;
 
-    private FormatVersion1ReaderWriter formatVersion1ReaderWriter;
-
     private int numberOfThreads = Utils.CORES;
 
     private boolean saveToFile = false;
@@ -49,7 +46,7 @@ public class SimulationProperties {
     private boolean realTimeVisualization = false;
 
     private int playingSpeed = 1;
-    
+
     private ArrayList<SimulationObject> initialObjects;
 
     public boolean isInfiniteSimulation() {
@@ -87,19 +84,6 @@ public class SimulationProperties {
 
     public void setNumberOfIterations(int numberOfIterations) {
         this.numberOfIterations = numberOfIterations;
-    }
-
-    /**
-     * Returns fireWrite for saving objects in a file.
-     *
-     * @return
-     */
-    public FormatVersion1ReaderWriter getFormatVersion1Writer() {
-        return formatVersion1ReaderWriter;
-    }
-
-    public void setFormatVersion1Writer(FormatVersion1ReaderWriter formatVersion1ReaderWriter) {
-        this.formatVersion1ReaderWriter = formatVersion1ReaderWriter;
     }
 
     public String getOutputFile() {

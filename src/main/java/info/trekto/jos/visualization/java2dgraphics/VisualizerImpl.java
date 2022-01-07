@@ -6,16 +6,13 @@ package info.trekto.jos.visualization.java2dgraphics;
 import info.trekto.jos.Container;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.visualization.Visualizer;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.Shape;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
-import javax.swing.JFrame;
 
 /**
  * @author Trayan Momkov
@@ -27,14 +24,8 @@ public class VisualizerImpl implements Visualizer {
     private VisualizationPanel visualizationPanel;
     private JFrame frame = null;
 
-    @Override
-    public void closeWindow() {
-        System.out.println("Release graphic resources.");
-        frame.dispose();
-    }
-
     public VisualizerImpl() {
-        if (Container.getProperties().isRealTimeVisualization()) {
+        if (Container.properties.isRealTimeVisualization()) {
             frame = new VisualizationFrame(this, "Simple Double Buffer");
             frame.addKeyListener(new VisualizationKeyListener(this));
 
@@ -53,6 +44,12 @@ public class VisualizerImpl implements Visualizer {
         }
     }
 
+    @Override
+    public void closeWindow() {
+        System.out.println("Release graphic resources.");
+        frame.dispose();
+    }
+
     /* (non-Javadoc)
      * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
      */
@@ -66,8 +63,8 @@ public class VisualizerImpl implements Visualizer {
         for (SimulationObject simulationObject : simulationObjects) {
             Ellipse2D ellipse = new Ellipse2D.Double();
             ellipse.setFrame(simulationObject.getX().doubleValue(), simulationObject.getY().doubleValue(),
-                    simulationObject.getRadius().doubleValue() * 2,
-                    simulationObject.getRadius().doubleValue() * 2);
+                             simulationObject.getRadius().doubleValue() * 2,
+                             simulationObject.getRadius().doubleValue() * 2);
 
             shapes.add(ellipse);
         }
