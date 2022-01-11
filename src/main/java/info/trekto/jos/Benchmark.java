@@ -62,40 +62,40 @@ public class Benchmark {
     private void runBenchmark(Simulation simulation, int numberOfThreads, NumberFactory.NumberType numberType, int writerBufferSize,
                               String inputFileName) throws SimulationException {
 
-        Container.readerWriter = new JsonReaderWriter();
-        Container.simulation = simulation;
+        C.io = new JsonReaderWriter();
+        C.simulation = simulation;
 
         try {
-            Container.properties = Container.readerWriter.readProperties(inputFileName);
-            Container.properties.createNumberFactory();
+            C.prop = C.io.readProperties(inputFileName);
+            C.prop.createNumberFactory();
         } catch (FileNotFoundException e) {
             logger.error("Cannot read properties file.", e);
             return;
         }
         Visualizer visualizer = new VisualizerImpl();
-        Container.simulation.addObserver(visualizer);
-        Container.simulationLogic = new SimulationLogicImpl();
+        C.simulation.addObserver(visualizer);
+        C.simulationLogic = new SimulationLogicImpl();
 
-        Container.properties.setNumberType(numberType);
-        Container.runtimeProperties.setNumberOfThreads(numberOfThreads);
-        Container.runtimeProperties.setWriterBufferSize(writerBufferSize);
-        Container.runtimeProperties.setBenchmarkMode(true);
-        Container.properties.setSaveToFile(false);
-        Container.properties.setInteractingLaw(InteractingLaw.NEWTON_LAW_OF_GRAVITATION);
+        C.prop.setNumberType(numberType);
+        C.runtimeProperties.setNumberOfThreads(numberOfThreads);
+        C.runtimeProperties.setWriterBufferSize(writerBufferSize);
+        C.runtimeProperties.setBenchmarkMode(true);
+        C.prop.setSaveToFile(false);
+        C.prop.setInteractingLaw(InteractingLaw.NEWTON_LAW_OF_GRAVITATION);
 
-        Container.simulationLogic = new SimulationLogicImpl();
+        C.simulationLogic = new SimulationLogicImpl();
 
 //        logger.info("Precision (number of digits to be used): " + Container.properties.getPrecision());
 //        logger.info("Number of runnig threads: " + Container.properties.getNumberOfThreads());
 //        logger.info("'Number' implementation: " + Container.properties.getNumberType());
 
-        long durationInNanoseconds = Container.simulation.startSimulation();
+        long durationInNanoseconds = C.simulation.startSimulation();
 
-        System.out.print("Precision (number of digits to be used): " + Container.properties.getPrecision() +
-                                 "\tNumber of runnig threads: " + Container.runtimeProperties.getNumberOfThreads() +
-                                 "\t'Number' implementation: " + Container.properties.getNumberType() +
+        System.out.print("Precision (number of digits to be used): " + C.prop.getPrecision() +
+                                 "\tNumber of runnig threads: " + C.runtimeProperties.getNumberOfThreads() +
+                                 "\t'Number' implementation: " + C.prop.getNumberType() +
                                  "\tTotal time: " + "\t" + (durationInNanoseconds / 1000000) + " ms");
-        if (Container.runtimeProperties.getNumberOfThreads() == CORES) {
+        if (C.runtimeProperties.getNumberOfThreads() == CORES) {
             System.out.print(" <<<<<<");
         }
     }

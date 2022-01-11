@@ -1,6 +1,6 @@
 package info.trekto.jos.core.impl;
 
-import info.trekto.jos.Container;
+import info.trekto.jos.C;
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.exceptions.SimulationException;
 import info.trekto.jos.formulas.CommonFormulas;
@@ -24,7 +24,7 @@ public class SimulationImpl extends Observable implements Simulation {
     private static final Logger logger = LoggerFactory.getLogger(SimulationImpl.class);
 
     // private Logger logger = LoggerFactory.getLogger(getClass());
-    private SimulationProperties properties = Container.properties;
+    private SimulationProperties properties = C.prop;
     private Thread[] threads;
     private Map<Integer, ArrayList<Integer>> numberOfobjectsDistributionPerThread = new HashMap<>();
     private int iterationCounter;
@@ -52,13 +52,13 @@ public class SimulationImpl extends Observable implements Simulation {
         /**
          * Distribute simulation objects per threads and start execution
          */
-        if (Container.runtimeProperties.getNumberOfThreads() == 1) {
+        if (C.runtimeProperties.getNumberOfThreads() == 1) {
             new SimulationRunnable(this, 0, objects.size()).run();
         } else {
             int fromIndex = 0, toIndex = 0;
-            ArrayList<Integer> distributionPerThread = getObjectsDistributionPerThread(Container.runtimeProperties.getNumberOfThreads(),
+            ArrayList<Integer> distributionPerThread = getObjectsDistributionPerThread(C.runtimeProperties.getNumberOfThreads(),
                                                                                        objects.size());
-            for (int i = 0; i < Container.runtimeProperties.getNumberOfThreads(); i++) {
+            for (int i = 0; i < C.runtimeProperties.getNumberOfThreads(); i++) {
                 toIndex = fromIndex + distributionPerThread.get(i);
                 threads[i] = new Thread(new SimulationRunnable(this, fromIndex, toIndex));
                 threads[i].start();
@@ -95,8 +95,8 @@ public class SimulationImpl extends Observable implements Simulation {
          * candidates for garbage collection.
          */
 
-        if (properties.isSaveToFile() && !Container.runtimeProperties.isBenchmarkMode()) {
-            Container.readerWriter.appendObjectsToFile(objects);
+        if (properties.isSaveToFile() && !C.runtimeProperties.isBenchmarkMode()) {
+            C.io.appendObjectsToFile(objects);
         }
     }
 
@@ -113,7 +113,7 @@ public class SimulationImpl extends Observable implements Simulation {
             try {
                 iterationCounter = i + 1;
 
-                if (Container.runtimeProperties.isBenchmarkMode() && i != 0 && i % 10000 == 0) {
+                if (C.runtimeProperties.isBenchmarkMode() && i != 0 && i % 10000 == 0) {
                     endTime = System.nanoTime();
                     long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
                     // logger.info("Iteration " + i + "\t" + (duration / 1000000) + " ms");
@@ -136,14 +136,14 @@ public class SimulationImpl extends Observable implements Simulation {
                 // logger.error("One of the threads interrupted in cycle " + i, e);
                 logger.error("Threads problem.", e);
             } finally {
-                Container.readerWriter.endFile();
+                C.io.endFile();
             }
         }
 
         endTime = System.nanoTime();
 
-        if (properties.isSaveToFile() && !Container.runtimeProperties.isBenchmarkMode()) {
-            Container.readerWriter.endFile();
+        if (properties.isSaveToFile() && !C.runtimeProperties.isBenchmarkMode()) {
+            C.io.endFile();
         }
         logger.info("End of simulation.");
         return endTime - globalStartTime;
@@ -189,11 +189,11 @@ public class SimulationImpl extends Observable implements Simulation {
                 break;
         }
 
-        threads = new Thread[Container.runtimeProperties.getNumberOfThreads()];
+        threads = new Thread[C.runtimeProperties.getNumberOfThreads()];
         objects = new ArrayList<SimulationObject>();
         auxiliaryObjects = new ArrayList<SimulationObject>();
 //        objectsForRemoval = new ArrayList<SimulationObject>();
-        for (SimulationObject simulationObject : Container.properties.getInitialObjects()) {
+        for (SimulationObject simulationObject : C.prop.getInitialObjects()) {
             objects.add(new SimulationObjectImpl(simulationObject));
             auxiliaryObjects.add(new SimulationObjectImpl(simulationObject));
         }

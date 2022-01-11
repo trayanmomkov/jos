@@ -23,23 +23,23 @@ public class Main {
             return;
         }
 
-        Container.readerWriter = new JsonReaderWriter();
-        Container.simulation = new SimulationForkJoinImpl();
+        C.io = new JsonReaderWriter();
+        C.simulation = new SimulationForkJoinImpl();
 
         try {
-            Container.properties = Container.readerWriter.readProperties(args[0]);
+            C.prop = C.io.readProperties(args[0]);
         } catch (FileNotFoundException e) {
             logger.error("Cannot read properties file.", e);
             return;
         }
 
-        Container.properties.createNumberFactory();
+        C.prop.createNumberFactory();
 
-        if (Container.properties.isRealTimeVisualization()) {
+        if (C.prop.isRealTimeVisualization()) {
             Visualizer visualizer = new VisualizerImpl();
-            Container.simulation.addObserver(visualizer);
+            C.simulation.addObserver(visualizer);
         }
-        Container.simulationLogic = new SimulationLogicImpl();
-        Container.simulation.startSimulation();
+        C.simulationLogic = new SimulationLogicImpl();
+        C.simulation.startSimulation();
     }
 }

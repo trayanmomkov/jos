@@ -1,6 +1,6 @@
 package info.trekto.jos.core.impl;
 
-import info.trekto.jos.Container;
+import info.trekto.jos.C;
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.exceptions.SimulationException;
 import info.trekto.jos.formulas.CommonFormulas;
@@ -54,7 +54,7 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
          */
         // TODO Decide dynamically how many threads to use.
 //        if (Container.properties.getNumberOfThreads() == 1) {
-        Container.simulationLogic.calculateNewValues(this, 0, objects.size());
+        C.simulationLogic.calculateNewValues(this, 0, objects.size());
 //        } else {
 //            new SimulationRecursiveAction(0, objects.size()).compute();
 //        }
@@ -81,8 +81,8 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
          * candidates for garbage collection.
          */
 
-        if (Container.properties.isSaveToFile() && !Container.runtimeProperties.isBenchmarkMode()) {
-            Container.readerWriter.appendObjectsToFile(objects);
+        if (C.prop.isSaveToFile() && !C.runtimeProperties.isBenchmarkMode()) {
+            C.io.appendObjectsToFile(objects);
         }
     }
 
@@ -96,11 +96,11 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
         long endTime;
 
         try {
-            for (int i = 0; Container.properties.isInfiniteSimulation() || i < Container.properties.getNumberOfIterations(); i++) {
+            for (int i = 0; C.prop.isInfiniteSimulation() || i < C.prop.getNumberOfIterations(); i++) {
                 try {
                     iterationCounter = i + 1;
 
-                    if (i % 1000 == 0 && !Container.runtimeProperties.isBenchmarkMode()) {
+                    if (i % 1000 == 0 && !C.runtimeProperties.isBenchmarkMode()) {
                         logger.info("Iteration " + i);
 //                    if (Container.properties.isBenchmarkMode()) {
 //                        endTime = System.nanoTime();
@@ -111,7 +111,7 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
 //                    }
                     }
 
-                    if (Container.properties.isRealTimeVisualization() && i % Container.properties.getPlayingSpeed() == 0) {
+                    if (C.prop.isRealTimeVisualization() && i % C.prop.getPlayingSpeed() == 0) {
                         setChanged();
                         notifyObservers(objects);
                     }
@@ -129,8 +129,8 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
 
             endTime = System.nanoTime();
         } finally {
-            if (Container.properties.isSaveToFile() && !Container.runtimeProperties.isBenchmarkMode()) {
-                Container.readerWriter.endFile();
+            if (C.prop.isSaveToFile() && !C.runtimeProperties.isBenchmarkMode()) {
+                C.io.endFile();
             }
         }
 
@@ -165,9 +165,9 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
          * This is need because we don't know the type of secondsPerItaration field before number
          * factory is set
          */
-        Container.properties.setSecondsPerIteration(Container.properties.getSecondsPerIteration());
+        C.prop.setSecondsPerIteration(C.prop.getSecondsPerIteration());
 
-        switch (Container.properties.getInteractingLaw()) {
+        switch (C.prop.getInteractingLaw()) {
             case NEWTON_LAW_OF_GRAVITATION:
                 forceCalculator = new NewtonGravity();
                 break;
@@ -179,12 +179,12 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
                 break;
         }
 
-        threads = new Thread[Container.runtimeProperties.getNumberOfThreads()];
+        threads = new Thread[C.runtimeProperties.getNumberOfThreads()];
         objects = new ArrayList<SimulationObject>();
         auxiliaryObjects = new ArrayList<SimulationObject>();
 //        objectsForRemoval = new ArrayList<SimulationObject>();
 
-        for (SimulationObject simulationObject : Container.properties.getInitialObjects()) {
+        for (SimulationObject simulationObject : C.prop.getInitialObjects()) {
             objects.add(new SimulationObjectImpl(simulationObject));
             auxiliaryObjects.add(new SimulationObjectImpl(simulationObject));
         }

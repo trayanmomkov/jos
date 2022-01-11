@@ -1,6 +1,6 @@
 package info.trekto.jos.core.impl;
 
-import info.trekto.jos.Container;
+import info.trekto.jos.C;
 import info.trekto.jos.core.Simulation;
 
 /**
@@ -27,6 +27,6 @@ public class SimulationRunnable implements Runnable {
 
     @Override
     public void run() {
-        Container.simulationLogic.calculateNewValues(simulation, fromIndex, toIndex);
+        C.simulationLogic.calculateNewValues(simulation, fromIndex, toIndex);
     }
 }

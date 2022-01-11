@@ -1,7 +1,7 @@
 package info.trekto.jos.io;
 
 import com.google.gson.*;
-import info.trekto.jos.Container;
+import info.trekto.jos.C;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.formulas.ForceCalculator;
 import info.trekto.jos.model.SimulationObject;
@@ -151,10 +151,10 @@ public class JsonReaderWriter implements ReaderWriter {
     public void appendObjectsToFile(List<SimulationObject> simulationObjects) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         if (writer == null) {
-            initWriter(Container.properties, Container.properties.getOutputFile());
+            initWriter(C.prop, C.prop.getOutputFile());
             try {
                 writer.write("{\n  \"properties\":\n");
-                gson.toJson(mapPropertiesAndInitialObjects(Container.properties, gson), writer);
+                gson.toJson(mapPropertiesAndInitialObjects(C.prop, gson), writer);
                 writer.write(",\n  \"simulation\": [\n");
             } catch (IOException e) {
                 logger.error("Cannot write 'simulation' element to output JSON file.", e);
@@ -167,12 +167,12 @@ public class JsonReaderWriter implements ReaderWriter {
         }
 
         JsonObject cycleJson = new JsonObject();
-        cycleJson.addProperty("cycle", Container.simulation.getCurrentIterationNumber());
-        cycleJson.addProperty("numberOfObjects", Container.properties.getNumberOfObjects());
+        cycleJson.addProperty("cycle", C.simulation.getCurrentIterationNumber());
+        cycleJson.addProperty("numberOfObjects", C.prop.getNumberOfObjects());
         cycleJson.add("objects", objectsAsJsonArray);
 
         gson.toJson(cycleJson, writer);
-        if (Container.simulation.getCurrentIterationNumber() < Container.properties.getNumberOfIterations()) {
+        if (C.simulation.getCurrentIterationNumber() < C.prop.getNumberOfIterations()) {
             try {
                 writer.write(",\n");
             } catch (IOException e) {
@@ -195,11 +195,11 @@ public class JsonReaderWriter implements ReaderWriter {
 
     public void initWriter(SimulationProperties properties, String inputFilePath) {
         try {
-            if (Container.runtimeProperties.getWriterBufferSize() == 0) {
+            if (C.runtimeProperties.getWriterBufferSize() == 0) {
                 writer = Files.newBufferedWriter(new File(properties.getOutputFile()).toPath(), UTF_8);
             } else {
                 writer = new BufferedWriter(Files.newBufferedWriter(new File(properties.getOutputFile()).toPath(), UTF_8),
-                                            Container.runtimeProperties.getWriterBufferSize());
+                                            C.runtimeProperties.getWriterBufferSize());
             }
         } catch (IOException e) {
             logger.info("Cannot open output file " + inputFilePath, e);

@@ -1,6 +1,6 @@
 package info.trekto.jos.core.impl;
 
-import info.trekto.jos.Container;
+import info.trekto.jos.C;
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.SimulationLogic;
 import info.trekto.jos.formulas.CommonFormulas;
@@ -68,11 +68,11 @@ public class SimulationLogicImpl implements SimulationLogic {
                                        SimulationObject simulationAuxiliaryObject) {
         // members[i]->x = members[i]->x + members[i]->speed.x * simulationProperties.secondsPerCycle;
         simulationAuxiliaryObject.setX(currentSimulationObject.getX().add(
-                currentSimulationObject.getSpeed().getX().multiply(Container.properties.getSecondsPerIteration())));
+                currentSimulationObject.getSpeed().getX().multiply(C.prop.getSecondsPerIteration())));
         simulationAuxiliaryObject.setY(currentSimulationObject.getY().add(
-                currentSimulationObject.getSpeed().getY().multiply(Container.properties.getSecondsPerIteration())));
+                currentSimulationObject.getSpeed().getY().multiply(C.prop.getSecondsPerIteration())));
         simulationAuxiliaryObject.setZ(currentSimulationObject.getZ().add(
-                currentSimulationObject.getSpeed().getZ().multiply(Container.properties.getSecondsPerIteration())));
+                currentSimulationObject.getSpeed().getZ().multiply(C.prop.getSecondsPerIteration())));
     }
 
     private TripleNumber addAcceleration(SimulationObject currentSimulationObject, TripleNumber oldAcceleration,
@@ -88,11 +88,11 @@ public class SimulationLogicImpl implements SimulationLogic {
                              TripleNumber acceleration) {
         // members[i]->speed.x += a.x * simulationProperties.secondsPerCycle;//* t;
         Number speedX = currentSimulationObject.getSpeed().getX()
-                .add(acceleration.getX().multiply(Container.properties.getSecondsPerIteration()));
+                .add(acceleration.getX().multiply(C.prop.getSecondsPerIteration()));
         Number speedY = currentSimulationObject.getSpeed().getY()
-                .add(acceleration.getY().multiply(Container.properties.getSecondsPerIteration()));
+                .add(acceleration.getY().multiply(C.prop.getSecondsPerIteration()));
         Number speedZ = currentSimulationObject.getSpeed().getZ()
-                .add(acceleration.getZ().multiply(Container.properties.getSecondsPerIteration()));
+                .add(acceleration.getZ().multiply(C.prop.getSecondsPerIteration()));
 
         simulationAuxiliaryObject.setSpeed(new TripleNumber(speedX, speedY, speedZ));
     }

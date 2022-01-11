@@ -1,6 +1,6 @@
 package info.trekto.jos.core.impl;
 
-import info.trekto.jos.Container;
+import info.trekto.jos.C;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ public class SimulationRecursiveAction extends RecursiveAction {
     @Override
     protected void compute() {
         if (toIndex - fromIndex <= THRESHOLD) {
-            Container.simulationLogic.calculateNewValues(Container.simulation, fromIndex, toIndex);
+            C.simulationLogic.calculateNewValues(C.simulation, fromIndex, toIndex);
         } else {
             List<RecursiveAction> subtasks = new ArrayList<>();
             int middle = fromIndex + ((toIndex - fromIndex) / 2);

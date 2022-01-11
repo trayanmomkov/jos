@@ -3,7 +3,7 @@
  */
 package info.trekto.jos.visualization.java2dgraphics;
 
-import info.trekto.jos.Container;
+import info.trekto.jos.C;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.visualization.Visualizer;
 
@@ -25,7 +25,7 @@ public class VisualizerImpl implements Visualizer {
     private JFrame frame = null;
 
     public VisualizerImpl() {
-        if (Container.properties.isRealTimeVisualization()) {
+        if (C.prop.isRealTimeVisualization()) {
             frame = new VisualizationFrame(this, "Simple Double Buffer");
             frame.addKeyListener(new VisualizationKeyListener(this));
 

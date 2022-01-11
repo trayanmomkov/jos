@@ -33,63 +33,63 @@ public class ObjectSwappingTest {
     public void test() throws NoSuchMethodException, SecurityException, IllegalAccessException,
             IllegalArgumentException, InvocationTargetException, NoSuchFieldException, FileNotFoundException {
 
-        Container.readerWriter = new JsonReaderWriter();
-        Container.simulation = new SimulationForkJoinImpl();
+        C.io = new JsonReaderWriter();
+        C.simulation = new SimulationForkJoinImpl();
 
-        Container.properties = Container.readerWriter.readProperties("src/test/resources/PSC_5_10_objects_Java2D_RUN.json");
-        Container.properties.createNumberFactory();
+        C.prop = C.io.readProperties("src/test/resources/PSC_5_10_objects_Java2D_RUN.json");
+        C.prop.createNumberFactory();
         Visualizer visualizer = new VisualizerImpl();
-        Container.simulation.addObserver(visualizer);
-        Container.simulationLogic = new SimulationLogicImpl();
+        C.simulation.addObserver(visualizer);
+        C.simulationLogic = new SimulationLogicImpl();
 
 
-        Container.properties.setNumberOfObjects(10);
-        Container.properties.setNumberOfIterations(10);
+        C.prop.setNumberOfObjects(10);
+        C.prop.setNumberOfIterations(10);
 
-        Class clazz = Container.simulation.getClass();
+        Class clazz = C.simulation.getClass();
 
         Method initMethod = clazz.getDeclaredMethod("init");
         Method doIterationMethod = clazz.getDeclaredMethod("doIteration");
 
         initMethod.setAccessible(true);
         doIterationMethod.setAccessible(true);
-        initMethod.invoke(Container.simulation);
+        initMethod.invoke(C.simulation);
 
         List<Integer> originalObjectsIds;
         List<Integer> auxiliaryObjectsIds;
 
         /** Get ids of first (original) objects */
-        originalObjectsIds = getObjectsIds(Container.simulation.getObjects());
+        originalObjectsIds = getObjectsIds(C.simulation.getObjects());
 
         Field auxiliaryObjectsField = clazz.getDeclaredField("auxiliaryObjects");
         auxiliaryObjectsField.setAccessible(true);
 
-        List<SimulationObject> auxiliaryObjects = (List<SimulationObject>) auxiliaryObjectsField.get(Container.simulation);
+        List<SimulationObject> auxiliaryObjects = (List<SimulationObject>) auxiliaryObjectsField.get(C.simulation);
 
         /** Get ids of auxiliary objects */
         auxiliaryObjectsIds = getObjectsIds(auxiliaryObjects);
 
         /** Do iterations and check whether objects in the two lists swap */
-        for (long i = 0; i < Container.properties.getNumberOfIterations(); i++) {
+        for (long i = 0; i < C.prop.getNumberOfIterations(); i++) {
             logger.info("\nIteration " + i);
-            doIterationMethod.invoke(Container.simulation);
+            doIterationMethod.invoke(C.simulation);
 
             if (i % 2 == 0) {
-                List<Integer> actualObjects = getObjectsIds(Container.simulation.getObjects());
+                List<Integer> actualObjects = getObjectsIds(C.simulation.getObjects());
                 assertTrue(auxiliaryObjectsIds.containsAll(actualObjects));
                 assertTrue(actualObjects.containsAll(auxiliaryObjectsIds));
 
-                actualObjects = getObjectsIds((List<SimulationObject>) auxiliaryObjectsField.get(Container
+                actualObjects = getObjectsIds((List<SimulationObject>) auxiliaryObjectsField.get(C
                                                                                                          .simulation));
                 assertTrue(originalObjectsIds.containsAll(actualObjects));
                 assertTrue(actualObjects.containsAll(originalObjectsIds));
             } else {
                 List<Integer> actualObjects = getObjectsIds((List<SimulationObject>) auxiliaryObjectsField
-                        .get(Container.simulation));
+                        .get(C.simulation));
                 assertTrue(auxiliaryObjectsIds.containsAll(actualObjects));
                 assertTrue(actualObjects.containsAll(auxiliaryObjectsIds));
 
-                actualObjects = getObjectsIds(Container.simulation.getObjects());
+                actualObjects = getObjectsIds(C.simulation.getObjects());
                 assertTrue(originalObjectsIds.containsAll(actualObjects));
                 assertTrue(actualObjects.containsAll(originalObjectsIds));
             }

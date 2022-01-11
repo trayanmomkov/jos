@@ -10,12 +10,12 @@ import info.trekto.jos.io.ReaderWriter;
  * Contains instances of main application classes.
  *
  * @author Trayan Momkov
- * @date 5 Mar 2016
+ * C from Container
  */
-public class Container {
+public class C {
     public static SimulationLogic simulationLogic;
     public static Simulation simulation;
-    public static SimulationProperties properties;
-    public static ReaderWriter readerWriter;
+    public static SimulationProperties prop;
+    public static ReaderWriter io;
     public static RuntimeProperties runtimeProperties = new RuntimeProperties();
 }
