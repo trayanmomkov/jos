@@ -1,8 +1,8 @@
 {
-  "numberOfIterations": 10000,
+  "numberOfIterations": 10,
   "secondsPerIteration": 1.0,
   "numberOfObjects": 12,
-  "outputFile": "/home/john/IdeaProjects/jos/src/test/resources/PSC_5_10_objects_Java2D_RUN.out_read_by_new_reader.json",
+  "outputFile": "/home/john/IdeaProjects/jos/src/test/resources/PSC_5_10_objects_Java2D_RUN_read_by_new_reader.out.json",
   "saveToFile": true,
   "numberType": "DOUBLE",
   "interactingLaw": "NEWTON_LAW_OF_GRAVITATION",
