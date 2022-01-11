@@ -5,7 +5,7 @@ import info.trekto.jos.core.impl.SimulationForkJoinImpl;
 import info.trekto.jos.core.impl.SimulationLogicImpl;
 import info.trekto.jos.exceptions.SimulationException;
 import info.trekto.jos.formulas.ForceCalculator.InteractingLaw;
-import info.trekto.jos.io.FormatVersion1ReaderWriter;
+import info.trekto.jos.io.JsonReaderWriter;
 import info.trekto.jos.numbers.NumberFactory;
 import info.trekto.jos.visualization.Visualizer;
 import info.trekto.jos.visualization.java2dgraphics.VisualizerImpl;
@@ -62,7 +62,7 @@ public class Benchmark {
     private void runBenchmark(Simulation simulation, int numberOfThreads, NumberFactory.NumberType numberType, int writerBufferSize,
                               String inputFileName) throws SimulationException {
                               
-        Container.readerWriter = new FormatVersion1ReaderWriter();
+        Container.readerWriter = new JsonReaderWriter();
         Container.simulation = simulation;
 
         try {

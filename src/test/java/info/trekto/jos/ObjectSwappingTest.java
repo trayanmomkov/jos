@@ -5,7 +5,7 @@ package info.trekto.jos;
 
 import info.trekto.jos.core.impl.SimulationForkJoinImpl;
 import info.trekto.jos.core.impl.SimulationLogicImpl;
-import info.trekto.jos.io.FormatVersion1ReaderWriter;
+import info.trekto.jos.io.JsonReaderWriter;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.visualization.Visualizer;
 import info.trekto.jos.visualization.java2dgraphics.VisualizerImpl;
@@ -33,7 +33,7 @@ public class ObjectSwappingTest {
     public void test() throws NoSuchMethodException, SecurityException, IllegalAccessException,
             IllegalArgumentException, InvocationTargetException, NoSuchFieldException, FileNotFoundException {
             
-        Container.readerWriter = new FormatVersion1ReaderWriter();
+        Container.readerWriter = new JsonReaderWriter();
         Container.simulation = new SimulationForkJoinImpl();
 
         Container.properties = Container.readerWriter.readProperties("src/test/resources/PSC_5_10_objects_Java2D_RUN");
