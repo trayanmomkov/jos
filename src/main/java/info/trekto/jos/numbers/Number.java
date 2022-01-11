@@ -165,4 +165,6 @@ public interface Number {
      * @return this {@code Number} converted to a {@code BigDecimal}.
      */
     public BigDecimal bigDecimalValue();
+    
+    String toString();
 }

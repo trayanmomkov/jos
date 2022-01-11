@@ -1,10 +1,8 @@
 package info.trekto.jos.core.impl;
 
 import info.trekto.jos.exceptions.SimulationRuntimeException;
-import info.trekto.jos.formulas.ForceCalculator.ForceCalculatorType;
+import info.trekto.jos.formulas.ForceCalculator.InteractingLaw;
 import info.trekto.jos.model.SimulationObject;
-import info.trekto.jos.numbers.New;
-import info.trekto.jos.numbers.Number;
 import info.trekto.jos.numbers.NumberFactory.NumberType;
 import info.trekto.jos.numbers.NumberFactoryProxy;
 import info.trekto.jos.numbers.impl.BigDecimalNumberFactory;
@@ -14,52 +12,41 @@ import info.trekto.jos.util.Utils;
 
 import java.math.MathContext;
 import java.util.ArrayList;
+import java.util.List;
 
-import static info.trekto.jos.formulas.ForceCalculator.ForceCalculatorType.NEWTON_LAW_OF_GRAVITATION;
+import static info.trekto.jos.formulas.ForceCalculator.InteractingLaw.NEWTON_LAW_OF_GRAVITATION;
 
 /**
  * @author Trayan Momkov
  * @date 6.03.2016 г.1:53:48
  */
 public class SimulationProperties {
-    private int numberOfIterations;
+    private long numberOfIterations;
 
-    private int nanoSecondsPerIteration;
-    private Number secondsPerIteration;
+    private long nanoSecondsPerIteration;
+    private double secondsPerIteration;
 
-    private int numberOfObjects;
+    private long numberOfObjects;
 
     private String outputFile;
 
-    private int numberOfThreads = Utils.CORES;
-
     private boolean saveToFile = false;
 
-    private boolean benchmarkMode = false;
-
     private NumberType numberType;
-    private ForceCalculatorType forceCalculatorType = NEWTON_LAW_OF_GRAVITATION;
+    private InteractingLaw interactingLaw = NEWTON_LAW_OF_GRAVITATION;
     private Integer precision;
-
-    private int writerBufferSize = 0;
 
     private boolean realTimeVisualization = false;
 
     private int playingSpeed = 1;
 
-    private ArrayList<SimulationObject> initialObjects;
+    private List<SimulationObject> initialObjects;
+
+    public SimulationProperties() {
+    }
 
     public boolean isInfiniteSimulation() {
         return numberOfIterations == -1;
-    }
-
-    /**
-     * Call {@link #getNumberOfObjects}. Returns number of objects.
-     *
-     * @return
-     */
-    public int getN() {
-        return numberOfObjects;
     }
 
     /**
@@ -67,22 +54,22 @@ public class SimulationProperties {
      *
      * @return
      */
-    public int getNumberOfObjects() {
+    public long getNumberOfObjects() {
         return numberOfObjects;
     }
 
     /**
      * Java {@link ArrayList} is limited to Integer.MAX_VALUE
      */
-    public void setNumberOfObjects(int numberOfObjects) {
+    public void setNumberOfObjects(long numberOfObjects) {
         this.numberOfObjects = numberOfObjects;
     }
 
-    public int getNumberOfIterations() {
+    public long getNumberOfIterations() {
         return numberOfIterations;
     }
 
-    public void setNumberOfIterations(int numberOfIterations) {
+    public void setNumberOfIterations(long numberOfIterations) {
         this.numberOfIterations = numberOfIterations;
     }
 
@@ -94,21 +81,13 @@ public class SimulationProperties {
         this.outputFile = outputFile;
     }
 
-    public int getNanoSecondsPerIteration() {
+    public long getNanoSecondsPerIteration() {
         return nanoSecondsPerIteration;
     }
 
-    public void setNanoSecondsPerIteration(int nanoSecondsPerIteration) {
+    public void setNanoSecondsPerIteration(long nanoSecondsPerIteration) {
         this.nanoSecondsPerIteration = nanoSecondsPerIteration;
-        this.secondsPerIteration = New.num(nanoSecondsPerIteration).divide(New.BILLION);
-    }
-
-    public int getNumberOfThreads() {
-        return numberOfThreads;
-    }
-
-    public void setNumberOfThreads(int numberOfThreads) {
-        this.numberOfThreads = numberOfThreads;
+        this.secondsPerIteration = nanoSecondsPerIteration / 1000000000.0;
     }
 
     public boolean isSaveToFile() {
@@ -119,23 +98,7 @@ public class SimulationProperties {
         this.saveToFile = saveToFile;
     }
 
-    public boolean isBenchmarkMode() {
-        return benchmarkMode;
-    }
-
-    public void setBenchmarkMode(boolean benchmarkMode) {
-        this.benchmarkMode = benchmarkMode;
-    }
-
-    public int getWriterBufferSize() {
-        return writerBufferSize;
-    }
-
-    public void setWriterBufferSize(int writerBufferSize) {
-        this.writerBufferSize = writerBufferSize;
-    }
-
-    public Number getSecondsPerIteration() {
+    public double getSecondsPerIteration() {
         return secondsPerIteration;
     }
 
@@ -156,15 +119,15 @@ public class SimulationProperties {
     /**
      * @return the forceCalculatorType
      */
-    public ForceCalculatorType getForceCalculatorType() {
-        return forceCalculatorType;
+    public InteractingLaw getInteractingLaw() {
+        return interactingLaw;
     }
 
     /**
-     * @param forceCalculatorType the forceCalculatorType to set
+     * @param interactingLaw the forceCalculatorType to set
      */
-    public void setForceCalculatorType(ForceCalculatorType forceCalculatorType) {
-        this.forceCalculatorType = forceCalculatorType;
+    public void setInteractingLaw(InteractingLaw interactingLaw) {
+        this.interactingLaw = interactingLaw;
     }
 
     public int getPrecision() {
@@ -228,11 +191,11 @@ public class SimulationProperties {
         }
     }
 
-    public ArrayList<SimulationObject> getInitialObjects() {
+    public List<SimulationObject> getInitialObjects() {
         return initialObjects;
     }
 
-    public void setInitialObjects(ArrayList<SimulationObject> initialObjects) {
+    public void setInitialObjects(List<SimulationObject> initialObjects) {
         this.initialObjects = initialObjects;
     }
 }

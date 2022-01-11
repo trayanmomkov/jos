@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
+import java.io.FileNotFoundException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -30,13 +31,14 @@ public class ObjectSwappingTest {
 
     @Test
     public void test() throws NoSuchMethodException, SecurityException, IllegalAccessException,
-            IllegalArgumentException, InvocationTargetException, NoSuchFieldException {
+            IllegalArgumentException, InvocationTargetException, NoSuchFieldException, FileNotFoundException {
             
         Container.readerWriter = new FormatVersion1ReaderWriter();
         Container.simulation = new SimulationForkJoinImpl();
 
         Container.properties = Container.readerWriter.readProperties("src/test/resources/PSC_5_10_objects_Java2D_RUN");
-        Container.readerWriter.initReaderAndWriter("src/test/resources/PSC_5_10_objects_Java2D_RUN", Container.properties);
+        Container.properties.createNumberFactory();
+        Container.readerWriter.initWriter(Container.properties, "src/test/resources/PSC_5_10_objects_Java2D_RUN");
         Visualizer visualizer = new VisualizerImpl();
         Container.simulation.addObserver(visualizer);
         Container.simulationLogic = new SimulationLogicImpl();

@@ -35,8 +35,7 @@ public class FormatVersion1ReaderWriter implements ReaderWriter {
     public static final String keyValueSeparator = ":[\\s\\t]+";
     private static final Logger logger = LoggerFactory.getLogger(FormatVersion1ReaderWriter.class);
     private BufferedWriter writer;
-    private BufferedReader reader;
-    
+
     private static String match(String pattern, String input) {
         return match(pattern, input, 1);
     }
@@ -51,24 +50,19 @@ public class FormatVersion1ReaderWriter implements ReaderWriter {
         }
     }
 
-    public void initReaderAndWriter(String inputFilePath, SimulationProperties properties) {
-        initReaderAndWriter(inputFilePath, properties, StandardCharsets.UTF_8);
+    @Override
+    public void writeProperties(SimulationProperties properties, String outputFilePath) {
+        throw new RuntimeException("Not implemented.");
     }
 
-    public void initReaderAndWriter(String inputFilePath, SimulationProperties properties, Charset charset) {
+    @Override
+    public void initWriter(SimulationProperties properties, String inputFilePath) {
         try {
-            File inputFile = new File(inputFilePath);
-            reader = Files.newBufferedReader(inputFile.toPath(), charset);
-            // writer = Files.newBufferedWriter(new File(outputFile).toPath(), charset);
-        } catch (IOException e) {
-            logger.info("Cannot open input file " + inputFilePath, e);
-        }
-        try {
-            if (properties.getWriterBufferSize() == 0) {
-                writer = Files.newBufferedWriter(new File(properties.getOutputFile()).toPath(), charset);
+            if (Container.runtimeProperties.getWriterBufferSize() == 0) {
+                writer = Files.newBufferedWriter(new File(properties.getOutputFile()).toPath(), StandardCharsets.UTF_8);
             } else {
-                writer = new BufferedWriter(Files.newBufferedWriter(new File(properties.getOutputFile()).toPath(), charset),
-                                            properties.getWriterBufferSize());
+                writer = new BufferedWriter(Files.newBufferedWriter(new File(properties.getOutputFile()).toPath(), StandardCharsets.UTF_8),
+                                            Container.runtimeProperties.getWriterBufferSize());
             }
         } catch (IOException e) {
             logger.info("Cannot open output file " + inputFilePath, e);
@@ -110,7 +104,7 @@ public class FormatVersion1ReaderWriter implements ReaderWriter {
         try {
             // fileToSave<<"============================ " << N << " | " << simulationProperties.cycleCounter <<
             // " (objects | cycle) ============================\n\n";
-            writer.write("============================ " + Container.properties.getN() + " | "
+            writer.write("============================ " + Container.properties.getNumberOfObjects() + " | "
                                  + Container.simulation.getCurrentIterationNumber()
                                  + " (objects | cycle) ============================\n\n");
 
@@ -309,7 +303,7 @@ public class FormatVersion1ReaderWriter implements ReaderWriter {
             reader.readLine();
 
             properties.setInitialObjects(new ArrayList<>());
-            for (int i = 0; i < properties.getN(); i++) {
+            for (int i = 0; i < properties.getNumberOfObjects(); i++) {
                 properties.getInitialObjects().add(readObjectFromFile(reader));
             }
         } catch (IOException e) {

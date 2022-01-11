@@ -2,6 +2,7 @@ package info.trekto.jos;
 
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.SimulationLogic;
+import info.trekto.jos.core.impl.RuntimeProperties;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.io.ReaderWriter;
 
@@ -16,4 +17,5 @@ public class Container {
     public static Simulation simulation;
     public static SimulationProperties properties;
     public static ReaderWriter readerWriter;
+    public static RuntimeProperties runtimeProperties = new RuntimeProperties();
 }

@@ -1,5 +1,6 @@
 package info.trekto.jos.util;
 
+import info.trekto.jos.Container;
 import info.trekto.jos.core.impl.SimulationProperties;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +13,7 @@ public class Utils {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Utils.class);
 
     public static void printConfiguration(SimulationProperties properties) {
-        if (properties.isBenchmarkMode() || !properties.isSaveToFile()) {
+        if (Container.runtimeProperties.isBenchmarkMode() || !properties.isSaveToFile()) {
             logger.info("███ NOT SAVING TO FILE! ███");
         }
         logger.info("JRE version: " + System.getProperty("java.specification.version"));
@@ -39,10 +40,10 @@ public class Utils {
 
         logger.info("Number of cores: " + CORES);
         logger.info("Precision (number of digits to be used): " + properties.getPrecision());
-        logger.info("Number of runnig threads: " + properties.getNumberOfThreads());
+        logger.info("Number of runnig threads: " + Container.runtimeProperties.getNumberOfThreads());
         logger.info("Number of objects: " + properties.getNumberOfObjects());
         logger.info("Number of iterations: " + properties.getNumberOfIterations());
         logger.info("'Number' implementation: " + properties.getNumberType());
-        logger.info("Writer buffer size: " + properties.getWriterBufferSize());
+        logger.info("Writer buffer size: " + Container.runtimeProperties.getWriterBufferSize());
     }
 }

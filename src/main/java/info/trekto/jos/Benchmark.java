@@ -4,13 +4,15 @@ import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.impl.SimulationForkJoinImpl;
 import info.trekto.jos.core.impl.SimulationLogicImpl;
 import info.trekto.jos.exceptions.SimulationException;
-import info.trekto.jos.formulas.ForceCalculator.ForceCalculatorType;
+import info.trekto.jos.formulas.ForceCalculator.InteractingLaw;
 import info.trekto.jos.io.FormatVersion1ReaderWriter;
 import info.trekto.jos.numbers.NumberFactory;
 import info.trekto.jos.visualization.Visualizer;
 import info.trekto.jos.visualization.java2dgraphics.VisualizerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.FileNotFoundException;
 
 import static info.trekto.jos.numbers.NumberFactory.NumberType.BIG_DECIMAL;
 import static info.trekto.jos.numbers.NumberFactory.NumberType.DOUBLE;
@@ -63,18 +65,24 @@ public class Benchmark {
         Container.readerWriter = new FormatVersion1ReaderWriter();
         Container.simulation = simulation;
 
-        Container.properties = Container.readerWriter.readProperties(inputFileName);
-        Container.readerWriter.initReaderAndWriter(inputFileName, Container.properties);
+        try {
+            Container.properties = Container.readerWriter.readProperties(inputFileName);
+            Container.properties.createNumberFactory();
+        } catch (FileNotFoundException e) {
+            logger.error("Cannot read properties file.", e);
+            return;
+        }
+        Container.readerWriter.initWriter(Container.properties, inputFileName);
         Visualizer visualizer = new VisualizerImpl();
         Container.simulation.addObserver(visualizer);
         Container.simulationLogic = new SimulationLogicImpl();
 
         Container.properties.setNumberType(numberType);
-        Container.properties.setNumberOfThreads(numberOfThreads);
-        Container.properties.setWriterBufferSize(writerBufferSize);
-        Container.properties.setBenchmarkMode(true);
+        Container.runtimeProperties.setNumberOfThreads(numberOfThreads);
+        Container.runtimeProperties.setWriterBufferSize(writerBufferSize);
+        Container.runtimeProperties.setBenchmarkMode(true);
         Container.properties.setSaveToFile(false);
-        Container.properties.setForceCalculatorType(ForceCalculatorType.NEWTON_LAW_OF_GRAVITATION);
+        Container.properties.setInteractingLaw(InteractingLaw.NEWTON_LAW_OF_GRAVITATION);
 
         Container.simulationLogic = new SimulationLogicImpl();
 
@@ -85,10 +93,10 @@ public class Benchmark {
         long durationInNanoseconds = Container.simulation.startSimulation();
 
         System.out.print("Precision (number of digits to be used): " + Container.properties.getPrecision() +
-        "\tNumber of runnig threads: " + Container.properties.getNumberOfThreads() +
+        "\tNumber of runnig threads: " + Container.runtimeProperties.getNumberOfThreads() +
         "\t'Number' implementation: " + Container.properties.getNumberType() +
         "\tTotal time: " + "\t" + (durationInNanoseconds / 1000000) + " ms");
-        if (Container.properties.getNumberOfThreads() == CORES) {
+        if (Container.runtimeProperties.getNumberOfThreads() == CORES) {
             System.out.print(" <<<<<<");
         }
     }

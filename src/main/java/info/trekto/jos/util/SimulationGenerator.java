@@ -1,9 +1,14 @@
 package info.trekto.jos.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.*;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 
 public class SimulationGenerator {
+    private static final Logger logger = LoggerFactory.getLogger(SimulationGenerator.class);
     private String filename = "input.sim";
     private int numberOfObject = 500;
     private boolean savingData = true;
@@ -15,11 +20,10 @@ public class SimulationGenerator {
     }
 
     public void generate() {
-        try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(filename), "utf-8"))) {
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filename), StandardCharsets.UTF_8))) {
             generateToWriter(writer);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Cannot write generated simulation.", e);
         }
     }
 

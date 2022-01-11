@@ -9,7 +9,6 @@ import info.trekto.jos.formulas.NewtonGravity;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.SimulationObjectImpl;
 import info.trekto.jos.numbers.Number;
-import info.trekto.jos.util.Utils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.LoggerFactory;
 
@@ -53,11 +52,12 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
         /**
          * Distribute simulation objects per threads and start execution
          */
-        if (Container.properties.getNumberOfThreads() == 1) {
-            Container.simulationLogic.calculateNewValues(this, 0, objects.size());
-        } else {
-            new SimulationRecursiveAction(0, objects.size()).compute();
-        }
+        // TODO Decide dynamically how many threads to use.
+//        if (Container.properties.getNumberOfThreads() == 1) {
+        Container.simulationLogic.calculateNewValues(this, 0, objects.size());
+//        } else {
+//            new SimulationRecursiveAction(0, objects.size()).compute();
+//        }
 
         /**
          * Remove disappeared because of collision objects
@@ -81,7 +81,7 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
          * candidates for garbage collection.
          */
 
-        if (Container.properties.isSaveToFile() && !Container.properties.isBenchmarkMode()) {
+        if (Container.properties.isSaveToFile() && !Container.runtimeProperties.isBenchmarkMode()) {
             Container.readerWriter.appendObjectsToFile(objects);
         }
     }
@@ -95,12 +95,13 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
         long startTime = globalStartTime;
         long endTime;
 
-        for (int i = 0; Container.properties.isInfiniteSimulation() || i < Container.properties.getNumberOfIterations(); i++) {
-            try {
-                iterationCounter = i + 1;
+        try {
+            for (int i = 0; Container.properties.isInfiniteSimulation() || i < Container.properties.getNumberOfIterations(); i++) {
+                try {
+                    iterationCounter = i + 1;
 
-                if (i % 1000 == 0 && !Container.properties.isBenchmarkMode()) {
-                    logger.info("Iteration " + i);
+                    if (i % 1000 == 0 && !Container.runtimeProperties.isBenchmarkMode()) {
+                        logger.info("Iteration " + i);
 //                    if (Container.properties.isBenchmarkMode()) {
 //                        endTime = System.nanoTime();
 //                        long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
@@ -108,30 +109,32 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
 //                        logger.info("\t" + (duration / 1000000) + " ms");
 //                        startTime = System.nanoTime();
 //                    }
+                    }
+
+                    if (Container.properties.isRealTimeVisualization() && i % Container.properties.getPlayingSpeed() == 0) {
+                        setChanged();
+                        notifyObservers(objects);
+                    }
+
+                    doIteration();
+
+                    // /** On every 100 iterations flush to disk */
+                    // if (i % 100 == 0) {
+                    // Container.Container.readerWriter.flushToDisk();
+                    // }
+                } catch (InterruptedException e) {
+                    logger.error("Concurrency failure. One of the threads interrupted in cycle " + i, e);
                 }
+            }
 
-                if (Container.properties.isRealTimeVisualization() && i % Container.properties.getPlayingSpeed() == 0) {
-                    setChanged();
-                    notifyObservers(objects);
-                }
-
-                doIteration();
-
-                // /** On every 100 iterations flush to disk */
-                // if (i % 100 == 0) {
-                // Container.Container.readerWriter.flushToDisk();
-                // }
-            } catch (InterruptedException e) {
-                // logger.error("One of the threads interrupted in cycle " + i, e);
-                logger.error("Concurrency failure", e);
+            endTime = System.nanoTime();
+        } finally {
+            if (Container.properties.isSaveToFile() && !Container.runtimeProperties.isBenchmarkMode()) {
+                Container.readerWriter.endFile();
             }
         }
 
-        endTime = System.nanoTime();
 
-        if (Container.properties.isSaveToFile() && !Container.properties.isBenchmarkMode()) {
-            Container.readerWriter.endFile();
-        }
         logger.info("End of simulation.");
         return endTime - globalStartTime;
     }
@@ -164,7 +167,7 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
          */
         Container.properties.setNanoSecondsPerIteration(Container.properties.getNanoSecondsPerIteration());
 
-        switch (Container.properties.getForceCalculatorType()) {
+        switch (Container.properties.getInteractingLaw()) {
             case NEWTON_LAW_OF_GRAVITATION:
                 forceCalculator = new NewtonGravity();
                 break;
@@ -176,7 +179,7 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
                 break;
         }
 
-        threads = new Thread[Container.properties.getNumberOfThreads()];
+        threads = new Thread[Container.runtimeProperties.getNumberOfThreads()];
         objects = new ArrayList<SimulationObject>();
         auxiliaryObjects = new ArrayList<SimulationObject>();
 //        objectsForRemoval = new ArrayList<SimulationObject>();

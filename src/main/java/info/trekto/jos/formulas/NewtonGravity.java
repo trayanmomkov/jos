@@ -21,7 +21,7 @@ public class NewtonGravity implements ForceCalculator {
     }
 
     @Override
-    public TripleNumber caclulateForceAsVector(SimulationObject object1, SimulationObject object2, Number distance) {
+    public TripleNumber calculateForceAsVector(SimulationObject object1, SimulationObject object2, Number distance) {
         Number force = caclulateForce(object1, object2, distance);
         //       Fx = F*x/r;
         Number forceX = force.multiply(object2.getX().subtract(object1.getX())).divide(distance);

@@ -23,10 +23,10 @@ public interface ForceCalculator {
      * @param distance
      * @return
      */
-    TripleNumber caclulateForceAsVector(final SimulationObject object1, final SimulationObject object2,
+    TripleNumber calculateForceAsVector(final SimulationObject object1, final SimulationObject object2,
                                         final Number distance);
 
-    public enum ForceCalculatorType {
+    public enum InteractingLaw {
         NEWTON_LAW_OF_GRAVITATION,
         COULOMB_LAW_ELECTRICALLY;
     }

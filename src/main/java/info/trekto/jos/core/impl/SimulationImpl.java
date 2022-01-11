@@ -9,7 +9,6 @@ import info.trekto.jos.formulas.NewtonGravity;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.SimulationObjectImpl;
 import info.trekto.jos.numbers.Number;
-import info.trekto.jos.util.Utils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,13 +52,13 @@ public class SimulationImpl extends Observable implements Simulation {
         /**
          * Distribute simulation objects per threads and start execution
          */
-        if (properties.getNumberOfThreads() == 1) {
+        if (Container.runtimeProperties.getNumberOfThreads() == 1) {
             new SimulationRunnable(this, 0, objects.size()).run();
         } else {
             int fromIndex = 0, toIndex = 0;
-            ArrayList<Integer> distributionPerThread = getObjectsDistributionPerThread(properties.getNumberOfThreads(),
+            ArrayList<Integer> distributionPerThread = getObjectsDistributionPerThread(Container.runtimeProperties.getNumberOfThreads(),
                                                                                        objects.size());
-            for (int i = 0; i < properties.getNumberOfThreads(); i++) {
+            for (int i = 0; i < Container.runtimeProperties.getNumberOfThreads(); i++) {
                 toIndex = fromIndex + distributionPerThread.get(i);
                 threads[i] = new Thread(new SimulationRunnable(this, fromIndex, toIndex));
                 threads[i].start();
@@ -96,7 +95,7 @@ public class SimulationImpl extends Observable implements Simulation {
          * candidates for garbage collection.
          */
 
-        if (properties.isSaveToFile() && !properties.isBenchmarkMode()) {
+        if (properties.isSaveToFile() && !Container.runtimeProperties.isBenchmarkMode()) {
             Container.readerWriter.appendObjectsToFile(objects);
         }
     }
@@ -114,7 +113,7 @@ public class SimulationImpl extends Observable implements Simulation {
             try {
                 iterationCounter = i + 1;
 
-                if (properties.isBenchmarkMode() && i != 0 && i % 10000 == 0) {
+                if (Container.runtimeProperties.isBenchmarkMode() && i != 0 && i % 10000 == 0) {
                     endTime = System.nanoTime();
                     long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
                     // logger.info("Iteration " + i + "\t" + (duration / 1000000) + " ms");
@@ -135,13 +134,15 @@ public class SimulationImpl extends Observable implements Simulation {
 //                 }
             } catch (InterruptedException e) {
                 // logger.error("One of the threads interrupted in cycle " + i, e);
-                e.printStackTrace();
+                logger.error("Threads problem.", e);
+            } finally {
+                Container.readerWriter.endFile();
             }
         }
 
         endTime = System.nanoTime();
 
-        if (properties.isSaveToFile() && !properties.isBenchmarkMode()) {
+        if (properties.isSaveToFile() && !Container.runtimeProperties.isBenchmarkMode()) {
             Container.readerWriter.endFile();
         }
         logger.info("End of simulation.");
@@ -176,7 +177,7 @@ public class SimulationImpl extends Observable implements Simulation {
          */
         properties.setNanoSecondsPerIteration(properties.getNanoSecondsPerIteration());
 
-        switch (properties.getForceCalculatorType()) {
+        switch (properties.getInteractingLaw()) {
             case NEWTON_LAW_OF_GRAVITATION:
                 forceCalculator = new NewtonGravity();
                 break;
@@ -188,7 +189,7 @@ public class SimulationImpl extends Observable implements Simulation {
                 break;
         }
 
-        threads = new Thread[properties.getNumberOfThreads()];
+        threads = new Thread[Container.runtimeProperties.getNumberOfThreads()];
         objects = new ArrayList<SimulationObject>();
         auxiliaryObjects = new ArrayList<SimulationObject>();
 //        objectsForRemoval = new ArrayList<SimulationObject>();

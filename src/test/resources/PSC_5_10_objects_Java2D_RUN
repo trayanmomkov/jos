@@ -28,7 +28,7 @@ trajectory width:	1		Width of lines linking trajectory points
 showing labels:		0		Whether to show object labels.
 
 saving data:		1		(1 = true, 0 = false)
-output file name:	default Must not contain spaces. Default filename is <input filename>.out
+output file name:	/home/john/IdeaProjects/jos/src/test/resources/PSC_5_10_objects_Java2D_RUN_read_by_old_reader.out.json Must not contain spaces. Default filename is <input filename>.out
 number of objects:	12
 
 Objects:
