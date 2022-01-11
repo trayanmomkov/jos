@@ -53,11 +53,11 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
          * Distribute simulation objects per threads and start execution
          */
         // TODO Decide dynamically how many threads to use.
-//        if (Container.properties.getNumberOfThreads() == 1) {
-        C.simulationLogic.calculateNewValues(this, 0, objects.size());
-//        } else {
-//            new SimulationRecursiveAction(0, objects.size()).compute();
-//        }
+        if (C.runtimeProperties.getNumberOfThreads() == 1) {
+            C.simulationLogic.calculateNewValues(this, 0, objects.size());
+        } else {
+            new SimulationRecursiveAction(0, objects.size()).compute();
+        }
 
         /**
          * Remove disappeared because of collision objects

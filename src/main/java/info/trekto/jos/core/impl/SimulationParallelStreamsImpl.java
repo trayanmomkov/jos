@@ -10,21 +10,21 @@ import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.SimulationObjectImpl;
 import info.trekto.jos.numbers.Number;
 import org.apache.commons.lang3.NotImplementedException;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 /**
+ * This implementation uses fork/join Java framework introduced in Java 7.
+ *
  * @author Trayan Momkov
- * @date 6.03.2016 г.1:53:36
+ * @date 2017-May-18
  */
-@Deprecated(forRemoval = true)
-public class SimulationImpl extends Observable implements Simulation {
-    private static final Logger logger = LoggerFactory.getLogger(SimulationImpl.class);
+public class SimulationParallelStreamsImpl extends Observable implements Simulation {
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(SimulationParallelStreamsImpl.class);
 
     // private Logger logger = LoggerFactory.getLogger(getClass());
-    private SimulationProperties properties = C.prop;
+//    private SimulationProperties properties = Container.properties;
     private Thread[] threads;
     private Map<Integer, ArrayList<Integer>> numberOfobjectsDistributionPerThread = new HashMap<>();
     private int iterationCounter;
@@ -40,7 +40,7 @@ public class SimulationImpl extends Observable implements Simulation {
      * iteration. We create objects at the beginning of the simulation and after that only remove
      * objects when collision appear. Good candidate for implementation of the lists is LinkedList
      * because during simulation we will not add any new objects to the lists, nor we will access
-     * them randomly (via indices). We only remove from them, get sublists and iterate sequentially.
+     * themrandomly (via indices). We only remove from them, get sublists and iterate sequentially.
      * But getting sublist is done by indices in every iteration. On the other hand removing objects
      * happens relatively rarely so ArrayList is faster than LinkedList.
      */
@@ -48,54 +48,44 @@ public class SimulationImpl extends Observable implements Simulation {
     private List<SimulationObject> auxiliaryObjects;
 //    private List<SimulationObject> objectsForRemoval;
 
-    private void doIteration() throws InterruptedException {
-        /**
-         * Distribute simulation objects per threads and start execution
-         */
-        if (C.runtimeProperties.getNumberOfThreads() == 1) {
-            new SimulationRunnable(this, 0, objects.size()).run();
-        } else {
-            int fromIndex = 0, toIndex = 0;
-            ArrayList<Integer> distributionPerThread = getObjectsDistributionPerThread(C.runtimeProperties.getNumberOfThreads(),
-                                                                                       objects.size());
-            for (int i = 0; i < C.runtimeProperties.getNumberOfThreads(); i++) {
-                toIndex = fromIndex + distributionPerThread.get(i);
-                threads[i] = new Thread(new SimulationRunnable(this, fromIndex, toIndex));
-                threads[i].start();
-                fromIndex = toIndex;
-            }
-
-            /**
-             * Wait for threads to finish
-             */
-            for (Thread thread : threads) {
-                thread.join();
+    private static SimulationObject findByLabel(String label, List<SimulationObject> objects) {
+        for (SimulationObject object : objects) {
+            if (object.getLabel().equals(label)) {
+                return object;
             }
         }
+        return null;
+    }
 
-        /**
-         * Remove disappeared because of collision objects
-         */
+    private void doIteration() throws InterruptedException {
+//        /* Distribute simulation objects per threads and start execution */
+//        // TODO Decide dynamically how many threads to use.
+//        if (C.runtimeProperties.getNumberOfThreads() == 1) {
+//            C.simulationLogic.calculateNewValues(this, 0, objects.size());
+//        } else {
+//            new SimulationRecursiveAction(0, objects.size()).compute();
+//        }
+
+        C.simulation.getObjects().parallelStream().forEach(o -> 
+            C.simulationLogic.calculateNewValues(this, o, findByLabel(o.getLabel(), C.simulation.getAuxiliaryObjects()))
+        );
+
+        /* Remove disappeared because of collision objects */
 //        auxiliaryObjects.removeAll(objectsForRemoval);
-        /**
-         * Swap lists
-         */
+
+        /* Swap lists */
         {
             List<SimulationObject> tempList = objects;
             objects = auxiliaryObjects;
 
-            /**
-             * Make size of auxiliary to match that of objects list. Objects in auxiliaryObjects now
-             * have old values but they will be replaced in next iteration
-             */
+            /* Make size of auxiliary to match that of objects list. Objects in auxiliaryObjects now
+               have old values but they will be replaced in next iteration */
             auxiliaryObjects = tempList.subList(0, objects.size());
         }
-        /**
-         * Here (outside the scope of tempList) objects remaining only in tempList should be
-         * candidates for garbage collection.
-         */
+        /* Here (outside the scope of tempList) objects remaining only in tempList should be
+           candidates for garbage collection. */
 
-        if (properties.isSaveToFile() && !C.runtimeProperties.isBenchmarkMode()) {
+        if (C.prop.isSaveToFile() && !C.runtimeProperties.isBenchmarkMode()) {
             C.io.appendObjectsToFile(objects);
         }
     }
@@ -109,42 +99,46 @@ public class SimulationImpl extends Observable implements Simulation {
         long startTime = globalStartTime;
         long endTime;
 
-        for (int i = 0; properties.isInfiniteSimulation() || i < properties.getNumberOfIterations(); i++) {
-            try {
-                iterationCounter = i + 1;
+        try {
+            for (int i = 0; C.prop.isInfiniteSimulation() || i < C.prop.getNumberOfIterations(); i++) {
+                try {
+                    iterationCounter = i + 1;
 
-                if (C.runtimeProperties.isBenchmarkMode() && i != 0 && i % 10000 == 0) {
-                    endTime = System.nanoTime();
-                    long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
-                    // logger.info("Iteration " + i + "\t" + (duration / 1000000) + " ms");
-                    logger.info("Iteration " + i + "\t" + (duration / 1000000) + " ms");
-                    startTime = System.nanoTime();
+                    if (i % 1000 == 0 && !C.runtimeProperties.isBenchmarkMode()) {
+                        logger.info("Iteration " + i);
+//                    if (Container.properties.isBenchmarkMode()) {
+//                        endTime = System.nanoTime();
+//                        long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
+//                        // logger.info("Iteration " + i + "\t" + (duration / 1000000) + " ms");
+//                        logger.info("\t" + (duration / 1000000) + " ms");
+//                        startTime = System.nanoTime();
+//                    }
+                    }
+
+                    if (C.prop.isRealTimeVisualization() && i % C.prop.getPlayingSpeed() == 0) {
+                        setChanged();
+                        notifyObservers(objects);
+                    }
+
+                    doIteration();
+
+                    // /** On every 100 iterations flush to disk */
+                    // if (i % 100 == 0) {
+                    // Container.Container.readerWriter.flushToDisk();
+                    // }
+                } catch (InterruptedException e) {
+                    logger.error("Concurrency failure. One of the threads interrupted in cycle " + i, e);
                 }
+            }
 
-                if (properties.isRealTimeVisualization() && i % properties.getPlayingSpeed() == 0) {
-                    setChanged();
-                    notifyObservers(objects);
-                }
-
-                doIteration();
-
-                // /** On every 100 iterations flush to disk */
-//                 if (i % 100 == 0) {
-//                     Container.readerWriter.flushToDisk();
-//                 }
-            } catch (InterruptedException e) {
-                // logger.error("One of the threads interrupted in cycle " + i, e);
-                logger.error("Threads problem.", e);
-            } finally {
+            endTime = System.nanoTime();
+        } finally {
+            if (C.prop.isSaveToFile() && !C.runtimeProperties.isBenchmarkMode()) {
                 C.io.endFile();
             }
         }
 
-        endTime = System.nanoTime();
 
-        if (properties.isSaveToFile() && !C.runtimeProperties.isBenchmarkMode()) {
-            C.io.endFile();
-        }
         logger.info("End of simulation.");
         return endTime - globalStartTime;
     }
@@ -175,9 +169,9 @@ public class SimulationImpl extends Observable implements Simulation {
          * This is need because we don't know the type of secondsPerItaration field before number
          * factory is set
          */
-        properties.setSecondsPerIteration(properties.getSecondsPerIteration());
+        C.prop.setSecondsPerIteration(C.prop.getSecondsPerIteration());
 
-        switch (properties.getInteractingLaw()) {
+        switch (C.prop.getInteractingLaw()) {
             case NEWTON_LAW_OF_GRAVITATION:
                 forceCalculator = new NewtonGravity();
                 break;
@@ -193,6 +187,7 @@ public class SimulationImpl extends Observable implements Simulation {
         objects = new ArrayList<SimulationObject>();
         auxiliaryObjects = new ArrayList<SimulationObject>();
 //        objectsForRemoval = new ArrayList<SimulationObject>();
+
         for (SimulationObject simulationObject : C.prop.getInitialObjects()) {
             objects.add(new SimulationObjectImpl(simulationObject));
             auxiliaryObjects.add(new SimulationObjectImpl(simulationObject));
@@ -202,7 +197,7 @@ public class SimulationImpl extends Observable implements Simulation {
         }
         logger.info("Done.\n");
 
-//        Utils.printConfiguration(properties);
+//        Utils.printConfiguration(Container.properties);
     }
 
     @Override
@@ -213,37 +208,6 @@ public class SimulationImpl extends Observable implements Simulation {
     @Override
     public List<SimulationObject> getAuxiliaryObjects() {
         return auxiliaryObjects;
-    }
-
-    /**
-     * Distribute objects per thread and return array which indices are thread numbers and values
-     * are objects for the given thread. For example: getObjectsDistributionPerThread(4, 10) must
-     * return [3, 3, 2, 2] that means for thread 0 - 3 objects for thread 1 - 3 objects for thread 2
-     * - 2 objects for thread 3 - 2 objects
-     *
-     * @param numberOfThreads
-     * @param numberOfObjects
-     * @return
-     */
-    public ArrayList<Integer> getObjectsDistributionPerThread(int numberOfThreads, int numberOfObjects) {
-        if (numberOfobjectsDistributionPerThread.get(numberOfObjects) == null) {
-            numberOfobjectsDistributionPerThread.put(numberOfObjects, new ArrayList<Integer>());
-            for (int i = 0; i < numberOfThreads; i++) {
-                numberOfobjectsDistributionPerThread.get(numberOfObjects).add(0);
-            }
-            int currentThread = 0;
-            for (int i = 0; i < numberOfObjects; i++) {
-                numberOfobjectsDistributionPerThread.get(numberOfObjects).set(
-                        currentThread,
-                        numberOfobjectsDistributionPerThread.get(numberOfObjects).get(currentThread) + 1);
-                if (currentThread == numberOfThreads - 1) {
-                    currentThread = 0;
-                } else {
-                    currentThread++;
-                }
-            }
-        }
-        return numberOfobjectsDistributionPerThread.get(numberOfObjects);
     }
 
     @Override

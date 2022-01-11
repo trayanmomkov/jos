@@ -64,6 +64,32 @@ public class SimulationLogicImpl implements SimulationLogic {
         }
     }
 
+    @Override
+    public void calculateNewValues(Simulation simulation, SimulationObject currentSimulationObject, SimulationObject simulationAuxiliaryObject) {
+            /* Move object */
+            moveSimulationObjects(currentSimulationObject, simulationAuxiliaryObject);
+
+            /* Calculate acceleration */
+            TripleNumber acceleration = new TripleNumber();
+            for (SimulationObject tempSimulationObject : simulation.getObjects()) {
+                if (tempSimulationObject == currentSimulationObject) {
+                    continue;
+                }
+                /* Calculate force */
+                Number distance = CommonFormulas.calculateDistance(currentSimulationObject, tempSimulationObject);
+                TripleNumber force = simulation.getForceCalculator().calculateForceAsVector(
+                        currentSimulationObject,
+                        tempSimulationObject,
+                        distance);
+
+                /* Add to current acceleration */
+                acceleration = addAcceleration(currentSimulationObject, acceleration, force);
+            }
+
+            /* Change speed */
+            changeSpeed(currentSimulationObject, simulationAuxiliaryObject, acceleration);
+    }
+
     private void moveSimulationObjects(SimulationObject currentSimulationObject,
                                        SimulationObject simulationAuxiliaryObject) {
         // members[i]->x = members[i]->x + members[i]->speed.x * simulationProperties.secondsPerCycle;
