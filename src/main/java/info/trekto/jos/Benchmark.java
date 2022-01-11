@@ -72,7 +72,6 @@ public class Benchmark {
             logger.error("Cannot read properties file.", e);
             return;
         }
-        Container.readerWriter.initWriter(Container.properties, inputFileName);
         Visualizer visualizer = new VisualizerImpl();
         Container.simulation.addObserver(visualizer);
         Container.simulationLogic = new SimulationLogicImpl();

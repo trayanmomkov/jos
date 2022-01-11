@@ -36,9 +36,8 @@ public class ObjectSwappingTest {
         Container.readerWriter = new JsonReaderWriter();
         Container.simulation = new SimulationForkJoinImpl();
 
-        Container.properties = Container.readerWriter.readProperties("src/test/resources/PSC_5_10_objects_Java2D_RUN");
+        Container.properties = Container.readerWriter.readProperties("src/test/resources/PSC_5_10_objects_Java2D_RUN.json");
         Container.properties.createNumberFactory();
-        Container.readerWriter.initWriter(Container.properties, "src/test/resources/PSC_5_10_objects_Java2D_RUN");
         Visualizer visualizer = new VisualizerImpl();
         Container.simulation.addObserver(visualizer);
         Container.simulationLogic = new SimulationLogicImpl();

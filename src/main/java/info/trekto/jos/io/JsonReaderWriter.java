@@ -151,7 +151,7 @@ public class JsonReaderWriter implements ReaderWriter {
     public void appendObjectsToFile(List<SimulationObject> simulationObjects) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         if (writer == null) {
-            Container.readerWriter.initWriter(Container.properties, Container.properties.getOutputFile());
+            initWriter(Container.properties, Container.properties.getOutputFile());
             try {
             writer.write("{\n  \"properties\":\n");
                 gson.toJson(mapPropertiesAndInitialObjects(Container.properties, gson), writer);
@@ -193,7 +193,6 @@ public class JsonReaderWriter implements ReaderWriter {
         }
     }
 
-    @Override
     public void initWriter(SimulationProperties properties, String inputFilePath) {
         try {
             if (Container.runtimeProperties.getWriterBufferSize() == 0) {

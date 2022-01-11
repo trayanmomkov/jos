@@ -14,6 +14,4 @@ public interface ReaderWriter {
     void appendObjectsToFile(List<SimulationObject> objects);
 
     void endFile();
-
-    void initWriter(SimulationProperties properties, String inputFilePath);
 }
