@@ -55,7 +55,7 @@ public class JsonReaderWriter implements ReaderWriter {
         JsonObject json = new JsonObject();
 
         json.addProperty("numberOfIterations", properties.getNumberOfIterations());
-        json.addProperty("secondsPerIteration", properties.getSecondsPerIteration());
+        json.addProperty("secondsPerIteration", properties.getSecondsPerIteration().toString());
         json.addProperty("numberOfObjects", properties.getNumberOfObjects());
         json.addProperty("outputFile", properties.getOutputFile());
         json.addProperty("saveToFile", properties.isSaveToFile());
@@ -101,7 +101,7 @@ public class JsonReaderWriter implements ReaderWriter {
         try {
             JsonObject json = JsonParser.parseReader(new FileReader(inputFilePath)).getAsJsonObject();
             properties.setNumberOfIterations(json.get("numberOfIterations").getAsLong());
-            properties.setNanoSecondsPerIteration(Math.round(json.get("secondsPerIteration").getAsDouble()) * 1000000000);
+            properties.setSecondsPerIteration(New.num(json.get("secondsPerIteration").getAsString()));
             properties.setNumberOfObjects(json.get("numberOfObjects").getAsLong());
             properties.setOutputFile(json.get("outputFile").getAsString());
             properties.setSaveToFile(json.get("saveToFile").getAsBoolean());

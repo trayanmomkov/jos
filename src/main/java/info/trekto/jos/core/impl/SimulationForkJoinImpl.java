@@ -165,7 +165,7 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
          * This is need because we don't know the type of secondsPerItaration field before number
          * factory is set
          */
-        Container.properties.setNanoSecondsPerIteration(Container.properties.getNanoSecondsPerIteration());
+        Container.properties.setSecondsPerIteration(Container.properties.getSecondsPerIteration());
 
         switch (Container.properties.getInteractingLaw()) {
             case NEWTON_LAW_OF_GRAVITATION:

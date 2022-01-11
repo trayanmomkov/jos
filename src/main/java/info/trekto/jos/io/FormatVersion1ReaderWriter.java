@@ -225,8 +225,8 @@ public class FormatVersion1ReaderWriter implements ReaderWriter {
                                                                    reader.readLine())));
 
             // seconds per cycle: 10
-            properties.setNanoSecondsPerIteration(Integer.valueOf(match("seconds per cycle" + keyValueSeparator + "([-\\d]+).*",
-                                                                        reader.readLine())) * ScientificConstants.NANOSECONDS_IN_ONE_SECOND);
+            properties.setSecondsPerIteration(New.num(match("seconds per cycle" + keyValueSeparator + "([-\\d]+).*",
+                                                            reader.readLine())));
 
             // simulation time: -1 (Depend from numberOfCycles and secondsPerCycle and vice versa, -1 mean no value)
             reader.readLine();

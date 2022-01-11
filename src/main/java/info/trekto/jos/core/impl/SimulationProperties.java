@@ -3,6 +3,7 @@ package info.trekto.jos.core.impl;
 import info.trekto.jos.exceptions.SimulationRuntimeException;
 import info.trekto.jos.formulas.ForceCalculator.InteractingLaw;
 import info.trekto.jos.model.SimulationObject;
+import info.trekto.jos.numbers.Number;
 import info.trekto.jos.numbers.NumberFactory.NumberType;
 import info.trekto.jos.numbers.NumberFactoryProxy;
 import info.trekto.jos.numbers.impl.BigDecimalNumberFactory;
@@ -23,8 +24,7 @@ import static info.trekto.jos.formulas.ForceCalculator.InteractingLaw.NEWTON_LAW
 public class SimulationProperties {
     private long numberOfIterations;
 
-    private long nanoSecondsPerIteration;
-    private double secondsPerIteration;
+    private info.trekto.jos.numbers.Number secondsPerIteration;
 
     private long numberOfObjects;
 
@@ -81,25 +81,12 @@ public class SimulationProperties {
         this.outputFile = outputFile;
     }
 
-    public long getNanoSecondsPerIteration() {
-        return nanoSecondsPerIteration;
-    }
-
-    public void setNanoSecondsPerIteration(long nanoSecondsPerIteration) {
-        this.nanoSecondsPerIteration = nanoSecondsPerIteration;
-        this.secondsPerIteration = nanoSecondsPerIteration / 1000000000.0;
-    }
-
     public boolean isSaveToFile() {
         return saveToFile;
     }
 
     public void setSaveToFile(boolean saveToFile) {
         this.saveToFile = saveToFile;
-    }
-
-    public double getSecondsPerIteration() {
-        return secondsPerIteration;
     }
 
     /**
@@ -197,5 +184,13 @@ public class SimulationProperties {
 
     public void setInitialObjects(List<SimulationObject> initialObjects) {
         this.initialObjects = initialObjects;
+    }
+
+    public Number getSecondsPerIteration() {
+        return secondsPerIteration;
+    }
+
+    public void setSecondsPerIteration(Number secondsPerIteration) {
+        this.secondsPerIteration = secondsPerIteration;
     }
 }

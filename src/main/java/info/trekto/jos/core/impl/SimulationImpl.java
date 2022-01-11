@@ -175,7 +175,7 @@ public class SimulationImpl extends Observable implements Simulation {
          * This is need because we don't know the type of secondsPerItaration field before number
          * factory is set
          */
-        properties.setNanoSecondsPerIteration(properties.getNanoSecondsPerIteration());
+        properties.setSecondsPerIteration(properties.getSecondsPerIteration());
 
         switch (properties.getInteractingLaw()) {
             case NEWTON_LAW_OF_GRAVITATION:
