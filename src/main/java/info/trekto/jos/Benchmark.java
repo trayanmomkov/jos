@@ -3,7 +3,6 @@ package info.trekto.jos;
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.impl.SimulationForkJoinImpl;
 import info.trekto.jos.core.impl.SimulationLogicImpl;
-import info.trekto.jos.core.impl.SimulationParallelStreamsImpl;
 import info.trekto.jos.exceptions.SimulationException;
 import info.trekto.jos.formulas.ForceCalculator.InteractingLaw;
 import info.trekto.jos.io.JsonReaderWriter;
@@ -42,7 +41,7 @@ public class Benchmark {
         inputFileName = args[0];
 
         /* Double */
-        Simulation simulation = new SimulationParallelStreamsImpl();
+        Simulation simulation = new SimulationForkJoinImpl();
         benchmark.runBenchmark(simulation, 1, DOUBLE, 0, inputFileName);
         benchmark.runBenchmark(simulation, 1, DOUBLE, 0, inputFileName);
         if (CORES > 2) {

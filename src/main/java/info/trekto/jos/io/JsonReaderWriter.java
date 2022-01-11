@@ -102,7 +102,7 @@ public class JsonReaderWriter implements ReaderWriter {
             JsonObject json = JsonParser.parseReader(new FileReader(inputFilePath)).getAsJsonObject().get("properties").getAsJsonObject();
             properties.setNumberOfIterations(json.get("numberOfIterations").getAsLong());
             properties.setSecondsPerIteration(New.num(json.get("secondsPerIteration").getAsString()));
-            properties.setNumberOfObjects(json.get("numberOfObjects").getAsLong());
+            properties.setNumberOfObjects(json.get("numberOfObjects").getAsInt());
             properties.setOutputFile(json.get("outputFile").getAsString());
             properties.setSaveToFile(json.get("saveToFile").getAsBoolean());
             properties.setNumberType(NumberFactory.NumberType.valueOf(json.get("numberType").getAsString()));

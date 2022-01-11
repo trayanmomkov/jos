@@ -20,6 +20,7 @@ import java.util.*;
  * @author Trayan Momkov
  * @date 2017-May-18
  */
+ @Deprecated
 public class SimulationParallelStreamsImpl extends Observable implements Simulation {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(SimulationParallelStreamsImpl.class);
 

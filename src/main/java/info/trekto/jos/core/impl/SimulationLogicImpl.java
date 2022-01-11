@@ -17,49 +17,34 @@ import java.util.Iterator;
 public class SimulationLogicImpl implements SimulationLogic {
     public SimulationLogicImpl() {
         super();
-//        secondsPerIteration = Container.properties.getSecondsPerIteration();
     }
 
     @Override
-    // public void calculateNewValues(Simulation simulation, List<SimulationObject> targetObjects) {
     public void calculateNewValues(Simulation simulation, int fromIndex, int toIndex) {
-        // logger.info("calculateNewValues() for thred: " + Thread.currentThread().getName() + " Target objects: "
-        // + simulation.getObjects().subList(fromIndex, toIndex));
-
         Iterator<SimulationObject> targetAuxiliaryObjectsIterator = simulation.getAuxiliaryObjects()
                 .subList(fromIndex, toIndex).iterator();
         for (SimulationObject currentSimulationObject : simulation.getObjects().subList(fromIndex, toIndex)) {
             SimulationObject simulationAuxiliaryObject = targetAuxiliaryObjectsIterator.next();
 
-            /**
-             * Move objects
-             */
+            /* Move objects */
             moveSimulationObjects(currentSimulationObject, simulationAuxiliaryObject);
 
-            /**
-             * Calculate acceleration
-             */
+            /* Calculate acceleration */
             TripleNumber acceleration = new TripleNumber();
             for (SimulationObject tempSimulationObject : simulation.getObjects()) {
                 if (tempSimulationObject == currentSimulationObject) {
                     continue;
                 }
-                /**
-                 * Calculate force
-                 */
-                TripleNumber force = simulation.getForceCalculator().calculateForceAsVector(currentSimulationObject,
-                                                                                            tempSimulationObject,
-                                                                                            CommonFormulas.calculateDistance(currentSimulationObject, tempSimulationObject));
+                /* Calculate force */
+                Number distance = CommonFormulas.calculateDistance(currentSimulationObject, tempSimulationObject);
+                TripleNumber force = simulation.getForceCalculator()
+                        .calculateForceAsVector(currentSimulationObject, tempSimulationObject, distance);
 
-                /**
-                 * Add to current acceleration
-                 */
+                /* Add to current acceleration */
                 acceleration = addAcceleration(currentSimulationObject, acceleration, force);
             }
 
-            /**
-             * Change speed
-             */
+            /* Change speed */
             changeSpeed(currentSimulationObject, simulationAuxiliaryObject, acceleration);
         }
     }

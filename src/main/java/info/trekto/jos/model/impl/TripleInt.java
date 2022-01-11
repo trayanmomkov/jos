@@ -20,11 +20,6 @@ public class TripleInt {
     private final int g;
     private final int b;
 
-    /**
-     * @param r
-     * @param g
-     * @param b
-     */
     public TripleInt(int r, int g, int b) {
         super();
         this.r = r;

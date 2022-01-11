@@ -8,8 +8,6 @@ import info.trekto.jos.core.Simulation;
  * @date 6.03.2016 г.1:53:54
  */
 public class SimulationRunnable implements Runnable {
-    //    private Logger logger = LoggerFactory.getLogger(getClass());
-
     private int fromIndex;
     private int toIndex;
     private Simulation simulation;

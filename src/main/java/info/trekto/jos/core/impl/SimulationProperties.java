@@ -25,7 +25,7 @@ public class SimulationProperties {
 
     private info.trekto.jos.numbers.Number secondsPerIteration;
 
-    private long numberOfObjects;
+    private int numberOfObjects;
 
     private String outputFile;
 
@@ -48,19 +48,14 @@ public class SimulationProperties {
         return numberOfIterations == -1;
     }
 
-    /**
-     * Returns number of objects.
-     *
-     * @return
-     */
-    public long getNumberOfObjects() {
+    public int getNumberOfObjects() {
         return numberOfObjects;
     }
 
     /**
      * Java {@link ArrayList} is limited to Integer.MAX_VALUE
      */
-    public void setNumberOfObjects(long numberOfObjects) {
+    public void setNumberOfObjects(int numberOfObjects) {
         this.numberOfObjects = numberOfObjects;
     }
 
@@ -88,30 +83,18 @@ public class SimulationProperties {
         this.saveToFile = saveToFile;
     }
 
-    /**
-     * @return the numberType
-     */
     public NumberType getNumberType() {
         return numberType;
     }
 
-    /**
-     * @param numberType the numberType to set
-     */
     public void setNumberType(NumberType numberType) {
         this.numberType = numberType;
     }
 
-    /**
-     * @return the forceCalculatorType
-     */
     public InteractingLaw getInteractingLaw() {
         return interactingLaw;
     }
 
-    /**
-     * @param interactingLaw the forceCalculatorType to set
-     */
     public void setInteractingLaw(InteractingLaw interactingLaw) {
         this.interactingLaw = interactingLaw;
     }
@@ -129,30 +112,18 @@ public class SimulationProperties {
         this.precision = precision;
     }
 
-    /**
-     * @return the realTimeVisualization
-     */
     public boolean isRealTimeVisualization() {
         return realTimeVisualization;
     }
 
-    /**
-     * @param realTimeVisualization the realTimeVisualization to set
-     */
     public void setRealTimeVisualization(boolean realTimeVisualization) {
         this.realTimeVisualization = realTimeVisualization;
     }
 
-    /**
-     * @return the playingSpeed
-     */
     public int getPlayingSpeed() {
         return playingSpeed;
     }
 
-    /**
-     * @param playingSpeed the playingSpeed to set
-     */
     public void setPlayingSpeed(int playingSpeed) {
         this.playingSpeed = playingSpeed;
     }

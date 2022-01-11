@@ -13,10 +13,6 @@ import java.util.Observer;
  */
 public interface Simulation {
 
-    /**
-     * @return nanoseconds of execution excluding init and closing file.
-     * @throws SimulationException
-     */
     long startSimulation() throws SimulationException;
 
     List<SimulationObject> getObjects();
