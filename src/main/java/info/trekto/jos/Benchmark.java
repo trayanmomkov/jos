@@ -3,6 +3,7 @@ package info.trekto.jos;
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.impl.SimulationForkJoinImpl;
 import info.trekto.jos.core.impl.SimulationLogicImpl;
+import info.trekto.jos.core.impl.SimulationParallelStreamsImpl;
 import info.trekto.jos.exceptions.SimulationException;
 import info.trekto.jos.formulas.ForceCalculator.InteractingLaw;
 import info.trekto.jos.io.JsonReaderWriter;
@@ -41,22 +42,23 @@ public class Benchmark {
         inputFileName = args[0];
 
         /* Double */
-        benchmark.runBenchmark(new SimulationForkJoinImpl(), 1, DOUBLE, 0, inputFileName);
-        benchmark.runBenchmark(new SimulationForkJoinImpl(), 1, DOUBLE, 0, inputFileName);
+        Simulation simulation = new SimulationParallelStreamsImpl();
+        benchmark.runBenchmark(simulation, 1, DOUBLE, 0, inputFileName);
+        benchmark.runBenchmark(simulation, 1, DOUBLE, 0, inputFileName);
         if (CORES > 2) {
-            benchmark.runBenchmark(new SimulationForkJoinImpl(), CORES / 2, DOUBLE, 0, inputFileName);
+            benchmark.runBenchmark(simulation, CORES / 2, DOUBLE, 0, inputFileName);
         }
-        benchmark.runBenchmark(new SimulationForkJoinImpl(), CORES, DOUBLE, 0, inputFileName);
-        benchmark.runBenchmark(new SimulationForkJoinImpl(), CORES * 2, DOUBLE, 0, inputFileName);
+        benchmark.runBenchmark(simulation, CORES, DOUBLE, 0, inputFileName);
+        benchmark.runBenchmark(simulation, CORES * 2, DOUBLE, 0, inputFileName);
 
         /* BigDecimal faster in JRE 1.8 */
-        benchmark.runBenchmark(new SimulationForkJoinImpl(), 1, BIG_DECIMAL, 0, inputFileName);
+        benchmark.runBenchmark(simulation, 1, BIG_DECIMAL, 0, inputFileName);
         if (CORES > 2) {
-            benchmark.runBenchmark(new SimulationForkJoinImpl(), CORES / 2, BIG_DECIMAL, 0, inputFileName);
+            benchmark.runBenchmark(simulation, CORES / 2, BIG_DECIMAL, 0, inputFileName);
         }
-        benchmark.runBenchmark(new SimulationForkJoinImpl(), CORES, BIG_DECIMAL, 0, inputFileName);
-        benchmark.runBenchmark(new SimulationForkJoinImpl(), CORES * 2, BIG_DECIMAL, 0, inputFileName);
-        benchmark.runBenchmark(new SimulationForkJoinImpl(), 1, DOUBLE, 0, inputFileName);
+        benchmark.runBenchmark(simulation, CORES, BIG_DECIMAL, 0, inputFileName);
+        benchmark.runBenchmark(simulation, CORES * 2, BIG_DECIMAL, 0, inputFileName);
+        benchmark.runBenchmark(simulation, 1, DOUBLE, 0, inputFileName);
     }
 
     private void runBenchmark(Simulation simulation, int numberOfThreads, NumberFactory.NumberType numberType, int writerBufferSize,
@@ -91,13 +93,10 @@ public class Benchmark {
 
         long durationInNanoseconds = C.simulation.startSimulation();
 
-        System.out.print("Precision (number of digits to be used): " + C.prop.getPrecision() +
-                                 "\tNumber of runnig threads: " + C.runtimeProperties.getNumberOfThreads() +
-                                 "\t'Number' implementation: " + C.prop.getNumberType() +
-                                 "\tTotal time: " + "\t" + (durationInNanoseconds / 1000000) + " ms");
-        if (C.runtimeProperties.getNumberOfThreads() == CORES) {
-            System.out.print(" <<<<<<");
-        }
+        System.out.println(C.prop.getPrecision() +
+                                 "\tthreads: " + C.runtimeProperties.getNumberOfThreads() +
+                                 "\t" + C.prop.getNumberType() +
+                                 "\t" + (durationInNanoseconds / 1000000) + " ms");
     }
 
     // private void setFactory(NumberFactory numberFactory) {

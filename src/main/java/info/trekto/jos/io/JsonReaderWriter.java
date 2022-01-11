@@ -99,7 +99,7 @@ public class JsonReaderWriter implements ReaderWriter {
     public SimulationProperties readProperties(String inputFilePath) throws FileNotFoundException {
         SimulationProperties properties = new SimulationProperties();
         try {
-            JsonObject json = JsonParser.parseReader(new FileReader(inputFilePath)).getAsJsonObject();
+            JsonObject json = JsonParser.parseReader(new FileReader(inputFilePath)).getAsJsonObject().get("properties").getAsJsonObject();
             properties.setNumberOfIterations(json.get("numberOfIterations").getAsLong());
             properties.setSecondsPerIteration(New.num(json.get("secondsPerIteration").getAsString()));
             properties.setNumberOfObjects(json.get("numberOfObjects").getAsLong());
