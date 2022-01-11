@@ -14,6 +14,8 @@ import java.util.List;
  */
 public class VisualizationPanel extends JPanel {
 
+    private final double scaleStep = 0.1;
+    private final double translateStep = 1;
     private List<Shape> shapes;
     private int displayWidth;
     private int displayHeight;
@@ -21,10 +23,8 @@ public class VisualizationPanel extends JPanel {
     private Graphics graphics = null;
     private Color backgroundColor;
     private double scale = 1;
-    private final double scaleStep = 0.1;
     private double translateX = 0;
     private double translateY = 0;
-    private final double translateStep = 1;
 
     public VisualizationPanel(Color backgroundColor) {
         super();

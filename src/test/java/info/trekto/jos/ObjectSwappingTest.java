@@ -32,7 +32,7 @@ public class ObjectSwappingTest {
     @Test
     public void test() throws NoSuchMethodException, SecurityException, IllegalAccessException,
             IllegalArgumentException, InvocationTargetException, NoSuchFieldException, FileNotFoundException {
-            
+
         Container.readerWriter = new JsonReaderWriter();
         Container.simulation = new SimulationForkJoinImpl();
 
@@ -41,8 +41,8 @@ public class ObjectSwappingTest {
         Visualizer visualizer = new VisualizerImpl();
         Container.simulation.addObserver(visualizer);
         Container.simulationLogic = new SimulationLogicImpl();
-            
-            
+
+
         Container.properties.setNumberOfObjects(10);
         Container.properties.setNumberOfIterations(10);
 

@@ -32,7 +32,7 @@ public class Main {
             logger.error("Cannot read properties file.", e);
             return;
         }
-        
+
         Container.properties.createNumberFactory();
 
         if (Container.properties.isRealTimeVisualization()) {

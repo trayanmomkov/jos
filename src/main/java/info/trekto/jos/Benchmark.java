@@ -61,7 +61,7 @@ public class Benchmark {
 
     private void runBenchmark(Simulation simulation, int numberOfThreads, NumberFactory.NumberType numberType, int writerBufferSize,
                               String inputFileName) throws SimulationException {
-                              
+
         Container.readerWriter = new JsonReaderWriter();
         Container.simulation = simulation;
 
@@ -92,9 +92,9 @@ public class Benchmark {
         long durationInNanoseconds = Container.simulation.startSimulation();
 
         System.out.print("Precision (number of digits to be used): " + Container.properties.getPrecision() +
-        "\tNumber of runnig threads: " + Container.runtimeProperties.getNumberOfThreads() +
-        "\t'Number' implementation: " + Container.properties.getNumberType() +
-        "\tTotal time: " + "\t" + (durationInNanoseconds / 1000000) + " ms");
+                                 "\tNumber of runnig threads: " + Container.runtimeProperties.getNumberOfThreads() +
+                                 "\t'Number' implementation: " + Container.properties.getNumberType() +
+                                 "\tTotal time: " + "\t" + (durationInNanoseconds / 1000000) + " ms");
         if (Container.runtimeProperties.getNumberOfThreads() == CORES) {
             System.out.print(" <<<<<<");
         }

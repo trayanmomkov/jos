@@ -24,6 +24,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton startSimulationButton;
+
     /**
      * Creates new form MainFrame
      */

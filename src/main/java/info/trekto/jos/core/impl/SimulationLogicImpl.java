@@ -6,7 +6,6 @@ import info.trekto.jos.core.SimulationLogic;
 import info.trekto.jos.formulas.CommonFormulas;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.TripleNumber;
-import info.trekto.jos.numbers.New;
 import info.trekto.jos.numbers.Number;
 
 import java.util.Iterator;

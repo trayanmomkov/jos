@@ -9,6 +9,11 @@ public class NumberImplSpeedTest {
     private static Number n1;
     private static Number n2;
 
+    private static void calculate() {
+        n1 = n1.multiply(n2);
+        n1 = n1.divide(New.num(10));
+    }
+
     // @Test
     public void testPerformance() {
         // logger.info(n1.compareTo(n2));
@@ -39,10 +44,5 @@ public class NumberImplSpeedTest {
             sum += time;
         }
         logger.info("Average: " + (sum / times.length / 1000 / 1000));
-    }
-
-    private static void calculate() {
-        n1 = n1.multiply(n2);
-        n1 = n1.divide(New.num(10));
     }
 }

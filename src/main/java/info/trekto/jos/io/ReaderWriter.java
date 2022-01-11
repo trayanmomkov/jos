@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ReaderWriter {
     SimulationProperties readProperties(String inputFilePath) throws FileNotFoundException;
-    
+
     void writeProperties(SimulationProperties properties, String outputFilePath);
 
     void appendObjectsToFile(List<SimulationObject> objects);

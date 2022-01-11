@@ -39,7 +39,7 @@ public class SimulationObjectImpl implements SimulationObject {
         this.x = New.ZERO;
         this.y = New.ZERO;
         this.z = New.ZERO;
-        
+
         color = new TripleInt(0, 0, 255);
     }
 

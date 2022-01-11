@@ -153,7 +153,7 @@ public class JsonReaderWriter implements ReaderWriter {
         if (writer == null) {
             initWriter(Container.properties, Container.properties.getOutputFile());
             try {
-            writer.write("{\n  \"properties\":\n");
+                writer.write("{\n  \"properties\":\n");
                 gson.toJson(mapPropertiesAndInitialObjects(Container.properties, gson), writer);
                 writer.write(",\n  \"simulation\": [\n");
             } catch (IOException e) {
