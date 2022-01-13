@@ -47,21 +47,31 @@ public class VisualizerImpl implements Visualizer {
         System.out.println("Release graphic resources.");
         frame.dispose();
     }
+    
+    double convertCoordinatesForDisplayX(double x) {
+        return x + visualizationPanel.getWidth() / 2.0;
+    }
+    
+    double convertCoordinatesForDisplayY(double y) {
+        return y + visualizationPanel.getHeight() / 2.0;
+    }
 
     @Override
     public void onNext(List<SimulationObject> simulationObject) {
         visualizationPanel.draw(createShapes(simulationObject));
     }
 
-    private List<Shape> createShapes(List<SimulationObject> simulationObjects) {
-        List<Shape> shapes = new ArrayList<>();
+    private List<ShapeWithColor> createShapes(List<SimulationObject> simulationObjects) {
+        List<ShapeWithColor> shapes = new ArrayList<>();
         for (SimulationObject simulationObject : simulationObjects) {
             Ellipse2D ellipse = new Ellipse2D.Double();
-            ellipse.setFrame(simulationObject.getX().doubleValue(), simulationObject.getY().doubleValue(),
+            ellipse.setFrame(convertCoordinatesForDisplayX(simulationObject.getX().doubleValue()),
+                             convertCoordinatesForDisplayY(simulationObject.getY().doubleValue()),
                              simulationObject.getRadius().doubleValue() * 2,
                              simulationObject.getRadius().doubleValue() * 2);
 
-            shapes.add(ellipse);
+            Color color = new Color(simulationObject.getColor().getR(), simulationObject.getColor().getG(), simulationObject.getColor().getB());
+            shapes.add(new ShapeWithColor(ellipse, color));
         }
         return shapes;
     }

@@ -13,7 +13,7 @@ public class VisualizationPanel extends JPanel {
 
     private final double scaleStep = 0.1;
     private final double translateStep = 1;
-    private List<Shape> shapes;
+    private List<ShapeWithColor> shapes;
     private int displayWidth;
     private int displayHeight;
     private Image image = null;
@@ -60,13 +60,14 @@ public class VisualizationPanel extends JPanel {
 
     public void renderOffScreen(final Graphics g) {
         if (shapes != null) {
-            for (Shape shape : shapes) {
-                ((Graphics2D) g).fill(shape);
+            for (ShapeWithColor shape : shapes) {
+                g.setColor(shape.getColor());
+                ((Graphics2D) g).fill(shape.getShape());
             }
         }
     }
 
-    public void draw(List<Shape> shapes) {
+    public void draw(List<ShapeWithColor> shapes) {
         this.shapes = shapes;
         repaint();
     }

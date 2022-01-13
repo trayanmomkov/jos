@@ -87,9 +87,9 @@ public class SimulationForkJoinImpl implements Simulation {
                 try {
                     iterationCounter = i + 1;
 
-                    if (i % 1000 == 0) {
-                        logger.info("Iteration " + i);
-                    }
+//                    if (i % 1000 == 0) {
+//                        logger.info("Iteration " + i);
+//                    }
 
                     if (C.prop.isRealTimeVisualization() && i % C.prop.getPlayingSpeed() == 0) {
                         notifySubscribers();
