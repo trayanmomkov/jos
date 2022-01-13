@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 /**
  * @author Trayan Momkov
- * @date 10 Apr 2016
+ * 10 Apr 2016
  */
 public class FloatNumberFactory implements NumberFactory {
 

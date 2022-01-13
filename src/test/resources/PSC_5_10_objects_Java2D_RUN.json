@@ -1,13 +1,14 @@
 {
   "properties": {
+    "numberType": "DOUBLE",
+    "precision": 32,
+    "scale": 16,
     "numberOfIterations": 10,
     "secondsPerIteration": 1.0,
     "numberOfObjects": 12,
     "outputFile": "/home/john/IdeaProjects/jos/src/test/resources/PSC_5_10_objects_Java2D_RUN_read_by_new_reader.out.json",
     "saveToFile": true,
-    "numberType": "DOUBLE",
     "interactingLaw": "NEWTON_LAW_OF_GRAVITATION",
-    "precision": 32,
     "realTimeVisualization": false,
     "playingSpeed": 60,
     "initialObjects": [

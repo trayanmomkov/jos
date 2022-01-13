@@ -7,7 +7,7 @@ import java.math.BigDecimal;
  * extended.
  *
  * @author Trayan Momkov
- * @date 18 Aug 2015
+ * 18 Aug 2015
  */
 public interface Number {
     // Arithmetic Operations

@@ -33,11 +33,9 @@ public class Main {
             return;
         }
 
-        C.prop.createNumberFactory();
-
         if (C.prop.isRealTimeVisualization()) {
             Visualizer visualizer = new VisualizerImpl();
-            C.simulation.addObserver(visualizer);
+            C.simulation.subscribe(visualizer);
         }
         C.simulationLogic = new SimulationLogicImpl();
         C.simulation.startSimulation();

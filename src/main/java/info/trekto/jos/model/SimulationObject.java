@@ -1,6 +1,3 @@
-/**
- *
- */
 package info.trekto.jos.model;
 
 import info.trekto.jos.model.impl.TripleInt;
@@ -11,7 +8,7 @@ import java.util.List;
 
 /**
  * @author Trayan Momkov
- * @date 19 Aug 2015
+ * 19 Aug 2015
  */
 public interface SimulationObject {
     Number getX();
@@ -55,6 +52,4 @@ public interface SimulationObject {
 
     /** This must be used only for visualization purposes. Trajectory list consumes memory and CPU. */
     void setTrajectory(List<TripleNumber> trajectory);
-
-    Number calculateSpeedMagnitude();
 }

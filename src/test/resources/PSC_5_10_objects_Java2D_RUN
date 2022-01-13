@@ -1,5 +1,5 @@
 numbers type:		DOUBLE		Possible values: FLOAT, DOUBLE, BIG_DECIMAL
-precision:		32		Arithmetic precision in digits after point. 0 = infinite precision; -1 = native floating point type double
+precision:		32		Arithmetic precision. 0 = infinite precision; -1 = native floating point type double
 window size:		1280 1024	in pixels
 
 bounce from screen:	0		(1 = true, 0 = false)	Whether objects bounce from the window borders

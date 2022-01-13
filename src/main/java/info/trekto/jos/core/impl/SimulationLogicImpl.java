@@ -12,13 +12,9 @@ import java.util.Iterator;
 
 /**
  * @author Trayan Momkov
- * @date 6.03.2016 г.1:53:42
+ * 2016-Mar-6
  */
 public class SimulationLogicImpl implements SimulationLogic {
-    public SimulationLogicImpl() {
-        super();
-    }
-
     @Override
     public void calculateNewValues(Simulation simulation, int fromIndex, int toIndex) {
         Iterator<SimulationObject> targetAuxiliaryObjectsIterator = simulation.getAuxiliaryObjects()
@@ -47,32 +43,6 @@ public class SimulationLogicImpl implements SimulationLogic {
             /* Change speed */
             changeSpeed(currentSimulationObject, simulationAuxiliaryObject, acceleration);
         }
-    }
-
-    @Override
-    public void calculateNewValues(Simulation simulation, SimulationObject currentSimulationObject, SimulationObject simulationAuxiliaryObject) {
-            /* Move object */
-            moveSimulationObjects(currentSimulationObject, simulationAuxiliaryObject);
-
-            /* Calculate acceleration */
-            TripleNumber acceleration = new TripleNumber();
-            for (SimulationObject tempSimulationObject : simulation.getObjects()) {
-                if (tempSimulationObject == currentSimulationObject) {
-                    continue;
-                }
-                /* Calculate force */
-                Number distance = CommonFormulas.calculateDistance(currentSimulationObject, tempSimulationObject);
-                TripleNumber force = simulation.getForceCalculator().calculateForceAsVector(
-                        currentSimulationObject,
-                        tempSimulationObject,
-                        distance);
-
-                /* Add to current acceleration */
-                acceleration = addAcceleration(currentSimulationObject, acceleration, force);
-            }
-
-            /* Change speed */
-            changeSpeed(currentSimulationObject, simulationAuxiliaryObject, acceleration);
     }
 
     private void moveSimulationObjects(SimulationObject currentSimulationObject,

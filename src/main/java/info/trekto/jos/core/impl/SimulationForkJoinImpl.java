@@ -9,24 +9,26 @@ import info.trekto.jos.formulas.NewtonGravity;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.SimulationObjectImpl;
 import info.trekto.jos.numbers.Number;
+import info.trekto.jos.util.Utils;
 import org.apache.commons.lang3.NotImplementedException;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Flow;
+
+import static info.trekto.jos.formulas.ScientificConstants.NANOSECONDS_IN_ONE_SECOND;
 
 /**
  * This implementation uses fork/join Java framework introduced in Java 7.
  *
  * @author Trayan Momkov
- * @date 2017-May-18
+ * 2017-May-18
  */
-public class SimulationForkJoinImpl extends Observable implements Simulation {
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(SimulationForkJoinImpl.class);
+public class SimulationForkJoinImpl implements Simulation {
+    private static final Logger logger = LoggerFactory.getLogger(SimulationForkJoinImpl.class);
 
-    // private Logger logger = LoggerFactory.getLogger(getClass());
-//    private SimulationProperties properties = Container.properties;
-    private Thread[] threads;
-    private Map<Integer, ArrayList<Integer>> numberOfobjectsDistributionPerThread = new HashMap<>();
     private int iterationCounter;
     private ForceCalculator forceCalculator;
 
@@ -40,48 +42,34 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
      * iteration. We create objects at the beginning of the simulation and after that only remove
      * objects when collision appear. Good candidate for implementation of the lists is LinkedList
      * because during simulation we will not add any new objects to the lists, nor we will access
-     * themrandomly (via indices). We only remove from them, get sublists and iterate sequentially.
+     * them randomly (via indices). We only remove from them, get sublists and iterate sequentially.
      * But getting sublist is done by indices in every iteration. On the other hand removing objects
      * happens relatively rarely so ArrayList is faster than LinkedList.
      */
     private List<SimulationObject> objects;
     private List<SimulationObject> auxiliaryObjects;
 //    private List<SimulationObject> objectsForRemoval;
+    private List<Flow.Subscriber<? super List<SimulationObject>>> subscribers;
 
     private void doIteration() throws InterruptedException {
-        /**
-         * Distribute simulation objects per threads and start execution
-         */
-        // TODO Decide dynamically how many threads to use.
-        if (C.runtimeProperties.getNumberOfThreads() == 1) {
-            C.simulationLogic.calculateNewValues(this, 0, objects.size());
-        } else {
-            new SimulationRecursiveAction(0, objects.size()).compute();
-        }
+        /* Distribute simulation objects per threads and start execution */
+        new SimulationRecursiveAction(0, objects.size()).compute();
 
-        /**
-         * Remove disappeared because of collision objects
-         */
+        /* Remove disappeared because of collision objects */
 //        auxiliaryObjects.removeAll(objectsForRemoval);
-        /**
-         * Swap lists
-         */
+        /* Swap lists */
         {
             List<SimulationObject> tempList = objects;
             objects = auxiliaryObjects;
 
-            /**
-             * Make size of auxiliary to match that of objects list. Objects in auxiliaryObjects now
-             * have old values but they will be replaced in next iteration
-             */
+            /* Make size of auxiliary to match that of objects list. Objects in auxiliaryObjects now
+             * have old values but they will be replaced in next iteration */
             auxiliaryObjects = tempList.subList(0, objects.size());
         }
-        /**
-         * Here (outside the scope of tempList) objects remaining only in tempList should be
-         * candidates for garbage collection.
-         */
+        /* Here (outside the scope of tempList) objects remaining only in tempList should be
+         * candidates for garbage collection. */
 
-        if (C.prop.isSaveToFile() && !C.runtimeProperties.isBenchmarkMode()) {
+        if (C.prop.isSaveToFile()) {
             C.io.appendObjectsToFile(objects);
         }
     }
@@ -91,8 +79,7 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
         init();
 
         logger.info("\nStart simulation...");
-        long globalStartTime = System.nanoTime();
-        long startTime = globalStartTime;
+        long startTime = System.nanoTime();
         long endTime;
 
         try {
@@ -100,20 +87,12 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
                 try {
                     iterationCounter = i + 1;
 
-                    if (i % 1000 == 0 && !C.runtimeProperties.isBenchmarkMode()) {
+                    if (i % 1000 == 0) {
                         logger.info("Iteration " + i);
-//                    if (Container.properties.isBenchmarkMode()) {
-//                        endTime = System.nanoTime();
-//                        long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
-//                        // logger.info("Iteration " + i + "\t" + (duration / 1000000) + " ms");
-//                        logger.info("\t" + (duration / 1000000) + " ms");
-//                        startTime = System.nanoTime();
-//                    }
                     }
 
                     if (C.prop.isRealTimeVisualization() && i % C.prop.getPlayingSpeed() == 0) {
-                        setChanged();
-                        notifyObservers(objects);
+                        notifySubscribers();
                     }
 
                     doIteration();
@@ -129,28 +108,32 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
 
             endTime = System.nanoTime();
         } finally {
-            if (C.prop.isSaveToFile() && !C.runtimeProperties.isBenchmarkMode()) {
+            if (C.prop.isSaveToFile()) {
                 C.io.endFile();
             }
         }
 
 
-        logger.info("End of simulation.");
-        return endTime - globalStartTime;
+        logger.info(String.format("End of simulation. Time: %.2f %n s.", (endTime - startTime) / (double)NANOSECONDS_IN_ONE_SECOND));
+        return endTime - startTime;
+    }
+
+    private void notifySubscribers() {
+        for (Flow.Subscriber<? super List<SimulationObject>> subscriber : subscribers) {
+            subscriber.onNext(objects);
+        }
     }
 
     private boolean collisionExists() {
-        for (Object element : objects) {
-            SimulationObject object = (SimulationObject) element;
-            for (Object element2 : objects) {
-                SimulationObject object2 = (SimulationObject) element2;
-                if (object == object2) {
+        for (SimulationObject object : objects) {
+            for (SimulationObject object1 : objects) {
+                if (object == object1) {
                     continue;
                 }
                 // distance between centres
-                Number distance = CommonFormulas.calculateDistance(object, object2);
+                Number distance = CommonFormulas.calculateDistance(object, object1);
 
-                if (distance.compareTo(object.getRadius().add(object2.getRadius())) < 0) {
+                if (distance.compareTo(object.getRadius().add(object1.getRadius())) < 0) {
                     return true;
                 }
             }
@@ -179,9 +162,9 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
                 break;
         }
 
-        threads = new Thread[C.runtimeProperties.getNumberOfThreads()];
-        objects = new ArrayList<SimulationObject>();
-        auxiliaryObjects = new ArrayList<SimulationObject>();
+        //    private SimulationProperties properties = Container.properties;
+        objects = new ArrayList<>();
+        auxiliaryObjects = new ArrayList<>();
 //        objectsForRemoval = new ArrayList<SimulationObject>();
 
         for (SimulationObject simulationObject : C.prop.getInitialObjects()) {
@@ -193,7 +176,7 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
         }
         logger.info("Done.\n");
 
-//        Utils.printConfiguration(Container.properties);
+        Utils.printConfiguration(C.prop);
     }
 
     @Override
@@ -214,5 +197,13 @@ public class SimulationForkJoinImpl extends Observable implements Simulation {
     @Override
     public ForceCalculator getForceCalculator() {
         return forceCalculator;
+    }
+
+    @Override
+    public void subscribe(Flow.Subscriber<? super List<SimulationObject>> subscriber) {
+        if (subscribers == null) {
+            subscribers = new ArrayList<>();
+        }
+        subscribers.add(subscriber);
     }
 }

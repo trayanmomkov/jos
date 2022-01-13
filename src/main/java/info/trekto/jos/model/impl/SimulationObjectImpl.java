@@ -1,6 +1,3 @@
-/**
- *
- */
 package info.trekto.jos.model.impl;
 
 import info.trekto.jos.model.SimulationObject;
@@ -12,7 +9,7 @@ import java.util.List;
 
 /**
  * @author Trayan Momkov
- * @date 3 Mar 2016
+ * 3 Mar 2016
  */
 public class SimulationObjectImpl implements SimulationObject {
 
@@ -24,22 +21,17 @@ public class SimulationObjectImpl implements SimulationObject {
     TripleInt color;
     Number mass;
 
-    /**
-     * Whether the object is static
-     */
+    /* Whether the object is static */
     boolean motionless = false;
     String label;
 
-    /**
-     * Array with points which object passed through.
-     */
+    /* Array with points through which object passed. */
     List<TripleNumber> trajectory;
 
     public SimulationObjectImpl() {
         this.x = New.ZERO;
         this.y = New.ZERO;
         this.z = New.ZERO;
-
         color = new TripleInt(0, 0, 255);
     }
 
@@ -50,8 +42,7 @@ public class SimulationObjectImpl implements SimulationObject {
         this.motionless = simulationObject.isMotionless();
         this.radius = simulationObject.getRadius();
         this.speed = simulationObject.getSpeed();
-        this.trajectory = (simulationObject.getTrajectory() == null) ? null : new ArrayList<TripleNumber>(
-                simulationObject.getTrajectory());
+        this.trajectory = (simulationObject.getTrajectory() == null) ? null : new ArrayList<>(simulationObject.getTrajectory());
         this.x = simulationObject.getX();
         this.y = simulationObject.getY();
         this.z = simulationObject.getZ();
@@ -155,14 +146,5 @@ public class SimulationObjectImpl implements SimulationObject {
     @Override
     public void setTrajectory(List<TripleNumber> trajectory) {
         this.trajectory = trajectory;
-    }
-
-    /**
-     * The magnitude of speed which is a 3D vector.
-     */
-    @Override
-    public Number calculateSpeedMagnitude() {
-        return speed.getX().multiply(speed.getX()).add(speed.getY().multiply(speed.getY()))
-                .add(speed.getZ().multiply(speed.getZ())).sqrt();
     }
 }

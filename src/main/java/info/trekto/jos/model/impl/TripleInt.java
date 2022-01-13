@@ -1,6 +1,3 @@
-/**
- *
- */
 package info.trekto.jos.model.impl;
 
 import info.trekto.jos.model.SimulationObject;
@@ -13,7 +10,7 @@ import java.awt.*;
  * Used for representing the color of {@link SimulationObject}.
  * Immutable.
  * @author Trayan Momkov
- * @date 3 Mar 2016
+ * 3 Mar 2016
  */
 public class TripleInt {
     private final int r;

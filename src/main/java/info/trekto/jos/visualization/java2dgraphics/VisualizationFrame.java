@@ -1,6 +1,3 @@
-/**
- *
- */
 package info.trekto.jos.visualization.java2dgraphics;
 
 import info.trekto.jos.visualization.Visualizer;
@@ -10,7 +7,7 @@ import java.awt.event.WindowEvent;
 
 /**
  * @author Trayan Momkov
- * @date 2016-дек-27 19:12
+ * 2016-дек-27 19:12
  *
  */
 public class VisualizationFrame extends JFrame {

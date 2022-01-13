@@ -9,7 +9,7 @@ import java.util.concurrent.RecursiveAction;
 
 /**
  * @author Trayan Momkov
- * @date 2017-Aug-5 21:22:53
+ * 2017-Aug-5 21:22:53
  */
 public class SimulationRecursiveAction extends RecursiveAction {
 

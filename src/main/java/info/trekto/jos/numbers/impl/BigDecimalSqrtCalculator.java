@@ -1,6 +1,3 @@
-/**
- *
- */
 package info.trekto.jos.numbers.impl;
 
 /*
@@ -35,7 +32,7 @@ import java.math.RoundingMode;
 
 /**
  * @author Trayan Momkov
- * @date 18 Mar 2016
+ * 18 Mar 2016-Mar-18
  */
 public class BigDecimalSqrtCalculator {
     protected static BigInteger BigIntegerZERO = BigInteger.ZERO;

@@ -1,6 +1,3 @@
-/**
- *
- */
 package info.trekto.jos.visualization.java2dgraphics;
 
 import javax.swing.*;
@@ -9,7 +6,7 @@ import java.util.List;
 
 /**
  * @author Trayan Momkov
- * @date 2016-окт-17 23:16
+ * 2016-окт-17 23:16
  *
  */
 public class VisualizationPanel extends JPanel {
@@ -41,7 +38,7 @@ public class VisualizationPanel extends JPanel {
 
         final Dimension dimension = getSize();
         if (image == null) {
-            /** Double-buffer: clear the offscreen image. */
+            /* Double-buffer: clear the offscreen image. */
             image = createImage(dimension.width, dimension.height);
             //            image = new BufferedImage(dimension.width, dimension.height, BufferedImage.TYPE_INT_RGB);
         }
@@ -49,13 +46,13 @@ public class VisualizationPanel extends JPanel {
         graphics.setColor(backgroundColor);
         graphics.fillRect(0, 0, dimension.width, dimension.height);
 
-        /** Paint Offscreen */
+        /* Paint Offscreen */
         renderOffScreen(image.getGraphics());
 
-        /** Scaling */
+        /* Scaling */
         ((Graphics2D) g).scale(scale, scale);
 
-        /** Translating */
+        /* Translating */
         ((Graphics2D) g).translate(translateX, translateY);
 
         g.drawImage(image, 0, 0, null);
@@ -63,8 +60,7 @@ public class VisualizationPanel extends JPanel {
 
     public void renderOffScreen(final Graphics g) {
         if (shapes != null) {
-            for (Object element : shapes) {
-                Shape shape = (Shape) element;
+            for (Shape shape : shapes) {
                 ((Graphics2D) g).fill(shape);
             }
         }
@@ -75,33 +71,27 @@ public class VisualizationPanel extends JPanel {
         repaint();
     }
 
-
     public void zoomIn() {
         System.out.println("zoomIn");
         scale += scaleStep;
     }
-
 
     public void zoomOut() {
         System.out.println("zoomOut");
         scale -= scaleStep;
     }
 
-
     public void translateLeft() {
         translateX += translateStep;
     }
-
 
     public void translateUp() {
         translateY += translateStep;
     }
 
-
     public void translateRight() {
         translateX -= translateStep;
     }
-
 
     public void translateDown() {
         translateY -= translateStep;

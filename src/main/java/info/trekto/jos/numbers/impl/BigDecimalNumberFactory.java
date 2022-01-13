@@ -8,15 +8,17 @@ import java.math.MathContext;
 
 /**
  * @author Trayan Momkov
- * @date 7 Dec 2015
+ * 7 Dec 2015
  */
 public class BigDecimalNumberFactory implements NumberFactory {
 
     private MathContext mathContext;
+    private final int scale;
 
-    public BigDecimalNumberFactory(MathContext mathContext) {
+    public BigDecimalNumberFactory(MathContext mathContext, int scale) {
         super();
         this.mathContext = mathContext;
+        this.scale = scale;
     }
 
     public MathContext getMathContext() {
@@ -34,21 +36,21 @@ public class BigDecimalNumberFactory implements NumberFactory {
 
     @Override
     public Number createNumber(String val) {
-        return new BigDecimalNumberImpl(val, mathContext);
+        return new BigDecimalNumberImpl(val, mathContext, scale);
     }
 
     @Override
     public Number createNumber(double val) {
-        return new BigDecimalNumberImpl(val, mathContext);
+        return new BigDecimalNumberImpl(val, mathContext, scale);
     }
 
     @Override
     public Number createNumber(int val) {
-        return new BigDecimalNumberImpl(val, mathContext);
+        return new BigDecimalNumberImpl(val, mathContext, scale);
     }
 
     @Override
     public Number createNumber(long val) {
-        return new BigDecimalNumberImpl(val, mathContext);
+        return new BigDecimalNumberImpl(val, mathContext, scale);
     }
 }

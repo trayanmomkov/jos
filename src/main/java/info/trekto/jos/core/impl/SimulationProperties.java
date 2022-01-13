@@ -1,43 +1,36 @@
 package info.trekto.jos.core.impl;
 
-import info.trekto.jos.exceptions.SimulationRuntimeException;
 import info.trekto.jos.formulas.ForceCalculator.InteractingLaw;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.numbers.Number;
 import info.trekto.jos.numbers.NumberFactory.NumberType;
-import info.trekto.jos.numbers.NumberFactoryProxy;
-import info.trekto.jos.numbers.impl.BigDecimalNumberFactory;
-import info.trekto.jos.numbers.impl.DoubleNumberFactory;
-import info.trekto.jos.numbers.impl.FloatNumberFactory;
 
-import java.math.MathContext;
-import java.util.ArrayList;
 import java.util.List;
 
 import static info.trekto.jos.formulas.ForceCalculator.InteractingLaw.NEWTON_LAW_OF_GRAVITATION;
 
 /**
  * @author Trayan Momkov
- * @date 6.03.2016 г.1:53:48
+ * 2016-Mar-6
  */
 public class SimulationProperties {
     private long numberOfIterations;
-
     private info.trekto.jos.numbers.Number secondsPerIteration;
-
-    private int numberOfObjects;
-
     private String outputFile;
-
     private boolean saveToFile = false;
-
     private NumberType numberType;
     private InteractingLaw interactingLaw = NEWTON_LAW_OF_GRAVITATION;
-    private Integer precision;
-
     private boolean realTimeVisualization = false;
-
     private int playingSpeed = 1;
+    
+    /* Java {@link ArrayList} is limited to Integer.MAX_VALUE */
+    private int numberOfObjects;
+    
+    /* Significant digits. In 1.2300 we have 3 significant digits */
+    private int precision = 32;
+    
+    /* Number of digits after decimal point. In 12.34 the scale is 2 */
+    private int scale = 16;
 
     private List<SimulationObject> initialObjects;
 
@@ -52,9 +45,6 @@ public class SimulationProperties {
         return numberOfObjects;
     }
 
-    /**
-     * Java {@link ArrayList} is limited to Integer.MAX_VALUE
-     */
     public void setNumberOfObjects(int numberOfObjects) {
         this.numberOfObjects = numberOfObjects;
     }
@@ -99,19 +89,6 @@ public class SimulationProperties {
         this.interactingLaw = interactingLaw;
     }
 
-    public int getPrecision() {
-        return precision;
-    }
-
-    /**
-     * Number of digits to be used for an operation; results are rounded to this precision
-     *
-     * @param precision
-     */
-    public void setPrecision(int precision) {
-        this.precision = precision;
-    }
-
     public boolean isRealTimeVisualization() {
         return realTimeVisualization;
     }
@@ -128,26 +105,6 @@ public class SimulationProperties {
         this.playingSpeed = playingSpeed;
     }
 
-    public void createNumberFactory() {
-        switch (numberType) {
-            case FLOAT:
-                NumberFactoryProxy.setFactory(new FloatNumberFactory());
-                break;
-            case DOUBLE:
-                NumberFactoryProxy.setFactory(new DoubleNumberFactory());
-                break;
-            case BIG_DECIMAL:
-                if (precision == null) {
-                    throw new SimulationRuntimeException("Precision is not set!");
-                }
-                NumberFactoryProxy.setFactory(new BigDecimalNumberFactory(new MathContext(precision)));
-                break;
-            default:
-                NumberFactoryProxy.setFactory(new DoubleNumberFactory());
-                break;
-        }
-    }
-
     public List<SimulationObject> getInitialObjects() {
         return initialObjects;
     }
@@ -162,5 +119,21 @@ public class SimulationProperties {
 
     public void setSecondsPerIteration(Number secondsPerIteration) {
         this.secondsPerIteration = secondsPerIteration;
+    }
+
+    public int getPrecision() {
+        return precision;
+    }
+
+    public void setPrecision(int precision) {
+        this.precision = precision;
+    }
+
+    public int getScale() {
+        return scale;
+    }
+
+    public void setScale(int scale) {
+        this.scale = scale;
     }
 }

@@ -1,13 +1,10 @@
-/**
- *
- */
 package info.trekto.jos.numbers;
 
 import java.math.BigDecimal;
 
 /**
  * @author Trayan Momkov
- * @date 7 Dec 2015
+ * 7 Dec 2015
  */
 public interface NumberFactory {
     public Number createNumber(BigDecimal val);

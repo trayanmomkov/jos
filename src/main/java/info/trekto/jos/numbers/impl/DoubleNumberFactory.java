@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 /**
  * @author Trayan Momkov
- * @date 7 Dec 2015
+ * 7 Dec 2015
  */
 public class DoubleNumberFactory implements NumberFactory {
 

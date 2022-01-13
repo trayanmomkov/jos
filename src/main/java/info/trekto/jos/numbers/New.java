@@ -1,6 +1,3 @@
-/**
- *
- */
 package info.trekto.jos.numbers;
 
 import java.math.BigDecimal;
@@ -8,7 +5,7 @@ import java.math.BigDecimal;
 /**
  * Just a shortcut for NumberFactoryProxy.
  * @author Trayan Momkov
- * @date 7 Dec 2015
+ * 7 Dec 2015
  */
 public class New {
     public static Number ZERO;

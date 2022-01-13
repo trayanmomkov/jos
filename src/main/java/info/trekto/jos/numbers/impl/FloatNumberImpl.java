@@ -1,6 +1,3 @@
-/**
- *
- */
 package info.trekto.jos.numbers.impl;
 
 import info.trekto.jos.numbers.Number;
@@ -11,7 +8,7 @@ import java.math.BigDecimal;
  * Double implementation.
  * Immutable.
  * @author Trayan Momkov
- * @date 10 Apr 2016
+ * 10 Apr 2016
  */
 public class FloatNumberImpl implements Number {
 
@@ -87,8 +84,6 @@ public class FloatNumberImpl implements Number {
         return new FloatNumberImpl(-value);
     }
 
-    // Comparison Operations
-
     @Override
     public int compareTo(Number val) {
         return (value < ((FloatNumberImpl) val).value) ? -1 : (value > ((FloatNumberImpl) val).value) ? 1 : 0;
@@ -109,8 +104,6 @@ public class FloatNumberImpl implements Number {
     public Number max(Number val) {
         return (compareTo(val) >= 0 ? this : val);
     }
-
-    // Format Converters
 
     @Override
     public Number valueOf(long val) {

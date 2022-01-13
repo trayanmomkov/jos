@@ -1,6 +1,3 @@
-/**
- *
- */
 package info.trekto.jos.formulas;
 
 import info.trekto.jos.model.SimulationObject;
@@ -8,7 +5,7 @@ import info.trekto.jos.numbers.Number;
 
 /**
  * @author Trayan Momkov
- * @date 7 Apr 2016
+ * 7 Apr 2016
  *
  */
 public class CommonFormulas {

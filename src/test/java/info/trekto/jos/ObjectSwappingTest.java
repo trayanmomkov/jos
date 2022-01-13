@@ -1,6 +1,3 @@
-/**
- *
- */
 package info.trekto.jos;
 
 import info.trekto.jos.core.impl.SimulationForkJoinImpl;
@@ -24,7 +21,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * @author Trayan Momkov
- * @date 18 Mar 2016
+ * 18 Mar 2016
  */
 public class ObjectSwappingTest {
     private static final Logger logger = LoggerFactory.getLogger(ObjectSwappingTest.class);
@@ -37,9 +34,9 @@ public class ObjectSwappingTest {
         C.simulation = new SimulationForkJoinImpl();
 
         C.prop = C.io.readProperties("src/test/resources/PSC_5_10_objects_Java2D_RUN.json");
-        C.prop.createNumberFactory();
+//        createNumberFactory(NumberFactory.NumberType.BIG_DECIMAL, 32, 16);
         Visualizer visualizer = new VisualizerImpl();
-        C.simulation.addObserver(visualizer);
+        C.simulation.subscribe(visualizer);
         C.simulationLogic = new SimulationLogicImpl();
 
 

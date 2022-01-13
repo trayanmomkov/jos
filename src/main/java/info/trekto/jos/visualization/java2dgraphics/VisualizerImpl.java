@@ -1,25 +1,25 @@
-/**
- *
- */
 package info.trekto.jos.visualization.java2dgraphics;
 
 import info.trekto.jos.C;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.visualization.Visualizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
+import java.util.concurrent.Flow;
 
 /**
  * @author Trayan Momkov
- * @date 2016-окт-17 23:13
+ * 2016-окт-17 23:13
  *
  */
 public class VisualizerImpl implements Visualizer {
+    private static final Logger logger = LoggerFactory.getLogger(VisualizerImpl.class);
 
     private VisualizationPanel visualizationPanel;
     private JFrame frame = null;
@@ -29,9 +29,7 @@ public class VisualizerImpl implements Visualizer {
             frame = new VisualizationFrame(this, "Simple Double Buffer");
             frame.addKeyListener(new VisualizationKeyListener(this));
 
-            /**
-             * Get window dimension
-             */
+            /* Get window dimension */
             GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
             int displayWidth = gd.getDisplayMode().getWidth();
             int displayHeight = gd.getDisplayMode().getHeight();
@@ -50,12 +48,9 @@ public class VisualizerImpl implements Visualizer {
         frame.dispose();
     }
 
-    /* (non-Javadoc)
-     * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
-     */
     @Override
-    public void update(Observable o, Object arg) {
-        visualizationPanel.draw(createShapes((List<SimulationObject>) arg));
+    public void onNext(List<SimulationObject> simulationObject) {
+        visualizationPanel.draw(createShapes(simulationObject));
     }
 
     private List<Shape> createShapes(List<SimulationObject> simulationObjects) {
@@ -101,4 +96,18 @@ public class VisualizerImpl implements Visualizer {
         visualizationPanel.translateDown();
     }
 
+    @Override
+    public void onSubscribe(Flow.Subscription subscription) {
+        subscription.request(1);
+    }
+
+    @Override
+    public void onError(Throwable throwable) {
+        logger.error("onError called.", throwable);
+    }
+
+    @Override
+    public void onComplete() {
+
+    }
 }

@@ -5,13 +5,13 @@ import info.trekto.jos.formulas.ForceCalculator;
 import info.trekto.jos.model.SimulationObject;
 
 import java.util.List;
-import java.util.Observer;
+import java.util.concurrent.Flow;
 
 /**
  * @author Trayan Momkov
- * @date 6.03.2016 г.1:52:10
+ * 2016-Mar-6
  */
-public interface Simulation {
+public interface Simulation extends Flow.Publisher<List<SimulationObject>> {
 
     long startSimulation() throws SimulationException;
 
@@ -22,6 +22,4 @@ public interface Simulation {
     int getCurrentIterationNumber();
 
     ForceCalculator getForceCalculator();
-
-    void addObserver(Observer o);
 }

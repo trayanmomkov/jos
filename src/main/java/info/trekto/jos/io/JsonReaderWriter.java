@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static info.trekto.jos.numbers.NumberFactoryProxy.createNumberFactory;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -62,6 +63,7 @@ public class JsonReaderWriter implements ReaderWriter {
         json.addProperty("numberType", properties.getNumberType().name());
         json.addProperty("interactingLaw", properties.getInteractingLaw().name());
         json.addProperty("precision", properties.getPrecision());
+        json.addProperty("scale", properties.getScale());
         json.addProperty("realTimeVisualization", properties.isRealTimeVisualization());
         json.addProperty("playingSpeed", properties.getPlayingSpeed());
         return json;
@@ -100,14 +102,18 @@ public class JsonReaderWriter implements ReaderWriter {
         SimulationProperties properties = new SimulationProperties();
         try {
             JsonObject json = JsonParser.parseReader(new FileReader(inputFilePath)).getAsJsonObject().get("properties").getAsJsonObject();
+            properties.setNumberType(NumberFactory.NumberType.valueOf(json.get("numberType").getAsString()));
+            properties.setPrecision(json.get("precision").getAsInt());
+            properties.setScale(json.get("scale").getAsInt());
+            
+            createNumberFactory(properties.getNumberType(), properties.getPrecision(), properties.getScale());
+            
             properties.setNumberOfIterations(json.get("numberOfIterations").getAsLong());
             properties.setSecondsPerIteration(New.num(json.get("secondsPerIteration").getAsString()));
             properties.setNumberOfObjects(json.get("numberOfObjects").getAsInt());
             properties.setOutputFile(json.get("outputFile").getAsString());
             properties.setSaveToFile(json.get("saveToFile").getAsBoolean());
-            properties.setNumberType(NumberFactory.NumberType.valueOf(json.get("numberType").getAsString()));
             properties.setInteractingLaw(ForceCalculator.InteractingLaw.valueOf(json.get("interactingLaw").getAsString()));
-            properties.setPrecision(json.get("precision").getAsInt());
             properties.setRealTimeVisualization(json.get("realTimeVisualization").getAsBoolean());
             properties.setPlayingSpeed(json.get("playingSpeed").getAsInt());
 
@@ -130,10 +136,8 @@ public class JsonReaderWriter implements ReaderWriter {
                                                New.num(speed.get("z").getAsString())));
 
                 simo.setRadius(New.num(o.get("radius").getAsString()));
-
                 JsonObject color = o.get("color").getAsJsonObject();
                 simo.setColor(new TripleInt(color.get("r").getAsInt(), color.get("g").getAsInt(), color.get("b").getAsInt()));
-
                 simo.setMotionless(o.get("motionless").getAsBoolean());
 
                 initialObjects.add(simo);
@@ -195,12 +199,7 @@ public class JsonReaderWriter implements ReaderWriter {
 
     public void initWriter(SimulationProperties properties, String inputFilePath) {
         try {
-            if (C.runtimeProperties.getWriterBufferSize() == 0) {
-                writer = Files.newBufferedWriter(new File(properties.getOutputFile()).toPath(), UTF_8);
-            } else {
-                writer = new BufferedWriter(Files.newBufferedWriter(new File(properties.getOutputFile()).toPath(), UTF_8),
-                                            C.runtimeProperties.getWriterBufferSize());
-            }
+            writer = Files.newBufferedWriter(new File(properties.getOutputFile()).toPath(), UTF_8);
         } catch (IOException e) {
             logger.info("Cannot open output file " + inputFilePath, e);
         }

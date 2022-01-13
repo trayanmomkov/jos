@@ -1,6 +1,3 @@
-/**
- *
- */
 package info.trekto.jos.visualization.java2dgraphics;
 
 import info.trekto.jos.visualization.Visualizer;
@@ -10,7 +7,7 @@ import java.awt.event.KeyListener;
 
 /**
  * @author Trayan Momkov
- * @date 2016-дек-27 19:16
+ * 2016-дек-27 19:16
  *
  */
 public class VisualizationKeyListener implements KeyListener {

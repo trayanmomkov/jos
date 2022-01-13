@@ -1,16 +1,16 @@
-/**
- *
- */
 package info.trekto.jos.visualization;
 
-import java.util.Observer;
+import info.trekto.jos.model.SimulationObject;
+
+import java.util.List;
+import java.util.concurrent.Flow;
 
 /**
  * @author Trayan Momkov
- * @date 2016-окт-17 23:11
+ * 2016-Oct-17 23:11
  *
  */
-public interface Visualizer extends Observer {
+public interface Visualizer extends Flow.Subscriber<List<SimulationObject>> {
     void closeWindow();
 
     void zoomIn();
