@@ -164,7 +164,10 @@ public class BigDecimalNumberImpl implements Number {
             return false;
         }
         BigDecimalNumberImpl that = (BigDecimalNumberImpl) o;
-        return Objects.equals(value, that.value);
+        if (value == null) {
+            return that.value == null;
+        }
+        return value.compareTo(that.value) == 0;
     }
 
     @Override
