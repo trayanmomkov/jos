@@ -3,13 +3,14 @@
     "numberType": "DOUBLE",
     "precision": 32,
     "scale": 16,
-    "numberOfIterations": 100000000,
-    "secondsPerIteration": 0.001,
+    "numberOfIterations": 30000000,
+    "secondsPerIteration": 0.2,
     "numberOfObjects": 2,
     "outputFile": "/home/john/IdeaProjects/jos/src/test/resources/PSC_5_10_objects_Java2D_RUN_read_by_new_reader.out.json",
     "saveToFile": false,
     "interactingLaw": "NEWTON_LAW_OF_GRAVITATION",
     "realTimeVisualization": true,
+    "bounceFromWalls": true,
     "playingSpeed": 60,
     "initialObjects": [
       {
@@ -18,35 +19,35 @@
           "b": 255,
           "g": 0
         },
-        "mass": "1.0E9",
-        "x": "200.0",
-        "y": "0.0",
+        "mass": "1.0",
+        "x": "800.0",
+        "y": "400.0",
         "z": "0.0",
         "label": "1",
         "radius": "10.0",
         "motionless": false,
         "speed": {
-          "x": "0.0",
-          "y": "0.0",
+          "x": "0.0001",
+          "y": "0.0001",
           "z": "0.0"
         }
       },
       {
         "color": {
-          "r": 0,
-          "b": 255,
+          "r": 255,
+          "b": 0,
           "g": 0
         },
-        "mass": "1.0E9",
-        "x": "-200.0",
-        "y": "0.0",
+        "mass": "1.0",
+        "x": "-770.0",
+        "y": "-400.0",
         "z": "0.0",
         "label": "2",
         "radius": "10.0",
         "motionless": false,
         "speed": {
-          "x": "0.0",
-          "y": "0.0",
+          "x": "-0.0001",
+          "y": "-0.0001",
           "z": "0.0"
         }
       }

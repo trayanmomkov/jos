@@ -22,4 +22,6 @@ public interface Simulation extends Flow.Publisher<List<SimulationObject>> {
     int getCurrentIterationNumber();
 
     ForceCalculator getForceCalculator();
+    
+    List<Flow.Subscriber<? super List<SimulationObject>>> getSubscribers();
 }

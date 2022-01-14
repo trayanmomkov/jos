@@ -66,6 +66,7 @@ public class JsonReaderWriter implements ReaderWriter {
         json.addProperty("scale", properties.getScale());
         json.addProperty("realTimeVisualization", properties.isRealTimeVisualization());
         json.addProperty("playingSpeed", properties.getPlayingSpeed());
+        json.addProperty("bounceFromWalls", properties.isBounceFromWalls());
         return json;
     }
 
@@ -116,6 +117,7 @@ public class JsonReaderWriter implements ReaderWriter {
             properties.setInteractingLaw(ForceCalculator.InteractingLaw.valueOf(json.get("interactingLaw").getAsString()));
             properties.setRealTimeVisualization(json.get("realTimeVisualization").getAsBoolean());
             properties.setPlayingSpeed(json.get("playingSpeed").getAsInt());
+            properties.setBounceFromWalls(json.get("bounceFromWalls").getAsBoolean());
 
             List<SimulationObject> initialObjects = new ArrayList<>();
             for (JsonElement jsonElement : json.get("initialObjects").getAsJsonArray()) {

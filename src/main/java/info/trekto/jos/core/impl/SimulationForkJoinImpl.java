@@ -200,6 +200,11 @@ public class SimulationForkJoinImpl implements Simulation {
     }
 
     @Override
+    public List<Flow.Subscriber<? super List<SimulationObject>>> getSubscribers() {
+        return subscribers;
+    }
+
+    @Override
     public void subscribe(Flow.Subscriber<? super List<SimulationObject>> subscriber) {
         if (subscribers == null) {
             subscribers = new ArrayList<>();

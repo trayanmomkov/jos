@@ -7,6 +7,7 @@ import info.trekto.jos.formulas.CommonFormulas;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.TripleNumber;
 import info.trekto.jos.numbers.Number;
+import info.trekto.jos.visualization.java2dgraphics.VisualizerImpl;
 
 import java.util.Iterator;
 
@@ -42,6 +43,34 @@ public class SimulationLogicImpl implements SimulationLogic {
 
             /* Change speed */
             changeSpeed(currentSimulationObject, simulationAuxiliaryObject, acceleration);
+
+            /* Bounce from walls */
+            if (C.prop.isBounceFromWalls()) {
+                bounceFromWalls(simulationAuxiliaryObject);
+            }
+        }
+    }
+
+    private void bounceFromWalls(SimulationObject simulationAuxiliaryObject) {
+        if (!C.simulation.getSubscribers().isEmpty()) {
+            int width = ((VisualizerImpl) C.simulation.getSubscribers().get(0)).getVisualizationPanel().getWidth();
+            int height = ((VisualizerImpl) C.simulation.getSubscribers().get(0)).getVisualizationPanel().getHeight();
+
+            if (simulationAuxiliaryObject.getX().add(simulationAuxiliaryObject.getRadius()).doubleValue() > width / 2.0
+                    || simulationAuxiliaryObject.getX().subtract(simulationAuxiliaryObject.getRadius()).doubleValue() < -width / 2.0) {
+                TripleNumber speed = new TripleNumber(simulationAuxiliaryObject.getSpeed().getX().negate(),
+                                                      simulationAuxiliaryObject.getSpeed().getY(),
+                                                      simulationAuxiliaryObject.getSpeed().getZ());
+                simulationAuxiliaryObject.setSpeed(speed);
+            }
+
+            if (simulationAuxiliaryObject.getY().add(simulationAuxiliaryObject.getRadius()).doubleValue() > height / 2.0
+                    || simulationAuxiliaryObject.getY().subtract(simulationAuxiliaryObject.getRadius()).doubleValue() < -height / 2.0) {
+                TripleNumber speed = new TripleNumber(simulationAuxiliaryObject.getSpeed().getX(),
+                                                      simulationAuxiliaryObject.getSpeed().getY().negate(),
+                                                      simulationAuxiliaryObject.getSpeed().getZ());
+                simulationAuxiliaryObject.setSpeed(speed);
+            }
         }
     }
 

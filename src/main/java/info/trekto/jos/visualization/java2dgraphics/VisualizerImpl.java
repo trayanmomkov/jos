@@ -20,7 +20,6 @@ import java.util.concurrent.Flow;
  */
 public class VisualizerImpl implements Visualizer {
     private static final Logger logger = LoggerFactory.getLogger(VisualizerImpl.class);
-
     private VisualizationPanel visualizationPanel;
     private JFrame frame = null;
 
@@ -65,8 +64,8 @@ public class VisualizerImpl implements Visualizer {
         List<ShapeWithColor> shapes = new ArrayList<>();
         for (SimulationObject simulationObject : simulationObjects) {
             Ellipse2D ellipse = new Ellipse2D.Double();
-            ellipse.setFrame(convertCoordinatesForDisplayX(simulationObject.getX().doubleValue()),
-                             convertCoordinatesForDisplayY(simulationObject.getY().doubleValue()),
+            ellipse.setFrame(convertCoordinatesForDisplayX(simulationObject.getX().subtract(simulationObject.getRadius()).doubleValue()),
+                             convertCoordinatesForDisplayY(simulationObject.getY().subtract(simulationObject.getRadius()).doubleValue()),
                              simulationObject.getRadius().doubleValue() * 2,
                              simulationObject.getRadius().doubleValue() * 2);
 
@@ -119,5 +118,9 @@ public class VisualizerImpl implements Visualizer {
     @Override
     public void onComplete() {
 
+    }
+
+    public VisualizationPanel getVisualizationPanel() {
+        return visualizationPanel;
     }
 }

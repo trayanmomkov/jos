@@ -22,6 +22,7 @@ public class SimulationProperties {
     private InteractingLaw interactingLaw = NEWTON_LAW_OF_GRAVITATION;
     private boolean realTimeVisualization = false;
     private int playingSpeed = 1;
+    private boolean bounceFromWalls;
     
     /* Java {@link ArrayList} is limited to Integer.MAX_VALUE */
     private int numberOfObjects;
@@ -135,5 +136,13 @@ public class SimulationProperties {
 
     public void setScale(int scale) {
         this.scale = scale;
+    }
+
+    public boolean isBounceFromWalls() {
+        return bounceFromWalls;
+    }
+
+    public void setBounceFromWalls(boolean bounceFromWalls) {
+        this.bounceFromWalls = bounceFromWalls;
     }
 }
