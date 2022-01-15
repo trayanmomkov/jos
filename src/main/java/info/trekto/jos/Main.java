@@ -23,21 +23,27 @@ public class Main {
             return;
         }
 
+        String inputFile = args[0];
+        init(inputFile);
+        C.simulation.removeAllSubscribers();
+        if (C.prop.isRealTimeVisualization()) {
+            Visualizer visualizer = new VisualizerImpl();
+            C.simulation.subscribe(visualizer);
+        }
+        C.simulation.startSimulation();
+    }
+    
+    public static void init(String inputFile) {
         C.io = new JsonReaderWriter();
         C.simulation = new SimulationForkJoinImpl();
 
         try {
-            C.prop = C.io.readProperties(args[0]);
+            C.prop = C.io.readProperties(inputFile);
         } catch (FileNotFoundException e) {
             logger.error("Cannot read properties file.", e);
             return;
         }
 
-        if (C.prop.isRealTimeVisualization()) {
-            Visualizer visualizer = new VisualizerImpl();
-            C.simulation.subscribe(visualizer);
-        }
         C.simulationLogic = new SimulationLogicImpl();
-        C.simulation.startSimulation();
     }
 }

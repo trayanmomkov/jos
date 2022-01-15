@@ -15,7 +15,7 @@ import static info.trekto.jos.formulas.ForceCalculator.InteractingLaw.NEWTON_LAW
  */
 public class SimulationProperties {
     private long numberOfIterations;
-    private info.trekto.jos.numbers.Number secondsPerIteration;
+    private Number secondsPerIteration;
     private String outputFile;
     private boolean saveToFile = false;
     private NumberType numberType;

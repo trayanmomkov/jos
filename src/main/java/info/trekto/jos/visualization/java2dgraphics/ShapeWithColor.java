@@ -5,6 +5,7 @@ import java.awt.*;
 public class ShapeWithColor {
     private Shape shape;
     private Color color;
+    private String text;
 
     public ShapeWithColor(Shape shape, Color color) {
         this.shape = shape;
@@ -25,5 +26,13 @@ public class ShapeWithColor {
 
     public void setShape(Shape shape) {
         this.shape = shape;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 }

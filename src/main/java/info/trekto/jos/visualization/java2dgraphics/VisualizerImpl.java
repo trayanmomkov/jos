@@ -13,15 +13,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Flow;
 
+import static java.awt.Color.BLUE;
+
 /**
  * @author Trayan Momkov
  * 2016-окт-17 23:13
- *
  */
 public class VisualizerImpl implements Visualizer {
     private static final Logger logger = LoggerFactory.getLogger(VisualizerImpl.class);
     private VisualizationPanel visualizationPanel;
     private JFrame frame = null;
+    List<ShapeWithColor> lastShapes;
 
     public VisualizerImpl() {
         if (C.prop.isRealTimeVisualization()) {
@@ -43,21 +45,22 @@ public class VisualizerImpl implements Visualizer {
 
     @Override
     public void closeWindow() {
-        System.out.println("Release graphic resources.");
+        logger.info("Release graphic resources.");
         frame.dispose();
     }
-    
+
     double convertCoordinatesForDisplayX(double x) {
         return x + visualizationPanel.getWidth() / 2.0;
     }
-    
+
     double convertCoordinatesForDisplayY(double y) {
         return y + visualizationPanel.getHeight() / 2.0;
     }
 
     @Override
     public void onNext(List<SimulationObject> simulationObject) {
-        visualizationPanel.draw(createShapes(simulationObject));
+        lastShapes = createShapes(simulationObject);
+        visualizationPanel.draw(lastShapes);
     }
 
     private List<ShapeWithColor> createShapes(List<SimulationObject> simulationObjects) {
@@ -117,7 +120,12 @@ public class VisualizerImpl implements Visualizer {
 
     @Override
     public void onComplete() {
-
+        Ellipse2D ellipse = new Ellipse2D.Double();
+        ellipse.setFrame(convertCoordinatesForDisplayX(-0), convertCoordinatesForDisplayY(0), 1, 1);
+        ShapeWithColor text = new ShapeWithColor(ellipse, BLUE);
+        text.setText(C.endText);
+        lastShapes.add(text);
+        visualizationPanel.draw(lastShapes);
     }
 
     public VisualizationPanel getVisualizationPanel() {

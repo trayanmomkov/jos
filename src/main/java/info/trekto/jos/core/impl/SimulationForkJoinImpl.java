@@ -10,6 +10,7 @@ import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.SimulationObjectImpl;
 import info.trekto.jos.numbers.Number;
 import info.trekto.jos.util.Utils;
+import info.trekto.jos.visualization.java2dgraphics.VisualizerImpl;
 import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,6 +77,7 @@ public class SimulationForkJoinImpl implements Simulation {
         init();
 
         logger.info("\nStart simulation...");
+        C.endText = "END.";
         long startTime = System.nanoTime();
         long previousTime = startTime;
         long endTime;
@@ -83,6 +85,12 @@ public class SimulationForkJoinImpl implements Simulation {
         try {
             for (int i = 0; C.prop.isInfiniteSimulation() || i < C.prop.getNumberOfIterations(); i++) {
                 try {
+                    if (C.hasToStop) {
+                        C.hasToStop = false;
+                        C.endText = "Stopped!";
+                        break;
+                    }
+
                     iterationCounter = i + 1;
 
                     if (System.nanoTime() - previousTime >= NANOSECONDS_IN_ONE_SECOND * 2) {
@@ -100,6 +108,7 @@ public class SimulationForkJoinImpl implements Simulation {
                 }
             }
 
+            notifySubscribersEnd();
             endTime = System.nanoTime();
         } finally {
             if (C.prop.isSaveToFile()) {
@@ -115,6 +124,12 @@ public class SimulationForkJoinImpl implements Simulation {
     private void notifySubscribers() {
         for (Flow.Subscriber<? super List<SimulationObject>> subscriber : subscribers) {
             subscriber.onNext(objects);
+        }
+    }
+
+    private void notifySubscribersEnd() {
+        for (Flow.Subscriber<? super List<SimulationObject>> subscriber : subscribers) {
+            subscriber.onComplete();
         }
     }
 
@@ -191,6 +206,18 @@ public class SimulationForkJoinImpl implements Simulation {
     @Override
     public List<Flow.Subscriber<? super List<SimulationObject>>> getSubscribers() {
         return subscribers;
+    }
+
+    @Override
+    public void removeAllSubscribers() {
+        if (subscribers != null) {
+            for (Flow.Subscriber<? super List<SimulationObject>> subscriber : subscribers) {
+                if (subscriber instanceof VisualizerImpl) {
+                    ((VisualizerImpl) subscriber).closeWindow();
+                }
+            }
+        }
+        subscribers = new ArrayList<>();
     }
 
     @Override

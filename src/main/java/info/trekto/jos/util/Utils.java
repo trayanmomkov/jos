@@ -1,5 +1,6 @@
 package info.trekto.jos.util;
 
+import info.trekto.jos.C;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.SimulationObjectImpl;
@@ -76,6 +77,7 @@ public class Utils {
                 + seconds + " s.";
 
 
+        C.mainForm.appendMessage(remainingString);
         logger.info(remainingString);
         return remainingString;
     }

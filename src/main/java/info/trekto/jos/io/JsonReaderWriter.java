@@ -34,7 +34,9 @@ public class JsonReaderWriter implements ReaderWriter {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonObject json = mapPropertiesAndInitialObjects(properties, gson);
         try (Writer writer = new FileWriter(outputFilePath)) {
+            writer.write("{\n  \"properties\":\n");
             gson.toJson(json, writer);
+            writer.write("\n}");
         } catch (IOException e) {
             logger.error("Cannot save properties.");
         }
@@ -106,9 +108,9 @@ public class JsonReaderWriter implements ReaderWriter {
             properties.setNumberType(NumberFactory.NumberType.valueOf(json.get("numberType").getAsString()));
             properties.setPrecision(json.get("precision").getAsInt());
             properties.setScale(json.get("scale").getAsInt());
-            
+
             createNumberFactory(properties.getNumberType(), properties.getPrecision(), properties.getScale());
-            
+
             properties.setNumberOfIterations(json.get("numberOfIterations").getAsLong());
             properties.setSecondsPerIteration(New.num(json.get("secondsPerIteration").getAsString()));
             properties.setNumberOfObjects(json.get("numberOfObjects").getAsInt());
@@ -193,6 +195,7 @@ public class JsonReaderWriter implements ReaderWriter {
             if (writer != null) {
                 writer.write("\n    ]\n}");
                 writer.close();
+                writer = null;
             }
         } catch (IOException e) {
             logger.info("Error while closing file.", e);

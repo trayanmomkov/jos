@@ -1,5 +1,8 @@
 package info.trekto.jos.visualization.java2dgraphics;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
@@ -7,9 +10,9 @@ import java.util.List;
 /**
  * @author Trayan Momkov
  * 2016-окт-17 23:16
- *
  */
 public class VisualizationPanel extends JPanel {
+    private static final Logger logger = LoggerFactory.getLogger(VisualizationPanel.class);
 
     private final double scaleStep = 0.1;
     private final double translateStep = 1;
@@ -62,7 +65,14 @@ public class VisualizationPanel extends JPanel {
         if (shapes != null) {
             for (ShapeWithColor shape : shapes) {
                 g.setColor(shape.getColor());
-                ((Graphics2D) g).fill(shape.getShape());
+                if (shape.getText() != null) {
+                    g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 96));
+                    ((Graphics2D) g).drawString(shape.getText(),
+                                                Math.round(shape.getShape().getBounds2D().getCenterX()),
+                                                Math.round(shape.getShape().getBounds2D().getCenterY()));
+                } else {
+                    ((Graphics2D) g).fill(shape.getShape());
+                }
             }
         }
     }
@@ -73,12 +83,12 @@ public class VisualizationPanel extends JPanel {
     }
 
     public void zoomIn() {
-        System.out.println("zoomIn");
+        logger.info("zoomIn");
         scale += scaleStep;
     }
 
     public void zoomOut() {
-        System.out.println("zoomOut");
+        logger.info("zoomOut");
         scale -= scaleStep;
     }
 
@@ -97,4 +107,5 @@ public class VisualizationPanel extends JPanel {
     public void translateDown() {
         translateY -= translateStep;
     }
+
 }

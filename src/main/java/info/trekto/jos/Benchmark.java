@@ -58,6 +58,6 @@ public class Benchmark {
 
         long durationInNanoseconds = C.simulation.startSimulation();
 
-        System.out.println(C.prop.getPrecision() + "\t" + C.prop.getNumberType() + "\t" + (durationInNanoseconds / 1000000) + " ms");
+        logger.info(C.prop.getPrecision() + "\t" + C.prop.getNumberType() + "\t" + (durationInNanoseconds / 1000000) + " ms");
     }
 }

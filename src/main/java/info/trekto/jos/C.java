@@ -3,6 +3,7 @@ package info.trekto.jos;
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.SimulationLogic;
 import info.trekto.jos.core.impl.SimulationProperties;
+import info.trekto.jos.gui.MainForm;
 import info.trekto.jos.io.ReaderWriter;
 
 /**
@@ -16,4 +17,7 @@ public class C {
     public static Simulation simulation;
     public static SimulationProperties prop;
     public static ReaderWriter io;
+    public static MainForm mainForm;
+    public static boolean hasToStop;
+    public static String endText = "END";
 }
