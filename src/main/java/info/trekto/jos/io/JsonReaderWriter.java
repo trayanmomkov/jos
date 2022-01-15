@@ -174,7 +174,7 @@ public class JsonReaderWriter implements ReaderWriter {
 
         JsonObject cycleJson = new JsonObject();
         cycleJson.addProperty("cycle", C.simulation.getCurrentIterationNumber());
-        cycleJson.addProperty("numberOfObjects", C.prop.getNumberOfObjects());
+        cycleJson.addProperty("numberOfObjects", simulationObjects.size());
         cycleJson.add("objects", objectsAsJsonArray);
 
         gson.toJson(cycleJson, writer);

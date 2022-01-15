@@ -1,5 +1,6 @@
 package info.trekto.jos.numbers.impl;
 
+import info.trekto.jos.numbers.New;
 import info.trekto.jos.numbers.Number;
 
 import java.math.BigDecimal;
@@ -7,6 +8,7 @@ import java.math.BigDecimal;
 /**
  * Double implementation.
  * Immutable.
+ *
  * @author Trayan Momkov
  * 10 Apr 2016
  */
@@ -138,5 +140,25 @@ public class FloatNumberImpl implements Number {
     @Override
     public Number sqrt() {
         return new FloatNumberImpl((float) Math.sqrt(value));
+    }
+    
+    public Number atan2(Number n1, Number n2) {
+        // TODO Use ApFloat for trigonometry
+        return New.num(Math.atan2(n1.floatValue(), n2.floatValue()));
+    }
+
+    @Override
+    public Number cos(Number n) {
+        return New.num(Math.cos(n.floatValue()));
+    }
+
+    @Override
+    public Number sin(Number n) {
+        return New.num(Math.sin(n.floatValue()));
+    }
+
+    @Override
+    public Number cbrt(Number n) {
+        return New.num(Math.cbrt(n.floatValue()));
     }
 }

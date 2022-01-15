@@ -167,4 +167,9 @@ public interface Number {
     public BigDecimal bigDecimalValue();
 
     String toString();
+    
+    Number atan2(Number n1, Number n2);
+    Number cos(Number n);
+    Number sin(Number n);
+    Number cbrt(Number n);
 }

@@ -16,9 +16,13 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Flow;
 
 import static info.trekto.jos.formulas.ScientificConstants.NANOSECONDS_IN_ONE_SECOND;
+import static info.trekto.jos.util.Utils.deepCopy;
+import static info.trekto.jos.util.Utils.showRemainingTime;
 
 /**
  * This implementation uses fork/join Java framework introduced in Java 7.
@@ -48,27 +52,20 @@ public class SimulationForkJoinImpl implements Simulation {
      */
     private List<SimulationObject> objects;
     private List<SimulationObject> auxiliaryObjects;
-//    private List<SimulationObject> objectsForRemoval;
+    static Set<SimulationObject> objectsForRemoval;
     private List<Flow.Subscriber<? super List<SimulationObject>>> subscribers;
 
     private void doIteration() throws InterruptedException {
+        objectsForRemoval = ConcurrentHashMap.newKeySet();
+        auxiliaryObjects = deepCopy(objects);
+
         /* Distribute simulation objects per threads and start execution */
         new SimulationRecursiveAction(0, objects.size()).compute();
 
         /* Remove disappeared because of collision objects */
-//        auxiliaryObjects.removeAll(objectsForRemoval);
-        /* Swap lists */
-        {
-            List<SimulationObject> tempList = objects;
-            objects = auxiliaryObjects;
+        auxiliaryObjects.removeAll(objectsForRemoval);
 
-            /* Make size of auxiliary to match that of objects list. Objects in auxiliaryObjects now
-             * have old values but they will be replaced in next iteration */
-            auxiliaryObjects = tempList.subList(0, objects.size());
-        }
-        /* Here (outside the scope of tempList) objects remaining only in tempList should be
-         * candidates for garbage collection. */
-
+        objects = auxiliaryObjects;
         if (C.prop.isSaveToFile()) {
             C.io.appendObjectsToFile(objects);
         }
@@ -80,6 +77,7 @@ public class SimulationForkJoinImpl implements Simulation {
 
         logger.info("\nStart simulation...");
         long startTime = System.nanoTime();
+        long previousTime = startTime;
         long endTime;
 
         try {
@@ -87,20 +85,16 @@ public class SimulationForkJoinImpl implements Simulation {
                 try {
                     iterationCounter = i + 1;
 
-//                    if (i % 1000 == 0) {
-//                        logger.info("Iteration " + i);
-//                    }
+                    if (System.nanoTime() - previousTime >= NANOSECONDS_IN_ONE_SECOND * 2) {
+                        showRemainingTime(i, System.nanoTime() - startTime, C.prop.getNumberOfIterations());
+                        previousTime = System.nanoTime();
+                    }
 
                     if (C.prop.isRealTimeVisualization() && i % C.prop.getPlayingSpeed() == 0) {
                         notifySubscribers();
                     }
 
                     doIteration();
-
-                    // /** On every 100 iterations flush to disk */
-                    // if (i % 100 == 0) {
-                    // Container.Container.readerWriter.flushToDisk();
-                    // }
                 } catch (InterruptedException e) {
                     logger.error("Concurrency failure. One of the threads interrupted in cycle " + i, e);
                 }
@@ -114,7 +108,7 @@ public class SimulationForkJoinImpl implements Simulation {
         }
 
 
-        logger.info(String.format("End of simulation. Time: %.2f %n s.", (endTime - startTime) / (double)NANOSECONDS_IN_ONE_SECOND));
+        logger.info(String.format("End of simulation. Time: %.2f s.", (endTime - startTime) / (double) NANOSECONDS_IN_ONE_SECOND));
         return endTime - startTime;
     }
 
@@ -144,10 +138,8 @@ public class SimulationForkJoinImpl implements Simulation {
     private void init() throws SimulationException {
         logger.info("Initialize simulation...");
 
-        /**
-         * This is need because we don't know the type of secondsPerItaration field before number
-         * factory is set
-         */
+        /* This is need because we don't know the type of secondsPerItaration field before number
+         * factory is set */
         C.prop.setSecondsPerIteration(C.prop.getSecondsPerIteration());
 
         switch (C.prop.getInteractingLaw()) {
@@ -162,15 +154,12 @@ public class SimulationForkJoinImpl implements Simulation {
                 break;
         }
 
-        //    private SimulationProperties properties = Container.properties;
         objects = new ArrayList<>();
-        auxiliaryObjects = new ArrayList<>();
-//        objectsForRemoval = new ArrayList<SimulationObject>();
 
         for (SimulationObject simulationObject : C.prop.getInitialObjects()) {
             objects.add(new SimulationObjectImpl(simulationObject));
-            auxiliaryObjects.add(new SimulationObjectImpl(simulationObject));
         }
+
         if (collisionExists()) {
             throw new SimulationException("Initial collision exists!");
         }

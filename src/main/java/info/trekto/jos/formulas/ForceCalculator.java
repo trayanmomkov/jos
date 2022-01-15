@@ -1,6 +1,6 @@
 package info.trekto.jos.formulas;
 
-import info.trekto.jos.model.SimulationObject;
+import info.trekto.jos.model.ImmutableSimulationObject;
 import info.trekto.jos.model.impl.TripleNumber;
 import info.trekto.jos.numbers.Number;
 
@@ -10,12 +10,12 @@ import info.trekto.jos.numbers.Number;
  *
  */
 public interface ForceCalculator {
-    Number calculateForce(final SimulationObject object1, final SimulationObject object2, final Number distance);
+    Number calculateForce(final ImmutableSimulationObject object1, final ImmutableSimulationObject object2, final Number distance);
 
     /**
      * Calculate force between objects and return it as a vector (x, y, z).
      */
-    TripleNumber calculateForceAsVector(final SimulationObject object1, final SimulationObject object2, final Number distance);
+    TripleNumber calculateForceAsVector(final ImmutableSimulationObject object1, final ImmutableSimulationObject object2, final Number distance);
 
     enum InteractingLaw {
         NEWTON_LAW_OF_GRAVITATION,

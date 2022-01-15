@@ -1,5 +1,6 @@
 package info.trekto.jos.numbers.impl;
 
+import info.trekto.jos.numbers.New;
 import info.trekto.jos.numbers.Number;
 
 import java.math.BigDecimal;
@@ -11,6 +12,7 @@ import java.util.Objects;
 /**
  * BigDecimal implementation.
  * Immutable.
+ *
  * @author Trayan Momkov
  * 18 Aug 2015
  */
@@ -152,7 +154,7 @@ public class BigDecimalNumberImpl implements Number {
 
     @Override
     public String toString() {
-        return value.toString();
+        return value.stripTrailingZeros().toString();
     }
 
     @Override
@@ -186,5 +188,26 @@ public class BigDecimalNumberImpl implements Number {
     @Override
     public Number sqrt() {
         return new BigDecimalNumberImpl(BigDecimalSqrtCalculator.sqrt(value, roundingMode));
+    }
+
+    public Number atan2(Number n1, Number n2) {
+        // TODO Use ApFloat for trigonometry
+        return New.num(Math.atan2(n1.doubleValue(), n2.doubleValue()));
+    }
+
+    public Number cos(Number n) {
+        // TODO Use ApFloat for trigonometry
+        return New.num(Math.cos(n.doubleValue()));
+    }
+
+    @Override
+    public Number sin(Number n) {
+        // TODO Use ApFloat for trigonometry
+        return New.num(Math.sin(n.doubleValue()));
+    }
+    
+    public Number cbrt(Number n) {
+        // TODO cbrt to be replaced by function from ApFloat
+        return New.num(Math.cbrt(n.doubleValue()));
     }
 }

@@ -15,6 +15,7 @@ public class New {
     public static Number FOUR;
     public static Number RATIO_FOUR_THREE;
     public static Number BILLION;
+    public static Number IGNORED;
 
     public static Number num(BigDecimal val) {
         return NumberFactoryProxy.createNumber(val);

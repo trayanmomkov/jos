@@ -31,6 +31,7 @@ public class NumberFactoryProxy {
         New.FOUR = NumberFactoryProxy.createNumber("4");
         New.RATIO_FOUR_THREE = New.FOUR.divide(New.THREE);
         New.BILLION = NumberFactoryProxy.createNumber("1000000000");
+        New.IGNORED = NumberFactoryProxy.createNumber("0");
     }
 
     public static NumberFactory getFactory() {

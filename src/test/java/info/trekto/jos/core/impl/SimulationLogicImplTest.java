@@ -2,22 +2,40 @@ package info.trekto.jos.core.impl;
 
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.*;
-
 public class SimulationLogicImplTest {
-    
+
     @Test
-    public void moveSimulationObjectsShouldMoveCorrectly() {
+    public void calculateColorShouldWorkCorrectly() {
         // TODO
     }
-    
+
     @Test
-    public void addAccelerationShouldWorkCorrectly() {
+    public void calculateRadiusBasedOnNewVolumeShouldWorkCorrectly() {
         // TODO
     }
-    
+
     @Test
-    public void changeSpeedShouldWorkCorrectly() {
+    public void calculatePositionShouldWorkCorrectly() {
+        // TODO
+    }
+
+    @Test
+    public void calculateSpeedOnMergingShouldWorkCorrectly() {
+        // TODO
+    }
+
+    @Test
+    public void bounceFromWallsShouldWorkCorrectly() {
+        // TODO
+    }
+
+    @Test
+    public void moveObjectShouldWorkCorrectly() {
+        // TODO
+    }
+
+    @Test
+    public void calculateSpeedShouldWorkCorrectly() {
         // TODO
     }
 

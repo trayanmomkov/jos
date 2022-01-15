@@ -1,7 +1,14 @@
 package info.trekto.jos.util;
 
 import info.trekto.jos.core.impl.SimulationProperties;
+import info.trekto.jos.model.SimulationObject;
+import info.trekto.jos.model.impl.SimulationObjectImpl;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static info.trekto.jos.formulas.ScientificConstants.*;
 
 /**
  * @author Trayan Momkov
@@ -10,6 +17,14 @@ import org.slf4j.LoggerFactory;
 public class Utils {
     public static final int CORES = Runtime.getRuntime().availableProcessors();
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Utils.class);
+
+    public static List<SimulationObject> deepCopy(List<SimulationObject> src) {
+        ArrayList<SimulationObject> dst = new ArrayList<>();
+        for (SimulationObject element : src) {
+            dst.add(new SimulationObjectImpl(element));
+        }
+        return dst;
+    }
 
     public static void printConfiguration(SimulationProperties properties) {
         if (!properties.isSaveToFile()) {
@@ -38,5 +53,30 @@ public class Utils {
         logger.info("Number of objects: " + properties.getNumberOfObjects());
         logger.info("Number of iterations: " + properties.getNumberOfIterations());
         logger.info("'Number' implementation: " + properties.getNumberType());
+    }
+
+    public static String showRemainingTime(int i, long elapsedNanoseconds, long numberOfIterations) {
+        if (i == 0) {
+            return "";
+        }
+        long elapsed = Math.round(elapsedNanoseconds / (double) NANOSECONDS_IN_ONE_MILLISECOND);
+        double timePerIteration = elapsed / (double) i;
+        long remainingIterations = numberOfIterations - i;
+        long remainingTime = Math.round(remainingIterations * timePerIteration);
+
+        long days = remainingTime / MILLI_IN_DAY;
+        long hours = (remainingTime - (days * MILLI_IN_DAY)) / MILLI_IN_HOUR;
+        long minutes = (remainingTime - (days * MILLI_IN_DAY + hours * MILLI_IN_HOUR)) / MILLI_IN_MINUTE;
+        long seconds = (remainingTime - (days * MILLI_IN_DAY + hours * MILLI_IN_HOUR + minutes * MILLI_IN_MINUTE)) / MILLISECONDS_IN_ONE_SECOND;
+
+        String remainingString = "Iteration " + i + " Remaining time: "
+                + (days > 0 ? days + " d. " : "")
+                + (hours > 0 ? hours + " h. " : "")
+                + (minutes > 0 ? minutes + " m. " : "")
+                + seconds + " s.";
+
+
+        logger.info(remainingString);
+        return remainingString;
     }
 }
