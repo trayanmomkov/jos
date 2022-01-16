@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import java.io.FileNotFoundException;
 
 import static info.trekto.jos.numbers.NumberFactory.NumberType.*;
-import static info.trekto.jos.numbers.NumberFactoryProxy.createNumberFactory;
 
 /**
  * @author Trayan Momkov
@@ -43,7 +42,6 @@ public class Benchmark {
 
         try {
             C.prop = C.io.readProperties(inputFileName);
-            createNumberFactory(numberType, 32, 16);
         } catch (FileNotFoundException e) {
             logger.error("Cannot read properties file.", e);
             return;

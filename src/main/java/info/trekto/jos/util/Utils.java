@@ -5,7 +5,6 @@ import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.formulas.CommonFormulas;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.SimulationObjectImpl;
-import info.trekto.jos.numbers.Number;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
@@ -105,9 +104,9 @@ public class Utils {
                     continue;
                 }
                 // distance between centres
-                Number distance = CommonFormulas.calculateDistance(object, object1);
+                double distance = CommonFormulas.calculateDistance(object, object1);
 
-                if (distance.compareTo(object.getRadius().add(object1.getRadius())) < 0) {
+                if (distance < object.getRadius() + object1.getRadius()) {
                     return true;
                 }
             }

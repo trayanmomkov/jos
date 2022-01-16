@@ -2,7 +2,6 @@ package info.trekto.jos.model;
 
 import info.trekto.jos.model.impl.TripleInt;
 import info.trekto.jos.model.impl.TripleNumber;
-import info.trekto.jos.numbers.Number;
 
 import java.util.List;
 
@@ -11,19 +10,19 @@ import java.util.List;
  * 19 Aug 2015
  */
 public interface SimulationObject extends ImmutableSimulationObject {
-    void setX(Number x);
+    void setX(double x);
 
-    void setY(Number y);
+    void setY(double y);
 
-    void setZ(Number z);
+    void setZ(double z);
 
     void setSpeed(TripleNumber speed);
 
-    void setRadius(Number radius);
+    void setRadius(double radius);
 
     void setColor(TripleInt color);
 
-    void setMass(Number mass);
+    void setMass(double mass);
 
     void setMotionless(boolean motionless);
 

@@ -2,7 +2,6 @@ package info.trekto.jos.model.impl;
 
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.numbers.New;
-import info.trekto.jos.numbers.Number;
 
 /**
  * Container for three objects of type {@link Number}. Used for representing a point in three-dimensional space.
@@ -14,9 +13,9 @@ import info.trekto.jos.numbers.Number;
  */
 public class TripleNumber {
 
-    private final Number x;
-    private final Number y;
-    private final Number z;
+    private final double x;
+    private final double y;
+    private final double z;
 
     public TripleNumber() {
         this.x = New.ZERO;
@@ -24,21 +23,21 @@ public class TripleNumber {
         this.z = New.ZERO;
     }
 
-    public TripleNumber(Number x, Number y, Number z) {
+    public TripleNumber(double x, double y, double z) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
 
-    public Number getX() {
+    public double getX() {
         return x;
     }
 
-    public Number getY() {
+    public double getY() {
         return y;
     }
 
-    public Number getZ() {
+    public double getZ() {
         return z;
     }
 }

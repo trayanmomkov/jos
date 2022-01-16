@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static info.trekto.jos.numbers.NumberFactoryProxy.createNumberFactory;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -58,7 +57,7 @@ public class JsonReaderWriter implements ReaderWriter {
         JsonObject json = new JsonObject();
 
         json.addProperty("numberOfIterations", properties.getNumberOfIterations());
-        json.addProperty("secondsPerIteration", properties.getSecondsPerIteration().toString());
+        json.addProperty("secondsPerIteration", properties.getSecondsPerIteration());
         json.addProperty("numberOfObjects", properties.getNumberOfObjects());
         json.addProperty("outputFile", properties.getOutputFile());
         json.addProperty("saveToFile", properties.isSaveToFile());
@@ -76,19 +75,19 @@ public class JsonReaderWriter implements ReaderWriter {
         Map<String, Object> simulationObjectMap = new HashMap<>();
         simulationObjectMap.put("label", simulationObject.getLabel());
 
-        simulationObjectMap.put("x", simulationObject.getX().toString());
-        simulationObjectMap.put("y", simulationObject.getY().toString());
-        simulationObjectMap.put("z", simulationObject.getZ().toString());
+        simulationObjectMap.put("x", simulationObject.getX());
+        simulationObjectMap.put("y", simulationObject.getY());
+        simulationObjectMap.put("z", simulationObject.getZ());
 
-        simulationObjectMap.put("mass", simulationObject.getMass().toString());
+        simulationObjectMap.put("mass", simulationObject.getMass());
 
         Map<String, String> speed = new HashMap<>();
-        speed.put("x", simulationObject.getSpeed().getX().toString());
-        speed.put("y", simulationObject.getSpeed().getY().toString());
-        speed.put("z", simulationObject.getSpeed().getZ().toString());
+        speed.put("x", String.valueOf(simulationObject.getSpeed().getX()));
+        speed.put("y", String.valueOf(simulationObject.getSpeed().getY()));
+        speed.put("z", String.valueOf(simulationObject.getSpeed().getZ()));
         simulationObjectMap.put("speed", speed);
 
-        simulationObjectMap.put("radius", simulationObject.getRadius().toString());
+        simulationObjectMap.put("radius", simulationObject.getRadius());
 
         Map<String, Integer> color = new HashMap<>();
         color.put("r", simulationObject.getColor().getR());
@@ -109,10 +108,8 @@ public class JsonReaderWriter implements ReaderWriter {
             properties.setPrecision(json.get("precision").getAsInt());
             properties.setScale(json.get("scale").getAsInt());
 
-            createNumberFactory(properties.getNumberType(), properties.getPrecision(), properties.getScale());
-
             properties.setNumberOfIterations(json.get("numberOfIterations").getAsLong());
-            properties.setSecondsPerIteration(New.num(json.get("secondsPerIteration").getAsString()));
+            properties.setSecondsPerIteration(Double.parseDouble(json.get("secondsPerIteration").getAsString()));
             properties.setNumberOfObjects(json.get("numberOfObjects").getAsInt());
             properties.setOutputFile(json.get("outputFile").getAsString());
             properties.setSaveToFile(json.get("saveToFile").getAsBoolean());
@@ -128,18 +125,18 @@ public class JsonReaderWriter implements ReaderWriter {
 
                 simo.setLabel(o.get("label").getAsString());
 
-                simo.setX(New.num(o.get("x").getAsString()));
-                simo.setY(New.num(o.get("y").getAsString()));
-                simo.setZ(New.num(o.get("z").getAsString()));
+                simo.setX(Double.parseDouble(o.get("x").getAsString()));
+                simo.setY(Double.parseDouble(o.get("y").getAsString()));
+                simo.setZ(Double.parseDouble(o.get("z").getAsString()));
 
-                simo.setMass(New.num(o.get("mass").getAsString()));
+                simo.setMass(Double.parseDouble(o.get("mass").getAsString()));
 
                 JsonObject speed = o.get("speed").getAsJsonObject();
-                simo.setSpeed(new TripleNumber(New.num(speed.get("x").getAsString()),
-                                               New.num(speed.get("y").getAsString()),
-                                               New.num(speed.get("z").getAsString())));
+                simo.setSpeed(new TripleNumber(Double.parseDouble(speed.get("x").getAsString()),
+                                               Double.parseDouble(speed.get("y").getAsString()),
+                                               Double.parseDouble(speed.get("z").getAsString())));
 
-                simo.setRadius(New.num(o.get("radius").getAsString()));
+                simo.setRadius(Double.parseDouble(o.get("radius").getAsString()));
                 JsonObject color = o.get("color").getAsJsonObject();
                 simo.setColor(new TripleInt(color.get("r").getAsInt(), color.get("g").getAsInt(), color.get("b").getAsInt()));
                 simo.setMotionless(o.get("motionless").getAsBoolean());

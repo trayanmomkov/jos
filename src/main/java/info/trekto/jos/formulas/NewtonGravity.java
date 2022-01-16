@@ -2,7 +2,6 @@ package info.trekto.jos.formulas;
 
 import info.trekto.jos.model.ImmutableSimulationObject;
 import info.trekto.jos.model.impl.TripleNumber;
-import info.trekto.jos.numbers.Number;
 
 import static info.trekto.jos.formulas.ScientificConstants.GRAVITY;
 
@@ -12,19 +11,18 @@ import static info.trekto.jos.formulas.ScientificConstants.GRAVITY;
  */
 public class NewtonGravity implements ForceCalculator {
     @Override
-    public Number calculateForce(final ImmutableSimulationObject object1, final ImmutableSimulationObject object2, final Number distance) {
+    public double calculateForce(final ImmutableSimulationObject object1, final ImmutableSimulationObject object2, final double distance) {
         //        (GRAVITY * object1.mass() * object2.mass()) / (distance * distance);
-        return GRAVITY.multiply(object1.getMass()).multiply(object2.getMass())
-                .divide(distance.multiply(distance));
+        return GRAVITY * object1.getMass() * object2.getMass() / (distance * distance);
     }
 
     @Override
-    public TripleNumber calculateForceAsVector(ImmutableSimulationObject object1, ImmutableSimulationObject object2, Number distance) {
-        Number force = calculateForce(object1, object2, distance);
+    public TripleNumber calculateForceAsVector(ImmutableSimulationObject object1, ImmutableSimulationObject object2, double distance) {
+        double force = calculateForce(object1, object2, distance);
         //       Fx = F*x/r;
-        Number forceX = force.multiply(object2.getX().subtract(object1.getX())).divide(distance);
-        Number forceY = force.multiply(object2.getY().subtract(object1.getY())).divide(distance);
-        Number forceZ = force.multiply(object2.getZ().subtract(object1.getZ())).divide(distance);
+        double forceX = force * (object2.getX() - object1.getX()) / distance;
+        double forceY = force * (object2.getY() - object1.getY()) / distance;
+        double forceZ = force * (object2.getZ() - object1.getZ()) / distance;
         return new TripleNumber(forceX, forceY, forceZ);
     }
 }

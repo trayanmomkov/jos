@@ -2,10 +2,8 @@ package info.trekto.jos.formulas;
 
 import info.trekto.jos.model.ImmutableSimulationObject;
 import info.trekto.jos.model.impl.TripleNumber;
-import info.trekto.jos.numbers.Number;
 
 import static info.trekto.jos.formulas.ScientificConstants.PI;
-import static info.trekto.jos.numbers.New.IGNORED;
 import static info.trekto.jos.numbers.New.RATIO_FOUR_THREE;
 
 /**
@@ -14,28 +12,34 @@ import static info.trekto.jos.numbers.New.RATIO_FOUR_THREE;
  *
  */
 public class CommonFormulas {
-    public static Number calculateDistance(ImmutableSimulationObject object1, ImmutableSimulationObject object2) {
-        Number x = object2.getX().subtract(object1.getX());
-        Number y = object2.getY().subtract(object1.getY());
-        Number z = object2.getZ().subtract(object1.getZ());
-        return (x.multiply(x).add(y.multiply(y)).add(z.multiply(z))).sqrt();
+    public static double calculateDistance(ImmutableSimulationObject object1, ImmutableSimulationObject object2) {
+        double x = object2.getX() - object1.getX();
+        double y = object2.getY() - object1.getY();
+        double z = object2.getZ() - object1.getZ();
+        return Math.sqrt (x*x+y*y+z*z);
     }
     
-    public static Number calculateVolumeFromRadius(Number radius) {
+    public static double calculateVolumeFromRadius(double radius) {
         // V = 4/3 * pi * r^3
-        return RATIO_FOUR_THREE.multiply(PI).multiply(radius.pow(3));
+        if (radius == 0) {
+            return Double.MIN_VALUE;
+        }
+        return RATIO_FOUR_THREE * PI * Math.pow(radius, 3);
     }
     
-    public static Number calculateRadiusFromVolume(Number volume) {
+    public static double calculateRadiusFromVolume(double volume) {
         // V = 4/3 * pi * r^3
-        return IGNORED.cbrt(volume.divide(RATIO_FOUR_THREE.multiply(PI)));
+        if (volume == 0) {
+            return Double.MIN_VALUE;
+        }
+        return Math.cbrt(volume / (RATIO_FOUR_THREE * PI));
     }
 
     public static TripleNumber calculateAcceleration(ImmutableSimulationObject object, TripleNumber acceleration, TripleNumber force) {
         // ax = Fx / m
-        Number newAccelerationX = acceleration.getX().add(force.getX().divide(object.getMass()));
-        Number newAccelerationY = acceleration.getY().add(force.getY().divide(object.getMass()));
-        Number newAccelerationZ = acceleration.getZ().add(force.getZ().divide(object.getMass()));
+        double newAccelerationX = acceleration.getX() + force.getX() / object.getMass();
+        double newAccelerationY = acceleration.getY() + force.getY() / object.getMass();
+        double newAccelerationZ = acceleration.getZ() + force.getZ() / object.getMass();
         return new TripleNumber(newAccelerationX, newAccelerationY, newAccelerationZ);
     }
 }

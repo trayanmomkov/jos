@@ -2,7 +2,6 @@ package info.trekto.jos.model;
 
 import info.trekto.jos.model.impl.TripleInt;
 import info.trekto.jos.model.impl.TripleNumber;
-import info.trekto.jos.numbers.Number;
 
 import java.util.List;
 
@@ -11,19 +10,19 @@ import java.util.List;
  * 19 Aug 2015
  */
 public interface ImmutableSimulationObject {
-    Number getX();
+    double getX();
 
-    Number getY();
+    double getY();
 
-    Number getZ();
+    double getZ();
 
     TripleNumber getSpeed();
 
-    Number getRadius();
+    double getRadius();
 
     TripleInt getColor();
 
-    Number getMass();
+    double getMass();
 
     boolean isMotionless();
 

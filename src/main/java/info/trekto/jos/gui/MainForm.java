@@ -77,7 +77,7 @@ public class MainForm {
 
         secondsPerIterationTextField.getDocument().addUndoableEditListener(actionEvent -> {
             if (!secondsPerIterationTextField.getText().isBlank()) {
-                C.prop.setSecondsPerIteration(New.num(secondsPerIterationTextField.getText()));
+                C.prop.setSecondsPerIteration(Double.parseDouble(secondsPerIterationTextField.getText()));
             }
         });
 

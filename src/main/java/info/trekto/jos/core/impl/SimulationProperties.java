@@ -2,7 +2,6 @@ package info.trekto.jos.core.impl;
 
 import info.trekto.jos.formulas.ForceCalculator.InteractingLaw;
 import info.trekto.jos.model.SimulationObject;
-import info.trekto.jos.numbers.Number;
 import info.trekto.jos.numbers.NumberFactory.NumberType;
 
 import java.util.List;
@@ -15,7 +14,7 @@ import static info.trekto.jos.formulas.ForceCalculator.InteractingLaw.NEWTON_LAW
  */
 public class SimulationProperties {
     private long numberOfIterations;
-    private Number secondsPerIteration;
+    private double secondsPerIteration;
     private String outputFile;
     private boolean saveToFile = false;
     private NumberType numberType;
@@ -114,11 +113,11 @@ public class SimulationProperties {
         this.initialObjects = initialObjects;
     }
 
-    public Number getSecondsPerIteration() {
+    public double getSecondsPerIteration() {
         return secondsPerIteration;
     }
 
-    public void setSecondsPerIteration(Number secondsPerIteration) {
+    public void setSecondsPerIteration(double secondsPerIteration) {
         this.secondsPerIteration = secondsPerIteration;
     }
 

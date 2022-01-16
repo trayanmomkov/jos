@@ -99,6 +99,7 @@ public class SimulationForkJoinImpl implements Simulation {
                         notifySubscribers();
                     }
 
+                    System.out.println(i);
                     doIteration();
                 } catch (InterruptedException e) {
                     logger.error("Concurrency failure. One of the threads interrupted in cycle " + i, e);

@@ -9,31 +9,24 @@ import java.util.Random;
 import static info.trekto.jos.util.Utils.nanoToHumanReadable;
 
 public class AparapiTest {
-
-    @Test
-    public void info() {
-        Device device = Device.best();
-        System.out.println(device.getShortDescription());
-    }
-
     @Test
     public void arraysMultiplication() {
         int n = 100000;
-        final int k = 1000000;
+        final int k = 200000;
         Random random  = new Random(980767659786987L);
 
-        final float[] inA = new float[k];
+        final double[] inA = new double[k];
         for (int i = 0; i < k; i++) {
-            inA[i] = random.nextFloat();
+            inA[i] = random.nextDouble();
         }
-        final float[] inB = new float[k];
+        final double[] inB = new double[k];
         for (int i = 0; i < k; i++) {
-            inB[i] = random.nextFloat();
+            inB[i] = random.nextDouble();
         }
         
         /* Normal */
         assert (inA.length == inB.length);
-        final float[] result = new float[inA.length];
+        final double[] result = new double[inA.length];
 
         long start = System.nanoTime();
         for (int j = 0; j < n; j++) {
@@ -44,7 +37,7 @@ public class AparapiTest {
         System.out.println("Normal: " + nanoToHumanReadable(System.nanoTime() - start));
 
         /* Aparapi */
-        final float[] aparapiResult = new float[inA.length];
+        final double[] aparapiResult = new double[inA.length];
         Kernel kernel = new Kernel() {
             @Override
             public void run() {

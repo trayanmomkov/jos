@@ -2,7 +2,6 @@ package info.trekto.jos.model.impl;
 
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.numbers.New;
-import info.trekto.jos.numbers.Number;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,13 +12,13 @@ import java.util.List;
  */
 public class SimulationObjectImpl implements SimulationObject {
 
-    Number x;
-    Number y;
-    Number z;
+    double x;
+    double y;
+    double z;
     TripleNumber speed;
-    Number radius;
+    double radius;
     TripleInt color;
-    Number mass;
+    double mass;
 
     /* Whether the object is static */
     boolean motionless = false;
@@ -49,32 +48,32 @@ public class SimulationObjectImpl implements SimulationObject {
     }
 
     @Override
-    public Number getX() {
+    public double getX() {
         return x;
     }
 
     @Override
-    public void setX(Number x) {
+    public void setX(double x) {
         this.x = x;
     }
 
     @Override
-    public Number getY() {
+    public double getY() {
         return y;
     }
 
     @Override
-    public void setY(Number y) {
+    public void setY(double y) {
         this.y = y;
     }
 
     @Override
-    public Number getZ() {
+    public double getZ() {
         return z;
     }
 
     @Override
-    public void setZ(Number z) {
+    public void setZ(double z) {
         this.z = z;
     }
 
@@ -89,12 +88,12 @@ public class SimulationObjectImpl implements SimulationObject {
     }
 
     @Override
-    public Number getRadius() {
+    public double getRadius() {
         return radius;
     }
 
     @Override
-    public void setRadius(Number radius) {
+    public void setRadius(double radius) {
         this.radius = radius;
     }
 
@@ -109,12 +108,12 @@ public class SimulationObjectImpl implements SimulationObject {
     }
 
     @Override
-    public Number getMass() {
+    public double getMass() {
         return mass;
     }
 
     @Override
-    public void setMass(Number mass) {
+    public void setMass(double mass) {
         this.mass = mass;
     }
 

@@ -19,7 +19,6 @@ import java.util.Random;
 import static info.trekto.jos.formulas.ForceCalculator.InteractingLaw.NEWTON_LAW_OF_GRAVITATION;
 import static info.trekto.jos.numbers.New.ZERO;
 import static info.trekto.jos.numbers.NumberFactory.NumberType.DOUBLE;
-import static info.trekto.jos.numbers.NumberFactoryProxy.createNumberFactory;
 import static info.trekto.jos.util.Utils.collisionExists;
 
 public class SimulationGenerator {
@@ -41,11 +40,9 @@ public class SimulationGenerator {
         C.prop.setPrecision(32);
         C.prop.setScale(16);
 
-        createNumberFactory(C.prop.getNumberType(), C.prop.getPrecision(), C.prop.getScale());
-
         C.prop.setInteractingLaw(NEWTON_LAW_OF_GRAVITATION);
         C.prop.setNumberOfIterations(1_000_000);
-        C.prop.setSecondsPerIteration(New.num(0.001));
+        C.prop.setSecondsPerIteration(0.001);
         C.prop.setNumberOfObjects(400);
         C.prop.setOutputFile(head + "_out." + tail);
         C.prop.setSaveToFile(true);
@@ -66,18 +63,18 @@ public class SimulationGenerator {
             SimulationObject o = new SimulationObjectImpl();
 
             do {
-                o.setX(New.num(random.nextDouble()).subtract(New.num("0.5")).multiply(New.num(2000)));
-                o.setY(New.num(random.nextDouble()).subtract(New.num("0.5")).multiply(New.num(2000)));
+                o.setX((random.nextDouble() - 0.5) * 2000);
+                o.setY((random.nextDouble() - 0.5) * 2000);
                 o.setZ(ZERO);
-                o.setRadius(New.num(random.nextDouble()).multiply(New.num(5)));
+                o.setRadius(random.nextDouble() * 5);
             } while (collisionExists(objects));
 
-            o.setSpeed(new TripleNumber(New.num(random.nextDouble()).subtract(New.num("0.5")).multiply(New.num(10)),
-                                        New.num(random.nextDouble()).subtract(New.num("0.5")).multiply(New.num(10)),
+            o.setSpeed(new TripleNumber((random.nextDouble() - 0.5) * 10,
+                                        (random.nextDouble() - 0.5) * 10,
                                         ZERO));
 
             o.setColor(new TripleInt(random.nextInt(255), random.nextInt(255), random.nextInt(255)));
-            o.setMass(New.num(random.nextDouble()).multiply(New.num(100_000_000_000_000L)));
+            o.setMass(random.nextDouble() * 100_000_000_000_000L);
             o.setMotionless(false);
             o.setLabel(String.valueOf(i));
 

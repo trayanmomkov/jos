@@ -7,7 +7,6 @@ import info.trekto.jos.model.ImmutableSimulationObject;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.TripleInt;
 import info.trekto.jos.model.impl.TripleNumber;
-import info.trekto.jos.numbers.Number;
 import info.trekto.jos.visualization.java2dgraphics.VisualizerImpl;
 
 import java.util.HashSet;
@@ -17,7 +16,8 @@ import java.util.Set;
 
 import static info.trekto.jos.core.impl.SimulationForkJoinImpl.objectsForRemoval;
 import static info.trekto.jos.formulas.CommonFormulas.*;
-import static info.trekto.jos.numbers.New.*;
+import static info.trekto.jos.numbers.New.TWO;
+import static info.trekto.jos.numbers.New.ZERO;
 
 /**
  * @author Trayan Momkov
@@ -44,7 +44,7 @@ public class SimulationLogicImpl implements SimulationLogic {
                     continue;
                 }
                 /* Calculate force */
-                Number distance = calculateDistance(oldObject, tempObject);
+                double distance = calculateDistance(oldObject, tempObject);
                 TripleNumber force = simulation.getForceCalculator().calculateForceAsVector(oldObject, tempObject, distance);
 
                 /* Add to current acceleration */
@@ -76,9 +76,9 @@ public class SimulationLogicImpl implements SimulationLogic {
             if (tempOldObject == oldObject) {
                 continue;
             }
-            Number distance = calculateDistance(tempOldObject, newObject);
-            if (distance.compareTo(tempOldObject.getRadius().add(newObject.getRadius())) < 0) {    // if collide
-                if (newObject.getRadius().compareTo(tempOldObject.getRadius()) < 0) {
+            double distance = calculateDistance(tempOldObject, newObject);
+            if (distance < tempOldObject.getRadius() + newObject.getRadius()) {    // if collide
+                if (newObject.getRadius() < tempOldObject.getRadius()) {
                     /*The collision will be processed
                      * when we process the other colliding object (which is the bigger one). */
                     objectsForRemoval.add(newObject);
@@ -105,7 +105,7 @@ public class SimulationLogicImpl implements SimulationLogic {
                 bigger.setZ(position.getZ());
 
                 /* Mass */
-                bigger.setMass(bigger.getMass().add(smaller.getMass()));
+                bigger.setMass(bigger.getMass() + smaller.getMass());
 
                 /* Volume (radius) */
                 bigger.setRadius(calculateRadiusBasedOnNewVolume(smaller, bigger));
@@ -118,8 +118,8 @@ public class SimulationLogicImpl implements SimulationLogic {
     }
 
     private TripleInt calculateColor(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
-        double bigVolume = calculateVolumeFromRadius(bigger.getRadius()).doubleValue();
-        double smallVolume = calculateVolumeFromRadius(bigger.getRadius()).doubleValue();
+        double bigVolume = calculateVolumeFromRadius(bigger.getRadius());
+        double smallVolume = calculateVolumeFromRadius(bigger.getRadius());
         int r = (int) Math.round((bigger.getColor().getR() * bigVolume + smaller.getColor().getR() * smallVolume) / (bigVolume + smallVolume));
         int g = (int) Math.round((bigger.getColor().getG() * bigVolume + smaller.getColor().getG() * smallVolume) / (bigVolume + smallVolume));
         int b = (int) Math.round((bigger.getColor().getB() * bigVolume + smaller.getColor().getB() * smallVolume) / (bigVolume + smallVolume));
@@ -130,37 +130,37 @@ public class SimulationLogicImpl implements SimulationLogic {
     /**
      * We calculate for sphere, not for circle, so in 2D volume may not look real.
      */
-    public static Number calculateRadiusBasedOnNewVolume(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
+    public static double calculateRadiusBasedOnNewVolume(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
         // calculate volume of smaller and add it to volume of bigger
         // calculate new radius of bigger based on new volume
-        Number smallVolume = calculateVolumeFromRadius(smaller.getRadius());
-        Number bigVolume = calculateVolumeFromRadius(bigger.getRadius());
-        return calculateRadiusFromVolume(bigVolume.add(smallVolume));
+        double smallVolume = calculateVolumeFromRadius(smaller.getRadius());
+        double bigVolume = calculateVolumeFromRadius(bigger.getRadius());
+        return calculateRadiusFromVolume(bigVolume + smallVolume);
     }
 
-    private TripleNumber calculatePosition(Number distance, ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
+    private TripleNumber calculatePosition(double distance, ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
         // TODO What about Z ?!
-        Number fi = IGNORED.atan2(
-                bigger.getY().subtract(smaller.getY()).abs(),
-                bigger.getX().subtract(smaller.getX()).abs());
+        double fi = Math.atan2(
+                Math.abs(bigger.getY()- smaller.getY()),
+                 Math.abs(bigger.getX() - smaller.getX()));
 
-        Number massRation = smaller.getMass().divide(bigger.getMass());
-        Number x, y;
+        double massRation = smaller.getMass() / bigger.getMass();
+        double x, y;
 
-        if (bigger.getX().compareTo(smaller.getX()) <= 0) {
+        if (bigger.getX() <= smaller.getX()) {
 //                    bigger -> x += _distance * cos(fi.get_d()) * massRatio / 2.0;
-            x = bigger.getX().add(distance.multiply(IGNORED.cos(fi)).multiply(massRation).divide(TWO));
+            x = bigger.getX() + distance * Math.cos(fi) * massRation / TWO;
         } else {
 //                    bigger->x -=  _distance * cos(fi.get_d()) * massRatio / 2.0;
-            x = bigger.getX().subtract(distance.multiply(IGNORED.cos(fi)).multiply(massRation).divide(TWO));
+            x = bigger.getX() - distance * Math.cos(fi) * massRation / TWO;
         }
 
-        if (bigger.getY().compareTo(smaller.getY()) <= 0) {
+        if (bigger.getY() <= smaller.getY()) {
 //                    bigger->y +=  _distance * sin(fi.get_d()) * massRatio / 2.0;
-            y = bigger.getY().add(distance.multiply(IGNORED.sin(fi)).multiply(massRation).divide(TWO));
+            y = bigger.getY() + distance * Math.sin(fi) * massRation / TWO;
         } else {
 //                    bigger->y -=  _distance * sin(fi.get_d()) * massRatio / 2.0;
-            y = bigger.getY().subtract(distance.multiply(IGNORED.sin(fi)).multiply(massRation).divide(TWO));
+            y = bigger.getY() - distance * Math.sin(fi) * massRation / TWO;
         }
 
         return new TripleNumber(x, y, ZERO);
@@ -168,14 +168,14 @@ public class SimulationLogicImpl implements SimulationLogic {
 
     private TripleNumber calculateSpeedOnMerging(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
         TripleNumber totalImpulse = new TripleNumber(
-                smaller.getSpeed().getX().multiply(smaller.getMass()).add(bigger.getSpeed().getX().multiply(bigger.getMass())),
-                smaller.getSpeed().getY().multiply(smaller.getMass()).add(bigger.getSpeed().getY().multiply(bigger.getMass())),
-                smaller.getSpeed().getZ().multiply(smaller.getMass()).add(bigger.getSpeed().getZ().multiply(bigger.getMass())));
-        Number totalMass = bigger.getMass().add(smaller.getMass());
+                smaller.getSpeed().getX() * smaller.getMass() + bigger.getSpeed().getX() * bigger.getMass(),
+                smaller.getSpeed().getY() * smaller.getMass() + bigger.getSpeed().getY() * bigger.getMass(),
+                smaller.getSpeed().getZ() * smaller.getMass() + bigger.getSpeed().getZ() * bigger.getMass());
+        double totalMass = bigger.getMass() + smaller.getMass();
 
-        return new TripleNumber(totalImpulse.getX().divide(totalMass),
-                                totalImpulse.getY().divide(totalMass),
-                                totalImpulse.getZ().divide(totalMass));
+        return new TripleNumber(totalImpulse.getX() / totalMass,
+                                totalImpulse.getY() / totalMass,
+                                totalImpulse.getZ() / totalMass);
     }
 
     private void bounceFromWalls(SimulationObject newObject) {
@@ -183,18 +183,18 @@ public class SimulationLogicImpl implements SimulationLogic {
             int width = ((VisualizerImpl) C.simulation.getSubscribers().get(0)).getVisualizationPanel().getWidth();
             int height = ((VisualizerImpl) C.simulation.getSubscribers().get(0)).getVisualizationPanel().getHeight();
 
-            if (newObject.getX().add(newObject.getRadius()).doubleValue() > width / 2.0
-                    || newObject.getX().subtract(newObject.getRadius()).doubleValue() < -width / 2.0) {
-                TripleNumber speed = new TripleNumber(newObject.getSpeed().getX().negate(),
+            if (newObject.getX() + newObject.getRadius() > width / 2.0
+                    || newObject.getX() - newObject.getRadius() < -width / 2.0) {
+                TripleNumber speed = new TripleNumber(-newObject.getSpeed().getX(),
                                                       newObject.getSpeed().getY(),
                                                       newObject.getSpeed().getZ());
                 newObject.setSpeed(speed);
             }
 
-            if (newObject.getY().add(newObject.getRadius()).doubleValue() > height / 2.0
-                    || newObject.getY().subtract(newObject.getRadius()).doubleValue() < -height / 2.0) {
+            if (newObject.getY() + newObject.getRadius() > height / 2.0
+                    || newObject.getY() - newObject.getRadius() < -height / 2.0) {
                 TripleNumber speed = new TripleNumber(newObject.getSpeed().getX(),
-                                                      newObject.getSpeed().getY().negate(),
+                                                      -newObject.getSpeed().getY(),
                                                       newObject.getSpeed().getZ());
                 newObject.setSpeed(speed);
             }
@@ -203,16 +203,16 @@ public class SimulationLogicImpl implements SimulationLogic {
 
     private void moveObject(ImmutableSimulationObject oldObject, SimulationObject newObject) {
         // members[i]->x = members[i]->x + members[i]->speed.x * simulationProperties.secondsPerCycle;
-        newObject.setX(oldObject.getX().add(oldObject.getSpeed().getX().multiply(C.prop.getSecondsPerIteration())));
-        newObject.setY(oldObject.getY().add(oldObject.getSpeed().getY().multiply(C.prop.getSecondsPerIteration())));
-        newObject.setZ(oldObject.getZ().add(oldObject.getSpeed().getZ().multiply(C.prop.getSecondsPerIteration())));
+        newObject.setX(oldObject.getX() + oldObject.getSpeed().getX() * C.prop.getSecondsPerIteration());
+        newObject.setY(oldObject.getY() + oldObject.getSpeed().getY() * C.prop.getSecondsPerIteration());
+        newObject.setZ(oldObject.getZ() + oldObject.getSpeed().getZ() * C.prop.getSecondsPerIteration());
     }
 
     private TripleNumber calculateSpeed(ImmutableSimulationObject object, TripleNumber acceleration) {
         // members[i]->speed.x += a.x * simulationProperties.secondsPerCycle;//* t;
-        Number speedX = object.getSpeed().getX().add(acceleration.getX().multiply(C.prop.getSecondsPerIteration()));
-        Number speedY = object.getSpeed().getY().add(acceleration.getY().multiply(C.prop.getSecondsPerIteration()));
-        Number speedZ = object.getSpeed().getZ().add(acceleration.getZ().multiply(C.prop.getSecondsPerIteration()));
+        double speedX = object.getSpeed().getX() + acceleration.getX() * C.prop.getSecondsPerIteration();
+        double speedY = object.getSpeed().getY() + acceleration.getY() * C.prop.getSecondsPerIteration();
+        double speedZ = object.getSpeed().getZ() + acceleration.getZ() * C.prop.getSecondsPerIteration();
 
         return new TripleNumber(speedX, speedY, speedZ);
     }

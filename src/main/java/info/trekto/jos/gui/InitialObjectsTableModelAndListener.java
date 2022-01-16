@@ -5,8 +5,6 @@ import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.SimulationObjectImpl;
 import info.trekto.jos.model.impl.TripleInt;
 import info.trekto.jos.model.impl.TripleNumber;
-import info.trekto.jos.numbers.New;
-import info.trekto.jos.numbers.Number;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -77,15 +75,15 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
             SimulationObject o = new SimulationObjectImpl();
             int i = 0;
             o.setLabel(String.valueOf(vector.get(i++)));
-            o.setMass((Number) vector.get(i++));
-            o.setX((Number) vector.get(i++));
-            o.setY((Number) vector.get(i++));
-            o.setZ((Number) vector.get(i++));
-            o.setRadius((Number) vector.get(i++));
+            o.setMass((double) vector.get(i++));
+            o.setX((double) vector.get(i++));
+            o.setY((double) vector.get(i++));
+            o.setZ((double) vector.get(i++));
+            o.setRadius((double) vector.get(i++));
             o.setSpeed(new TripleNumber(
-                    New.num(String.valueOf(vector.get(i++))),
-                    New.num(String.valueOf(vector.get(i++))),
-                    New.num(String.valueOf(vector.get(i++)))));
+                    (double) vector.get(i++),
+                    (double) vector.get(i++),
+                    (double) vector.get(i++)));
             o.setMotionless((Boolean) vector.get(i++));
             o.setColor(new TripleInt(Integer.parseInt(String.valueOf(vector.get(i++))),
                                      Integer.parseInt(String.valueOf(vector.get(i++))),
