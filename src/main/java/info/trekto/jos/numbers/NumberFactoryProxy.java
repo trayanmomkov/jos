@@ -1,6 +1,7 @@
 package info.trekto.jos.numbers;
 
 import info.trekto.jos.formulas.ScientificConstants;
+import info.trekto.jos.numbers.impl.ApfloatNumberFactory;
 import info.trekto.jos.numbers.impl.BigDecimalNumberFactory;
 import info.trekto.jos.numbers.impl.DoubleNumberFactory;
 import info.trekto.jos.numbers.impl.FloatNumberFactory;
@@ -74,6 +75,9 @@ public class NumberFactoryProxy {
                 break;
             case BIG_DECIMAL:
                 setFactory(new BigDecimalNumberFactory(new MathContext(precision, roundingMode), scale));
+                break;
+            case APFLOAT:
+                setFactory(new ApfloatNumberFactory(precision));
                 break;
             default:
                 setFactory(new DoubleNumberFactory());

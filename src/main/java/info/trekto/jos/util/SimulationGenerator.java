@@ -45,7 +45,7 @@ public class SimulationGenerator {
 
         C.prop.setInteractingLaw(NEWTON_LAW_OF_GRAVITATION);
         C.prop.setNumberOfIterations(1_000_000);
-        C.prop.setSecondsPerIteration(New.num(0.001));
+        C.prop.setSecondsPerIteration(New.num("0.001"));
         C.prop.setNumberOfObjects(400);
         C.prop.setOutputFile(head + "_out." + tail);
         C.prop.setSaveToFile(true);
