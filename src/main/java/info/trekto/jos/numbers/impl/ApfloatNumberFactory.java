@@ -12,7 +12,7 @@ import java.math.MathContext;
  */
 public class ApfloatNumberFactory implements NumberFactory {
 
-    private final long precision;
+    final long precision;
 
     public ApfloatNumberFactory(long precision) {
         super();

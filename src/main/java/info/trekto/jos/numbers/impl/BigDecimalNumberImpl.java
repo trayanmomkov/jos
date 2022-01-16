@@ -9,6 +9,8 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Objects;
 
+import static info.trekto.jos.numbers.NumberFactoryProxy.createNumber;
+
 /**
  * BigDecimal implementation.
  * Immutable.
@@ -129,12 +131,12 @@ public class BigDecimalNumberImpl implements Number {
 
     @Override
     public Number valueOf(long val) {
-        return newNumber(BigDecimal.valueOf(val));
+        return createNumber(val);
     }
 
     @Override
     public Number valueOf(double val) {
-        return newNumber(BigDecimal.valueOf(val));
+        return createNumber(val);
     }
 
     @Override

@@ -8,6 +8,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Objects;
 
+import static info.trekto.jos.numbers.NumberFactoryProxy.createNumber;
+
 public class ApfloatNumberImpl implements Number {
 
     private final Apfloat value;
@@ -115,12 +117,12 @@ public class ApfloatNumberImpl implements Number {
 
     @Override
     public Number valueOf(long val) {
-        return newNumber(new Apfloat(val));
+        return createNumber(val);
     }
 
     @Override
     public Number valueOf(double val) {
-        return newNumber(new Apfloat(val));
+        return createNumber(val);
     }
 
     @Override
@@ -135,7 +137,7 @@ public class ApfloatNumberImpl implements Number {
 
     @Override
     public BigDecimal bigDecimalValue() {
-        return BigDecimal.valueOf(value.doubleValue());
+        return BigDecimal.valueOf(value.doubleValue()).setScale((int)value.precision(), BigDecimalNumberImpl.roundingMode);
     }
 
     @Override
