@@ -1,0 +1,6693 @@
+{
+  "properties":
+{
+  "numberOfIterations": 200,
+  "secondsPerIteration": 0.01,
+  "numberOfObjects": 2,
+  "outputFile": "/home/john/IdeaProjects/jos/src/test/resources/two_objects_collision.out.json",
+  "saveToFile": true,
+  "numberType": "DOUBLE",
+  "interactingLaw": "NEWTON_LAW_OF_GRAVITATION",
+  "precision": 32,
+  "scale": 16,
+  "realTimeVisualization": false,
+  "playingSpeed": 60,
+  "bounceFromWalls": true,
+  "initialObjects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -1.0,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 1.0,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+  "simulation": [
+{
+  "cycle": 1,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.99,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.99,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 2,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.98,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.98,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 3,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.97,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.97,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 4,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.96,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.96,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 5,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.95,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.95,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 6,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.94,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.94,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 7,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.9299999999999999,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.9299999999999999,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 8,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.9199999999999999,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.9199999999999999,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 9,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.9099999999999999,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.9099999999999999,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 10,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.8999999999999999,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.8999999999999999,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 11,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.8899999999999999,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.8899999999999999,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 12,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.8799999999999999,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.8799999999999999,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 13,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.8699999999999999,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.8699999999999999,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 14,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.8599999999999999,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.8599999999999999,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 15,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.8499999999999999,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.8499999999999999,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 16,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.8399999999999999,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.8399999999999999,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 17,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.8299999999999998,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.8299999999999998,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 18,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.8199999999999998,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.8199999999999998,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 19,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.8099999999999998,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.8099999999999998,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 20,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.7999999999999998,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.7999999999999998,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 21,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.7899999999999998,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.7899999999999998,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 22,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.7799999999999998,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.7799999999999998,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 23,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.7699999999999998,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.7699999999999998,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 24,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.7599999999999998,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.7599999999999998,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 25,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.7499999999999998,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.7499999999999998,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 26,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.7399999999999998,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.7399999999999998,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 27,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.7299999999999998,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.7299999999999998,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 28,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.7199999999999998,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.7199999999999998,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 29,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.7099999999999997,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.7099999999999997,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 30,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.6999999999999997,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.6999999999999997,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 31,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.6899999999999997,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.6899999999999997,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 32,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.6799999999999997,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.6799999999999997,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 33,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.6699999999999997,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.6699999999999997,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 34,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.6599999999999997,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.6599999999999997,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 35,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.6499999999999997,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.6499999999999997,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 36,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.6399999999999997,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.6399999999999997,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 37,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.6299999999999997,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.6299999999999997,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 38,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.6199999999999997,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.6199999999999997,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 39,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.6099999999999997,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.6099999999999997,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 40,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.5999999999999996,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.5999999999999996,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 41,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.5899999999999996,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.5899999999999996,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 42,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.5799999999999996,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.5799999999999996,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 43,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.5699999999999996,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.5699999999999996,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 44,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.5599999999999996,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.5599999999999996,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 45,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.5499999999999996,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.5499999999999996,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 46,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.5399999999999996,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.5399999999999996,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 47,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.5299999999999996,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.5299999999999996,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 48,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.5199999999999996,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.5199999999999996,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 49,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.5099999999999996,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.5099999999999996,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 50,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.49999999999999956,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.49999999999999956,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 51,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.48999999999999955,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.48999999999999955,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 52,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.47999999999999954,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.47999999999999954,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 53,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.46999999999999953,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.46999999999999953,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 54,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.4599999999999995,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.4599999999999995,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 55,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.4499999999999995,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.4499999999999995,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 56,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.4399999999999995,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.4399999999999995,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 57,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.4299999999999995,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.4299999999999995,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 58,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.4199999999999995,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.4199999999999995,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 59,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.4099999999999995,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.4099999999999995,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 60,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.39999999999999947,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.39999999999999947,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 61,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.38999999999999946,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.38999999999999946,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 62,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.37999999999999945,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.37999999999999945,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 63,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.36999999999999944,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.36999999999999944,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 64,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.35999999999999943,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.35999999999999943,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 65,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.3499999999999994,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.3499999999999994,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 66,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.3399999999999994,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.3399999999999994,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 67,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.3299999999999994,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.3299999999999994,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 68,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.3199999999999994,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.3199999999999994,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 69,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.3099999999999994,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.3099999999999994,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 70,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.2999999999999994,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.2999999999999994,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 71,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.28999999999999937,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.28999999999999937,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 72,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.27999999999999936,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.27999999999999936,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 73,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.26999999999999935,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.26999999999999935,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 74,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.25999999999999934,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.25999999999999934,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 75,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.24999999999999933,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.24999999999999933,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 76,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.23999999999999932,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.23999999999999932,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 77,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.22999999999999932,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.22999999999999932,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 78,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.2199999999999993,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.2199999999999993,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 79,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.2099999999999993,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.2099999999999993,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 80,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.1999999999999993,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.1999999999999993,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 81,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.18999999999999928,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.18999999999999928,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 82,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.17999999999999927,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.17999999999999927,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 83,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.16999999999999926,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.16999999999999926,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 84,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.15999999999999925,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.15999999999999925,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 85,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.14999999999999925,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.14999999999999925,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 86,
+  "numberOfObjects": 2,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 255,
+        "g": 0
+      },
+      "mass": 1.0,
+      "x": 0.0,
+      "y": -0.13999999999999924,
+      "z": 0.0,
+      "label": "1",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "0.0",
+        "y": "1.0",
+        "z": "0.0"
+      }
+    },
+    {
+      "color": {
+        "r": 255,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 2.0,
+      "x": 0.13999999999999924,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "2",
+      "radius": 0.1,
+      "motionless": false,
+      "speed": {
+        "x": "-1.0",
+        "y": "0.0",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 87,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": 0.1399999999999992,
+      "y": 0.0,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 88,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": 0.13333333333333255,
+      "y": 0.003333333333333333,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 89,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": 0.1266666666666659,
+      "y": 0.006666666666666666,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 90,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": 0.11999999999999923,
+      "y": 0.009999999999999998,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 91,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": 0.11333333333333256,
+      "y": 0.013333333333333332,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 92,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": 0.1066666666666659,
+      "y": 0.016666666666666666,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 93,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": 0.09999999999999923,
+      "y": 0.02,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 94,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": 0.09333333333333256,
+      "y": 0.023333333333333334,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 95,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": 0.08666666666666589,
+      "y": 0.02666666666666667,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 96,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": 0.07999999999999922,
+      "y": 0.030000000000000002,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 97,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": 0.07333333333333256,
+      "y": 0.03333333333333333,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 98,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": 0.06666666666666589,
+      "y": 0.03666666666666667,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 99,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": 0.05999999999999922,
+      "y": 0.04,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 100,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": 0.05333333333333255,
+      "y": 0.043333333333333335,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 101,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": 0.046666666666665885,
+      "y": 0.04666666666666667,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 102,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": 0.03999999999999922,
+      "y": 0.05,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 103,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": 0.03333333333333255,
+      "y": 0.05333333333333334,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 104,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": 0.02666666666666588,
+      "y": 0.05666666666666667,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 105,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": 0.019999999999999213,
+      "y": 0.060000000000000005,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 106,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": 0.013333333333332547,
+      "y": 0.06333333333333334,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 107,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": 0.00666666666666588,
+      "y": 0.06666666666666667,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 108,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -7.858297346174936E-16,
+      "y": 0.06999999999999999,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 109,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.006666666666667452,
+      "y": 0.07333333333333332,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 110,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.013333333333334118,
+      "y": 0.07666666666666665,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 111,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.020000000000000785,
+      "y": 0.07999999999999997,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 112,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.02666666666666745,
+      "y": 0.0833333333333333,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 113,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.03333333333333412,
+      "y": 0.08666666666666663,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 114,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.040000000000000785,
+      "y": 0.08999999999999996,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 115,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.04666666666666745,
+      "y": 0.09333333333333328,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 116,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.05333333333333412,
+      "y": 0.09666666666666661,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 117,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.06000000000000079,
+      "y": 0.09999999999999994,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 118,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.06666666666666746,
+      "y": 0.10333333333333326,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 119,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.07333333333333412,
+      "y": 0.10666666666666659,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 120,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.08000000000000079,
+      "y": 0.10999999999999992,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 121,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.08666666666666746,
+      "y": 0.11333333333333324,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 122,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.09333333333333413,
+      "y": 0.11666666666666657,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 123,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.1000000000000008,
+      "y": 0.1199999999999999,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 124,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.10666666666666746,
+      "y": 0.12333333333333323,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 125,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.11333333333333413,
+      "y": 0.12666666666666657,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 126,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.1200000000000008,
+      "y": 0.1299999999999999,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 127,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.12666666666666745,
+      "y": 0.13333333333333322,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 128,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.1333333333333341,
+      "y": 0.13666666666666655,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 129,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.14000000000000076,
+      "y": 0.13999999999999987,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 130,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.14666666666666742,
+      "y": 0.1433333333333332,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 131,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.15333333333333407,
+      "y": 0.14666666666666653,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 132,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.16000000000000072,
+      "y": 0.14999999999999986,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 133,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.16666666666666738,
+      "y": 0.15333333333333318,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 134,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.17333333333333403,
+      "y": 0.1566666666666665,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 135,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.1800000000000007,
+      "y": 0.15999999999999984,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 136,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.18666666666666734,
+      "y": 0.16333333333333316,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 137,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.193333333333334,
+      "y": 0.1666666666666665,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 138,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.20000000000000065,
+      "y": 0.16999999999999982,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 139,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.2066666666666673,
+      "y": 0.17333333333333314,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 140,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.21333333333333396,
+      "y": 0.17666666666666647,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 141,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.2200000000000006,
+      "y": 0.1799999999999998,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 142,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.22666666666666727,
+      "y": 0.18333333333333313,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 143,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.23333333333333392,
+      "y": 0.18666666666666645,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 144,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.24000000000000057,
+      "y": 0.18999999999999978,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 145,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.24666666666666723,
+      "y": 0.1933333333333331,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 146,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.2533333333333339,
+      "y": 0.19666666666666643,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 147,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.26000000000000056,
+      "y": 0.19999999999999976,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 148,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.2666666666666672,
+      "y": 0.2033333333333331,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 149,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.27333333333333387,
+      "y": 0.20666666666666642,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 150,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.2800000000000005,
+      "y": 0.20999999999999974,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 151,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.2866666666666672,
+      "y": 0.21333333333333307,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 152,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.29333333333333383,
+      "y": 0.2166666666666664,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 153,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.3000000000000005,
+      "y": 0.21999999999999972,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 154,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.30666666666666714,
+      "y": 0.22333333333333305,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 155,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.3133333333333338,
+      "y": 0.22666666666666638,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 156,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.32000000000000045,
+      "y": 0.2299999999999997,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 157,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.3266666666666671,
+      "y": 0.23333333333333303,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 158,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.33333333333333376,
+      "y": 0.23666666666666636,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 159,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.3400000000000004,
+      "y": 0.23999999999999969,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 160,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.34666666666666707,
+      "y": 0.243333333333333,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 161,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.3533333333333337,
+      "y": 0.24666666666666634,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 162,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.3600000000000004,
+      "y": 0.24999999999999967,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 163,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.36666666666666703,
+      "y": 0.253333333333333,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 164,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.3733333333333337,
+      "y": 0.2566666666666664,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 165,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.38000000000000034,
+      "y": 0.25999999999999973,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 166,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.386666666666667,
+      "y": 0.2633333333333331,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 167,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.39333333333333365,
+      "y": 0.26666666666666644,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 168,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.4000000000000003,
+      "y": 0.2699999999999998,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 169,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.40666666666666695,
+      "y": 0.27333333333333315,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 170,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.4133333333333336,
+      "y": 0.2766666666666665,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 171,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.42000000000000026,
+      "y": 0.27999999999999986,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 172,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.4266666666666669,
+      "y": 0.2833333333333332,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 173,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.43333333333333357,
+      "y": 0.28666666666666657,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 174,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.4400000000000002,
+      "y": 0.2899999999999999,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 175,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.4466666666666669,
+      "y": 0.2933333333333333,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 176,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.45333333333333353,
+      "y": 0.29666666666666663,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 177,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.4600000000000002,
+      "y": 0.3,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 178,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.46666666666666684,
+      "y": 0.30333333333333334,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 179,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.4733333333333335,
+      "y": 0.3066666666666667,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 180,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.48000000000000015,
+      "y": 0.31000000000000005,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 181,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.4866666666666668,
+      "y": 0.3133333333333334,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 182,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.49333333333333346,
+      "y": 0.31666666666666676,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 183,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.5000000000000001,
+      "y": 0.3200000000000001,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 184,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.5066666666666668,
+      "y": 0.3233333333333335,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 185,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.5133333333333335,
+      "y": 0.3266666666666668,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 186,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.5200000000000002,
+      "y": 0.3300000000000002,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 187,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.526666666666667,
+      "y": 0.33333333333333354,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 188,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.5333333333333337,
+      "y": 0.3366666666666669,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 189,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.5400000000000004,
+      "y": 0.34000000000000025,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 190,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.5466666666666671,
+      "y": 0.3433333333333336,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 191,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.5533333333333338,
+      "y": 0.34666666666666696,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 192,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.5600000000000005,
+      "y": 0.3500000000000003,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 193,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.5666666666666672,
+      "y": 0.35333333333333367,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 194,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.5733333333333339,
+      "y": 0.356666666666667,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 195,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.5800000000000006,
+      "y": 0.3600000000000004,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 196,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.5866666666666673,
+      "y": 0.36333333333333373,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 197,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.593333333333334,
+      "y": 0.3666666666666671,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 198,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.6000000000000008,
+      "y": 0.37000000000000044,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 199,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.6066666666666675,
+      "y": 0.3733333333333338,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+},
+{
+  "cycle": 200,
+  "numberOfObjects": 1,
+  "objects": [
+    {
+      "color": {
+        "r": 0,
+        "b": 0,
+        "g": 0
+      },
+      "mass": 3.0,
+      "x": -0.6133333333333342,
+      "y": 0.37666666666666715,
+      "z": 0.0,
+      "label": "1",
+      "radius": 4.9E-324,
+      "motionless": false,
+      "speed": {
+        "x": "-0.6666666666666666",
+        "y": "0.3333333333333333",
+        "z": "0.0"
+      }
+    }
+  ]
+}
+    ]
+}
