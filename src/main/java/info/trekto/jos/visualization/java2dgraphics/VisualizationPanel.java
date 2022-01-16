@@ -68,8 +68,8 @@ public class VisualizationPanel extends JPanel {
                 if (shape.getText() != null) {
                     g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 96));
                     ((Graphics2D) g).drawString(shape.getText(),
-                                                Math.round(shape.getShape().getBounds2D().getCenterX()),
-                                                Math.round(shape.getShape().getBounds2D().getCenterY()));
+                                                Math.round(shape.getShape().getBounds2D().getX()),
+                                                Math.round(shape.getShape().getBounds2D().getY()));
                 } else {
                     ((Graphics2D) g).fill(shape.getShape());
                 }

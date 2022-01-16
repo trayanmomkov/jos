@@ -3,13 +3,13 @@
     "numberType": "DOUBLE",
     "precision": 32,
     "scale": 16,
-    "numberOfIterations": 30000000,
-    "secondsPerIteration": 0.2,
+    "numberOfIterations": 200,
+    "secondsPerIteration": 0.01,
     "numberOfObjects": 2,
     "outputFile": "/home/john/IdeaProjects/jos/src/test/resources/two_objects_collision.out.json",
-    "saveToFile": false,
+    "saveToFile": true,
     "interactingLaw": "NEWTON_LAW_OF_GRAVITATION",
-    "realTimeVisualization": true,
+    "realTimeVisualization": false,
     "bounceFromWalls": true,
     "playingSpeed": 60,
     "initialObjects": [
@@ -19,34 +19,34 @@
           "b": 255,
           "g": 0
         },
-        "mass": "0.05",
+        "mass": "1",
         "x": "0.0",
-        "y": "-80.0",
+        "y": "-1.0",
         "z": "0.0",
         "label": "1",
-        "radius": "10.0",
+        "radius": "0.1",
         "motionless": false,
         "speed": {
           "x": "0.0",
-          "y": "0.0001",
+          "y": "1",
           "z": "0.0"
         }
       },
       {
         "color": {
-          "r": 0,
+          "r": 255,
           "b": 0,
-          "g": 255
+          "g": 0
         },
-        "mass": ".2",
-        "x": "80.0",
+        "mass": "2",
+        "x": "1",
         "y": "0.0",
         "z": "0.0",
         "label": "2",
-        "radius": "15.0",
+        "radius": "0.1",
         "motionless": false,
         "speed": {
-          "x": "-0.0001",
+          "x": "-1",
           "y": "0.0",
           "z": "0.0"
         }

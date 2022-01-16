@@ -167,7 +167,7 @@ public class MainForm {
     }
 
     private void showError(Component parent, String message, Exception exception) {
-        showError(parent, message + " " + exception.getCause());
+        showError(parent, message + " " + exception.getMessage());
     }
 
     private void showError(Component parent, String message) {

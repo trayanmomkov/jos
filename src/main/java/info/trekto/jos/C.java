@@ -19,5 +19,5 @@ public class C {
     public static ReaderWriter io;
     public static MainForm mainForm;
     public static boolean hasToStop;
-    public static String endText = "END";
+    public static String endText;
 }

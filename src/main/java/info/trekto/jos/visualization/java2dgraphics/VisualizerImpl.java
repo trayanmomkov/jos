@@ -121,7 +121,7 @@ public class VisualizerImpl implements Visualizer {
     @Override
     public void onComplete() {
         Ellipse2D ellipse = new Ellipse2D.Double();
-        ellipse.setFrame(convertCoordinatesForDisplayX(-0), convertCoordinatesForDisplayY(0), 1, 1);
+        ellipse.setFrame(convertCoordinatesForDisplayX(-100), convertCoordinatesForDisplayY(-10), 1, 1);
         ShapeWithColor text = new ShapeWithColor(ellipse, BLUE);
         text.setText(C.endText);
         lastShapes.add(text);

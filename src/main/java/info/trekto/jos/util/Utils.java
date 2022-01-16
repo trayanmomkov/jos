@@ -77,7 +77,9 @@ public class Utils {
                 + seconds + " s.";
 
 
-        C.mainForm.appendMessage(remainingString);
+        if (C.mainForm != null) {
+            C.mainForm.appendMessage(remainingString);
+        }
         logger.info(remainingString);
         return remainingString;
     }
