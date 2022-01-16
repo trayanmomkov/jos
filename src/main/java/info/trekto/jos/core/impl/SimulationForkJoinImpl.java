@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Flow;
 
@@ -50,18 +49,17 @@ public class SimulationForkJoinImpl implements Simulation {
      */
     private List<SimulationObject> objects;
     private List<SimulationObject> auxiliaryObjects;
-    static Set<SimulationObject> objectsForRemoval;
     private List<Flow.Subscriber<? super List<SimulationObject>>> subscribers;
 
     private void doIteration() throws InterruptedException {
-        objectsForRemoval = ConcurrentHashMap.newKeySet();
+        SimulationLogicImpl.objectsForRemoval = ConcurrentHashMap.newKeySet();
         auxiliaryObjects = deepCopy(objects);
 
         /* Distribute simulation objects per threads and start execution */
         new SimulationRecursiveAction(0, objects.size()).compute();
 
         /* Remove disappeared because of collision objects */
-        auxiliaryObjects.removeAll(objectsForRemoval);
+        auxiliaryObjects.removeAll(SimulationLogicImpl.objectsForRemoval);
 
         objects = auxiliaryObjects;
         if (C.prop.isSaveToFile()) {

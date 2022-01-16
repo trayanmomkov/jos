@@ -15,7 +15,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import static info.trekto.jos.core.impl.SimulationForkJoinImpl.objectsForRemoval;
 import static info.trekto.jos.formulas.CommonFormulas.*;
 import static info.trekto.jos.numbers.New.*;
 
@@ -24,6 +23,8 @@ import static info.trekto.jos.numbers.New.*;
  * 2016-Mar-6
  */
 public class SimulationLogicImpl implements SimulationLogic {
+    static Set<SimulationObject> objectsForRemoval;
+
     @Override
     public void calculateNewValues(Simulation simulation, int fromIndex, int toIndex) {
         Set<ImmutableSimulationObject> oldObjectsForRemoval = new HashSet<>();
