@@ -1,0 +1,245 @@
+{
+  "properties": {
+    "numberType": "DOUBLE",
+    "precision": 32,
+    "scale": 16,
+    "numberOfIterations": 10,
+    "secondsPerIteration": 1.0,
+    "numberOfObjects": 12,
+    "outputFile": "/home/john/IdeaProjects/jos/src/test/resources/PSC_5_10_objects_Java2D_RUN_read_by_new_reader.out.json",
+    "saveToFile": true,
+    "interactingLaw": "NEWTON_LAW_OF_GRAVITATION",
+    "realTimeVisualization": false,
+    "playingSpeed": 60,
+    "initialObjects": [
+      {
+        "color": {
+          "r": 0,
+          "b": 255,
+          "g": 0
+        },
+        "mass": "100000.0",
+        "x": "40.0",
+        "y": "40.0",
+        "z": "0.0",
+        "label": "1",
+        "radius": "10.0",
+        "motionless": false,
+        "speed": {
+          "x": "0.001",
+          "y": "0.0",
+          "z": "0.0"
+        }
+      },
+      {
+        "color": {
+          "r": 0,
+          "b": 255,
+          "g": 0
+        },
+        "mass": "100000.0",
+        "x": "140.0",
+        "y": "140.0",
+        "z": "0.0",
+        "label": "2",
+        "radius": "10.0",
+        "motionless": false,
+        "speed": {
+          "x": "-0.001",
+          "y": "0.0",
+          "z": "0.0"
+        }
+      },
+      {
+        "color": {
+          "r": 0,
+          "b": 255,
+          "g": 0
+        },
+        "mass": "1.0E9",
+        "x": "240.0",
+        "y": "240.0",
+        "z": "0.0",
+        "label": "3",
+        "radius": "10.0",
+        "motionless": false,
+        "speed": {
+          "x": "0.001",
+          "y": "0.02",
+          "z": "0.0"
+        }
+      },
+      {
+        "color": {
+          "r": 0,
+          "b": 255,
+          "g": 0
+        },
+        "mass": "200000.0",
+        "x": "340.0",
+        "y": "340.0",
+        "z": "0.0",
+        "label": "4",
+        "radius": "11.0",
+        "motionless": false,
+        "speed": {
+          "x": "0.011",
+          "y": "0.0",
+          "z": "0.0"
+        }
+      },
+      {
+        "color": {
+          "r": 0,
+          "b": 255,
+          "g": 0
+        },
+        "mass": "100000.0",
+        "x": "440.0",
+        "y": "440.0",
+        "z": "0.0",
+        "label": "5",
+        "radius": "10.0",
+        "motionless": false,
+        "speed": {
+          "x": "-0.001",
+          "y": "0.0",
+          "z": "0.0"
+        }
+      },
+      {
+        "color": {
+          "r": 0,
+          "b": 255,
+          "g": 0
+        },
+        "mass": "1.0E9",
+        "x": "540.0",
+        "y": "540.0",
+        "z": "0.0",
+        "label": "6",
+        "radius": "6.0",
+        "motionless": false,
+        "speed": {
+          "x": "0.011",
+          "y": "0.03",
+          "z": "0.0"
+        }
+      },
+      {
+        "color": {
+          "r": 0,
+          "b": 255,
+          "g": 0
+        },
+        "mass": "100000.0",
+        "x": "640.0",
+        "y": "640.0",
+        "z": "0.0",
+        "label": "7",
+        "radius": "10.0",
+        "motionless": false,
+        "speed": {
+          "x": "0.001",
+          "y": "0.0",
+          "z": "0.0"
+        }
+      },
+      {
+        "color": {
+          "r": 0,
+          "b": 255,
+          "g": 0
+        },
+        "mass": "100000.0",
+        "x": "740.0",
+        "y": "740.0",
+        "z": "0.0",
+        "label": "8",
+        "radius": "10.0",
+        "motionless": false,
+        "speed": {
+          "x": "-0.001",
+          "y": "0.0",
+          "z": "0.0"
+        }
+      },
+      {
+        "color": {
+          "r": 0,
+          "b": 255,
+          "g": 0
+        },
+        "mass": "5.0E8",
+        "x": "840.0",
+        "y": "840.0",
+        "z": "0.0",
+        "label": "9",
+        "radius": "20.0",
+        "motionless": false,
+        "speed": {
+          "x": "0.101",
+          "y": "0.32",
+          "z": "0.0"
+        }
+      },
+      {
+        "color": {
+          "r": 0,
+          "b": 255,
+          "g": 0
+        },
+        "mass": "1.0E9",
+        "x": "940.0",
+        "y": "940.0",
+        "z": "0.0",
+        "label": "10",
+        "radius": "12.0",
+        "motionless": false,
+        "speed": {
+          "x": "0.201",
+          "y": "0.22",
+          "z": "0.0"
+        }
+      },
+      {
+        "color": {
+          "r": 0,
+          "b": 255,
+          "g": 0
+        },
+        "mass": "5.0E8",
+        "x": "1111.0",
+        "y": "1111.0",
+        "z": "0.0",
+        "label": "11",
+        "radius": "20.0",
+        "motionless": false,
+        "speed": {
+          "x": "0.101",
+          "y": "0.32",
+          "z": "0.0"
+        }
+      },
+      {
+        "color": {
+          "r": 0,
+          "b": 255,
+          "g": 0
+        },
+        "mass": "1.0E9",
+        "x": "1234.0",
+        "y": "1234.0",
+        "z": "0.0",
+        "label": "12",
+        "radius": "10.0",
+        "motionless": false,
+        "speed": {
+          "x": "0.201",
+          "y": "0.22",
+          "z": "0.0"
+        }
+      }
+    ]
+  }
+}

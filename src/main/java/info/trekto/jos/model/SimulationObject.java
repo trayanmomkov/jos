@@ -11,44 +11,23 @@ import java.util.List;
  * 19 Aug 2015
  */
 public interface SimulationObject extends ImmutableSimulationObject {
-    Number getX();
-
     void setX(Number x);
-
-    Number getY();
 
     void setY(Number y);
 
-    Number getZ();
-
     void setZ(Number z);
-
-    TripleNumber getSpeed();
 
     void setSpeed(TripleNumber speed);
 
-    Number getRadius();
-
     void setRadius(Number radius);
-
-    TripleInt getColor();
 
     void setColor(TripleInt color);
 
-    Number getMass();
-
     void setMass(Number mass);
-
-    boolean isMotionless();
 
     void setMotionless(boolean motionless);
 
-    String getLabel();
-
     void setLabel(String label);
-
-    /** This must be used only for visualization purposes. Trajectory list consumes memory and CPU. */
-    List<TripleNumber> getTrajectory();
 
     /** This must be used only for visualization purposes. Trajectory list consumes memory and CPU. */
     void setTrajectory(List<TripleNumber> trajectory);

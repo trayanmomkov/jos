@@ -161,6 +161,7 @@ public class MainForm {
         bounceFromScreenWallsCheckBox.setSelected(prop.isBounceFromWalls());
         playingSpeedTextField.setText(String.valueOf(prop.getPlayingSpeed()));
 
+        ((InitialObjectsTableModelAndListener) initialObjectsTable.getModel()).setRowCount(0);
         for (SimulationObject initialObject : prop.getInitialObjects()) {
             ((InitialObjectsTableModelAndListener) initialObjectsTable.getModel()).addRow(initialObject);
         }

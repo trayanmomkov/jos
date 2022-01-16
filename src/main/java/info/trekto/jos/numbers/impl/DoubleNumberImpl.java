@@ -124,21 +124,21 @@ public class DoubleNumberImpl implements Number {
 
     @Override
     public Number atan2(Number n1, Number n2) {
-        return New.num(Math.atan2(n1.doubleValue(), n2.doubleValue()));
+        return new DoubleNumberImpl(Math.atan2(n1.doubleValue(), n2.doubleValue()));
     }
 
     @Override
     public Number cos(Number n) {
-        return New.num(Math.cos(n.doubleValue()));
+        return new DoubleNumberImpl(Math.cos(n.doubleValue()));
     }
 
     @Override
     public Number sin(Number n) {
-        return New.num(Math.sin(n.doubleValue()));
+        return new DoubleNumberImpl(Math.sin(n.doubleValue()));
     }
 
     @Override
     public Number cbrt(Number n) {
-        return New.num(Math.cbrt(n.doubleValue()));
+        return new DoubleNumberImpl(Math.cbrt(n.doubleValue()));
     }
 }

@@ -2,8 +2,10 @@ package info.trekto.jos.util;
 
 import info.trekto.jos.C;
 import info.trekto.jos.core.impl.SimulationProperties;
+import info.trekto.jos.formulas.CommonFormulas;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.SimulationObjectImpl;
+import info.trekto.jos.numbers.Number;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
@@ -57,6 +59,10 @@ public class Utils {
     }
 
     public static String showRemainingTime(int i, long elapsedNanoseconds, long numberOfIterations) {
+        return showRemainingTime(i, elapsedNanoseconds, numberOfIterations, 0);
+    }
+
+    public static String showRemainingTime(int i, long elapsedNanoseconds, long numberOfIterations, int numberOfObjects) {
         if (i == 0) {
             return "";
         }
@@ -65,22 +71,47 @@ public class Utils {
         long remainingIterations = numberOfIterations - i;
         long remainingTime = Math.round(remainingIterations * timePerIteration);
 
-        long days = remainingTime / MILLI_IN_DAY;
-        long hours = (remainingTime - (days * MILLI_IN_DAY)) / MILLI_IN_HOUR;
-        long minutes = (remainingTime - (days * MILLI_IN_DAY + hours * MILLI_IN_HOUR)) / MILLI_IN_MINUTE;
-        long seconds = (remainingTime - (days * MILLI_IN_DAY + hours * MILLI_IN_HOUR + minutes * MILLI_IN_MINUTE)) / MILLISECONDS_IN_ONE_SECOND;
-
-        String remainingString = "Iteration " + i + " Remaining time: "
-                + (days > 0 ? days + " d. " : "")
-                + (hours > 0 ? hours + " h. " : "")
-                + (minutes > 0 ? minutes + " m. " : "")
-                + seconds + " s.";
-
+        String remainingString = "Iteration " + i
+                + ", elapsed time: " + nanoToHumanReadable(elapsedNanoseconds)
+                + ", objects: " + numberOfObjects
+                + ", remaining time: " + milliToHumanReadable(remainingTime);
 
         if (C.mainForm != null) {
             C.mainForm.appendMessage(remainingString);
         }
         logger.info(remainingString);
         return remainingString;
+    }
+
+    public static String nanoToHumanReadable(long nanoseconds) {
+        return milliToHumanReadable(Math.round(nanoseconds / (double) NANOSECONDS_IN_ONE_MILLISECOND));
+    }
+
+    public static String milliToHumanReadable(long milliseconds) {
+        long days = milliseconds / MILLI_IN_DAY;
+        long hours = (milliseconds - (days * MILLI_IN_DAY)) / MILLI_IN_HOUR;
+        long minutes = (milliseconds - (days * MILLI_IN_DAY + hours * MILLI_IN_HOUR)) / MILLI_IN_MINUTE;
+        long seconds = (milliseconds - (days * MILLI_IN_DAY + hours * MILLI_IN_HOUR + minutes * MILLI_IN_MINUTE)) / MILLISECONDS_IN_ONE_SECOND;
+        return (days > 0 ? days + " d. " : "")
+                + (hours > 0 ? hours + " h. " : "")
+                + (minutes > 0 ? minutes + " m. " : "")
+                + seconds + " s.";
+    }
+
+    public static boolean collisionExists(List<SimulationObject> objects) {
+        for (SimulationObject object : objects) {
+            for (SimulationObject object1 : objects) {
+                if (object == object1) {
+                    continue;
+                }
+                // distance between centres
+                Number distance = CommonFormulas.calculateDistance(object, object1);
+
+                if (distance.compareTo(object.getRadius().add(object1.getRadius())) < 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

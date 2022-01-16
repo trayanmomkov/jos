@@ -1,0 +1,56 @@
+{
+  "properties": {
+    "numberOfIterations": 1000,
+    "secondsPerIteration": "0.01",
+    "numberOfObjects": 2,
+    "outputFile": "/home/john/IdeaProjects/jos/src/test/resources/two_objects_speed.json.out.json",
+    "saveToFile": true,
+    "numberType": "DOUBLE",
+    "interactingLaw": "NEWTON_LAW_OF_GRAVITATION",
+    "precision": 19,
+    "scale": 16,
+    "realTimeVisualization": false,
+    "playingSpeed": 60,
+    "bounceFromWalls": true,
+    "initialObjects": [
+      {
+        "color": {
+          "r": 0,
+          "b": 255,
+          "g": 0
+        },
+        "mass": "1.0E9",
+        "x": "200.0",
+        "y": "0.0",
+        "z": "0.0",
+        "label": "1",
+        "radius": "10.0",
+        "motionless": false,
+        "speed": {
+          "x": "0.0",
+          "y": "0.0",
+          "z": "0.0"
+        }
+      },
+      {
+        "color": {
+          "r": 0,
+          "b": 0,
+          "g": 255
+        },
+        "mass": "1.0E9",
+        "x": "-200.0",
+        "y": "0.0",
+        "z": "0.0",
+        "label": "2",
+        "radius": "10.0",
+        "motionless": false,
+        "speed": {
+          "x": "0.0",
+          "y": "0.0",
+          "z": "0.0"
+        }
+      }
+    ]
+  }
+}

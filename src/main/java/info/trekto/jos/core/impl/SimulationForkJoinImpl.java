@@ -3,12 +3,10 @@ package info.trekto.jos.core.impl;
 import info.trekto.jos.C;
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.exceptions.SimulationException;
-import info.trekto.jos.formulas.CommonFormulas;
 import info.trekto.jos.formulas.ForceCalculator;
 import info.trekto.jos.formulas.NewtonGravity;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.SimulationObjectImpl;
-import info.trekto.jos.numbers.Number;
 import info.trekto.jos.util.Utils;
 import info.trekto.jos.visualization.java2dgraphics.VisualizerImpl;
 import org.apache.commons.lang3.NotImplementedException;
@@ -22,8 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Flow;
 
 import static info.trekto.jos.formulas.ScientificConstants.NANOSECONDS_IN_ONE_SECOND;
-import static info.trekto.jos.util.Utils.deepCopy;
-import static info.trekto.jos.util.Utils.showRemainingTime;
+import static info.trekto.jos.util.Utils.*;
 
 /**
  * This implementation uses fork/join Java framework introduced in Java 7.
@@ -94,7 +91,7 @@ public class SimulationForkJoinImpl implements Simulation {
                     iterationCounter = i + 1;
 
                     if (System.nanoTime() - previousTime >= NANOSECONDS_IN_ONE_SECOND * 2) {
-                        showRemainingTime(i, System.nanoTime() - startTime, C.prop.getNumberOfIterations());
+                        showRemainingTime(i, System.nanoTime() - startTime, C.prop.getNumberOfIterations(), objects.size());
                         previousTime = System.nanoTime();
                     }
 
@@ -133,23 +130,6 @@ public class SimulationForkJoinImpl implements Simulation {
         }
     }
 
-    private boolean collisionExists() {
-        for (SimulationObject object : objects) {
-            for (SimulationObject object1 : objects) {
-                if (object == object1) {
-                    continue;
-                }
-                // distance between centres
-                Number distance = CommonFormulas.calculateDistance(object, object1);
-
-                if (distance.compareTo(object.getRadius().add(object1.getRadius())) < 0) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     private void init() throws SimulationException {
         logger.info("Initialize simulation...");
 
@@ -175,7 +155,7 @@ public class SimulationForkJoinImpl implements Simulation {
             objects.add(new SimulationObjectImpl(simulationObject));
         }
 
-        if (collisionExists()) {
+        if (collisionExists(objects)) {
             throw new SimulationException("Initial collision exists!");
         }
         logger.info("Done.\n");
