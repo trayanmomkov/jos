@@ -118,14 +118,18 @@ public class SimulationForkJoinImpl implements Simulation {
     }
 
     private void notifySubscribers() {
-        for (Flow.Subscriber<? super List<SimulationObject>> subscriber : subscribers) {
-            subscriber.onNext(objects);
+        if (subscribers != null) {
+            for (Flow.Subscriber<? super List<SimulationObject>> subscriber : subscribers) {
+                subscriber.onNext(objects);
+            }
         }
     }
 
     private void notifySubscribersEnd() {
-        for (Flow.Subscriber<? super List<SimulationObject>> subscriber : subscribers) {
-            subscriber.onComplete();
+        if (subscribers != null) {
+            for (Flow.Subscriber<? super List<SimulationObject>> subscriber : subscribers) {
+                subscriber.onComplete();
+            }
         }
     }
 

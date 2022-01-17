@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Vector;
 
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 public class MainForm {
@@ -97,7 +98,15 @@ public class MainForm {
         numberTypeComboBox.setModel(new DefaultComboBoxModel<>(comboBoxItems));
 
         numberTypeComboBox.addActionListener(
-                actionEvent -> C.prop.setNumberType(NumberType.valueOf(String.valueOf(numberTypeComboBox.getSelectedItem()))));
+                actionEvent -> {
+                    if (actionEvent.getModifiers() != 0) {
+                        C.prop.setNumberType(NumberType.valueOf(String.valueOf(numberTypeComboBox.getSelectedItem())));
+//                    createNumberFactory(C.prop.getNumberType(), C.prop.getPrecision(), C.prop.getScale());
+//                    C.prop.setSecondsPerIteration(New.num(secondsPerIterationTextField.getText()));
+//                    ((InitialObjectsTableModelAndListener) initialObjectsTable.getModel()).refreshInitialObjects();
+                        showWarn(mainPanel, "You have to save properties, number type change to take effect.");
+                    }
+                });
 
         interactingLawComboBox.addActionListener(
                 actionEvent -> C.prop.setInteractingLaw(InteractingLaw.valueOf(String.valueOf(interactingLawComboBox.getSelectedItem()))));
@@ -189,6 +198,10 @@ public class MainForm {
 
     private void showError(Component parent, String message) {
         JOptionPane.showMessageDialog(parent, message, "Error", ERROR_MESSAGE);
+    }
+
+    private void showWarn(Component parent, String message) {
+        JOptionPane.showMessageDialog(parent, message, "Warning", WARNING_MESSAGE);
     }
 
     public static void main(String[] args) {
