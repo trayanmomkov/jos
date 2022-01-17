@@ -17,6 +17,8 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
+import java.util.Collections;
+import java.util.Vector;
 
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
@@ -27,7 +29,7 @@ public class MainForm {
     private JTextField secondsPerIterationTextField;
     private JCheckBox saveToFileCheckBox;
     private JTextField outputFileTextField;
-    private JComboBox numberTypeComboBox;
+    private JComboBox<NumberType> numberTypeComboBox;
     private JComboBox interactingLawComboBox;
     private JCheckBox realTimeVisualizationCheckBox;
     private JTextField playingSpeedTextField;
@@ -64,7 +66,7 @@ public class MainForm {
             if (userSelection == JFileChooser.APPROVE_OPTION) {
                 File fileToSave = fileChooser.getSelectedFile();
                 C.io.writeProperties(C.prop, fileToSave.getAbsolutePath());
-                
+
                 /* Reopen just saved file */
                 inputFilePathLabel.setText(fileToSave.getAbsolutePath());
                 Main.init(fileToSave.getAbsolutePath());
@@ -89,6 +91,10 @@ public class MainForm {
                 C.prop.setSecondsPerIteration(New.num(secondsPerIterationTextField.getText()));
             }
         });
+
+        Vector<NumberType> comboBoxItems = new Vector<>();
+        Collections.addAll(comboBoxItems, NumberType.values());
+        numberTypeComboBox.setModel(new DefaultComboBoxModel<>(comboBoxItems));
 
         numberTypeComboBox.addActionListener(
                 actionEvent -> C.prop.setNumberType(NumberType.valueOf(String.valueOf(numberTypeComboBox.getSelectedItem()))));

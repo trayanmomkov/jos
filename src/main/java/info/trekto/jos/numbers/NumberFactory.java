@@ -7,17 +7,17 @@ import java.math.BigDecimal;
  * 7 Dec 2015
  */
 public interface NumberFactory {
-    public Number createNumber(BigDecimal val);
+    Number createNumber(BigDecimal val);
 
-    public Number createNumber(String val);
+    Number createNumber(String val);
 
-    public Number createNumber(double val);
+    Number createNumber(double val);
 
-    public Number createNumber(int val);
+    Number createNumber(int val);
 
-    public Number createNumber(long val);
+    Number createNumber(long val);
 
-    public enum NumberType {
-        FLOAT, DOUBLE, BIG_DECIMAL, APFLOAT;
+    enum NumberType {
+        DOUBLE, APFLOAT, BIG_DECIMAL, FLOAT;
     }
 }
