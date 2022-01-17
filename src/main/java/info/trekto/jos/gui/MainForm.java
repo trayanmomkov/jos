@@ -2,6 +2,8 @@ package info.trekto.jos.gui;
 
 import info.trekto.jos.C;
 import info.trekto.jos.Main;
+import info.trekto.jos.core.impl.SimulationForkJoinImpl;
+import info.trekto.jos.core.impl.SimulationLogicImpl;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.exceptions.SimulationException;
 import info.trekto.jos.formulas.ForceCalculator.InteractingLaw;
@@ -12,6 +14,7 @@ import info.trekto.jos.visualization.Visualizer;
 import info.trekto.jos.visualization.java2dgraphics.VisualizerImpl;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
 
@@ -19,7 +22,6 @@ import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 public class MainForm {
-    private JTextField inputFileTextField;
     private JButton browseButton;
     private JTextField numberOfIterationsTextField;
     private JTextField secondsPerIterationTextField;
@@ -39,15 +41,17 @@ public class MainForm {
     private JButton stopButton;
     private JButton savePropertiesButton;
     private JPanel mainPanel;
+    private JLabel inputFilePathLabel;
 
     public MainForm() {
         initialObjectsTable.setModel(new InitialObjectsTableModelAndListener(this));
         browseButton.addActionListener(actionEvent -> {
             JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileFilter(new FileNameExtensionFilter("JSON file", "json"));
             int option = fileChooser.showOpenDialog(mainPanel);
             if (option == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
-                inputFileTextField.setText(file.getAbsolutePath());
+                inputFilePathLabel.setText(file.getAbsolutePath());
                 Main.init(file.getAbsolutePath());
                 refreshProperties(C.prop);
             }
@@ -55,11 +59,16 @@ public class MainForm {
 
         savePropertiesButton.addActionListener(actionEvent -> {
             JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setSelectedFile(new File(inputFileTextField.getText()));
+            fileChooser.setSelectedFile(new File(inputFilePathLabel.getText()));
             int userSelection = fileChooser.showSaveDialog(mainPanel);
             if (userSelection == JFileChooser.APPROVE_OPTION) {
                 File fileToSave = fileChooser.getSelectedFile();
                 C.io.writeProperties(C.prop, fileToSave.getAbsolutePath());
+                
+                /* Reopen just saved file */
+                inputFilePathLabel.setText(fileToSave.getAbsolutePath());
+                Main.init(fileToSave.getAbsolutePath());
+                refreshProperties(C.prop);
             }
         });
 
@@ -119,7 +128,7 @@ public class MainForm {
 
         startButton.addActionListener(actionEvent -> start());
         stopButton.addActionListener(actionEvent -> C.hasToStop = true);
-        
+
         appendMessage("Controls:");
         appendMessage("\tExit: Esc");
         appendMessage("\tZoom in: +");
@@ -131,20 +140,21 @@ public class MainForm {
     }
 
     private void start() {
-        if (C.simulation != null) {
-            new Thread(() -> {
-                C.simulation.removeAllSubscribers();
-                if (C.prop.isRealTimeVisualization()) {
-                    Visualizer visualizer = new VisualizerImpl();
-                    C.simulation.subscribe(visualizer);
-                }
-                try {
-                    C.simulation.startSimulation();
-                } catch (SimulationException e) {
-                    showError(mainPanel, "Error during simulation.", e);
-                }
-            }).start();
-        }
+        C.simulation = new SimulationForkJoinImpl();
+        new Thread(() -> {
+
+            C.simulationLogic = new SimulationLogicImpl();
+            C.simulation.removeAllSubscribers();
+            if (C.prop.isRealTimeVisualization()) {
+                Visualizer visualizer = new VisualizerImpl();
+                C.simulation.subscribe(visualizer);
+            }
+            try {
+                C.simulation.startSimulation();
+            } catch (SimulationException e) {
+                showError(mainPanel, "Error during simulation.", e);
+            }
+        }).start();
     }
 
     void refreshProperties(SimulationProperties prop) {

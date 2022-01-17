@@ -68,7 +68,9 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
 
     @Override
     public void tableChanged(TableModelEvent e) {
-        refreshInitialObjects();
+        if (e.getType() != TableModelEvent.DELETE) {
+            refreshInitialObjects();
+        }
     }
 
     public void refreshInitialObjects() {
@@ -77,11 +79,11 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
             SimulationObject o = new SimulationObjectImpl();
             int i = 0;
             o.setLabel(String.valueOf(vector.get(i++)));
-            o.setMass((Number) vector.get(i++));
-            o.setX((Number) vector.get(i++));
-            o.setY((Number) vector.get(i++));
-            o.setZ((Number) vector.get(i++));
-            o.setRadius((Number) vector.get(i++));
+            o.setMass(New.num(String.valueOf(vector.get(i++))));
+            o.setX(New.num(String.valueOf(vector.get(i++))));
+            o.setY(New.num(String.valueOf(vector.get(i++))));
+            o.setZ(New.num(String.valueOf(vector.get(i++))));
+            o.setRadius(New.num(String.valueOf(vector.get(i++))));
             o.setSpeed(new TripleNumber(
                     New.num(String.valueOf(vector.get(i++))),
                     New.num(String.valueOf(vector.get(i++))),

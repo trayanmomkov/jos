@@ -22,7 +22,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>info.trekto.jos.Benchmark</mainClass>
+                            <mainClass>info.trekto.jos.gui.MainForm</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

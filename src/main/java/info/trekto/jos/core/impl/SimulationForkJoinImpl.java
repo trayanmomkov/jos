@@ -82,6 +82,7 @@ public class SimulationForkJoinImpl implements Simulation {
                 try {
                     if (C.hasToStop) {
                         C.hasToStop = false;
+                        C.io.endFile();
                         C.endText = "Stopped!";
                         break;
                     }

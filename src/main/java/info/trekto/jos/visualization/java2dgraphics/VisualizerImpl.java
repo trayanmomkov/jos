@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +41,11 @@ public class VisualizerImpl implements Visualizer {
             frame.setBackground(Color.WHITE);
             visualizationPanel = new VisualizationPanel(Color.WHITE);
             frame.add(visualizationPanel);
+            frame.addWindowListener(new WindowAdapter() {
+                public void windowClosing(WindowEvent e) {
+                    C.hasToStop = true;
+                }
+            });
             frame.setVisible(true);
         }
     }
@@ -124,6 +131,9 @@ public class VisualizerImpl implements Visualizer {
         ellipse.setFrame(convertCoordinatesForDisplayX(-100), convertCoordinatesForDisplayY(-10), 1, 1);
         ShapeWithColor text = new ShapeWithColor(ellipse, BLUE);
         text.setText(C.endText);
+        if (lastShapes == null) {
+            lastShapes = new ArrayList<>();
+        }
         lastShapes.add(text);
         visualizationPanel.draw(lastShapes);
     }
