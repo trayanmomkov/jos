@@ -100,7 +100,7 @@ public class SimulationLogicImpl implements SimulationLogic {
                 bigger.setSpeed(calculateSpeedOnMerging(smaller, bigger));
 
                 /* Position */
-                TripleNumber position = calculatePosition(distance, smaller, bigger);
+                TripleNumber position = calculatePosition(smaller, bigger);
                 bigger.setX(position.getX());
                 bigger.setY(position.getY());
                 bigger.setZ(position.getZ());
@@ -139,30 +139,14 @@ public class SimulationLogicImpl implements SimulationLogic {
         return calculateRadiusFromVolume(bigVolume.add(smallVolume));
     }
 
-    private TripleNumber calculatePosition(Number distance, ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
+    private TripleNumber calculatePosition(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
         // TODO What about Z ?!
-        Number fi = IGNORED.atan2(
-                bigger.getY().subtract(smaller.getY()).abs(),
-                bigger.getX().subtract(smaller.getX()).abs());
+        Number distanceX = bigger.getX().subtract(smaller.getX());
+        Number distanceY = bigger.getY().subtract(smaller.getY());
 
-        Number massRation = smaller.getMass().divide(bigger.getMass());
-        Number x, y;
-
-        if (bigger.getX().compareTo(smaller.getX()) <= 0) {
-//                    bigger -> x += _distance * cos(fi.get_d()) * massRatio / 2.0;
-            x = bigger.getX().add(distance.multiply(IGNORED.cos(fi)).multiply(massRation).divide(TWO));
-        } else {
-//                    bigger->x -=  _distance * cos(fi.get_d()) * massRatio / 2.0;
-            x = bigger.getX().subtract(distance.multiply(IGNORED.cos(fi)).multiply(massRation).divide(TWO));
-        }
-
-        if (bigger.getY().compareTo(smaller.getY()) <= 0) {
-//                    bigger->y +=  _distance * sin(fi.get_d()) * massRatio / 2.0;
-            y = bigger.getY().add(distance.multiply(IGNORED.sin(fi)).multiply(massRation).divide(TWO));
-        } else {
-//                    bigger->y -=  _distance * sin(fi.get_d()) * massRatio / 2.0;
-            y = bigger.getY().subtract(distance.multiply(IGNORED.sin(fi)).multiply(massRation).divide(TWO));
-        }
+        Number massRatio = smaller.getMass().divide(bigger.getMass());
+        Number x = bigger.getX().subtract(distanceX.multiply(massRatio).divide(TWO));
+        Number y = bigger.getY().subtract(distanceY.multiply(massRatio).divide(TWO));
 
         return new TripleNumber(x, y, ZERO);
     }
