@@ -66,7 +66,9 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
 
     @Override
     public void tableChanged(TableModelEvent e) {
-        refreshInitialObjects();
+        if (e.getType() != TableModelEvent.DELETE) {
+            refreshInitialObjects();
+        }
     }
 
     public void refreshInitialObjects() {
@@ -75,15 +77,15 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
             SimulationObject o = new SimulationObjectImpl();
             int i = 0;
             o.setLabel(String.valueOf(vector.get(i++)));
-            o.setMass((double) vector.get(i++));
-            o.setX((double) vector.get(i++));
-            o.setY((double) vector.get(i++));
-            o.setZ((double) vector.get(i++));
-            o.setRadius((double) vector.get(i++));
+            o.setMass(Double.parseDouble(String.valueOf(vector.get(i++))));
+            o.setX(Double.parseDouble(String.valueOf(vector.get(i++))));
+            o.setY(Double.parseDouble(String.valueOf(vector.get(i++))));
+            o.setZ(Double.parseDouble(String.valueOf(vector.get(i++))));
+            o.setRadius(Double.parseDouble(String.valueOf(vector.get(i++))));
             o.setSpeed(new TripleNumber(
-                    (double) vector.get(i++),
-                    (double) vector.get(i++),
-                    (double) vector.get(i++)));
+                    Double.parseDouble(String.valueOf(vector.get(i++))),
+                    Double.parseDouble(String.valueOf(vector.get(i++))),
+                    Double.parseDouble(String.valueOf(vector.get(i++)))));
             o.setMotionless((Boolean) vector.get(i++));
             o.setColor(new TripleInt(Integer.parseInt(String.valueOf(vector.get(i++))),
                                      Integer.parseInt(String.valueOf(vector.get(i++))),

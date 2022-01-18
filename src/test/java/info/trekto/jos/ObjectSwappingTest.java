@@ -33,7 +33,7 @@ public class ObjectSwappingTest {
         C.io = new JsonReaderWriter();
         C.simulation = new SimulationForkJoinImpl();
 
-        C.prop = C.io.readProperties("src/test/resources/PSC_5_10_objects_Java2D_RUN.json");
+        C.prop = C.io.readProperties("src/test/input_files/PSC_5_10_objects_Java2D_RUN.json");
 //        createNumberFactory(NumberFactory.NumberType.BIG_DECIMAL, 32, 16);
         Visualizer visualizer = new VisualizerImpl();
         C.simulation.subscribe(visualizer);

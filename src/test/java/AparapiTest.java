@@ -9,7 +9,14 @@ import java.util.Random;
 import static info.trekto.jos.util.Utils.nanoToHumanReadable;
 
 public class AparapiTest {
-    @Test
+
+//    @Test
+    public void info() {
+        Device device = Device.best();
+        System.out.println(device.getShortDescription());
+    }
+
+//    @Test
     public void arraysMultiplication() {
         int n = 100000;
         final int k = 200000;

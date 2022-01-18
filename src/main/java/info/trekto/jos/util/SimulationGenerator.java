@@ -51,7 +51,6 @@ public class SimulationGenerator {
         C.prop.setPlayingSpeed(1);
         C.prop.setInitialObjects(generateObjects(C.prop));
 
-        
         new JsonReaderWriter().writeProperties(C.prop, filename);
     }
 

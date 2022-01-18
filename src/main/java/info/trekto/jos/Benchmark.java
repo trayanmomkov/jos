@@ -30,12 +30,15 @@ public class Benchmark {
         String inputFileName = args[0];
 
         Simulation simulation = new SimulationForkJoinImpl();
-        benchmark.runBenchmark(simulation, FLOAT, inputFileName);
-        benchmark.runBenchmark(simulation, DOUBLE, inputFileName);
-        benchmark.runBenchmark(simulation, BIG_DECIMAL, inputFileName);
+        benchmark.runBenchmark(simulation, inputFileName);
+
+//        32	BIG_DECIMAL	10873 ms
+//        32	APFLOAT	752 ms
+//        32	DOUBLE	24 ms
+//        32	FLOAT	27 ms
     }
 
-    private void runBenchmark(Simulation simulation, NumberFactory.NumberType numberType, String inputFileName) throws SimulationException {
+    private void runBenchmark(Simulation simulation, String inputFileName) throws SimulationException {
 
         C.io = new JsonReaderWriter();
         C.simulation = simulation;
@@ -48,7 +51,6 @@ public class Benchmark {
         }
         C.simulationLogic = new SimulationLogicImpl();
 
-        C.prop.setNumberType(numberType);
         C.prop.setSaveToFile(false);
         C.prop.setInteractingLaw(InteractingLaw.NEWTON_LAW_OF_GRAVITATION);
 

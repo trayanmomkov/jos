@@ -10,6 +10,7 @@
     "saveToFile": true,
     "interactingLaw": "NEWTON_LAW_OF_GRAVITATION",
     "realTimeVisualization": false,
+    "bounceFromWalls": false,
     "playingSpeed": 60,
     "initialObjects": [
       {

@@ -8,6 +8,6 @@ import java.math.BigDecimal;
  */
 public interface NumberFactory {
     enum NumberType {
-        FLOAT, DOUBLE, BIG_DECIMAL;
+        DOUBLE, APFLOAT, BIG_DECIMAL, FLOAT;
     }
 }

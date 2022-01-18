@@ -14,16 +14,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import static info.trekto.jos.core.impl.SimulationForkJoinImpl.objectsForRemoval;
 import static info.trekto.jos.formulas.CommonFormulas.*;
-import static info.trekto.jos.numbers.New.TWO;
-import static info.trekto.jos.numbers.New.ZERO;
+import static info.trekto.jos.numbers.New.*;
 
 /**
  * @author Trayan Momkov
  * 2016-Mar-6
  */
 public class SimulationLogicImpl implements SimulationLogic {
+    static Set<SimulationObject> objectsForRemoval;
+
     @Override
     public void calculateNewValues(Simulation simulation, int fromIndex, int toIndex) {
         Set<ImmutableSimulationObject> oldObjectsForRemoval = new HashSet<>();
@@ -99,7 +99,7 @@ public class SimulationLogicImpl implements SimulationLogic {
                 bigger.setSpeed(calculateSpeedOnMerging(smaller, bigger));
 
                 /* Position */
-                TripleNumber position = calculatePosition(distance, smaller, bigger);
+                TripleNumber position = calculatePosition(smaller, bigger);
                 bigger.setX(position.getX());
                 bigger.setY(position.getY());
                 bigger.setZ(position.getZ());
@@ -138,30 +138,14 @@ public class SimulationLogicImpl implements SimulationLogic {
         return calculateRadiusFromVolume(bigVolume + smallVolume);
     }
 
-    private TripleNumber calculatePosition(double distance, ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
+    private TripleNumber calculatePosition(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
         // TODO What about Z ?!
-        double fi = Math.atan2(
-                Math.abs(bigger.getY()- smaller.getY()),
-                 Math.abs(bigger.getX() - smaller.getX()));
+        double distanceX = bigger.getX() - smaller.getX();
+        double distanceY = bigger.getY() - smaller.getY();
 
-        double massRation = smaller.getMass() / bigger.getMass();
-        double x, y;
-
-        if (bigger.getX() <= smaller.getX()) {
-//                    bigger -> x += _distance * cos(fi.get_d()) * massRatio / 2.0;
-            x = bigger.getX() + distance * Math.cos(fi) * massRation / TWO;
-        } else {
-//                    bigger->x -=  _distance * cos(fi.get_d()) * massRatio / 2.0;
-            x = bigger.getX() - distance * Math.cos(fi) * massRation / TWO;
-        }
-
-        if (bigger.getY() <= smaller.getY()) {
-//                    bigger->y +=  _distance * sin(fi.get_d()) * massRatio / 2.0;
-            y = bigger.getY() + distance * Math.sin(fi) * massRation / TWO;
-        } else {
-//                    bigger->y -=  _distance * sin(fi.get_d()) * massRatio / 2.0;
-            y = bigger.getY() - distance * Math.sin(fi) * massRation / TWO;
-        }
+        double massRatio = smaller.getMass() / bigger.getMass();
+        double x = bigger.getX() - distanceX * massRatio / TWO;
+        double y = bigger.getY() - distanceY * massRatio / TWO;
 
         return new TripleNumber(x, y, ZERO);
     }

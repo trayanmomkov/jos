@@ -16,7 +16,7 @@ public class CommonFormulas {
         double x = object2.getX() - object1.getX();
         double y = object2.getY() - object1.getY();
         double z = object2.getZ() - object1.getZ();
-        return Math.sqrt (x*x+y*y+z*z);
+        return Math.sqrt(x*x+y*y+z*z);
     }
     
     public static double calculateVolumeFromRadius(double radius) {
