@@ -139,15 +139,16 @@ public class SimulationLogicImpl implements SimulationLogic {
     }
 
     private TripleNumber calculatePosition(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
-        // TODO What about Z ?!
         double distanceX = bigger.getX() - smaller.getX();
         double distanceY = bigger.getY() - smaller.getY();
+        double distanceZ = bigger.getZ() - smaller.getZ();
 
         double massRatio = smaller.getMass() / bigger.getMass();
         double x = bigger.getX() - distanceX * massRatio / TWO;
         double y = bigger.getY() - distanceY * massRatio / TWO;
+        double z = bigger.getZ() - distanceZ * massRatio / TWO;
 
-        return new TripleNumber(x, y, ZERO);
+        return new TripleNumber(x, y, z);
     }
 
     private TripleNumber calculateSpeedOnMerging(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
