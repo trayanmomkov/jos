@@ -109,7 +109,7 @@ public class SimulationLogicImpl implements SimulationLogic {
                 bigger.setMass(bigger.getMass().add(smaller.getMass()));
 
                 /* Volume (radius) */
-                bigger.setRadius(calculateRadiusBasedOnNewVolume(smaller, bigger));
+                bigger.setRadius(calculateRadiusBasedOnNewVolumeAndDensity(smaller, bigger));
 
                 /* Color */
                 bigger.setColor(calculateColor(smaller, bigger));
@@ -131,12 +131,22 @@ public class SimulationLogicImpl implements SimulationLogic {
     /**
      * We calculate for sphere, not for circle, so in 2D volume may not look real.
      */
-    public static Number calculateRadiusBasedOnNewVolume(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
+    public static Number calculateRadiusBasedOnNewVolumeAndDensity(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
+        // density = mass / volume
         // calculate volume of smaller and add it to volume of bigger
         // calculate new radius of bigger based on new volume
         Number smallVolume = calculateVolumeFromRadius(smaller.getRadius());
+        Number smallDensity = smaller.getMass().divide(smallVolume);
         Number bigVolume = calculateVolumeFromRadius(bigger.getRadius());
-        return calculateRadiusFromVolume(bigVolume.add(smallVolume));
+        Number bigDensity = bigger.getMass().divide(bigVolume);
+        Number newMass = bigger.getMass().add(smaller.getMass());
+
+        /* Volume and density are two sides of one coin. We should decide what we want to be one of them
+         * and calculate the other. Here we wanted the new object to have an average density of the two collided. */
+        Number newDensity = smallDensity.add(bigDensity).divide(TWO);
+        Number newVolume = newMass.divide(newDensity);
+
+        return calculateRadiusFromVolume(newVolume);
     }
 
     private TripleNumber calculatePosition(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
