@@ -2,7 +2,7 @@ package info.trekto.jos.io;
 
 import com.google.gson.*;
 import info.trekto.jos.C;
-import info.trekto.jos.core.impl.Simulation;
+import info.trekto.jos.core.impl.SimulationLogicImpl;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.SimulationObjectImpl;
@@ -94,7 +94,7 @@ public class JsonReaderWriter implements ReaderWriter {
             properties.setSecondsPerIteration(Double.parseDouble(json.get("secondsPerIteration").getAsString()));
             properties.setNumberOfObjects(json.get("numberOfObjects").getAsInt());
             
-            C.simulation = new Simulation(properties.getNumberOfObjects());
+            C.simulation = new SimulationLogicImpl(properties.getNumberOfObjects());
             
             properties.setOutputFile(json.get("outputFile").getAsString());
             properties.setSaveToFile(json.get("saveToFile").getAsBoolean());

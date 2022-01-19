@@ -17,8 +17,8 @@ import static info.trekto.jos.util.Utils.*;
  * @author Trayan Momkov
  * 2017-May-18
  */
-public class Simulation {
-    private static final Logger logger = LoggerFactory.getLogger(Simulation.class);
+public class SimulationLogicImpl {
+    private static final Logger logger = LoggerFactory.getLogger(SimulationLogicImpl.class);
     private static final double TWO = 2.0;
     public static double RATIO_FOUR_THREE = 4 / 3.0;
     public static double BILLION = 1000000000;
@@ -45,7 +45,7 @@ public class Simulation {
     public final int[] readOnlyColor;
     public final boolean[] readOnlyDeleted;
 
-    public Simulation(int numberOfObjects) {
+    public SimulationLogicImpl(int numberOfObjects) {
         int n = numberOfObjects;
         positionX = new double[n];
         positionY = new double[n];
@@ -238,32 +238,24 @@ public class Simulation {
     /**
      * We calculate for sphere, not for circle, so in 2D volume may not look real.
      */
-//    public double calculateRadiusBasedOnNewVolumeAndDensity(int smaller, int bigger) {
-//        // density = mass / volume
-//        // calculate volume of smaller and add it to volume of bigger
-//        // calculate new radius of bigger based on new volume
-//        double smallVolume = calculateVolumeFromRadius(readOnlyRadius[smaller]);
-//        double smallDensity = readOnlyMass[smaller] / smallVolume;
-//        double bigVolume = calculateVolumeFromRadius(radius[bigger]);
-//        double bigDensity = mass[bigger] / bigVolume;
-//        double newMass = mass[bigger] + readOnlyMass[smaller];
-//        
-//        /* Volume and density are two sides of one coin. We should decide what we want to be one of them
-//         * and calculate the other. Here we wanted the new object to have an average density of the two collided. */
-//        double newDensity = (smallDensity + bigDensity) / 2.0;
-//        double newVolume = newMass / newDensity;
-//        
-//        return calculateRadiusFromVolume(newVolume);
-//    }
-    
     public double calculateRadiusBasedOnNewVolumeAndDensity(int smaller, int bigger) {
+        // density = mass / volume
         // calculate volume of smaller and add it to volume of bigger
         // calculate new radius of bigger based on new volume
         double smallVolume = calculateVolumeFromRadius(readOnlyRadius[smaller]);
+        double smallDensity = readOnlyMass[smaller] / smallVolume;
         double bigVolume = calculateVolumeFromRadius(radius[bigger]);
-        return calculateRadiusFromVolume(bigVolume + smallVolume);
-    }
+        double bigDensity = mass[bigger] / bigVolume;
+        double newMass = mass[bigger] + readOnlyMass[smaller];
 
+        /* Volume and density are two sides of one coin. We should decide what we want to be one of them
+         * and calculate the other. Here we wanted the new object to have an average density of the two collided. */
+        double newDensity = (smallDensity + bigDensity) / 2.0;
+        double newVolume = newMass / newDensity;
+
+        return calculateRadiusFromVolume(newVolume);
+    }
+    
     private void changePositionOnMerging(int smaller, int bigger) {
         double distanceX = positionX[bigger] - readOnlyPositionX[smaller];
         double distanceY = positionY[bigger] - readOnlyPositionY[smaller];

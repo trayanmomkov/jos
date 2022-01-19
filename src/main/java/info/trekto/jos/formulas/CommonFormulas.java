@@ -2,7 +2,7 @@ package info.trekto.jos.formulas;
 
 import info.trekto.jos.model.ImmutableSimulationObject;
 
-import static info.trekto.jos.core.impl.Simulation.RATIO_FOUR_THREE;
+import static info.trekto.jos.core.impl.SimulationLogicImpl.RATIO_FOUR_THREE;
 import static info.trekto.jos.formulas.ScientificConstants.PI;
 
 /**
