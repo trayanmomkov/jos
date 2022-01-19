@@ -2,7 +2,6 @@ import com.aparapi.Kernel;
 import com.aparapi.Range;
 import com.aparapi.device.Device;
 import org.testng.Assert;
-import org.testng.annotations.Test;
 
 import java.util.Random;
 

@@ -3,12 +3,9 @@ package info.trekto.jos.numbers;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.math.MathContext;
 import java.text.DecimalFormat;
-import java.util.regex.Pattern;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 
 public class ArithmeticCorrectnessTest {
     DecimalFormat df = new DecimalFormat("#.#");

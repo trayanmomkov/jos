@@ -13,5 +13,7 @@ public interface ReaderWriter {
 
     void appendObjectsToFile(List<SimulationObject> objects);
 
+    void appendObjectsToFile();
+
     void endFile();
 }

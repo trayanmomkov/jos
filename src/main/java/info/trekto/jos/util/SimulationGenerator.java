@@ -5,20 +5,13 @@ import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.io.JsonReaderWriter;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.SimulationObjectImpl;
-import info.trekto.jos.model.impl.TripleInt;
-import info.trekto.jos.model.impl.TripleNumber;
-import info.trekto.jos.numbers.New;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static info.trekto.jos.formulas.ForceCalculator.InteractingLaw.NEWTON_LAW_OF_GRAVITATION;
-import static info.trekto.jos.numbers.New.ZERO;
-import static info.trekto.jos.numbers.NumberFactory.NumberType.DOUBLE;
 import static info.trekto.jos.util.Utils.collisionExists;
 
 public class SimulationGenerator {
@@ -36,11 +29,9 @@ public class SimulationGenerator {
 
         C.prop = new SimulationProperties();
 
-        C.prop.setNumberType(DOUBLE);
         C.prop.setPrecision(32);
         C.prop.setScale(16);
 
-        C.prop.setInteractingLaw(NEWTON_LAW_OF_GRAVITATION);
         C.prop.setNumberOfIterations(1_000_000);
         C.prop.setSecondsPerIteration(0.001);
         C.prop.setNumberOfObjects(400);
@@ -64,17 +55,20 @@ public class SimulationGenerator {
             do {
                 o.setX((random.nextDouble() - 0.5) * 2000);
                 o.setY((random.nextDouble() - 0.5) * 2000);
-                o.setZ(ZERO);
+                o.setZ(0);
                 o.setRadius(random.nextDouble() * 5);
             } while (collisionExists(objects));
 
-            o.setSpeed(new TripleNumber((random.nextDouble() - 0.5) * 10,
-                                        (random.nextDouble() - 0.5) * 10,
-                                        ZERO));
+            o.setSpeedX((random.nextDouble() - 0.5) * 10);
+            o.setSpeedY((random.nextDouble() - 0.5) * 10);
+            o.setSpeedZ(0);
 
-            o.setColor(new TripleInt(random.nextInt(255), random.nextInt(255), random.nextInt(255)));
+            int rgb = random.nextInt(255);
+            rgb = (rgb << 8) + random.nextInt(255);
+            rgb = (rgb << 8) + random.nextInt(255);
+
+            o.setColor(rgb);
             o.setMass(random.nextDouble() * 100_000_000_000_000L);
-            o.setMotionless(false);
             o.setLabel(String.valueOf(i));
 
             objects.add(o);

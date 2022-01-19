@@ -1,12 +1,10 @@
 package info.trekto.jos.core.impl;
 
-import info.trekto.jos.formulas.ForceCalculator.InteractingLaw;
+
 import info.trekto.jos.model.SimulationObject;
-import info.trekto.jos.numbers.NumberFactory.NumberType;
 
 import java.util.List;
 
-import static info.trekto.jos.formulas.ForceCalculator.InteractingLaw.NEWTON_LAW_OF_GRAVITATION;
 
 /**
  * @author Trayan Momkov
@@ -17,8 +15,6 @@ public class SimulationProperties {
     private double secondsPerIteration;
     private String outputFile;
     private boolean saveToFile = false;
-    private NumberType numberType;
-    private InteractingLaw interactingLaw = NEWTON_LAW_OF_GRAVITATION;
     private boolean realTimeVisualization = false;
     private int playingSpeed = 1;
     private boolean bounceFromWalls;
@@ -71,22 +67,6 @@ public class SimulationProperties {
 
     public void setSaveToFile(boolean saveToFile) {
         this.saveToFile = saveToFile;
-    }
-
-    public NumberType getNumberType() {
-        return numberType;
-    }
-
-    public void setNumberType(NumberType numberType) {
-        this.numberType = numberType;
-    }
-
-    public InteractingLaw getInteractingLaw() {
-        return interactingLaw;
-    }
-
-    public void setInteractingLaw(InteractingLaw interactingLaw) {
-        this.interactingLaw = interactingLaw;
     }
 
     public boolean isRealTimeVisualization() {

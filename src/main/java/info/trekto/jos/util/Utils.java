@@ -4,10 +4,9 @@ import info.trekto.jos.C;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.formulas.CommonFormulas;
 import info.trekto.jos.model.SimulationObject;
-import info.trekto.jos.model.impl.SimulationObjectImpl;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
+import java.awt.*;
 import java.util.List;
 
 import static info.trekto.jos.formulas.ScientificConstants.*;
@@ -20,12 +19,22 @@ public class Utils {
     public static final int CORES = Runtime.getRuntime().availableProcessors();
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Utils.class);
 
-    public static List<SimulationObject> deepCopy(List<SimulationObject> src) {
-        ArrayList<SimulationObject> dst = new ArrayList<>();
-        for (SimulationObject element : src) {
-            dst.add(new SimulationObjectImpl(element));
+    public static void deepCopy(double[] src, double[] dst) {
+        for (int i = 0; i < src.length; i++) {
+            dst[i] = src[i];
         }
-        return dst;
+    }
+    
+    public static void deepCopy(int[] src, int[] dst) {
+        for (int i = 0; i < src.length; i++) {
+            dst[i] = src[i];
+        }
+    }
+    
+    public static void deepCopy(boolean[] src, boolean[] dst) {
+        for (int i = 0; i < src.length; i++) {
+            dst[i] = src[i];
+        }
     }
 
     public static void printConfiguration(SimulationProperties properties) {
@@ -54,7 +63,7 @@ public class Utils {
         logger.info("Scale: " + properties.getScale());
         logger.info("Number of objects: " + properties.getNumberOfObjects());
         logger.info("Number of iterations: " + properties.getNumberOfIterations());
-        logger.info("'Number' implementation: " + properties.getNumberType());
+        logger.info("'Number' implementation: double");
     }
 
     public static String showRemainingTime(int i, long elapsedNanoseconds, long numberOfIterations) {
@@ -97,6 +106,23 @@ public class Utils {
                 + seconds + " s.";
     }
 
+    public static boolean collisionExists(double[] positionX, double[] positionY, double[] radius) {
+        for (int i = 0; i < positionX.length; i++) {
+            for (int j = 0; j < positionX.length; j++) {
+                if (i == j) {
+                    continue;
+                }
+                // distance between centres
+                double distance = CommonFormulas.calculateDistance(positionX[i], positionY[i], positionX[j], positionY[j]);
+
+                if (distance < radius[i] + radius[j]) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
     public static boolean collisionExists(List<SimulationObject> objects) {
         for (SimulationObject object : objects) {
             for (SimulationObject object1 : objects) {
@@ -112,5 +138,22 @@ public class Utils {
             }
         }
         return false;
+    }
+
+    public static void main(String[] args) {
+        int rgb = 255;
+        rgb = (rgb << 8) + 0;
+        rgb = (rgb << 8) + 0;
+        System.out.println(rgb);
+        
+        int r = (1245420 >> 16) & 0xFF;
+        int g = (1245420 >> 8) & 0xFF;
+        int b = 1245420 & 0xFF;
+
+        System.out.println("RGB " + r + " " + g + " " + b);
+        
+        Color c = new Color(16711680);
+        Color a = new Color(255);
+        Color h = new Color(128, 128, 0);
     }
 }

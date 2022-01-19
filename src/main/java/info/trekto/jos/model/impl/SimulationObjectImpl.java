@@ -1,10 +1,9 @@
 package info.trekto.jos.model.impl;
 
+import info.trekto.jos.C;
 import info.trekto.jos.model.SimulationObject;
-import info.trekto.jos.numbers.New;
 
-import java.util.ArrayList;
-import java.util.List;
+import static java.awt.Color.BLUE;
 
 /**
  * @author Trayan Momkov
@@ -12,39 +11,46 @@ import java.util.List;
  */
 public class SimulationObjectImpl implements SimulationObject {
 
-    double x;
-    double y;
-    double z;
-    TripleNumber speed;
-    double radius;
-    TripleInt color;
-    double mass;
-
-    /* Whether the object is static */
-    boolean motionless = false;
-    String label;
-
-    /* Array with points through which object passed. */
-    List<TripleNumber> trajectory;
+    private double x;
+    private double y;
+    private double z;
+    private double speedX;
+    private double speedY;
+    private double speedZ;
+    private double radius;
+    private int color;
+    private double mass;
+    private String label;
 
     public SimulationObjectImpl() {
-        this.x = New.ZERO;
-        this.y = New.ZERO;
-        this.z = New.ZERO;
-        color = new TripleInt(0, 0, 255);
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
+        color = BLUE.getRGB();
     }
 
     public SimulationObjectImpl(SimulationObject simulationObject) {
         this.color = simulationObject.getColor();
         this.label = simulationObject.getLabel();
         this.mass = simulationObject.getMass();
-        this.motionless = simulationObject.isMotionless();
         this.radius = simulationObject.getRadius();
-        this.speed = simulationObject.getSpeed();
-        this.trajectory = (simulationObject.getTrajectory() == null) ? null : new ArrayList<>(simulationObject.getTrajectory());
+        this.speedX = simulationObject.getSpeedX();
+        this.speedY = simulationObject.getSpeedY();
+        this.speedZ = simulationObject.getSpeedZ();
         this.x = simulationObject.getX();
         this.y = simulationObject.getY();
         this.z = simulationObject.getZ();
+    }
+
+    public SimulationObjectImpl(int i) {
+        this.color = C.simulation.color[i];
+        this.label = C.simulation.label[i];
+        this.mass = C.simulation.mass[i];
+        this.radius = C.simulation.radius[i];
+        this.speedX = C.simulation.speedX[i];
+        this.speedY = C.simulation.speedY[i];
+        this.x = C.simulation.positionX[i];
+        this.y = C.simulation.positionY[i];
     }
 
     @Override
@@ -78,16 +84,6 @@ public class SimulationObjectImpl implements SimulationObject {
     }
 
     @Override
-    public TripleNumber getSpeed() {
-        return speed;
-    }
-
-    @Override
-    public void setSpeed(TripleNumber speed) {
-        this.speed = speed;
-    }
-
-    @Override
     public double getRadius() {
         return radius;
     }
@@ -98,12 +94,12 @@ public class SimulationObjectImpl implements SimulationObject {
     }
 
     @Override
-    public TripleInt getColor() {
+    public int getColor() {
         return color;
     }
 
     @Override
-    public void setColor(TripleInt color) {
+    public void setColor(int color) {
         this.color = color;
     }
 
@@ -118,16 +114,6 @@ public class SimulationObjectImpl implements SimulationObject {
     }
 
     @Override
-    public boolean isMotionless() {
-        return motionless;
-    }
-
-    @Override
-    public void setMotionless(boolean motionless) {
-        this.motionless = motionless;
-    }
-
-    @Override
     public String getLabel() {
         return label;
     }
@@ -138,12 +124,32 @@ public class SimulationObjectImpl implements SimulationObject {
     }
 
     @Override
-    public List<TripleNumber> getTrajectory() {
-        return trajectory;
+    public double getSpeedX() {
+        return speedX;
     }
 
     @Override
-    public void setTrajectory(List<TripleNumber> trajectory) {
-        this.trajectory = trajectory;
+    public void setSpeedX(double speedX) {
+        this.speedX = speedX;
+    }
+
+    @Override
+    public double getSpeedY() {
+        return speedY;
+    }
+
+    @Override
+    public void setSpeedY(double speedY) {
+        this.speedY = speedY;
+    }
+
+    @Override
+    public double getSpeedZ() {
+        return speedZ;
+    }
+
+    @Override
+    public void setSpeedZ(double speedZ) {
+        this.speedZ = speedZ;
     }
 }

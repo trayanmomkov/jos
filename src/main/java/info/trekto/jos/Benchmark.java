@@ -1,18 +1,11 @@
 package info.trekto.jos;
 
-import info.trekto.jos.core.Simulation;
-import info.trekto.jos.core.impl.SimulationForkJoinImpl;
-import info.trekto.jos.core.impl.SimulationLogicImpl;
 import info.trekto.jos.exceptions.SimulationException;
-import info.trekto.jos.formulas.ForceCalculator.InteractingLaw;
 import info.trekto.jos.io.JsonReaderWriter;
-import info.trekto.jos.numbers.NumberFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
-
-import static info.trekto.jos.numbers.NumberFactory.NumberType.*;
 
 /**
  * @author Trayan Momkov
@@ -29,8 +22,7 @@ public class Benchmark {
         }
         String inputFileName = args[0];
 
-        Simulation simulation = new SimulationForkJoinImpl();
-        benchmark.runBenchmark(simulation, inputFileName);
+        benchmark.runBenchmark(inputFileName);
 
 //        32	BIG_DECIMAL	10873 ms
 //        32	APFLOAT	752 ms
@@ -38,10 +30,9 @@ public class Benchmark {
 //        32	FLOAT	27 ms
     }
 
-    private void runBenchmark(Simulation simulation, String inputFileName) throws SimulationException {
+    private void runBenchmark(String inputFileName) throws SimulationException {
 
         C.io = new JsonReaderWriter();
-        C.simulation = simulation;
 
         try {
             C.prop = C.io.readProperties(inputFileName);
@@ -49,15 +40,11 @@ public class Benchmark {
             logger.error("Cannot read properties file.", e);
             return;
         }
-        C.simulationLogic = new SimulationLogicImpl();
 
         C.prop.setSaveToFile(false);
-        C.prop.setInteractingLaw(InteractingLaw.NEWTON_LAW_OF_GRAVITATION);
-
-        C.simulationLogic = new SimulationLogicImpl();
 
         long durationInNanoseconds = C.simulation.startSimulation();
 
-        logger.info(C.prop.getPrecision() + "\t" + C.prop.getNumberType() + "\t" + (durationInNanoseconds / 1000000) + " ms");
+        logger.info(C.prop.getPrecision() + "\tDOUBLE\t" + (durationInNanoseconds / 1000000) + " ms");
     }
 }

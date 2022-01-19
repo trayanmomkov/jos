@@ -1,7 +1,5 @@
 package info.trekto.jos.formulas;
 
-import info.trekto.jos.numbers.New;
-
 /**
  * @author Trayan Momkov
  * 3 Mar 2016

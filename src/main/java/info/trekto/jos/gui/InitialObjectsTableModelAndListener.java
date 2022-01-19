@@ -3,8 +3,6 @@ package info.trekto.jos.gui;
 import info.trekto.jos.C;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.SimulationObjectImpl;
-import info.trekto.jos.model.impl.TripleInt;
-import info.trekto.jos.model.impl.TripleNumber;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -55,13 +53,10 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
                 o.getY(),
                 o.getZ(),
                 o.getRadius(),
-                o.getSpeed().getX(),
-                o.getSpeed().getY(),
-                o.getSpeed().getZ(),
-                o.isMotionless(),
-                o.getColor().getR(),
-                o.getColor().getG(),
-                o.getColor().getB()});
+                o.getSpeedX(),
+                o.getSpeedY(),
+                o.getSpeedZ(),
+                o.getColor()});
     }
 
     @Override
@@ -82,14 +77,9 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
             o.setY(Double.parseDouble(String.valueOf(vector.get(i++))));
             o.setZ(Double.parseDouble(String.valueOf(vector.get(i++))));
             o.setRadius(Double.parseDouble(String.valueOf(vector.get(i++))));
-            o.setSpeed(new TripleNumber(
-                    Double.parseDouble(String.valueOf(vector.get(i++))),
-                    Double.parseDouble(String.valueOf(vector.get(i++))),
-                    Double.parseDouble(String.valueOf(vector.get(i++)))));
-            o.setMotionless((Boolean) vector.get(i++));
-            o.setColor(new TripleInt(Integer.parseInt(String.valueOf(vector.get(i++))),
-                                     Integer.parseInt(String.valueOf(vector.get(i++))),
-                                     Integer.parseInt(String.valueOf(vector.get(i++)))));
+            o.setSpeedX(Double.parseDouble(String.valueOf(vector.get(i++))));
+            o.setSpeedY(Double.parseDouble(String.valueOf(vector.get(i++))));
+            o.setColor(Integer.parseInt(String.valueOf(vector.get(i++))));
 
             C.prop.getInitialObjects().add(o);
         }

@@ -2,23 +2,15 @@ package info.trekto.jos.gui;
 
 import info.trekto.jos.C;
 import info.trekto.jos.Main;
-import info.trekto.jos.core.impl.SimulationForkJoinImpl;
-import info.trekto.jos.core.impl.SimulationLogicImpl;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.exceptions.SimulationException;
-import info.trekto.jos.formulas.ForceCalculator.InteractingLaw;
 import info.trekto.jos.model.SimulationObject;
-import info.trekto.jos.numbers.New;
-import info.trekto.jos.numbers.NumberFactory.NumberType;
-import info.trekto.jos.visualization.Visualizer;
 import info.trekto.jos.visualization.java2dgraphics.VisualizerImpl;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
-import java.util.Collections;
-import java.util.Vector;
 
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.WARNING_MESSAGE;
@@ -30,8 +22,6 @@ public class MainForm {
     private JTextField secondsPerIterationTextField;
     private JCheckBox saveToFileCheckBox;
     private JTextField outputFileTextField;
-    private JComboBox<NumberType> numberTypeComboBox;
-    private JComboBox interactingLawComboBox;
     private JCheckBox realTimeVisualizationCheckBox;
     private JTextField playingSpeedTextField;
     private JCheckBox bounceFromScreenWallsCheckBox;
@@ -93,24 +83,20 @@ public class MainForm {
             }
         });
 
-        Vector<NumberType> comboBoxItems = new Vector<>();
-        Collections.addAll(comboBoxItems, NumberType.values());
-        numberTypeComboBox.setModel(new DefaultComboBoxModel<>(comboBoxItems));
+//        Vector<NumberType> comboBoxItems = new Vector<>();
+//        Collections.addAll(comboBoxItems, NumberType.values());
+//        numberTypeComboBox.setModel(new DefaultComboBoxModel<>(comboBoxItems));
 
-        numberTypeComboBox.addActionListener(
-                actionEvent -> {
-                    if (actionEvent.getModifiers() != 0) {
-                        C.prop.setNumberType(NumberType.valueOf(String.valueOf(numberTypeComboBox.getSelectedItem())));
-//                    createNumberFactory(C.prop.getNumberType(), C.prop.getPrecision(), C.prop.getScale());
-//                    C.prop.setSecondsPerIteration(New.num(secondsPerIterationTextField.getText()));
-//                    ((InitialObjectsTableModelAndListener) initialObjectsTable.getModel()).refreshInitialObjects();
-                        showWarn(mainPanel, "You have to save properties, number type change to take effect.");
-                    }
-                });
-
-        interactingLawComboBox.addActionListener(
-                actionEvent -> C.prop.setInteractingLaw(InteractingLaw.valueOf(String.valueOf(interactingLawComboBox.getSelectedItem()))));
-
+//        numberTypeComboBox.addActionListener(
+//                actionEvent -> {
+//                    if (actionEvent.getModifiers() != 0) {
+//                        C.prop.setNumberType(NumberType.valueOf(String.valueOf(numberTypeComboBox.getSelectedItem())));
+////                    createNumberFactory(C.prop.getNumberType(), C.prop.getPrecision(), C.prop.getScale());
+////                    C.prop.setSecondsPerIteration(New.num(secondsPerIterationTextField.getText()));
+////                    ((InitialObjectsTableModelAndListener) initialObjectsTable.getModel()).refreshInitialObjects();
+//                        showWarn(mainPanel, "You have to save properties, number type change to take effect.");
+//                    }
+//                });
 
         saveToFileCheckBox.addActionListener(actionEvent -> C.prop.setSaveToFile(saveToFileCheckBox.isSelected()));
 
@@ -155,14 +141,9 @@ public class MainForm {
     }
 
     private void start() {
-        C.simulation = new SimulationForkJoinImpl();
         new Thread(() -> {
-
-            C.simulationLogic = new SimulationLogicImpl();
-            C.simulation.removeAllSubscribers();
             if (C.prop.isRealTimeVisualization()) {
-                Visualizer visualizer = new VisualizerImpl();
-                C.simulation.subscribe(visualizer);
+                C.visualizer = new VisualizerImpl();
             }
             try {
                 C.simulation.startSimulation();
@@ -176,14 +157,12 @@ public class MainForm {
         numberOfObjectsTextField.setText(String.valueOf(prop.getNumberOfObjects()));
         numberOfIterationsTextField.setText(String.valueOf(prop.getNumberOfIterations()));
         secondsPerIterationTextField.setText(String.valueOf(prop.getSecondsPerIteration()));
-        numberTypeComboBox.setSelectedItem(prop.getNumberType());
-        interactingLawComboBox.setSelectedItem(prop.getInteractingLaw());
         saveToFileCheckBox.setSelected(prop.isSaveToFile());
         outputFileTextField.setText(prop.getOutputFile());
         precisionTextField.setText(String.valueOf(prop.getPrecision()));
         scaleTextField.setText(String.valueOf(prop.getScale()));
         realTimeVisualizationCheckBox.setSelected(prop.isRealTimeVisualization());
-        bounceFromScreenWallsCheckBox.setSelected(prop.isBounceFromWalls());
+        bounceFromScreenWallsCheckBox.setSelected(false);
         playingSpeedTextField.setText(String.valueOf(prop.getPlayingSpeed()));
 
         ((InitialObjectsTableModelAndListener) initialObjectsTable.getModel()).setRowCount(0);

@@ -1,7 +1,6 @@
 package info.trekto.jos.visualization.java2dgraphics;
 
 import info.trekto.jos.C;
-import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.visualization.Visualizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +12,6 @@ import java.awt.event.WindowEvent;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Flow;
 
 import static java.awt.Color.BLUE;
 
@@ -64,25 +62,39 @@ public class VisualizerImpl implements Visualizer {
         return y + visualizationPanel.getHeight() / 2.0;
     }
 
-    @Override
-    public void onNext(List<SimulationObject> simulationObject) {
-        lastShapes = createShapes(simulationObject);
+    public void visualize() {
+        lastShapes = createShapes();
         visualizationPanel.draw(lastShapes);
     }
 
-    private List<ShapeWithColor> createShapes(List<SimulationObject> simulationObjects) {
+    private List<ShapeWithColor> createShapes() {
         List<ShapeWithColor> shapes = new ArrayList<>();
-        for (SimulationObject simulationObject : simulationObjects) {
+        for (int i = 0; i < C.simulation.positionX.length; i++) {
+            if (C.simulation.deleted[i]) {
+                continue;
+            }
             Ellipse2D ellipse = new Ellipse2D.Double();
-            ellipse.setFrame(convertCoordinatesForDisplayX(simulationObject.getX() - simulationObject.getRadius()),
-                             convertCoordinatesForDisplayY(simulationObject.getY() - simulationObject.getRadius()),
-                             simulationObject.getRadius() * 2,
-                             simulationObject.getRadius() * 2);
+            ellipse.setFrame(convertCoordinatesForDisplayX(C.simulation.positionX[i] - C.simulation.radius[i]),
+                             convertCoordinatesForDisplayY(C.simulation.positionY[i] - C.simulation.radius[i]),
+                             C.simulation.radius[i] * 2,
+                             C.simulation.radius[i] * 2);
 
-            Color color = new Color(simulationObject.getColor().getR(), simulationObject.getColor().getG(), simulationObject.getColor().getB());
+            Color color = new Color(C.simulation.color[i]);
             shapes.add(new ShapeWithColor(ellipse, color));
         }
         return shapes;
+    }
+
+    public void end() {
+        Ellipse2D ellipse = new Ellipse2D.Double();
+        ellipse.setFrame(convertCoordinatesForDisplayX(-100), convertCoordinatesForDisplayY(-10), 1, 1);
+        ShapeWithColor text = new ShapeWithColor(ellipse, BLUE);
+        text.setText(C.endText);
+        if (lastShapes == null) {
+            lastShapes = new ArrayList<>();
+        }
+        lastShapes.add(text);
+        visualizationPanel.draw(lastShapes);
     }
 
     @Override
@@ -113,29 +125,6 @@ public class VisualizerImpl implements Visualizer {
     @Override
     public void translateDown() {
         visualizationPanel.translateDown();
-    }
-
-    @Override
-    public void onSubscribe(Flow.Subscription subscription) {
-        subscription.request(1);
-    }
-
-    @Override
-    public void onError(Throwable throwable) {
-        logger.error("onError called.", throwable);
-    }
-
-    @Override
-    public void onComplete() {
-        Ellipse2D ellipse = new Ellipse2D.Double();
-        ellipse.setFrame(convertCoordinatesForDisplayX(-100), convertCoordinatesForDisplayY(-10), 1, 1);
-        ShapeWithColor text = new ShapeWithColor(ellipse, BLUE);
-        text.setText(C.endText);
-        if (lastShapes == null) {
-            lastShapes = new ArrayList<>();
-        }
-        lastShapes.add(text);
-        visualizationPanel.draw(lastShapes);
     }
 
     public VisualizationPanel getVisualizationPanel() {

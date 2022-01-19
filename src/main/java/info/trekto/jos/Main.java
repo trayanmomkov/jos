@@ -1,10 +1,7 @@
 package info.trekto.jos;
 
-import info.trekto.jos.core.impl.SimulationForkJoinImpl;
-import info.trekto.jos.core.impl.SimulationLogicImpl;
 import info.trekto.jos.exceptions.SimulationException;
 import info.trekto.jos.io.JsonReaderWriter;
-import info.trekto.jos.visualization.Visualizer;
 import info.trekto.jos.visualization.java2dgraphics.VisualizerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,25 +22,18 @@ public class Main {
 
         String inputFile = args[0];
         init(inputFile);
-        C.simulation.removeAllSubscribers();
         if (C.prop.isRealTimeVisualization()) {
-            Visualizer visualizer = new VisualizerImpl();
-            C.simulation.subscribe(visualizer);
+            C.visualizer = new VisualizerImpl();
         }
         C.simulation.startSimulation();
     }
     
     public static void init(String inputFile) {
         C.io = new JsonReaderWriter();
-        C.simulation = new SimulationForkJoinImpl();
-
         try {
             C.prop = C.io.readProperties(inputFile);
         } catch (FileNotFoundException e) {
             logger.error("Cannot read properties file.", e);
-            return;
         }
-
-        C.simulationLogic = new SimulationLogicImpl();
     }
 }

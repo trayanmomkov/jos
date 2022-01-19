@@ -1,10 +1,9 @@
 package info.trekto.jos.formulas;
 
 import info.trekto.jos.model.ImmutableSimulationObject;
-import info.trekto.jos.model.impl.TripleNumber;
 
+import static info.trekto.jos.core.impl.Simulation.RATIO_FOUR_THREE;
 import static info.trekto.jos.formulas.ScientificConstants.PI;
-import static info.trekto.jos.numbers.New.RATIO_FOUR_THREE;
 
 /**
  * @author Trayan Momkov
@@ -12,6 +11,12 @@ import static info.trekto.jos.numbers.New.RATIO_FOUR_THREE;
  *
  */
 public class CommonFormulas {
+    public static double calculateDistance(double object1X, double object1Y, double object2X, double object2Y) {
+        double x = object2X - object1X;
+        double y = object2Y - object1Y;
+        return Math.sqrt(x*x+y*y);
+    }
+
     public static double calculateDistance(ImmutableSimulationObject object1, ImmutableSimulationObject object2) {
         double x = object2.getX() - object1.getX();
         double y = object2.getY() - object1.getY();
@@ -33,13 +38,5 @@ public class CommonFormulas {
             return Double.MIN_VALUE;
         }
         return Math.cbrt(volume / (RATIO_FOUR_THREE * PI));
-    }
-
-    public static TripleNumber calculateAcceleration(ImmutableSimulationObject object, TripleNumber acceleration, TripleNumber force) {
-        // ax = Fx / m
-        double newAccelerationX = acceleration.getX() + force.getX() / object.getMass();
-        double newAccelerationY = acceleration.getY() + force.getY() / object.getMass();
-        double newAccelerationZ = acceleration.getZ() + force.getZ() / object.getMass();
-        return new TripleNumber(newAccelerationX, newAccelerationY, newAccelerationZ);
     }
 }
