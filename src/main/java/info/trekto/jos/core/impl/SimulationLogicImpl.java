@@ -143,9 +143,6 @@ public class SimulationLogicImpl {
     public void calculateNewValues() {
         for (int i = 0; i < positionX.length; i++) {
             if (!deleted[i]) {
-                /* Move object */
-                moveObject(i);
-
                 /* Calculate acceleration */
                 double accelerationX = 0;
                 double accelerationY = 0;
@@ -169,6 +166,9 @@ public class SimulationLogicImpl {
                 speedX[i] = readOnlySpeedX[i] + accelerationX * C.prop.getSecondsPerIteration();
                 speedY[i] = readOnlySpeedY[i] + accelerationY * C.prop.getSecondsPerIteration();
 
+                /* Move object */
+                moveObject(i);
+
                 /* Collision and merging */
                 processCollisions(i);
             }
@@ -180,7 +180,7 @@ public class SimulationLogicImpl {
             if (i != j && !readOnlyDeleted[j]) {
                 double distance = calculateDistance(positionX[i], positionY[i], readOnlyPositionX[j], readOnlyPositionY[j]);
                 if (distance < radius[i] + readOnlyRadius[j]) {    // if collide
-                    if (readOnlyRadius[i] >= readOnlyRadius[j]) {   // TODO compare masses instead of radius.
+                    if (mass[i] >= readOnlyMass[j]) {
                         /* If the current object is the smaller one, the collision will be processed
                          * when we process the other colliding object (which is the bigger one). */
                          
@@ -277,8 +277,8 @@ public class SimulationLogicImpl {
     }
 
     private void moveObject(int i) {
-        positionX[i] = readOnlyPositionX[i] + readOnlySpeedX[i] * C.prop.getSecondsPerIteration();
-        positionY[i] = readOnlyPositionY[i] + readOnlySpeedY[i] * C.prop.getSecondsPerIteration();
+        positionX[i] = positionX[i] + speedX[i] * C.prop.getSecondsPerIteration();
+        positionY[i] = positionY[i] + speedY[i] * C.prop.getSecondsPerIteration();
     }
 
     public int getCurrentIterationNumber() {
