@@ -99,6 +99,9 @@ public class SimulationForkJoinImpl implements Simulation {
                     }
 
                     doIteration();
+                    if (C.prop.isRealTimeVisualization() && C.prop.getPlayingSpeed() < 0) {
+                        Thread.sleep(-C.prop.getPlayingSpeed());
+                    }
                 } catch (InterruptedException e) {
                     logger.error("Concurrency failure. One of the threads interrupted in cycle " + i, e);
                 }
