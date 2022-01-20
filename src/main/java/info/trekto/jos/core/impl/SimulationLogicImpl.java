@@ -195,14 +195,14 @@ public class SimulationLogicImpl {
                         /* Position */
                         changePositionOnMerging(smaller, bigger);
 
+                        /* Color */
+                        color[bigger] = calculateColor(smaller, bigger);
+
                         /* Volume (radius) */
                         radius[bigger] = calculateRadiusBasedOnNewVolumeAndDensity(smaller, bigger);
 
                         /* Mass */
                         mass[bigger] = mass[bigger] + readOnlyMass[smaller];
-
-                        /* Color */
-                        color[bigger] = calculateColor(smaller, bigger);
                     }
                 }
             }
