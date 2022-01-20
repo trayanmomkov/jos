@@ -67,11 +67,11 @@ public class SimulationLogicImpl implements SimulationLogic {
 
     private void processCollisions(ImmutableSimulationObject oldObject, SimulationObject newObject,
                                    List<SimulationObject> oldObjects, Set<ImmutableSimulationObject> oldObjectsForRemoval) {
-        if (oldObjectsForRemoval.contains(oldObject)) {
-            /* The collision is already processed. Current newObject was smaller thus it was added in oldObjectsForRemoval. */
-            objectsForRemoval.add(newObject);
-            return;
-        }
+//        if (oldObjectsForRemoval.contains(oldObject)) {
+//            /* The collision is already processed. Current newObject was smaller thus it was added in oldObjectsForRemoval. */
+//            objectsForRemoval.add(newObject);
+//            return;
+//        }
 
         for (ImmutableSimulationObject tempOldObject : oldObjects) {
             if (tempOldObject == oldObject) {
@@ -79,11 +79,23 @@ public class SimulationLogicImpl implements SimulationLogic {
             }
             Number distance = calculateDistance(tempOldObject, newObject);
             if (distance.compareTo(tempOldObject.getRadius().add(newObject.getRadius())) < 0) {    // if collide
+                /* Objects merging */
+                SimulationObject bigger = newObject;
+                ImmutableSimulationObject smaller = tempOldObject;
                 if (newObject.getMass().compareTo(tempOldObject.getMass()) < 0) {
-                    /*The collision will be processed
-                     * when we process the other colliding object (which is the bigger one). */
-                    objectsForRemoval.add(newObject);
-                    return;
+                    for (SimulationObject o : C.simulation.getAuxiliaryObjects()) {
+                        if (o.getLabel().equals(tempOldObject.getLabel())) {
+                            bigger = o;
+                            break;
+                        }
+                    }
+                    
+                    for (SimulationObject o : oldObjects) {
+                        if (o.getLabel().equals(newObject.getLabel())) {
+                            smaller = o;
+                            break;
+                        }
+                    }
                 }
 
                 /* Bounce off each other */
@@ -91,9 +103,6 @@ public class SimulationLogicImpl implements SimulationLogic {
 //                calculateImpulseAfterCollision(i, j);
 //            } esle {
 
-                /* Objects merging */
-                SimulationObject bigger = newObject;
-                ImmutableSimulationObject smaller = tempOldObject;
                 oldObjectsForRemoval.add(smaller);
 
                 /* Speed */
