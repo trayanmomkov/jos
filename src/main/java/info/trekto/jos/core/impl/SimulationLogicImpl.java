@@ -134,6 +134,10 @@ public class SimulationLogicImpl {
         deepCopy(deleted, readOnlyDeleted);
 
         calculateNewValues();
+        
+        if (C.prop.isRealTimeVisualization() && C.prop.getPlayingSpeed() < 0) {
+            Thread.sleep(-C.prop.getPlayingSpeed());
+        }
 
         if (C.prop.isSaveToFile()) {
             C.io.appendObjectsToFile();
@@ -180,30 +184,30 @@ public class SimulationLogicImpl {
             if (i != j && !readOnlyDeleted[j]) {
                 double distance = calculateDistance(positionX[i], positionY[i], readOnlyPositionX[j], readOnlyPositionY[j]);
                 if (distance < radius[i] + readOnlyRadius[j]) {    // if collide
-                    if (mass[i] >= readOnlyMass[j]) {
-                        /* If the current object is the smaller one, the collision will be processed
-                         * when we process the other colliding object (which is the bigger one). */
-                         
-                        /* Objects merging */
-                        int bigger = i;
-                        int smaller = j;
-                        deleted[smaller] = true;
-
-                        /* Speed */
-                        changeSpeedOnMerging(smaller, bigger);
-
-                        /* Position */
-                        changePositionOnMerging(smaller, bigger);
-
-                        /* Color */
-                        color[bigger] = calculateColor(smaller, bigger);
-
-                        /* Volume (radius) */
-                        radius[bigger] = calculateRadiusBasedOnNewVolumeAndDensity(smaller, bigger);
-
-                        /* Mass */
-                        mass[bigger] = mass[bigger] + readOnlyMass[smaller];
+                    /* Objects merging */
+                    int bigger = i;
+                    int smaller = j;
+                    if (mass[i] < readOnlyMass[j]) {
+                        bigger = j;
+                        smaller = i;
                     }
+                        
+                    deleted[smaller] = true;
+
+                    /* Speed */
+                    changeSpeedOnMerging(smaller, bigger);
+
+                    /* Position */
+                    changePositionOnMerging(smaller, bigger);
+
+                    /* Color */
+                    color[bigger] = calculateColor(smaller, bigger);
+
+                    /* Volume (radius) */
+                    radius[bigger] = calculateRadiusBasedOnNewVolumeAndDensity(smaller, bigger);
+
+                    /* Mass */
+                    mass[bigger] = mass[bigger] + readOnlyMass[smaller];
                 }
             }
         }
@@ -255,7 +259,7 @@ public class SimulationLogicImpl {
 
         return calculateRadiusFromVolume(newVolume);
     }
-    
+
     private void changePositionOnMerging(int smaller, int bigger) {
         double distanceX = positionX[bigger] - readOnlyPositionX[smaller];
         double distanceY = positionY[bigger] - readOnlyPositionY[smaller];
