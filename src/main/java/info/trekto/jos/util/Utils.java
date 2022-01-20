@@ -10,6 +10,7 @@ import java.awt.*;
 import java.util.List;
 
 import static info.trekto.jos.formulas.ScientificConstants.*;
+import static java.awt.Color.BLUE;
 
 /**
  * @author Trayan Momkov
@@ -155,5 +156,6 @@ public class Utils {
         Color c = new Color(16711680);
         Color a = new Color(255);
         Color h = new Color(128, 128, 0);
+        System.out.println("BLUE: " +  String.format("%08X", BLUE.getRGB()));
     }
 }

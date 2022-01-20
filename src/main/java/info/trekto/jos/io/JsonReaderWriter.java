@@ -42,7 +42,7 @@ public class JsonReaderWriter implements ReaderWriter {
         JsonArray initialObjects = new JsonArray();
 
         for (SimulationObject simulationObject : properties.getInitialObjects()) {
-            initialObjects.add(mapToJson(gson, simulationObject));
+            initialObjects.add(mapSimulationObjectToJson(gson, simulationObject));
         }
 
         json.add("initialObjects", initialObjects);
@@ -66,7 +66,7 @@ public class JsonReaderWriter implements ReaderWriter {
         return json;
     }
 
-    private JsonObject mapToJson(Gson gson, SimulationObject simulationObject) {
+    private JsonObject mapSimulationObjectToJson(Gson gson, SimulationObject simulationObject) {
         Map<String, Object> simulationObjectMap = new HashMap<>();
         simulationObjectMap.put("label", simulationObject.getLabel());
         simulationObjectMap.put("x", simulationObject.getX());
@@ -77,7 +77,7 @@ public class JsonReaderWriter implements ReaderWriter {
         simulationObjectMap.put("speedY", simulationObject.getSpeedY());
         simulationObjectMap.put("speedZ", simulationObject.getSpeedZ());
         simulationObjectMap.put("radius", simulationObject.getRadius());
-        simulationObjectMap.put("color", simulationObject.getColor());
+        simulationObjectMap.put("color", String.format("%08X", simulationObject.getColor()).substring(2));
 
         return gson.toJsonTree(simulationObjectMap).getAsJsonObject();
     }
@@ -116,7 +116,7 @@ public class JsonReaderWriter implements ReaderWriter {
 
                 simo.setMass(Double.parseDouble(o.get("mass").getAsString()));
                 simo.setRadius(Double.parseDouble(o.get("radius").getAsString()));
-                simo.setColor(o.get("color").getAsInt());
+                simo.setColor(Integer.parseInt(o.get("color").getAsString(), 16));
                 simo.setLabel(o.get("label").getAsString());
 
                 initialObjects.add(simo);
@@ -161,7 +161,7 @@ public class JsonReaderWriter implements ReaderWriter {
 
         JsonArray objectsAsJsonArray = new JsonArray();
         for (SimulationObject simulationObject : simulationObjects) {
-            objectsAsJsonArray.add(mapToJson(gson, simulationObject));
+            objectsAsJsonArray.add(mapSimulationObjectToJson(gson, simulationObject));
         }
 
         JsonObject cycleJson = new JsonObject();
@@ -196,7 +196,7 @@ public class JsonReaderWriter implements ReaderWriter {
         JsonArray objectsAsJsonArray = new JsonArray();
         for (int i = 0; i < C.simulation.positionX.length; i++) {
             if (!C.simulation.deleted[i]) {
-                objectsAsJsonArray.add(mapToJson(gson, new SimulationObjectImpl(i)));
+                objectsAsJsonArray.add(mapSimulationObjectToJson(gson, new SimulationObjectImpl(i)));
             }
         }
 
