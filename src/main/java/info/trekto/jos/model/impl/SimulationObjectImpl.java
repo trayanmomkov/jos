@@ -39,7 +39,6 @@ public class SimulationObjectImpl implements SimulationObject {
         this.color = simulationObject.getColor();
         this.label = simulationObject.getLabel();
         this.mass = simulationObject.getMass();
-        this.motionless = simulationObject.isMotionless();
         this.radius = simulationObject.getRadius();
         this.speed = simulationObject.getSpeed();
         this.trajectory = (simulationObject.getTrajectory() == null) ? null : new ArrayList<>(simulationObject.getTrajectory());
@@ -116,16 +115,6 @@ public class SimulationObjectImpl implements SimulationObject {
     @Override
     public void setMass(Number mass) {
         this.mass = mass;
-    }
-
-    @Override
-    public boolean isMotionless() {
-        return motionless;
-    }
-
-    @Override
-    public void setMotionless(boolean motionless) {
-        this.motionless = motionless;
     }
 
     @Override

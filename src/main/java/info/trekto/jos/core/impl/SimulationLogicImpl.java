@@ -35,9 +35,6 @@ public class SimulationLogicImpl implements SimulationLogic {
         for (ImmutableSimulationObject oldObject : simulation.getObjects().subList(fromIndex, toIndex)) {
             SimulationObject newObject = newObjectsIterator.next();
 
-            /* Move objects */
-            moveObject(oldObject, newObject);
-
             /* Calculate acceleration */
             TripleNumber acceleration = new TripleNumber();
             for (ImmutableSimulationObject tempObject : simulation.getObjects()) {
@@ -60,6 +57,9 @@ public class SimulationLogicImpl implements SimulationLogic {
                 bounceFromWalls(newObject);
             }
 
+            /* Move objects */
+            moveObject(oldObject, newObject);
+
             /* Collision and merging */
             processCollisions(oldObject, newObject, simulation.getObjects(), oldObjectsForRemoval);
         }
@@ -79,7 +79,7 @@ public class SimulationLogicImpl implements SimulationLogic {
             }
             Number distance = calculateDistance(tempOldObject, newObject);
             if (distance.compareTo(tempOldObject.getRadius().add(newObject.getRadius())) < 0) {    // if collide
-                if (newObject.getRadius().compareTo(tempOldObject.getRadius()) < 0) {
+                if (newObject.getMass().compareTo(tempOldObject.getMass()) < 0) {
                     /*The collision will be processed
                      * when we process the other colliding object (which is the bigger one). */
                     objectsForRemoval.add(newObject);
@@ -105,14 +105,15 @@ public class SimulationLogicImpl implements SimulationLogic {
                 bigger.setY(position.getY());
                 bigger.setZ(position.getZ());
 
-                /* Mass */
-                bigger.setMass(bigger.getMass().add(smaller.getMass()));
+                /* Color */
+                bigger.setColor(calculateColor(smaller, bigger));
+
 
                 /* Volume (radius) */
                 bigger.setRadius(calculateRadiusBasedOnNewVolumeAndDensity(smaller, bigger));
-
-                /* Color */
-                bigger.setColor(calculateColor(smaller, bigger));
+                
+                /* Mass */
+                bigger.setMass(bigger.getMass().add(smaller.getMass()));
 //            }
             }
         }
@@ -120,7 +121,7 @@ public class SimulationLogicImpl implements SimulationLogic {
 
     private TripleInt calculateColor(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
         double bigVolume = calculateVolumeFromRadius(bigger.getRadius()).doubleValue();
-        double smallVolume = calculateVolumeFromRadius(bigger.getRadius()).doubleValue();
+        double smallVolume = calculateVolumeFromRadius(smaller.getRadius()).doubleValue();
         int r = (int) Math.round((bigger.getColor().getR() * bigVolume + smaller.getColor().getR() * smallVolume) / (bigVolume + smallVolume));
         int g = (int) Math.round((bigger.getColor().getG() * bigVolume + smaller.getColor().getG() * smallVolume) / (bigVolume + smallVolume));
         int b = (int) Math.round((bigger.getColor().getB() * bigVolume + smaller.getColor().getB() * smallVolume) / (bigVolume + smallVolume));
@@ -199,9 +200,9 @@ public class SimulationLogicImpl implements SimulationLogic {
 
     private void moveObject(ImmutableSimulationObject oldObject, SimulationObject newObject) {
         // members[i]->x = members[i]->x + members[i]->speed.x * simulationProperties.secondsPerCycle;
-        newObject.setX(oldObject.getX().add(oldObject.getSpeed().getX().multiply(C.prop.getSecondsPerIteration())));
-        newObject.setY(oldObject.getY().add(oldObject.getSpeed().getY().multiply(C.prop.getSecondsPerIteration())));
-        newObject.setZ(oldObject.getZ().add(oldObject.getSpeed().getZ().multiply(C.prop.getSecondsPerIteration())));
+        newObject.setX(newObject.getX().add(newObject.getSpeed().getX().multiply(C.prop.getSecondsPerIteration())));
+        newObject.setY(newObject.getY().add(newObject.getSpeed().getY().multiply(C.prop.getSecondsPerIteration())));
+        newObject.setZ(newObject.getZ().add(newObject.getSpeed().getZ().multiply(C.prop.getSecondsPerIteration())));
     }
 
     private TripleNumber calculateSpeed(ImmutableSimulationObject object, TripleNumber acceleration) {

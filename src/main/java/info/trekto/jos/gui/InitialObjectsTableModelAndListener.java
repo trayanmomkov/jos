@@ -6,7 +6,6 @@ import info.trekto.jos.model.impl.SimulationObjectImpl;
 import info.trekto.jos.model.impl.TripleInt;
 import info.trekto.jos.model.impl.TripleNumber;
 import info.trekto.jos.numbers.New;
-import info.trekto.jos.numbers.Number;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -60,7 +59,6 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
                 o.getSpeed().getX(),
                 o.getSpeed().getY(),
                 o.getSpeed().getZ(),
-                o.isMotionless(),
                 o.getColor().getR(),
                 o.getColor().getG(),
                 o.getColor().getB()});
@@ -88,7 +86,6 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
                     New.num(String.valueOf(vector.get(i++))),
                     New.num(String.valueOf(vector.get(i++))),
                     New.num(String.valueOf(vector.get(i++)))));
-            o.setMotionless((Boolean) vector.get(i++));
             o.setColor(new TripleInt(Integer.parseInt(String.valueOf(vector.get(i++))),
                                      Integer.parseInt(String.valueOf(vector.get(i++))),
                                      Integer.parseInt(String.valueOf(vector.get(i++)))));

@@ -77,7 +77,6 @@ public class SimulationGenerator {
 
             o.setColor(new TripleInt(random.nextInt(255), random.nextInt(255), random.nextInt(255)));
             o.setMass(New.num(random.nextDouble()).multiply(New.num(100_000_000_000_000L)));
-            o.setMotionless(false);
             o.setLabel(String.valueOf(i));
 
             objects.add(o);

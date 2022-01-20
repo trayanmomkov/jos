@@ -25,8 +25,6 @@ public interface ImmutableSimulationObject {
 
     Number getMass();
 
-    boolean isMotionless();
-
     String getLabel();
 
     /** This must be used only for visualization purposes. Trajectory list consumes memory and CPU. */

@@ -25,8 +25,6 @@ public interface SimulationObject extends ImmutableSimulationObject {
 
     void setMass(Number mass);
 
-    void setMotionless(boolean motionless);
-
     void setLabel(String label);
 
     /** This must be used only for visualization purposes. Trajectory list consumes memory and CPU. */
