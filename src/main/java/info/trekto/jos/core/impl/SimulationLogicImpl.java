@@ -97,6 +97,11 @@ public class SimulationLogicImpl implements SimulationLogic {
 
                     /* Mass */
                     bigger.setMass(bigger.getMass().add(smaller.getMass()));
+                
+                    if (newObject == smaller) {
+                        /* If the current object is deleted one, stop processing it further. */
+                        break;
+                    }
                 }
             }
         }
