@@ -139,6 +139,13 @@ public class SimulationLogicImpl {
         deepCopy(deleted, readOnlyDeleted);
 
         calculateNewValues();
+
+        /* Collision and merging */
+        for (int i = 0; i < positionX.length; i++) {
+            if (!deleted[i]) {
+                processCollisions(i);
+            }
+        }
         
         if (C.prop.isRealTimeVisualization() && C.prop.getPlayingSpeed() < 0) {
             Thread.sleep(-C.prop.getPlayingSpeed());
@@ -178,13 +185,6 @@ public class SimulationLogicImpl {
                 /* Move object */
                 positionX[i] = positionX[i] + speedX[i] * C.prop.getSecondsPerIteration();
                 positionY[i] = positionY[i] + speedY[i] * C.prop.getSecondsPerIteration();
-            }
-        }
-
-        /* Collision and merging */
-        for (int i = 0; i < positionX.length; i++) {
-            if (!deleted[i]) {
-                processCollisions(i);
             }
         }
     }
