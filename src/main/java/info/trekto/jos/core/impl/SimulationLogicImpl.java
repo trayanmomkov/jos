@@ -10,25 +10,21 @@ import info.trekto.jos.model.impl.TripleNumber;
 import info.trekto.jos.numbers.Number;
 import info.trekto.jos.visualization.java2dgraphics.VisualizerImpl;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import static info.trekto.jos.formulas.CommonFormulas.*;
-import static info.trekto.jos.numbers.New.*;
+import static info.trekto.jos.numbers.New.TWO;
 
 /**
  * @author Trayan Momkov
  * 2016-Mar-6
  */
 public class SimulationLogicImpl implements SimulationLogic {
-    static Set<SimulationObject> objectsForRemoval;
 
     @Override
     public void calculateNewValues(Simulation simulation, int fromIndex, int toIndex) {
-        Set<ImmutableSimulationObject> oldObjectsForRemoval = new HashSet<>();
-
         Iterator<SimulationObject> newObjectsIterator = simulation.getAuxiliaryObjects().subList(fromIndex, toIndex).iterator();
 
         /* We should not change oldObject. We can change only newObject. */
@@ -59,76 +55,55 @@ public class SimulationLogicImpl implements SimulationLogic {
 
             /* Move objects */
             moveObject(oldObject, newObject);
-
-            /* Collision and merging */
-            processCollisions(oldObject, newObject, simulation.getObjects(), oldObjectsForRemoval);
         }
     }
 
-    private void processCollisions(ImmutableSimulationObject oldObject, SimulationObject newObject,
-                                   List<SimulationObject> oldObjects, Set<ImmutableSimulationObject> oldObjectsForRemoval) {
-//        if (oldObjectsForRemoval.contains(oldObject)) {
-//            /* The collision is already processed. Current newObject was smaller thus it was added in oldObjectsForRemoval. */
-//            objectsForRemoval.add(newObject);
-//            return;
-//        }
-
-        for (ImmutableSimulationObject tempOldObject : oldObjects) {
-            if (tempOldObject == oldObject) {
-                continue;
-            }
-            Number distance = calculateDistance(tempOldObject, newObject);
-            if (distance.compareTo(tempOldObject.getRadius().add(newObject.getRadius())) < 0) {    // if collide
-                /* Objects merging */
-                SimulationObject bigger = newObject;
-                ImmutableSimulationObject smaller = tempOldObject;
-                if (newObject.getMass().compareTo(tempOldObject.getMass()) < 0) {
-                    for (SimulationObject o : C.simulation.getAuxiliaryObjects()) {
-                        if (o.getLabel().equals(tempOldObject.getLabel())) {
-                            bigger = o;
-                            break;
-                        }
-                    }
-                    
-                    for (SimulationObject o : oldObjects) {
-                        if (o.getLabel().equals(newObject.getLabel())) {
-                            smaller = o;
-                            break;
-                        }
-                    }
+    public static void processCollisions(Simulation simulation) {
+        List<SimulationObject> forRemoval = new ArrayList<>();
+        for (SimulationObject newObject : simulation.getAuxiliaryObjects()) {
+            for (SimulationObject tempObject : simulation.getAuxiliaryObjects()) {
+                if (tempObject == newObject || forRemoval.contains(tempObject)) {
+                    continue;
                 }
+                Number distance = calculateDistance(newObject, tempObject);
+                if (distance.compareTo(tempObject.getRadius().add(newObject.getRadius())) < 0) {    // if collide
+                    SimulationObject bigger;
+                    SimulationObject smaller;
+                    if (newObject.getMass().compareTo(tempObject.getMass()) < 0) {
+                        smaller = newObject;
+                        bigger = tempObject;
+                    } else {
+                        smaller = tempObject;
+                        bigger = newObject;
+                    }
+                    forRemoval.add(smaller);
 
-                /* Bounce off each other */
-//            if(!simulationProperties.absorbtion) {
-//                calculateImpulseAfterCollision(i, j);
-//            } esle {
+                    /* Objects merging */
+                    /* Speed */
+                    bigger.setSpeed(calculateSpeedOnMerging(smaller, bigger));
 
-                oldObjectsForRemoval.add(smaller);
+                    /* Position */
+                    TripleNumber position = calculatePosition(smaller, bigger);
+                    bigger.setX(position.getX());
+                    bigger.setY(position.getY());
+                    bigger.setZ(position.getZ());
 
-                /* Speed */
-                bigger.setSpeed(calculateSpeedOnMerging(smaller, bigger));
-
-                /* Position */
-                TripleNumber position = calculatePosition(smaller, bigger);
-                bigger.setX(position.getX());
-                bigger.setY(position.getY());
-                bigger.setZ(position.getZ());
-
-                /* Color */
-                bigger.setColor(calculateColor(smaller, bigger));
+                    /* Color */
+                    bigger.setColor(calculateColor(smaller, bigger));
 
 
-                /* Volume (radius) */
-                bigger.setRadius(calculateRadiusBasedOnNewVolumeAndDensity(smaller, bigger));
-                
-                /* Mass */
-                bigger.setMass(bigger.getMass().add(smaller.getMass()));
-//            }
+                    /* Volume (radius) */
+                    bigger.setRadius(calculateRadiusBasedOnNewVolumeAndDensity(smaller, bigger));
+
+                    /* Mass */
+                    bigger.setMass(bigger.getMass().add(smaller.getMass()));
+                }
             }
         }
+        simulation.getAuxiliaryObjects().removeAll(forRemoval);
     }
 
-    private TripleInt calculateColor(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
+    private static TripleInt calculateColor(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
         double bigVolume = calculateVolumeFromRadius(bigger.getRadius()).doubleValue();
         double smallVolume = calculateVolumeFromRadius(smaller.getRadius()).doubleValue();
         int r = (int) Math.round((bigger.getColor().getR() * bigVolume + smaller.getColor().getR() * smallVolume) / (bigVolume + smallVolume));
@@ -159,7 +134,7 @@ public class SimulationLogicImpl implements SimulationLogic {
         return calculateRadiusFromVolume(newVolume);
     }
 
-    private TripleNumber calculatePosition(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
+    private static TripleNumber calculatePosition(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
         Number distanceX = bigger.getX().subtract(smaller.getX());
         Number distanceY = bigger.getY().subtract(smaller.getY());
         Number distanceZ = bigger.getZ().subtract(smaller.getZ());
@@ -172,7 +147,7 @@ public class SimulationLogicImpl implements SimulationLogic {
         return new TripleNumber(x, y, z);
     }
 
-    private TripleNumber calculateSpeedOnMerging(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
+    private static TripleNumber calculateSpeedOnMerging(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
         TripleNumber totalImpulse = new TripleNumber(
                 smaller.getSpeed().getX().multiply(smaller.getMass()).add(bigger.getSpeed().getX().multiply(bigger.getMass())),
                 smaller.getSpeed().getY().multiply(smaller.getMass()).add(bigger.getSpeed().getY().multiply(bigger.getMass())),

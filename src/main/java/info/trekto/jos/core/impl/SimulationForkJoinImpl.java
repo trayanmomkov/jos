@@ -15,9 +15,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Flow;
 
+import static info.trekto.jos.core.impl.SimulationLogicImpl.processCollisions;
 import static info.trekto.jos.formulas.ScientificConstants.NANOSECONDS_IN_ONE_SECOND;
 import static info.trekto.jos.util.Utils.*;
 
@@ -52,14 +52,13 @@ public class SimulationForkJoinImpl implements Simulation {
     private List<Flow.Subscriber<? super List<SimulationObject>>> subscribers;
 
     private void doIteration() throws InterruptedException {
-        SimulationLogicImpl.objectsForRemoval = ConcurrentHashMap.newKeySet();
         auxiliaryObjects = deepCopy(objects);
 
         /* Distribute simulation objects per threads and start execution */
         new SimulationRecursiveAction(0, objects.size()).compute();
 
-        /* Remove disappeared because of collision objects */
-        auxiliaryObjects.removeAll(SimulationLogicImpl.objectsForRemoval);
+        /* Collision and merging */
+        processCollisions(C.simulation);
 
         objects = auxiliaryObjects;
         if (C.prop.isSaveToFile()) {
