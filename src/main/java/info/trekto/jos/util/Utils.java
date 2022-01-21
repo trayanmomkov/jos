@@ -7,7 +7,9 @@ import info.trekto.jos.model.SimulationObject;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static info.trekto.jos.formulas.ScientificConstants.*;
 import static java.awt.Color.BLUE;
@@ -136,6 +138,16 @@ public class Utils {
                 if (distance < object.getRadius() + object1.getRadius()) {
                     return true;
                 }
+            }
+        }
+        return false;
+    }
+
+    public static boolean duplicateIdExists(String[] id) {
+        Set<String> ids = new HashSet<>();
+        for (String s : id) {
+            if (!ids.add(s)) {
+                return true;
             }
         }
         return false;

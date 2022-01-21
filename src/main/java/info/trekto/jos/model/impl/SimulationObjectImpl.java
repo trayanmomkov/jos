@@ -20,7 +20,7 @@ public class SimulationObjectImpl implements SimulationObject {
     private double radius;
     private int color;
     private double mass;
-    private String label;
+    private String id;
 
     public SimulationObjectImpl() {
         this.x = 0;
@@ -31,7 +31,7 @@ public class SimulationObjectImpl implements SimulationObject {
 
     public SimulationObjectImpl(SimulationObject simulationObject) {
         this.color = simulationObject.getColor();
-        this.label = simulationObject.getLabel();
+        this.id = simulationObject.getId();
         this.mass = simulationObject.getMass();
         this.radius = simulationObject.getRadius();
         this.speedX = simulationObject.getSpeedX();
@@ -44,7 +44,7 @@ public class SimulationObjectImpl implements SimulationObject {
 
     public SimulationObjectImpl(int i) {
         this.color = C.simulation.color[i];
-        this.label = C.simulation.label[i];
+        this.id = C.simulation.id[i];
         this.mass = C.simulation.mass[i];
         this.radius = C.simulation.radius[i];
         this.speedX = C.simulation.speedX[i];
@@ -114,13 +114,13 @@ public class SimulationObjectImpl implements SimulationObject {
     }
 
     @Override
-    public String getLabel() {
-        return label;
+    public String getId() {
+        return id;
     }
 
     @Override
-    public void setLabel(String label) {
-        this.label = label;
+    public void setId(String id) {
+        this.id = id;
     }
 
     @Override

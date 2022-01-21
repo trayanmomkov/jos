@@ -22,5 +22,5 @@ public interface ImmutableSimulationObject {
 
     double getMass();
 
-    String getLabel();
+    String getId();
 }

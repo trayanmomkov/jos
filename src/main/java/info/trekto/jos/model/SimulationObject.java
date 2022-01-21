@@ -23,5 +23,5 @@ public interface SimulationObject extends ImmutableSimulationObject {
 
     void setMass(double mass);
 
-    void setLabel(String label);
+    void setId(String id);
 }

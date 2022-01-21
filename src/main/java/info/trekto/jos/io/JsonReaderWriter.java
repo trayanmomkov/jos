@@ -68,7 +68,7 @@ public class JsonReaderWriter implements ReaderWriter {
 
     private JsonObject mapSimulationObjectToJson(Gson gson, SimulationObject simulationObject) {
         Map<String, Object> simulationObjectMap = new HashMap<>();
-        simulationObjectMap.put("label", simulationObject.getLabel());
+        simulationObjectMap.put("id", simulationObject.getId());
         simulationObjectMap.put("x", simulationObject.getX());
         simulationObjectMap.put("y", simulationObject.getY());
         simulationObjectMap.put("z", simulationObject.getZ());
@@ -117,7 +117,7 @@ public class JsonReaderWriter implements ReaderWriter {
                 simo.setMass(Double.parseDouble(o.get("mass").getAsString()));
                 simo.setRadius(Double.parseDouble(o.get("radius").getAsString()));
                 simo.setColor(Integer.parseInt(o.get("color").getAsString(), 16));
-                simo.setLabel(o.get("label").getAsString());
+                simo.setId(o.get("id").getAsString());
 
                 initialObjects.add(simo);
             }
@@ -140,7 +140,7 @@ public class JsonReaderWriter implements ReaderWriter {
             C.simulation.speedY[i] = o.getSpeedY();
             C.simulation.mass[i] = o.getMass();
             C.simulation.radius[i] = o.getRadius();
-            C.simulation.label[i] = o.getLabel();
+            C.simulation.id[i] = o.getId();
             C.simulation.color[i] = o.getColor();
         }
     }

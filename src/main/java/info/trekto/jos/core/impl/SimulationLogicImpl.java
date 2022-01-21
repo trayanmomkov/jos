@@ -31,7 +31,7 @@ public class SimulationLogicImpl {
     public final double[] speedY;
     public final double[] mass;
     public final double[] radius;
-    public final String[] label;
+    public final String[] id;
     public final int[] color;
     public final boolean[] deleted;
 
@@ -53,7 +53,7 @@ public class SimulationLogicImpl {
         speedY = new double[n];
         mass = new double[n];
         radius = new double[n];
-        label = new String[n];
+        id = new String[n];
         color = new int[n];
         deleted = new boolean[n];
 
@@ -69,9 +69,14 @@ public class SimulationLogicImpl {
     }
 
     public long startSimulation() throws SimulationException {
+        if (duplicateIdExists(id)) {
+            throw new SimulationException("Objects with duplicate IDs exist!");
+        }
+    
         if (collisionExists(positionX, positionY, radius)) {
             throw new SimulationException("Initial collision exists!");
         }
+        
         logger.info("Done.\n");
         Utils.printConfiguration(C.prop);
 
