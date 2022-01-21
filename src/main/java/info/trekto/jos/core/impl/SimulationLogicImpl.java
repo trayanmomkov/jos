@@ -153,41 +153,46 @@ public class SimulationLogicImpl {
                 for (int j = 0; j < readOnlyPositionX.length; j++) {
                     if (i != j && !readOnlyDeleted[j]) {
                         /* Calculate force */
-                        double distance = calculateDistance(readOnlyPositionX[i], readOnlyPositionY[i], readOnlyPositionX[j], readOnlyPositionY[j]);
-                        double force = calculateForce(readOnlyMass[i], readOnlyMass[j], distance);
+                        double distance = calculateDistance(positionX[i], positionY[i], readOnlyPositionX[j], readOnlyPositionY[j]);
+                        double force = calculateForce(mass[i], readOnlyMass[j], distance);
                         //       Fx = F*x/r;
-                        double forceX = force * (readOnlyPositionX[j] - readOnlyPositionX[i]) / distance;
-                        double forceY = force * (readOnlyPositionY[j] - readOnlyPositionY[i]) / distance;
+                        double forceX = force * (readOnlyPositionX[j] - positionX[i]) / distance;
+                        double forceY = force * (readOnlyPositionY[j] - positionY[i]) / distance;
 
                         /* Add to current acceleration */
                         // ax = Fx / m
-                        accelerationX = accelerationX + forceX / readOnlyMass[i];
-                        accelerationY = accelerationY + forceY / readOnlyMass[i];
+                        accelerationX = accelerationX + forceX / mass[i];
+                        accelerationY = accelerationY + forceY / mass[i];
                     }
                 }
 
                 /* Change speed */
-                speedX[i] = readOnlySpeedX[i] + accelerationX * C.prop.getSecondsPerIteration();
-                speedY[i] = readOnlySpeedY[i] + accelerationY * C.prop.getSecondsPerIteration();
+                speedX[i] = speedX[i] + accelerationX * C.prop.getSecondsPerIteration();
+                speedY[i] = speedY[i] + accelerationY * C.prop.getSecondsPerIteration();
 
                 /* Move object */
-                moveObject(i);
+                positionX[i] = positionX[i] + speedX[i] * C.prop.getSecondsPerIteration();
+                positionY[i] = positionY[i] + speedY[i] * C.prop.getSecondsPerIteration();
+            }
+        }
 
-                /* Collision and merging */
+        /* Collision and merging */
+        for (int i = 0; i < positionX.length; i++) {
+            if (!deleted[i]) {
                 processCollisions(i);
             }
         }
     }
 
     private void processCollisions(int i) {
-        for (int j = 0; j < readOnlyPositionX.length; j++) {
-            if (i != j && !readOnlyDeleted[j]) {
-                double distance = calculateDistance(positionX[i], positionY[i], readOnlyPositionX[j], readOnlyPositionY[j]);
-                if (distance < radius[i] + readOnlyRadius[j]) {    // if collide
+        for (int j = 0; j < positionX.length; j++) {
+            if (i != j && !deleted[j]) {
+                double distance = calculateDistance(positionX[i], positionY[i], positionX[j], positionY[j]);
+                if (distance < radius[i] + radius[j]) {    // if collide
                     /* Objects merging */
                     int bigger = i;
                     int smaller = j;
-                    if (mass[i] < readOnlyMass[j]) {
+                    if (mass[i] < mass[j]) {
                         bigger = j;
                         smaller = i;
                     }
@@ -207,24 +212,29 @@ public class SimulationLogicImpl {
                     radius[bigger] = calculateRadiusBasedOnNewVolumeAndDensity(smaller, bigger);
 
                     /* Mass */
-                    mass[bigger] = mass[bigger] + readOnlyMass[smaller];
+                    mass[bigger] = mass[bigger] + mass[smaller];
+                    
+                    if (i == smaller) {
+                        /* If the current object is deleted stop processing it further. */
+                        break;  // TODO Aparapi doesn't support breaks
+                    }
                 }
             }
         }
     }
 
     private int calculateColor(int smaller, int bigger) {
-        double bigVolume = calculateVolumeFromRadius(readOnlyRadius[bigger]);
-        double smallVolume = calculateVolumeFromRadius(readOnlyRadius[smaller]);
+        double bigVolume = calculateVolumeFromRadius(radius[bigger]);
+        double smallVolume = calculateVolumeFromRadius(radius[smaller]);
 
         /* Decode color */
-        int biggerRed = (readOnlyColor[bigger] >> 16) & 0xFF;
-        int biggerGreen = (readOnlyColor[bigger] >> 8) & 0xFF;
-        int biggerBlue = readOnlyColor[bigger] & 0xFF;
+        int biggerRed = (color[bigger] >> 16) & 0xFF;
+        int biggerGreen = (color[bigger] >> 8) & 0xFF;
+        int biggerBlue = color[bigger] & 0xFF;
 
-        int smallerRed = (readOnlyColor[smaller] >> 16) & 0xFF;
-        int smallerGreen = (readOnlyColor[smaller] >> 8) & 0xFF;
-        int smallerBlue = readOnlyColor[smaller] & 0xFF;
+        int smallerRed = (color[smaller] >> 16) & 0xFF;
+        int smallerGreen = (color[smaller] >> 8) & 0xFF;
+        int smallerBlue = color[smaller] & 0xFF;
 
         /* Calculate new value */
         int r = (int) Math.round((biggerRed * bigVolume + smallerRed * smallVolume) / (bigVolume + smallVolume));
@@ -246,11 +256,11 @@ public class SimulationLogicImpl {
         // density = mass / volume
         // calculate volume of smaller and add it to volume of bigger
         // calculate new radius of bigger based on new volume
-        double smallVolume = calculateVolumeFromRadius(readOnlyRadius[smaller]);
-        double smallDensity = readOnlyMass[smaller] / smallVolume;
+        double smallVolume = calculateVolumeFromRadius(radius[smaller]);
+        double smallDensity = mass[smaller] / smallVolume;
         double bigVolume = calculateVolumeFromRadius(radius[bigger]);
         double bigDensity = mass[bigger] / bigVolume;
-        double newMass = mass[bigger] + readOnlyMass[smaller];
+        double newMass = mass[bigger] + mass[smaller];
 
         /* Volume and density are two sides of one coin. We should decide what we want to be one of them
          * and calculate the other. Here we wanted the new object to have an average density of the two collided. */
@@ -261,10 +271,10 @@ public class SimulationLogicImpl {
     }
 
     private void changePositionOnMerging(int smaller, int bigger) {
-        double distanceX = positionX[bigger] - readOnlyPositionX[smaller];
-        double distanceY = positionY[bigger] - readOnlyPositionY[smaller];
+        double distanceX = positionX[bigger] - positionX[smaller];
+        double distanceY = positionY[bigger] - positionY[smaller];
 
-        double massRatio = readOnlyMass[smaller] / mass[bigger];
+        double massRatio = mass[smaller] / mass[bigger];
 
         positionX[bigger] = positionX[bigger] - distanceX * massRatio / TWO;
         positionY[bigger] = positionY[bigger] - distanceY * massRatio / TWO;
@@ -272,17 +282,12 @@ public class SimulationLogicImpl {
 
     private void changeSpeedOnMerging(int smaller, int bigger) {
         /* We want to get already updated speed for the current one (bigger), thus we use speedX and not readOnlySpeedX */
-        double totalImpulseX = readOnlySpeedX[smaller] * readOnlyMass[smaller] + speedX[bigger] * mass[bigger];
-        double totalImpulseY = readOnlySpeedY[smaller] * readOnlyMass[smaller] + speedY[bigger] * mass[bigger];
-        double totalMass = mass[bigger] + readOnlyMass[smaller];
+        double totalImpulseX = speedX[smaller] * mass[smaller] + speedX[bigger] * mass[bigger];
+        double totalImpulseY = speedY[smaller] * mass[smaller] + speedY[bigger] * mass[bigger];
+        double totalMass = mass[bigger] + mass[smaller];
 
         speedX[bigger] = totalImpulseX / totalMass;
         speedY[bigger] = totalImpulseY / totalMass;
-    }
-
-    private void moveObject(int i) {
-        positionX[i] = positionX[i] + speedX[i] * C.prop.getSecondsPerIteration();
-        positionY[i] = positionY[i] + speedY[i] * C.prop.getSecondsPerIteration();
     }
 
     public int getCurrentIterationNumber() {
