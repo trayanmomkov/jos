@@ -25,7 +25,7 @@ public interface ImmutableSimulationObject {
 
     Number getMass();
 
-    String getLabel();
+    String getId();
 
     /** This must be used only for visualization purposes. Trajectory list consumes memory and CPU. */
     List<TripleNumber> getTrajectory();

@@ -9,7 +9,9 @@ import info.trekto.jos.numbers.Number;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static info.trekto.jos.formulas.ScientificConstants.*;
 
@@ -110,6 +112,16 @@ public class Utils {
                 if (distance.compareTo(object.getRadius().add(object1.getRadius())) < 0) {
                     return true;
                 }
+            }
+        }
+        return false;
+    }
+
+    public static boolean duplicateIdExists(List<SimulationObject> objects) {
+        Set<String> ids = new HashSet<>();
+        for (SimulationObject object : objects) {
+            if (!ids.add(object.getId())) {
+                return true;
             }
         }
         return false;

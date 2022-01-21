@@ -107,7 +107,7 @@ public class SimulationGenerator {
             
             // density = mass / volume
             o.setMass(New.num(random.nextDouble()).multiply(calculateVolumeFromRadius(o.getRadius()).multiply(New.num(100_000_000_000_000L))));
-            o.setLabel(String.valueOf(i));
+            o.setId(String.valueOf(i));
 
             objects.add(o);
             System.out.println(i + " objects generated.");

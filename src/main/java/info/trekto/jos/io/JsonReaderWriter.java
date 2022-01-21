@@ -75,7 +75,7 @@ public class JsonReaderWriter implements ReaderWriter {
 
     private JsonObject mapSimulationObjectToJson(Gson gson, SimulationObject simulationObject) {
         Map<String, Object> simulationObjectMap = new HashMap<>();
-        simulationObjectMap.put("label", simulationObject.getLabel());
+        simulationObjectMap.put("id", simulationObject.getId());
 
         simulationObjectMap.put("x", simulationObject.getX().toString());
         simulationObjectMap.put("y", simulationObject.getY().toString());
@@ -120,7 +120,7 @@ public class JsonReaderWriter implements ReaderWriter {
                 JsonObject o = jsonElement.getAsJsonObject();
                 SimulationObject simo = new SimulationObjectImpl();
 
-                simo.setLabel(o.get("label").getAsString());
+                simo.setId(o.get("id").getAsString());
 
                 simo.setX(New.num(o.get("x").getAsString()));
                 simo.setY(New.num(o.get("y").getAsString()));

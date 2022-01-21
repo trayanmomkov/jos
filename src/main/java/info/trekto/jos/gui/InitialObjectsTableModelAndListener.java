@@ -26,7 +26,7 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
         columnNameIndexMap = new HashMap<>();
 
         int i = 0;
-        addCol("label", i++);
+        addCol("id", i++);
         addCol("mass", i++);
         addCol("X", i++);
         addCol("Y", i++);
@@ -50,7 +50,7 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
 
     public void addRow(SimulationObject o) {
         super.addRow(new Object[]{
-                o.getLabel(),
+                o.getId(),
                 o.getMass(),
                 o.getX(),
                 o.getY(),
@@ -76,7 +76,7 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
         for (Vector vector : dataVector) {
             SimulationObject o = new SimulationObjectImpl();
             int i = 0;
-            o.setLabel(String.valueOf(vector.get(i++)));
+            o.setId(String.valueOf(vector.get(i++)));
             o.setMass(New.num(String.valueOf(vector.get(i++))));
             o.setX(New.num(String.valueOf(vector.get(i++))));
             o.setY(New.num(String.valueOf(vector.get(i++))));

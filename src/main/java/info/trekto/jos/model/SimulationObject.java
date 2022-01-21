@@ -25,7 +25,7 @@ public interface SimulationObject extends ImmutableSimulationObject {
 
     void setMass(Number mass);
 
-    void setLabel(String label);
+    void setId(String id);
 
     /** This must be used only for visualization purposes. Trajectory list consumes memory and CPU. */
     void setTrajectory(List<TripleNumber> trajectory);

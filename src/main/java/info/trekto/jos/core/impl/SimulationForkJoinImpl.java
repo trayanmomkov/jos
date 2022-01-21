@@ -160,6 +160,10 @@ public class SimulationForkJoinImpl implements Simulation {
             objects.add(new SimulationObjectImpl(simulationObject));
         }
 
+        if (duplicateIdExists(objects)) {
+            throw new SimulationException("Objects with duplicate IDs exist!");
+        }
+
         if (collisionExists(objects)) {
             throw new SimulationException("Initial collision exists!");
         }

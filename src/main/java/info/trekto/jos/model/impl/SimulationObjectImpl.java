@@ -23,7 +23,7 @@ public class SimulationObjectImpl implements SimulationObject {
 
     /* Whether the object is static */
     boolean motionless = false;
-    String label;
+    String id;
 
     /* Array with points through which object passed. */
     List<TripleNumber> trajectory;
@@ -37,7 +37,7 @@ public class SimulationObjectImpl implements SimulationObject {
 
     public SimulationObjectImpl(SimulationObject simulationObject) {
         this.color = simulationObject.getColor();
-        this.label = simulationObject.getLabel();
+        this.id = simulationObject.getId();
         this.mass = simulationObject.getMass();
         this.radius = simulationObject.getRadius();
         this.speed = simulationObject.getSpeed();
@@ -118,13 +118,13 @@ public class SimulationObjectImpl implements SimulationObject {
     }
 
     @Override
-    public String getLabel() {
-        return label;
+    public String getId() {
+        return id;
     }
 
     @Override
-    public void setLabel(String label) {
-        this.label = label;
+    public void setId(String id) {
+        this.id = id;
     }
 
     @Override
