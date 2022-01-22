@@ -1,5 +1,6 @@
 package info.trekto.jos.numbers.impl;
 
+import info.trekto.jos.C;
 import info.trekto.jos.numbers.New;
 import info.trekto.jos.numbers.Number;
 
@@ -57,7 +58,7 @@ public class BigDecimalNumberImpl implements Number {
 
     @Override
     public Number add(Number augend) {
-        return newNumber(value.add(((BigDecimalNumberImpl) augend).value));
+        return newNumber(value.add(((BigDecimalNumberImpl) augend).value).setScale(C.prop.getScale(), roundingMode));
     }
 
     @Override
@@ -67,7 +68,7 @@ public class BigDecimalNumberImpl implements Number {
 
     @Override
     public Number multiply(Number multiplicand) {
-        return newNumber(value.multiply(((BigDecimalNumberImpl) multiplicand).value));
+        return newNumber(value.multiply(((BigDecimalNumberImpl) multiplicand).value).setScale(C.prop.getScale(), roundingMode));
         // return new NumberBigDecimalImpl((value.multiply(((NumberBigDecimalImpl) multiplicand).value)));
     }
 
@@ -95,7 +96,7 @@ public class BigDecimalNumberImpl implements Number {
 
     @Override
     public Number pow(int n) {
-        return newNumber(value.pow(n));
+        return newNumber(value.pow(n).setScale(C.prop.getScale(), roundingMode));
     }
 
     @Override
@@ -189,7 +190,7 @@ public class BigDecimalNumberImpl implements Number {
 
     @Override
     public Number sqrt() {
-        return new BigDecimalNumberImpl(BigDecimalSqrtCalculator.sqrt(value, roundingMode));
+        return new BigDecimalNumberImpl(BigDecimalSqrtCalculator.sqrt(value, roundingMode).setScale(C.prop.getScale(), roundingMode));
     }
 
     public Number atan2(Number n1, Number n2) {
