@@ -72,11 +72,11 @@ public class SimulationLogicImpl {
         if (duplicateIdExists(id)) {
             throw new SimulationException("Objects with duplicate IDs exist!");
         }
-    
+
         if (collisionExists(positionX, positionY, radius)) {
             throw new SimulationException("Initial collision exists!");
         }
-        
+
         logger.info("Done.\n");
         Utils.printConfiguration(C.prop);
 
@@ -141,12 +141,8 @@ public class SimulationLogicImpl {
         calculateNewValues();
 
         /* Collision and merging */
-        for (int i = 0; i < positionX.length; i++) {
-            if (!deleted[i]) {
-                processCollisions(i);
-            }
-        }
-        
+        processCollisions();
+
         if (C.prop.isRealTimeVisualization() && C.prop.getPlayingSpeed() < 0) {
             Thread.sleep(-C.prop.getPlayingSpeed());
         }
@@ -189,39 +185,46 @@ public class SimulationLogicImpl {
         }
     }
 
-    private void processCollisions(int i) {
-        for (int j = 0; j < positionX.length; j++) {
-            if (i != j && !deleted[j]) {
-                double distance = calculateDistance(positionX[i], positionY[i], positionX[j], positionY[j]);
-                if (distance < radius[i] + radius[j]) {    // if collide
-                    /* Objects merging */
-                    int bigger = i;
-                    int smaller = j;
-                    if (mass[i] < mass[j]) {
-                        bigger = j;
-                        smaller = i;
-                    }
-                        
-                    deleted[smaller] = true;
+    private void processCollisions() {
+        for (int i = 0; i < positionX.length; i++) {
+            if (!deleted[i]) {
+                for (int j = 0; j < positionX.length; j++) {
+                    if (i != j && !deleted[j]) {
+                        double distance = calculateDistance(positionX[i], positionY[i], positionX[j], positionY[j]);
+                        if (distance < radius[i] + radius[j]) {    // if collide
+                            /* Objects merging */
+                            int bigger;
+                            int smaller;
+                            if (mass[i] < mass[j]) {
+                                bigger = j;
+                                smaller = i;
+                            } else {
+                                bigger = i;
+                                smaller = j;
+                            }
 
-                    /* Speed */
-                    changeSpeedOnMerging(smaller, bigger);
+                            deleted[smaller] = true;
 
-                    /* Position */
-                    changePositionOnMerging(smaller, bigger);
+                            /* Speed */
+                            changeSpeedOnMerging(smaller, bigger);
 
-                    /* Color */
-                    color[bigger] = calculateColor(smaller, bigger);
+                            /* Position */
+                            changePositionOnMerging(smaller, bigger);
 
-                    /* Volume (radius) */
-                    radius[bigger] = calculateRadiusBasedOnNewVolumeAndDensity(smaller, bigger);
+                            /* Color */
+                            color[bigger] = calculateColor(smaller, bigger);
 
-                    /* Mass */
-                    mass[bigger] = mass[bigger] + mass[smaller];
-                    
-                    if (i == smaller) {
-                        /* If the current object is deleted stop processing it further. */
-                        break;  // TODO Aparapi doesn't support breaks
+                            /* Volume (radius) */
+                            radius[bigger] = calculateRadiusBasedOnNewVolumeAndDensity(smaller, bigger);
+
+                            /* Mass */
+                            mass[bigger] = mass[bigger] + mass[smaller];
+
+                            if (i == smaller) {
+                                /* If the current object is deleted stop processing it further. */
+                                break;  // TODO Aparapi doesn't support breaks
+                            }
+                        }
                     }
                 }
             }
