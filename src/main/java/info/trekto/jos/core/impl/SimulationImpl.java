@@ -62,7 +62,7 @@ public class SimulationImpl {
                     iterationCounter = i + 1;
 
                     if (System.nanoTime() - previousTime >= NANOSECONDS_IN_ONE_SECOND * SHOW_REMAINING_INTERVAL_SECONDS) {
-                        showRemainingTimeBasedOnLastNIterations(i, startTime, C.prop.getNumberOfIterations(), kernel.positionX.length);
+                        showRemainingTimeBasedOnLastNIterations(i, startTime, C.prop.getNumberOfIterations(), countObjects());
                         previousTime = System.nanoTime();
                     }
 
@@ -119,5 +119,15 @@ public class SimulationImpl {
 
     public long getCurrentIterationNumber() {
         return iterationCounter;
+    }
+
+    private int countObjects() {
+        int numberOfObjects = 0;
+        for (int j = 0; j < kernel.deleted.length; j++) {
+            if (!kernel.deleted[j]) {
+                numberOfObjects++;
+            }
+        }
+        return numberOfObjects;
     }
 }
