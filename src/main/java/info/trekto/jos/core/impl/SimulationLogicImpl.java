@@ -61,6 +61,9 @@ public class SimulationLogicImpl implements SimulationLogic {
     public static void processCollisions(Simulation simulation) {
         List<SimulationObject> forRemoval = new ArrayList<>();
         for (SimulationObject newObject : simulation.getAuxiliaryObjects()) {
+            if (forRemoval.contains(newObject)) {
+                continue;
+            }
             for (SimulationObject tempObject : simulation.getAuxiliaryObjects()) {
                 if (tempObject == newObject || forRemoval.contains(tempObject)) {
                     continue;
@@ -97,7 +100,7 @@ public class SimulationLogicImpl implements SimulationLogic {
 
                     /* Mass */
                     bigger.setMass(bigger.getMass().add(smaller.getMass()));
-                
+
                     if (newObject == smaller) {
                         /* If the current object is deleted one, stop processing it further. */
                         break;
