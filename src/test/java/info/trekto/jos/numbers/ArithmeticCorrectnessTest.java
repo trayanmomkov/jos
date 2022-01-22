@@ -1,5 +1,7 @@
 package info.trekto.jos.numbers;
 
+import info.trekto.jos.C;
+import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.numbers.impl.BigDecimalNumberFactory;
 import info.trekto.jos.numbers.impl.DoubleNumberFactory;
 import org.testng.annotations.BeforeClass;
@@ -45,6 +47,8 @@ public class ArithmeticCorrectnessTest {
         int scale = 16;
 
         MathContext mathContext = new MathContext(precision, roundingMode);
+        C.prop = new SimulationProperties();
+        C.prop.setScale(scale);
         NumberFactoryProxy.setFactory(new BigDecimalNumberFactory(mathContext, scale));
 
         Number a = New.num(2);

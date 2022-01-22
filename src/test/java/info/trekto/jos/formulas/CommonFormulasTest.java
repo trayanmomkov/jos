@@ -10,13 +10,13 @@ public class CommonFormulasTest {
     }
 
     @Test
-    public void calculateVolumeFromRadiusShouldCalculateCorrectly(Number radius) {
+    public void calculateVolumeFromRadiusShouldCalculateCorrectly() {
         // V = 4/3 * pi * r^3
         // TODO
     }
     
     @Test
-    public void calculateRadiusFromVolumeShouldCalculateCorrectly(Number volume) {
+    public void calculateRadiusFromVolumeShouldCalculateCorrectly() {
         // V = 4/3 * pi * r^3
         // TODO
     }
