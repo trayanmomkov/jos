@@ -39,7 +39,7 @@ public class SimulationGenerator {
         C.prop = new SimulationProperties();
 
         C.prop.setNumberType(DOUBLE);
-        C.prop.setPrecision(32);
+        C.prop.setPrecision(16);
         C.prop.setScale(16);
 
         createNumberFactory(C.prop.getNumberType(), C.prop.getPrecision(), C.prop.getScale());

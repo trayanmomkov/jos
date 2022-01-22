@@ -19,7 +19,7 @@ public interface Simulation extends Flow.Publisher<List<SimulationObject>> {
 
     List<SimulationObject> getAuxiliaryObjects();
 
-    int getCurrentIterationNumber();
+    long getCurrentIterationNumber();
 
     ForceCalculator getForceCalculator();
     

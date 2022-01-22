@@ -29,8 +29,9 @@ import static info.trekto.jos.util.Utils.*;
  */
 public class SimulationForkJoinImpl implements Simulation {
     private static final Logger logger = LoggerFactory.getLogger(SimulationForkJoinImpl.class);
+    public static final int SHOW_REMAINING_INTERVAL_SECONDS = 2;
 
-    private int iterationCounter;
+    private long iterationCounter;
     private ForceCalculator forceCalculator;
 
     /**
@@ -77,7 +78,7 @@ public class SimulationForkJoinImpl implements Simulation {
         long endTime;
 
         try {
-            for (int i = 0; C.prop.isInfiniteSimulation() || i < C.prop.getNumberOfIterations(); i++) {
+            for (long i = 0; C.prop.isInfiniteSimulation() || i < C.prop.getNumberOfIterations(); i++) {
                 try {
                     if (C.hasToStop) {
                         C.hasToStop = false;
@@ -88,8 +89,8 @@ public class SimulationForkJoinImpl implements Simulation {
 
                     iterationCounter = i + 1;
 
-                    if (System.nanoTime() - previousTime >= NANOSECONDS_IN_ONE_SECOND * 2) {
-                        showRemainingTime(i, System.nanoTime() - startTime, C.prop.getNumberOfIterations(), objects.size());
+                    if (System.nanoTime() - previousTime >= NANOSECONDS_IN_ONE_SECOND * SHOW_REMAINING_INTERVAL_SECONDS) {
+                        showRemainingTimeBasedOnLastNIterations(i, startTime, C.prop.getNumberOfIterations(), objects.size());
                         previousTime = System.nanoTime();
                     }
 
@@ -98,6 +99,7 @@ public class SimulationForkJoinImpl implements Simulation {
                     }
 
                     doIteration();
+
                     if (C.prop.isRealTimeVisualization() && C.prop.getPlayingSpeed() < 0) {
                         Thread.sleep(-C.prop.getPlayingSpeed());
                     }
@@ -115,7 +117,7 @@ public class SimulationForkJoinImpl implements Simulation {
         }
 
 
-        logger.info(String.format("End of simulation. Time: %.2f s.", (endTime - startTime) / (double) NANOSECONDS_IN_ONE_SECOND));
+        logger.info("End of simulation. Time: " + nanoToHumanReadable (endTime - startTime));
         return endTime - startTime;
     }
 
@@ -183,7 +185,7 @@ public class SimulationForkJoinImpl implements Simulation {
     }
 
     @Override
-    public int getCurrentIterationNumber() {
+    public long getCurrentIterationNumber() {
         return iterationCounter;
     }
 
