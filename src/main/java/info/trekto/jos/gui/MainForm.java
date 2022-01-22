@@ -12,6 +12,8 @@ import info.trekto.jos.numbers.New;
 import info.trekto.jos.numbers.NumberFactory.NumberType;
 import info.trekto.jos.visualization.Visualizer;
 import info.trekto.jos.visualization.java2dgraphics.VisualizerImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -25,6 +27,8 @@ import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 public class MainForm {
+    private static final Logger logger = LoggerFactory.getLogger(MainForm.class);
+
     private JButton browseButton;
     private JTextField numberOfIterationsTextField;
     private JTextField secondsPerIterationTextField;
@@ -168,7 +172,18 @@ public class MainForm {
                 C.simulation.startSimulation();
             } catch (SimulationException e) {
                 showError(mainPanel, "Error during simulation.", e);
+            } catch (ArithmeticException ex) {
+                if (ex.getMessage().contains("zero")) {
+                    String message = "Operation with zero. Please increase the precision and try again. " + ex.getMessage();
+                    logger.error(message, ex);
+                    if (C.mainForm != null) {
+                        C.mainForm.appendMessage(message);
+                    }
+                } else {
+                    throw ex;
+                }
             }
+
         }).start();
     }
 
