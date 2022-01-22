@@ -25,9 +25,22 @@ public class Main {
         if (C.prop.isRealTimeVisualization()) {
             C.visualizer = new VisualizerImpl();
         }
-        C.simulation.startSimulation();
+
+        try {
+            C.simulation.startSimulation();
+        } catch (ArithmeticException ex) {
+            if (ex.getMessage().contains("zero")) {
+                String message = "Operation with zero. Please increase the precision and try again. " + ex.getMessage();
+                logger.error(message, ex);
+                if (C.mainForm != null) {
+                    C.mainForm.appendMessage(message);
+                }
+            } else {
+                throw ex;
+            }
+        }
     }
-    
+
     public static void init(String inputFile) {
         C.io = new JsonReaderWriter();
         try {
