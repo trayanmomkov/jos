@@ -22,8 +22,9 @@ public class SimulationLogicImpl {
     private static final double TWO = 2.0;
     public static double RATIO_FOUR_THREE = 4 / 3.0;
     public static double BILLION = 1000000000;
+    public static final int SHOW_REMAINING_INTERVAL_SECONDS = 2;
 
-    private int iterationCounter;
+    private long iterationCounter;
 
     public final double[] positionX;
     public final double[] positionY;
@@ -87,7 +88,7 @@ public class SimulationLogicImpl {
         long endTime;
 
         try {
-            for (int i = 0; C.prop.isInfiniteSimulation() || i < C.prop.getNumberOfIterations(); i++) {
+            for (long i = 0; C.prop.isInfiniteSimulation() || i < C.prop.getNumberOfIterations(); i++) {
                 try {
                     if (C.hasToStop) {
                         C.hasToStop = false;
@@ -98,8 +99,8 @@ public class SimulationLogicImpl {
 
                     iterationCounter = i + 1;
 
-                    if (System.nanoTime() - previousTime >= NANOSECONDS_IN_ONE_SECOND * 2) {
-                        showRemainingTime(i, System.nanoTime() - startTime, C.prop.getNumberOfIterations(), positionX.length);
+                    if (System.nanoTime() - previousTime >= NANOSECONDS_IN_ONE_SECOND * SHOW_REMAINING_INTERVAL_SECONDS) {
+                        showRemainingTimeBasedOnLastNIterations(i, startTime, C.prop.getNumberOfIterations(), positionX.length);
                         previousTime = System.nanoTime();
                     }
 
@@ -124,7 +125,7 @@ public class SimulationLogicImpl {
         }
 
 
-        logger.info(String.format("End of simulation. Time: %.2f s.", (endTime - startTime) / (double) NANOSECONDS_IN_ONE_SECOND));
+        logger.info("End of simulation. Time: " + nanoToHumanReadable (endTime - startTime));
         return endTime - startTime;
     }
 
@@ -298,7 +299,7 @@ public class SimulationLogicImpl {
         speedY[bigger] = totalImpulseY / totalMass;
     }
 
-    public int getCurrentIterationNumber() {
+    public long getCurrentIterationNumber() {
         return iterationCounter;
     }
 }

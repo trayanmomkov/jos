@@ -7,9 +7,8 @@ import info.trekto.jos.model.SimulationObject;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 
 import static info.trekto.jos.formulas.ScientificConstants.*;
 import static java.awt.Color.BLUE;
@@ -21,6 +20,10 @@ import static java.awt.Color.BLUE;
 public class Utils {
     public static final int CORES = Runtime.getRuntime().availableProcessors();
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Utils.class);
+    private static final int LAST_N_INTERVALS = 3;
+
+    private static List<Long> lastIterationsCount = new ArrayList<>();
+    private static List<Long> lastTime = new ArrayList<>();
 
     public static void deepCopy(double[] src, double[] dst) {
         for (int i = 0; i < src.length; i++) {
@@ -69,21 +72,34 @@ public class Utils {
         logger.info("'Number' implementation: double");
     }
 
-    public static String showRemainingTime(int i, long elapsedNanoseconds, long numberOfIterations) {
-        return showRemainingTime(i, elapsedNanoseconds, numberOfIterations, 0);
-    }
-
-    public static String showRemainingTime(int i, long elapsedNanoseconds, long numberOfIterations, int numberOfObjects) {
+    public static String showRemainingTimeBasedOnLastNIterations(long i, long startTime, long numberOfIterations, int numberOfObjects) {
         if (i == 0) {
             return "";
         }
-        long elapsed = Math.round(elapsedNanoseconds / (double) NANOSECONDS_IN_ONE_MILLISECOND);
-        double timePerIteration = elapsed / (double) i;
-        long remainingIterations = numberOfIterations - i;
-        long remainingTime = Math.round(remainingIterations * timePerIteration);
 
+        if (lastIterationsCount.size() == LAST_N_INTERVALS) {
+            lastIterationsCount.remove(0);
+            lastTime.remove(0);
+        }
+        lastIterationsCount.add(i);
+        lastTime.add(System.nanoTime());
+
+        long time = lastTime.get(lastTime.size() - 1) - lastTime.get(0);
+        double iterations = lastIterationsCount.get(lastIterationsCount.size() - 1) - lastIterationsCount.get(0);
+        
+        double averageTimePerIteration;
+        if (time == 0) {
+            long elapsed = (System.nanoTime() - startTime);
+            averageTimePerIteration = Math.round(elapsed / (double) i / (double) NANOSECONDS_IN_ONE_MILLISECOND);
+        } else {
+            averageTimePerIteration = time / iterations / (double) NANOSECONDS_IN_ONE_MILLISECOND;
+        }
+
+        long remainingIterations = numberOfIterations - i;
+        long remainingTime = Math.round(remainingIterations * averageTimePerIteration);
+    
         String remainingString = "Iteration " + i
-                + ", elapsed time: " + nanoToHumanReadable(elapsedNanoseconds)
+                + ", elapsed time: " + nanoToHumanReadable(System.nanoTime() - startTime)
                 + ", objects: " + numberOfObjects
                 + ", remaining time: " + milliToHumanReadable(remainingTime);
 
