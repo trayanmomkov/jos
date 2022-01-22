@@ -10,6 +10,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
+import static info.trekto.jos.core.impl.SimulationLogicImpl.calculateDistance;
 import static info.trekto.jos.formulas.ScientificConstants.*;
 import static java.awt.Color.BLUE;
 
@@ -132,7 +133,7 @@ public class Utils {
                     continue;
                 }
                 // distance between centres
-                double distance = CommonFormulas.calculateDistance(positionX[i], positionY[i], positionX[j], positionY[j]);
+                double distance = calculateDistance(positionX[i], positionY[i], positionX[j], positionY[j]);
 
                 if (distance < radius[i] + radius[j]) {
                     return true;

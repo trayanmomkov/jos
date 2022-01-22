@@ -2,7 +2,7 @@ package info.trekto.jos.io;
 
 import com.google.gson.*;
 import info.trekto.jos.C;
-import info.trekto.jos.core.impl.SimulationLogicImpl;
+import info.trekto.jos.core.impl.SimulationImpl;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.SimulationObjectImpl;
@@ -94,7 +94,7 @@ public class JsonReaderWriter implements ReaderWriter {
             properties.setSecondsPerIteration(Double.parseDouble(json.get("secondsPerIteration").getAsString()));
             properties.setNumberOfObjects(json.get("numberOfObjects").getAsInt());
             
-            C.simulation = new SimulationLogicImpl(properties.getNumberOfObjects());
+            C.simulation = new SimulationImpl(properties.getNumberOfObjects(), properties.getSecondsPerIteration());
             
             properties.setOutputFile(json.get("outputFile").getAsString());
             properties.setSaveToFile(json.get("saveToFile").getAsBoolean());
@@ -134,14 +134,14 @@ public class JsonReaderWriter implements ReaderWriter {
     private void initArrays(List<SimulationObject> initialObjects) {
         for (int i = 0; i < initialObjects.size(); i++) {
             SimulationObject o = initialObjects.get(i);
-            C.simulation.positionX[i] = o.getX();
-            C.simulation.positionY[i] = o.getY();
-            C.simulation.speedX[i] = o.getSpeedX();
-            C.simulation.speedY[i] = o.getSpeedY();
-            C.simulation.mass[i] = o.getMass();
-            C.simulation.radius[i] = o.getRadius();
-            C.simulation.id[i] = o.getId();
-            C.simulation.color[i] = o.getColor();
+            C.simulation.kernel.positionX[i] = o.getX();
+            C.simulation.kernel.positionY[i] = o.getY();
+            C.simulation.kernel.speedX[i] = o.getSpeedX();
+            C.simulation.kernel.speedY[i] = o.getSpeedY();
+            C.simulation.kernel.mass[i] = o.getMass();
+            C.simulation.kernel.radius[i] = o.getRadius();
+            C.simulation.kernel.id[i] = o.getId();
+            C.simulation.kernel.color[i] = o.getColor();
         }
     }
 
@@ -194,8 +194,8 @@ public class JsonReaderWriter implements ReaderWriter {
         }
 
         JsonArray objectsAsJsonArray = new JsonArray();
-        for (int i = 0; i < C.simulation.positionX.length; i++) {
-            if (!C.simulation.deleted[i]) {
+        for (int i = 0; i < C.simulation.kernel.positionX.length; i++) {
+            if (!C.simulation.kernel.deleted[i]) {
                 objectsAsJsonArray.add(mapSimulationObjectToJson(gson, new SimulationObjectImpl(i)));
             }
         }

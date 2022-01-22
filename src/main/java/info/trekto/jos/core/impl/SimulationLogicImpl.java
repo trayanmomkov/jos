@@ -1,30 +1,13 @@
 package info.trekto.jos.core.impl;
 
-import info.trekto.jos.C;
-import info.trekto.jos.exceptions.SimulationException;
-import info.trekto.jos.util.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.aparapi.Kernel;
 
-import static info.trekto.jos.formulas.CommonFormulas.*;
-import static info.trekto.jos.formulas.NewtonGravity.calculateForce;
-import static info.trekto.jos.formulas.ScientificConstants.NANOSECONDS_IN_ONE_SECOND;
-import static info.trekto.jos.util.Utils.*;
+import static info.trekto.jos.formulas.CommonFormulas.calculateRadiusFromVolume;
+import static info.trekto.jos.formulas.CommonFormulas.calculateVolumeFromRadius;
 
-/**
- * This implementation uses fork/join Java framework introduced in Java 7.
- *
- * @author Trayan Momkov
- * 2017-May-18
- */
-public class SimulationLogicImpl {
-    private static final Logger logger = LoggerFactory.getLogger(SimulationLogicImpl.class);
+public class SimulationLogicImpl extends Kernel {
     private static final double TWO = 2.0;
-    public static double RATIO_FOUR_THREE = 4 / 3.0;
-    public static double BILLION = 1000000000;
-    public static final int SHOW_REMAINING_INTERVAL_SECONDS = 2;
-
-    private long iterationCounter;
+    private static final double GRAVITY = 0.00000000006674; // 6.674×10^−11 N⋅m2/kg2
 
     public final double[] positionX;
     public final double[] positionY;
@@ -46,8 +29,12 @@ public class SimulationLogicImpl {
     public final int[] readOnlyColor;
     public final boolean[] readOnlyDeleted;
 
-    public SimulationLogicImpl(int numberOfObjects) {
+    private final double secondsPerIteration;
+
+    public SimulationLogicImpl(int numberOfObjects, double secondsPerIteration) {
         int n = numberOfObjects;
+        this.secondsPerIteration = secondsPerIteration;
+
         positionX = new double[n];
         positionY = new double[n];
         speedX = new double[n];
@@ -69,124 +56,43 @@ public class SimulationLogicImpl {
         readOnlyDeleted = new boolean[n];
     }
 
-    public long startSimulation() throws SimulationException {
-        if (duplicateIdExists(id)) {
-            throw new SimulationException("Objects with duplicate IDs exist!");
-        }
+    @Override
+    public void run() {
+        calculateNewValues(getGlobalId());
+    }
 
-        if (collisionExists(positionX, positionY, radius)) {
-            throw new SimulationException("Initial collision exists!");
-        }
+    public void calculateNewValues(int i) {
+        if (!deleted[i]) {
+            /* Calculate acceleration */
+            double accelerationX = 0;
+            double accelerationY = 0;
+            for (int j = 0; j < readOnlyPositionX.length; j++) {
+                if (i != j && !readOnlyDeleted[j]) {
+                    /* Calculate force */
+                    double distance = calculateDistance(positionX[i], positionY[i], readOnlyPositionX[j], readOnlyPositionY[j]);
+                    double force = calculateForce(mass[i], readOnlyMass[j], distance);
+                    //       Fx = F*x/r;
+                    double forceX = force * (readOnlyPositionX[j] - positionX[i]) / distance;
+                    double forceY = force * (readOnlyPositionY[j] - positionY[i]) / distance;
 
-        logger.info("Done.\n");
-        Utils.printConfiguration(C.prop);
-
-        logger.info("\nStart simulation...");
-        C.endText = "END.";
-        long startTime = System.nanoTime();
-        long previousTime = startTime;
-        long endTime;
-
-        try {
-            for (long i = 0; C.prop.isInfiniteSimulation() || i < C.prop.getNumberOfIterations(); i++) {
-                try {
-                    if (C.hasToStop) {
-                        C.hasToStop = false;
-                        C.io.endFile();
-                        C.endText = "Stopped!";
-                        break;
-                    }
-
-                    iterationCounter = i + 1;
-
-                    if (System.nanoTime() - previousTime >= NANOSECONDS_IN_ONE_SECOND * SHOW_REMAINING_INTERVAL_SECONDS) {
-                        showRemainingTimeBasedOnLastNIterations(i, startTime, C.prop.getNumberOfIterations(), positionX.length);
-                        previousTime = System.nanoTime();
-                    }
-
-                    if (C.prop.isRealTimeVisualization() && System.nanoTime() - previousTime >= C.prop.getPlayingSpeed()) {
-                        C.visualizer.visualize();
-                    }
-
-                    doIteration();
-                } catch (InterruptedException e) {
-                    logger.error("Concurrency failure. One of the threads interrupted in cycle " + i, e);
+                    /* Add to current acceleration */
+                    // ax = Fx / m
+                    accelerationX = accelerationX + forceX / mass[i];
+                    accelerationY = accelerationY + forceY / mass[i];
                 }
             }
 
-            if (C.prop.isRealTimeVisualization()) {
-                C.visualizer.end();
-            }
-            endTime = System.nanoTime();
-        } finally {
-            if (C.prop.isSaveToFile()) {
-                C.io.endFile();
-            }
-        }
+            /* Change speed */
+            speedX[i] = speedX[i] + accelerationX * secondsPerIteration;
+            speedY[i] = speedY[i] + accelerationY * secondsPerIteration;
 
-
-        logger.info("End of simulation. Time: " + nanoToHumanReadable (endTime - startTime));
-        return endTime - startTime;
-    }
-
-    private void doIteration() throws InterruptedException {
-        deepCopy(positionX, readOnlyPositionX);
-        deepCopy(positionY, readOnlyPositionY);
-        deepCopy(speedX, readOnlySpeedX);
-        deepCopy(speedY, readOnlySpeedY);
-        deepCopy(mass, readOnlyMass);
-        deepCopy(radius, readOnlyRadius);
-        deepCopy(color, readOnlyColor);
-        deepCopy(deleted, readOnlyDeleted);
-
-        calculateNewValues();
-
-        /* Collision and merging */
-        processCollisions();
-
-        if (C.prop.isRealTimeVisualization() && C.prop.getPlayingSpeed() < 0) {
-            Thread.sleep(-C.prop.getPlayingSpeed());
-        }
-
-        if (C.prop.isSaveToFile()) {
-            C.io.appendObjectsToFile();
+            /* Move object */
+            positionX[i] = positionX[i] + speedX[i] * secondsPerIteration;
+            positionY[i] = positionY[i] + speedY[i] * secondsPerIteration;
         }
     }
 
-    public void calculateNewValues() {
-        for (int i = 0; i < positionX.length; i++) {
-            if (!deleted[i]) {
-                /* Calculate acceleration */
-                double accelerationX = 0;
-                double accelerationY = 0;
-                for (int j = 0; j < readOnlyPositionX.length; j++) {
-                    if (i != j && !readOnlyDeleted[j]) {
-                        /* Calculate force */
-                        double distance = calculateDistance(positionX[i], positionY[i], readOnlyPositionX[j], readOnlyPositionY[j]);
-                        double force = calculateForce(mass[i], readOnlyMass[j], distance);
-                        //       Fx = F*x/r;
-                        double forceX = force * (readOnlyPositionX[j] - positionX[i]) / distance;
-                        double forceY = force * (readOnlyPositionY[j] - positionY[i]) / distance;
-
-                        /* Add to current acceleration */
-                        // ax = Fx / m
-                        accelerationX = accelerationX + forceX / mass[i];
-                        accelerationY = accelerationY + forceY / mass[i];
-                    }
-                }
-
-                /* Change speed */
-                speedX[i] = speedX[i] + accelerationX * C.prop.getSecondsPerIteration();
-                speedY[i] = speedY[i] + accelerationY * C.prop.getSecondsPerIteration();
-
-                /* Move object */
-                positionX[i] = positionX[i] + speedX[i] * C.prop.getSecondsPerIteration();
-                positionY[i] = positionY[i] + speedY[i] * C.prop.getSecondsPerIteration();
-            }
-        }
-    }
-
-    private void processCollisions() {
+    public void processCollisions() {
         for (int i = 0; i < positionX.length; i++) {
             if (!deleted[i]) {
                 for (int j = 0; j < positionX.length; j++) {
@@ -299,7 +205,13 @@ public class SimulationLogicImpl {
         speedY[bigger] = totalImpulseY / totalMass;
     }
 
-    public long getCurrentIterationNumber() {
-        return iterationCounter;
+    public static double calculateDistance(double object1X, double object1Y, double object2X, double object2Y) {
+        double x = object2X - object1X;
+        double y = object2Y - object1Y;
+        return Math.sqrt(x * x + y * y);
+    }
+
+    public static double calculateForce(final double object1Mass, final double object2Mass, final double distance) {
+        return GRAVITY * object1Mass * object2Mass / (distance * distance);
     }
 }

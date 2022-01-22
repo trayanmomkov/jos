@@ -69,17 +69,17 @@ public class VisualizerImpl implements Visualizer {
 
     private List<ShapeWithColor> createShapes() {
         List<ShapeWithColor> shapes = new ArrayList<>();
-        for (int i = 0; i < C.simulation.positionX.length; i++) {
-            if (C.simulation.deleted[i]) {
+        for (int i = 0; i < C.simulation.kernel.positionX.length; i++) {
+            if (C.simulation.kernel.deleted[i]) {
                 continue;
             }
             Ellipse2D ellipse = new Ellipse2D.Double();
-            ellipse.setFrame(convertCoordinatesForDisplayX(C.simulation.positionX[i] - C.simulation.radius[i]),
-                             convertCoordinatesForDisplayY(C.simulation.positionY[i] - C.simulation.radius[i]),
-                             C.simulation.radius[i] * 2,
-                             C.simulation.radius[i] * 2);
+            ellipse.setFrame(convertCoordinatesForDisplayX(C.simulation.kernel.positionX[i] - C.simulation.kernel.radius[i]),
+                             convertCoordinatesForDisplayY(C.simulation.kernel.positionY[i] - C.simulation.kernel.radius[i]),
+                             C.simulation.kernel.radius[i] * 2,
+                             C.simulation.kernel.radius[i] * 2);
 
-            Color color = new Color(C.simulation.color[i]);
+            Color color = new Color(C.simulation.kernel.color[i]);
             shapes.add(new ShapeWithColor(ellipse, color));
         }
         return shapes;

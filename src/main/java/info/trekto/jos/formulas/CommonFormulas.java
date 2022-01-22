@@ -2,7 +2,7 @@ package info.trekto.jos.formulas;
 
 import info.trekto.jos.model.ImmutableSimulationObject;
 
-import static info.trekto.jos.core.impl.SimulationLogicImpl.RATIO_FOUR_THREE;
+import static info.trekto.jos.core.impl.SimulationImpl.RATIO_FOUR_THREE;
 import static info.trekto.jos.formulas.ScientificConstants.PI;
 
 /**
@@ -11,11 +11,6 @@ import static info.trekto.jos.formulas.ScientificConstants.PI;
  *
  */
 public class CommonFormulas {
-    public static double calculateDistance(double object1X, double object1Y, double object2X, double object2Y) {
-        double x = object2X - object1X;
-        double y = object2Y - object1Y;
-        return Math.sqrt(x*x+y*y);
-    }
 
     public static double calculateDistance(ImmutableSimulationObject object1, ImmutableSimulationObject object2) {
         double x = object2.getX() - object1.getX();
