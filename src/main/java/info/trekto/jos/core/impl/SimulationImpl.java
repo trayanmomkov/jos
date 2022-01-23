@@ -22,21 +22,32 @@ public class SimulationImpl {
     public static final int SHOW_REMAINING_INTERVAL_SECONDS = 2;
 
     private long iterationCounter;
-    public SimulationLogicImpl kernel;
-    private final Range range;
+    public SimulationLogicImpl simulationLogicKernel;
+    private final Range simulationLogicRange;
+    public CollisionCheck collisionCheckKernel;
+    private final Range collisionCheckRange;
 
     public SimulationImpl(int numberOfObjects, double secondsPerIteration) {
-        kernel = new SimulationLogicImpl(numberOfObjects, secondsPerIteration);
-        range = Range.create(kernel.positionX.length);
-        kernel.setExecutionMode(GPU);
+        simulationLogicKernel = new SimulationLogicImpl(numberOfObjects, secondsPerIteration);
+        simulationLogicRange = Range.create(numberOfObjects);
+        simulationLogicKernel.setExecutionMode(GPU);
+
+        collisionCheckKernel = new CollisionCheck(
+                simulationLogicKernel, numberOfObjects,
+                simulationLogicKernel.positionX,
+                simulationLogicKernel.positionY,
+                simulationLogicKernel.radius,
+                simulationLogicKernel.deleted);
+        collisionCheckRange = Range.create(numberOfObjects);
+        collisionCheckKernel.setExecutionMode(GPU);
     }
 
     public long startSimulation() throws SimulationException {
-        if (duplicateIdExists(kernel.id)) {
+        if (duplicateIdExists(simulationLogicKernel.id)) {
             throw new SimulationException("Objects with duplicate IDs exist!");
         }
 
-        if (collisionExists(kernel.positionX, kernel.positionY, kernel.radius)) {
+        if (collisionExists(simulationLogicKernel.positionX, simulationLogicKernel.positionY, simulationLogicKernel.radius)) {
             throw new SimulationException("Initial collision exists!");
         }
 
@@ -91,22 +102,29 @@ public class SimulationImpl {
     }
 
     private void doIteration() throws InterruptedException {
-        deepCopy(kernel.positionX, kernel.readOnlyPositionX);
-        deepCopy(kernel.positionY, kernel.readOnlyPositionY);
-        deepCopy(kernel.speedX, kernel.readOnlySpeedX);
-        deepCopy(kernel.speedY, kernel.readOnlySpeedY);
-        deepCopy(kernel.mass, kernel.readOnlyMass);
-        deepCopy(kernel.radius, kernel.readOnlyRadius);
-        deepCopy(kernel.color, kernel.readOnlyColor);
-        deepCopy(kernel.deleted, kernel.readOnlyDeleted);
+        deepCopy(simulationLogicKernel.positionX, simulationLogicKernel.readOnlyPositionX);
+        deepCopy(simulationLogicKernel.positionY, simulationLogicKernel.readOnlyPositionY);
+        deepCopy(simulationLogicKernel.speedX, simulationLogicKernel.readOnlySpeedX);
+        deepCopy(simulationLogicKernel.speedY, simulationLogicKernel.readOnlySpeedY);
+        deepCopy(simulationLogicKernel.mass, simulationLogicKernel.readOnlyMass);
+        deepCopy(simulationLogicKernel.radius, simulationLogicKernel.readOnlyRadius);
+        deepCopy(simulationLogicKernel.color, simulationLogicKernel.readOnlyColor);
+        deepCopy(simulationLogicKernel.deleted, simulationLogicKernel.readOnlyDeleted);
 
-        kernel.execute(range);
-        if (!GPU.equals(kernel.getExecutionMode()) || iterationCounter == 1) {
-            logger.warn("Execution mode = " + kernel.getExecutionMode());
+        simulationLogicKernel.execute(simulationLogicRange);
+        if (!GPU.equals(simulationLogicKernel.getExecutionMode()) || iterationCounter == 1) {
+            logger.warn("Execution mode = " + simulationLogicKernel.getExecutionMode());
         }
 
         /* Collision and merging */
-        kernel.processCollisions();
+        collisionCheckKernel.prepare();
+        collisionCheckKernel.execute(collisionCheckRange);
+        if (!GPU.equals(collisionCheckKernel.getExecutionMode()) || iterationCounter == 1) {
+            logger.warn("collisionCheckKernel Execution mode = " + collisionCheckKernel.getExecutionMode());
+        }
+        if (collisionCheckKernel.collisionExists()) {
+            simulationLogicKernel.processCollisions();
+        }
 
         if (C.prop.isRealTimeVisualization() && C.prop.getPlayingSpeed() < 0) {
             Thread.sleep(-C.prop.getPlayingSpeed());
@@ -123,8 +141,8 @@ public class SimulationImpl {
 
     private int countObjects() {
         int numberOfObjects = 0;
-        for (int j = 0; j < kernel.deleted.length; j++) {
-            if (!kernel.deleted[j]) {
+        for (int j = 0; j < simulationLogicKernel.deleted.length; j++) {
+            if (!simulationLogicKernel.deleted[j]) {
                 numberOfObjects++;
             }
         }

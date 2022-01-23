@@ -43,14 +43,14 @@ public class SimulationObjectImpl implements SimulationObject {
     }
 
     public SimulationObjectImpl(int i) {
-        this.color = C.simulation.kernel.color[i];
-        this.id = C.simulation.kernel.id[i];
-        this.mass = C.simulation.kernel.mass[i];
-        this.radius = C.simulation.kernel.radius[i];
-        this.speedX = C.simulation.kernel.speedX[i];
-        this.speedY = C.simulation.kernel.speedY[i];
-        this.x = C.simulation.kernel.positionX[i];
-        this.y = C.simulation.kernel.positionY[i];
+        this.color = C.simulation.simulationLogicKernel.color[i];
+        this.id = C.simulation.simulationLogicKernel.id[i];
+        this.mass = C.simulation.simulationLogicKernel.mass[i];
+        this.radius = C.simulation.simulationLogicKernel.radius[i];
+        this.speedX = C.simulation.simulationLogicKernel.speedX[i];
+        this.speedY = C.simulation.simulationLogicKernel.speedY[i];
+        this.x = C.simulation.simulationLogicKernel.positionX[i];
+        this.y = C.simulation.simulationLogicKernel.positionY[i];
     }
 
     @Override

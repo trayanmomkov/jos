@@ -134,14 +134,14 @@ public class JsonReaderWriter implements ReaderWriter {
     private void initArrays(List<SimulationObject> initialObjects) {
         for (int i = 0; i < initialObjects.size(); i++) {
             SimulationObject o = initialObjects.get(i);
-            C.simulation.kernel.positionX[i] = o.getX();
-            C.simulation.kernel.positionY[i] = o.getY();
-            C.simulation.kernel.speedX[i] = o.getSpeedX();
-            C.simulation.kernel.speedY[i] = o.getSpeedY();
-            C.simulation.kernel.mass[i] = o.getMass();
-            C.simulation.kernel.radius[i] = o.getRadius();
-            C.simulation.kernel.id[i] = o.getId();
-            C.simulation.kernel.color[i] = o.getColor();
+            C.simulation.simulationLogicKernel.positionX[i] = o.getX();
+            C.simulation.simulationLogicKernel.positionY[i] = o.getY();
+            C.simulation.simulationLogicKernel.speedX[i] = o.getSpeedX();
+            C.simulation.simulationLogicKernel.speedY[i] = o.getSpeedY();
+            C.simulation.simulationLogicKernel.mass[i] = o.getMass();
+            C.simulation.simulationLogicKernel.radius[i] = o.getRadius();
+            C.simulation.simulationLogicKernel.id[i] = o.getId();
+            C.simulation.simulationLogicKernel.color[i] = o.getColor();
         }
     }
 
@@ -194,8 +194,8 @@ public class JsonReaderWriter implements ReaderWriter {
         }
 
         JsonArray objectsAsJsonArray = new JsonArray();
-        for (int i = 0; i < C.simulation.kernel.positionX.length; i++) {
-            if (!C.simulation.kernel.deleted[i]) {
+        for (int i = 0; i < C.simulation.simulationLogicKernel.positionX.length; i++) {
+            if (!C.simulation.simulationLogicKernel.deleted[i]) {
                 objectsAsJsonArray.add(mapSimulationObjectToJson(gson, new SimulationObjectImpl(i)));
             }
         }
