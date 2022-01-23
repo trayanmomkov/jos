@@ -7,8 +7,10 @@ import info.trekto.jos.model.SimulationObject;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static info.trekto.jos.core.impl.SimulationLogicImpl.calculateDistance;
 import static info.trekto.jos.formulas.ScientificConstants.*;
@@ -31,13 +33,13 @@ public class Utils {
             dst[i] = src[i];
         }
     }
-    
+
     public static void deepCopy(int[] src, int[] dst) {
         for (int i = 0; i < src.length; i++) {
             dst[i] = src[i];
         }
     }
-    
+
     public static void deepCopy(boolean[] src, boolean[] dst) {
         for (int i = 0; i < src.length; i++) {
             dst[i] = src[i];
@@ -73,7 +75,7 @@ public class Utils {
         logger.info("'Number' implementation: double");
     }
 
-    public static String showRemainingTimeBasedOnLastNIterations(long i, long startTime, long numberOfIterations, int numberOfObjects) {
+    public static String showRemainingTime(long i, long startTime, long numberOfIterations, int numberOfObjects) {
         if (i == 0) {
             return "";
         }
@@ -87,7 +89,7 @@ public class Utils {
 
         long time = lastTime.get(lastTime.size() - 1) - lastTime.get(0);
         double iterations = lastIterationsCount.get(lastIterationsCount.size() - 1) - lastIterationsCount.get(0);
-        
+
         double averageTimePerIteration;
         if (time == 0) {
             long elapsed = (System.nanoTime() - startTime);
@@ -98,11 +100,11 @@ public class Utils {
 
         long remainingIterations = numberOfIterations - i;
         long remainingTime = Math.round(remainingIterations * averageTimePerIteration);
-    
+
         String remainingString = "Iteration " + i
                 + ", elapsed time: " + nanoToHumanReadable(System.nanoTime() - startTime)
                 + ", objects: " + numberOfObjects
-                + ", remaining time: " + milliToHumanReadable(remainingTime);
+                + (numberOfIterations < 1 ? "" : ", remaining time: " + milliToHumanReadable(remainingTime));
 
         if (C.mainForm != null) {
             C.mainForm.appendMessage(remainingString);
@@ -136,13 +138,15 @@ public class Utils {
                 double distance = calculateDistance(positionX[i], positionY[i], positionX[j], positionY[j]);
 
                 if (distance < radius[i] + radius[j]) {
+                    logger.info(String.format("Collision between object A(x:%f, y:%f, r:%f) and B(x:%f, y:%f, r:%f)",
+                                              positionX[i], positionY[i], radius[i], positionX[j], positionY[j], radius[j]));
                     return true;
                 }
             }
         }
         return false;
     }
-    
+
     public static boolean collisionExists(List<SimulationObject> objects) {
         for (SimulationObject object : objects) {
             for (SimulationObject object1 : objects) {
@@ -175,16 +179,16 @@ public class Utils {
         rgb = (rgb << 8) + 0;
         rgb = (rgb << 8) + 0;
         System.out.println(rgb);
-        
+
         int r = (1245420 >> 16) & 0xFF;
         int g = (1245420 >> 8) & 0xFF;
         int b = 1245420 & 0xFF;
 
         System.out.println("RGB " + r + " " + g + " " + b);
-        
+
         Color c = new Color(16711680);
         Color a = new Color(255);
         Color h = new Color(128, 128, 0);
-        System.out.println("BLUE: " +  String.format("%08X", BLUE.getRGB()));
+        System.out.println("BLUE: " + String.format("%08X", BLUE.getRGB()));
     }
 }

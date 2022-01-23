@@ -1,10 +1,11 @@
 package info.trekto.jos.gui;
 
 import info.trekto.jos.C;
-import info.trekto.jos.Main;
+import info.trekto.jos.core.impl.SimulationImpl;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.exceptions.SimulationException;
 import info.trekto.jos.model.SimulationObject;
+import info.trekto.jos.util.SimulationGenerator;
 import info.trekto.jos.visualization.java2dgraphics.VisualizerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,8 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.WARNING_MESSAGE;
@@ -20,6 +23,7 @@ import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 public class MainForm {
     private static final Logger logger = LoggerFactory.getLogger(MainForm.class);
+    public static final String PROGRAM_NAME = "JOS";
 
     private JButton browseButton;
     private JTextField numberOfIterationsTextField;
@@ -39,6 +43,29 @@ public class MainForm {
     private JButton savePropertiesButton;
     private JPanel mainPanel;
     private JLabel inputFilePathLabel;
+    private JRadioButton runningRadioButton;
+    private JRadioButton playRadioButton;
+    private JButton browsePlayingFileButton;
+    private JLabel playFileLabel;
+    private JPanel simulationPropertiesPanel;
+    private JLabel numberOfObjectsLabel;
+    private JLabel secondsPerIterationLabel;
+    private JLabel numberTypeLabel;
+    private JLabel interactingLawLabel;
+    private JLabel outputFileLabel;
+    private JLabel precisionLabel;
+    private JLabel scaleLabel;
+    private JLabel numberTypeDropdown;
+    private JLabel lawDropdown;
+    private JLabel numberOfIterationsLabel;
+    private JLabel playFromLabel;
+    private JLabel playingSpeedLabel;
+    private JButton playButton;
+    private JScrollPane initialObjectsPanel;
+    private JButton generateObjectsButton;
+    private ButtonGroup buttonGroup;
+    private List<Component> runningComponents;
+    private List<Component> playingComponents;
 
     public MainForm() {
         initialObjectsTable.setModel(new InitialObjectsTableModelAndListener(this));
@@ -49,7 +76,7 @@ public class MainForm {
             if (option == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
                 inputFilePathLabel.setText(file.getAbsolutePath());
-                Main.init(file.getAbsolutePath());
+                SimulationImpl.init(file.getAbsolutePath());
                 refreshProperties(C.prop);
             }
         });
@@ -64,7 +91,7 @@ public class MainForm {
 
                 /* Reopen just saved file */
                 inputFilePathLabel.setText(fileToSave.getAbsolutePath());
-                Main.init(fileToSave.getAbsolutePath());
+                SimulationImpl.init(fileToSave.getAbsolutePath());
                 refreshProperties(C.prop);
             }
         });
@@ -86,21 +113,6 @@ public class MainForm {
                 C.prop.setSecondsPerIteration(Double.parseDouble(secondsPerIterationTextField.getText()));
             }
         });
-
-//        Vector<NumberType> comboBoxItems = new Vector<>();
-//        Collections.addAll(comboBoxItems, NumberType.values());
-//        numberTypeComboBox.setModel(new DefaultComboBoxModel<>(comboBoxItems));
-
-//        numberTypeComboBox.addActionListener(
-//                actionEvent -> {
-//                    if (actionEvent.getModifiers() != 0) {
-//                        C.prop.setNumberType(NumberType.valueOf(String.valueOf(numberTypeComboBox.getSelectedItem())));
-////                    createNumberFactory(C.prop.getNumberType(), C.prop.getPrecision(), C.prop.getScale());
-////                    C.prop.setSecondsPerIteration(New.num(secondsPerIterationTextField.getText()));
-////                    ((InitialObjectsTableModelAndListener) initialObjectsTable.getModel()).refreshInitialObjects();
-//                        showWarn(mainPanel, "You have to save properties, number type change to take effect.");
-//                    }
-//                });
 
         saveToFileCheckBox.addActionListener(actionEvent -> C.prop.setSaveToFile(saveToFileCheckBox.isSelected()));
 
@@ -132,7 +144,11 @@ public class MainForm {
         });
 
         startButton.addActionListener(actionEvent -> start());
-        stopButton.addActionListener(actionEvent -> C.hasToStop = true);
+        stopButton.addActionListener(actionEvent -> {
+            if (C.simulation != null && C.simulation.running) {
+                C.hasToStop = true;
+            }
+        });
 
         appendMessage("Controls:");
         appendMessage("\tExit: Esc");
@@ -142,32 +158,83 @@ public class MainForm {
         appendMessage("\tMove down: ↓");
         appendMessage("\tMove right: →");
         appendMessage("\tMove left: ←");
+
+        buttonGroup = new ButtonGroup();
+        buttonGroup.add(runningRadioButton);
+        buttonGroup.add(playRadioButton);
+
+        runningRadioButton.addActionListener(actionEvent -> enableRunning(true));
+        playRadioButton.addActionListener(actionEvent -> enableRunning(false));
+
+        runningComponents = new ArrayList<>(List.of(
+                numberOfIterationsTextField, secondsPerIterationTextField, browseButton, saveToFileCheckBox, outputFileTextField,
+                realTimeVisualizationCheckBox, numberOfObjectsTextField, initialObjectsTable, numberOfIterationsLabel,
+                startButton, stopButton, savePropertiesButton, inputFilePathLabel, simulationPropertiesPanel, numberOfObjectsLabel,
+                secondsPerIterationLabel, numberTypeLabel, interactingLawLabel, outputFileLabel, numberTypeDropdown, lawDropdown,
+                initialObjectsTable, initialObjectsPanel, generateObjectsButton));
+
+        playingComponents = new ArrayList<>(List.of(playingSpeedTextField, playFileLabel, playFromLabel, browsePlayingFileButton,
+                                                    playingSpeedLabel, playingSpeedTextField, playButton));
+
+        generateObjectsButton.addActionListener(actionEvent -> {
+            SimulationProperties prop = new SimulationProperties();
+            if (!numberOfObjectsTextField.getText().isBlank()) {
+                prop.setNumberOfObjects(Integer.parseInt(numberOfObjectsTextField.getText()));
+            }
+
+            if (!numberOfIterationsTextField.getText().isBlank()) {
+                prop.setNumberOfIterations(Integer.parseInt(numberOfIterationsTextField.getText()));
+            }
+
+            if (!secondsPerIterationTextField.getText().isBlank()) {
+                prop.setSecondsPerIteration(Double.parseDouble(secondsPerIterationTextField.getText()));
+            }
+            prop.setRealTimeVisualization(realTimeVisualizationCheckBox.isSelected());
+            prop.setSaveToFile(saveToFileCheckBox.isSelected());
+            
+            new Thread(() -> SimulationGenerator.generateObjects(prop, this)).start();
+        });
+    }
+
+    private void enableRunning(boolean enable) {
+        runningComponents.forEach(c -> c.setEnabled(enable));
+        playingComponents.forEach(c -> c.setEnabled(!enable));
     }
 
     private void start() {
-        new Thread(() -> {
-            if (C.prop.isRealTimeVisualization()) {
-                C.visualizer = new VisualizerImpl();
-            }
-            try {
-                C.simulation.startSimulation();
-            } catch (SimulationException e) {
-                showError(mainPanel, "Error during simulation.", e);
-            } catch (ArithmeticException ex) {
-                if (ex.getMessage().contains("zero")) {
-                    String message = "Operation with zero. Please increase the precision and try again. " + ex.getMessage();
-                    logger.error(message, ex);
-                    if (C.mainForm != null) {
-                        C.mainForm.appendMessage(message);
+        if (C.prop != null && C.prop.getInitialObjects() != null) {
+            new Thread(() -> {
+                try {
+                    if (C.prop.isRealTimeVisualization()) {
+                        C.visualizer = new VisualizerImpl();
                     }
-                } else {
-                    throw ex;
+                    C.simulation.startSimulation();
+                } catch (SimulationException e) {
+                    showError(mainPanel, "Error during simulation.", e);
+                    C.visualizer.closeWindow();
+                } catch (ArithmeticException ex) {
+                    if (ex.getMessage().contains("zero")) {
+                        String message = "Operation with zero. Please increase the precision and try again. " + ex.getMessage();
+                        logger.error(message, ex);
+                        appendMessage(message);
+                        C.visualizer.closeWindow();
+                    } else {
+                        throw ex;
+                    }
+                } finally {
+                    onVisualizationWindowClosed();
                 }
-            }
-        }).start();
+            }).start();
+            startButton.setEnabled(false);
+            runningComponents.forEach(c -> c.setEnabled(false));
+            playingComponents.forEach(c -> c.setEnabled(false));
+            runningRadioButton.setEnabled(false);
+            playRadioButton.setEnabled(false);
+            stopButton.setEnabled(true);
+        }
     }
 
-    void refreshProperties(SimulationProperties prop) {
+    public void refreshProperties(SimulationProperties prop) {
         numberOfObjectsTextField.setText(String.valueOf(prop.getNumberOfObjects()));
         numberOfIterationsTextField.setText(String.valueOf(prop.getNumberOfIterations()));
         secondsPerIterationTextField.setText(String.valueOf(prop.getSecondsPerIteration()));
@@ -201,13 +268,29 @@ public class MainForm {
         JFrame jFrame = new JFrame();
         MainForm mainForm = new MainForm();
         C.mainForm = mainForm;
+        C.prop = new SimulationProperties();
         jFrame.setContentPane(mainForm.mainPanel);
+        jFrame.setTitle(PROGRAM_NAME);
         jFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
         jFrame.pack();
+        jFrame.setLocationRelativeTo(null); // Center of the screen
         jFrame.setVisible(true);
     }
 
     public void appendMessage(String message) {
         consoleTextArea.append(message + "\n");
+        consoleTextArea.setCaretPosition(consoleTextArea.getDocument().getLength());
+    }
+
+    public void onVisualizationWindowClosed() {
+        startButton.setEnabled(true);
+        if (runningRadioButton.isSelected()) {
+            runningComponents.forEach(c -> c.setEnabled(true));
+        } else {
+            playingComponents.forEach(c -> c.setEnabled(true));
+        }
+        runningRadioButton.setEnabled(true);
+        playRadioButton.setEnabled(true);
+        stopButton.setEnabled(false);
     }
 }

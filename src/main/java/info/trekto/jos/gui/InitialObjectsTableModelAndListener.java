@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
+import static info.trekto.jos.core.impl.SimulationImpl.initArrays;
+
 public class InitialObjectsTableModelAndListener extends DefaultTableModel implements TableModelListener {
     Map<String, Integer> columnNameIndexMap;
     MainForm mainForm;
@@ -31,11 +33,8 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
         addCol("radius", i++);
         addCol("speedX", i++);
         addCol("speedY", i++);
-        addCol("speedX", i++);
-        addCol("motionless", i++);
-        addCol("colorR", i++);
-        addCol("colorG", i++);
-        addCol("colorB", i++);
+        addCol("speedZ", i++);
+        addCol("color", i++);
 
         addTableModelListener(this);
     }
@@ -61,7 +60,7 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
 
     @Override
     public void tableChanged(TableModelEvent e) {
-        if (e.getType() != TableModelEvent.DELETE) {
+        if (e.getType() != TableModelEvent.DELETE && e.getColumn() != -1) {
             refreshInitialObjects();
         }
     }
@@ -79,9 +78,11 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
             o.setRadius(Double.parseDouble(String.valueOf(vector.get(i++))));
             o.setSpeedX(Double.parseDouble(String.valueOf(vector.get(i++))));
             o.setSpeedY(Double.parseDouble(String.valueOf(vector.get(i++))));
+            o.setSpeedZ(Double.parseDouble(String.valueOf(vector.get(i++))));
             o.setColor(Integer.parseInt(String.valueOf(vector.get(i++))));
 
             C.prop.getInitialObjects().add(o);
         }
+        initArrays(C.prop.getInitialObjects());
     }
 }

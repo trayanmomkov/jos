@@ -121,26 +121,11 @@ public class JsonReaderWriter implements ReaderWriter {
             }
 
             properties.setInitialObjects(initialObjects);
-            initArrays(initialObjects);
         } catch (ClassCastException | IllegalStateException ex) {
             logger.error("Cannot parse properties file: '" + inputFilePath + "'", ex);
         }
 
         return properties;
-    }
-
-    private void initArrays(List<SimulationObject> initialObjects) {
-        for (int i = 0; i < initialObjects.size(); i++) {
-            SimulationObject o = initialObjects.get(i);
-            C.simulation.simulationLogicKernel.positionX[i] = o.getX();
-            C.simulation.simulationLogicKernel.positionY[i] = o.getY();
-            C.simulation.simulationLogicKernel.speedX[i] = o.getSpeedX();
-            C.simulation.simulationLogicKernel.speedY[i] = o.getSpeedY();
-            C.simulation.simulationLogicKernel.mass[i] = o.getMass();
-            C.simulation.simulationLogicKernel.radius[i] = o.getRadius();
-            C.simulation.simulationLogicKernel.id[i] = o.getId();
-            C.simulation.simulationLogicKernel.color[i] = o.getColor();
-        }
     }
 
     @Override

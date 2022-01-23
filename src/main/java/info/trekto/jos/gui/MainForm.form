@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="info.trekto.jos.gui.MainForm">
-  <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="5" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="6" column-count="7" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="1036" height="1000"/>
+      <xy x="20" y="20" width="1036" height="1077"/>
     </constraints>
     <properties/>
-    <border type="none"/>
+    <border type="none" title=""/>
     <children>
-      <grid id="fcf5e" layout-manager="GridLayoutManager" row-count="2" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="fcf5e" binding="simulationPropertiesPanel" layout-manager="GridLayoutManager" row-count="2" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="1" column="0" row-span="1" col-span="5" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="0" row-span="1" col-span="7" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
-        <properties/>
+        <properties>
+          <enabled value="true"/>
+        </properties>
         <border type="none" title="Simulation properties"/>
         <children>
           <grid id="d8db8" layout-manager="GridLayoutManager" row-count="5" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -24,7 +26,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="ed0dd" class="javax.swing.JLabel">
+              <component id="ed0dd" class="javax.swing.JLabel" binding="numberOfIterationsLabel">
                 <constraints>
                   <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
@@ -38,9 +40,11 @@
                     <preferred-size width="150" height="-1"/>
                   </grid>
                 </constraints>
-                <properties/>
+                <properties>
+                  <text value="0"/>
+                </properties>
               </component>
-              <component id="712c5" class="javax.swing.JLabel">
+              <component id="712c5" class="javax.swing.JLabel" binding="secondsPerIterationLabel">
                 <constraints>
                   <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
@@ -54,28 +58,19 @@
                     <preferred-size width="150" height="-1"/>
                   </grid>
                 </constraints>
-                <properties/>
+                <properties>
+                  <text value="0.01"/>
+                </properties>
               </component>
-              <component id="9daa2" class="javax.swing.JLabel">
+              <component id="9daa2" class="javax.swing.JLabel" binding="numberTypeLabel">
                 <constraints>
                   <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <labelFor value="1e5d"/>
                   <text value="Number type"/>
                 </properties>
               </component>
-              <component id="1e5d" class="javax.swing.JComboBox" default-binding="true">
-                <constraints>
-                  <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <model>
-                    <item value="DOUBLE"/>
-                  </model>
-                </properties>
-              </component>
-              <component id="af226" class="javax.swing.JLabel">
+              <component id="af226" class="javax.swing.JLabel" binding="interactingLawLabel">
                 <constraints>
                   <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
@@ -83,17 +78,7 @@
                   <text value="Interacting law"/>
                 </properties>
               </component>
-              <component id="eceb7" class="javax.swing.JComboBox">
-                <constraints>
-                  <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <model>
-                    <item value="NEWTON_LAW_OF_GRAVITATION"/>
-                  </model>
-                </properties>
-              </component>
-              <component id="33eca" class="javax.swing.JLabel">
+              <component id="33eca" class="javax.swing.JLabel" binding="numberOfObjectsLabel">
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
@@ -107,11 +92,29 @@
                     <preferred-size width="150" height="-1"/>
                   </grid>
                 </constraints>
-                <properties/>
+                <properties>
+                  <text value="20"/>
+                </properties>
+              </component>
+              <component id="c8085" class="javax.swing.JLabel" binding="numberTypeDropdown">
+                <constraints>
+                  <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="DOUBLE"/>
+                </properties>
+              </component>
+              <component id="701ea" class="javax.swing.JLabel" binding="lawDropdown">
+                <constraints>
+                  <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="NEWTON_LAW_OF_GRAVITATION"/>
+                </properties>
               </component>
             </children>
           </grid>
-          <grid id="787a2" layout-manager="GridLayoutManager" row-count="5" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="787a2" layout-manager="GridLayoutManager" row-count="5" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
               <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -121,10 +124,11 @@
             <children>
               <component id="9f95f" class="javax.swing.JCheckBox" binding="realTimeVisualizationCheckBox" default-binding="true">
                 <constraints>
-                  <grid row="2" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="2" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <horizontalTextPosition value="10"/>
+                  <selected value="true"/>
                   <text value="Real time visualization"/>
                 </properties>
               </component>
@@ -133,17 +137,19 @@
                   <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
+                  <enabled value="false"/>
                   <hideActionText value="true"/>
                   <horizontalAlignment value="10"/>
                   <horizontalTextPosition value="10"/>
                   <text value="Bounce from screen walls"/>
                 </properties>
               </component>
-              <component id="8f5cc" class="javax.swing.JLabel">
+              <component id="8f5cc" class="javax.swing.JLabel" binding="precisionLabel">
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
+                  <enabled value="false"/>
                   <text value="Precision"/>
                 </properties>
               </component>
@@ -153,13 +159,17 @@
                     <preferred-size width="150" height="-1"/>
                   </grid>
                 </constraints>
-                <properties/>
+                <properties>
+                  <enabled value="false"/>
+                  <text value=""/>
+                </properties>
               </component>
-              <component id="a5fa2" class="javax.swing.JLabel">
+              <component id="a5fa2" class="javax.swing.JLabel" binding="scaleLabel">
                 <constraints>
                   <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
+                  <enabled value="false"/>
                   <text value="Scale"/>
                 </properties>
               </component>
@@ -169,23 +179,17 @@
                     <preferred-size width="150" height="-1"/>
                   </grid>
                 </constraints>
-                <properties/>
-              </component>
-              <component id="3567b" class="javax.swing.JLabel">
-                <constraints>
-                  <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
                 <properties>
-                  <text value="Playing speed"/>
+                  <enabled value="false"/>
                 </properties>
               </component>
-              <component id="f9794" class="javax.swing.JTextField" binding="playingSpeedTextField">
+              <component id="e1fe3" class="javax.swing.JButton" binding="generateObjectsButton" default-binding="true">
                 <constraints>
-                  <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="-1"/>
-                  </grid>
+                  <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
-                <properties/>
+                <properties>
+                  <text value="Generate objects"/>
+                </properties>
               </component>
             </children>
           </grid>
@@ -197,7 +201,7 @@
             </constraints>
             <properties/>
           </component>
-          <component id="5b640" class="javax.swing.JLabel">
+          <component id="5b640" class="javax.swing.JLabel" binding="outputFileLabel">
             <constraints>
               <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -218,7 +222,7 @@
       </grid>
       <scrollpane id="6d490">
         <constraints>
-          <grid row="4" column="0" row-span="1" col-span="5" vsize-policy="6" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="5" column="0" row-span="1" col-span="7" vsize-policy="6" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <toolTipText value=""/>
@@ -236,30 +240,24 @@
           </component>
         </children>
       </scrollpane>
-      <scrollpane id="4011f">
+      <scrollpane id="4011f" binding="initialObjectsPanel">
         <constraints>
-          <grid row="2" column="0" row-span="1" col-span="5" vsize-policy="5" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="2" column="0" row-span="1" col-span="7" vsize-policy="5" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none" title="Initial objects"/>
         <children>
-          <component id="e8122" class="javax.swing.JTable" binding="initialObjectsTable">
+          <component id="b42b7" class="javax.swing.JTable" binding="initialObjectsTable">
             <constraints/>
-            <properties/>
+            <properties>
+              <enabled value="true"/>
+            </properties>
           </component>
         </children>
       </scrollpane>
-      <component id="80397" class="javax.swing.JButton" binding="stopButton" default-binding="true">
-        <constraints>
-          <grid row="3" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Stop"/>
-        </properties>
-      </component>
       <component id="d4290" class="javax.swing.JLabel" binding="inputFilePathLabel">
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value=""/>
@@ -268,7 +266,7 @@
       <grid id="47677" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="0" column="2" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="3" row-span="1" col-span="4" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none"/>
@@ -296,24 +294,95 @@
           </component>
         </children>
       </grid>
-      <hspacer id="1bebd">
+      <component id="e24f2" class="javax.swing.JLabel" binding="playFromLabel">
         <constraints>
-          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
-      </hspacer>
+        <properties>
+          <enabled value="false"/>
+          <text value="Play from:"/>
+        </properties>
+      </component>
+      <component id="96d91" class="javax.swing.JButton" binding="browsePlayingFileButton">
+        <constraints>
+          <grid row="4" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <enabled value="false"/>
+          <text value="Browse"/>
+        </properties>
+      </component>
+      <component id="90cdd" class="javax.swing.JLabel" binding="playFileLabel">
+        <constraints>
+          <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <enabled value="false"/>
+          <text value=""/>
+        </properties>
+      </component>
+      <component id="3567b" class="javax.swing.JLabel" binding="playingSpeedLabel">
+        <constraints>
+          <grid row="4" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <enabled value="false"/>
+          <text value="Playing speed"/>
+        </properties>
+      </component>
       <component id="3ddee" class="javax.swing.JButton" binding="startButton" default-binding="true">
         <constraints>
-          <grid row="3" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="3" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Start"/>
         </properties>
       </component>
-      <hspacer id="2d0c8">
+      <component id="f9794" class="javax.swing.JTextField" binding="playingSpeedTextField">
         <constraints>
-          <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="4" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="4" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
         </constraints>
-      </hspacer>
+        <properties>
+          <enabled value="false"/>
+        </properties>
+      </component>
+      <component id="1f07c" class="javax.swing.JButton" binding="playButton">
+        <constraints>
+          <grid row="4" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <enabled value="false"/>
+          <text value="Play"/>
+        </properties>
+      </component>
+      <component id="80397" class="javax.swing.JButton" binding="stopButton" default-binding="true">
+        <constraints>
+          <grid row="3" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <enabled value="false"/>
+          <text value="Stop"/>
+        </properties>
+      </component>
+      <component id="21c6b" class="javax.swing.JRadioButton" binding="playRadioButton">
+        <constraints>
+          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Play simulation"/>
+        </properties>
+      </component>
+      <component id="cd62e" class="javax.swing.JRadioButton" binding="runningRadioButton">
+        <constraints>
+          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <selected value="true"/>
+          <text value="Run simulation"/>
+        </properties>
+      </component>
     </children>
   </grid>
 </form>

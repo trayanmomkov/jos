@@ -27,7 +27,7 @@ public class VisualizerImpl implements Visualizer {
 
     public VisualizerImpl() {
         if (C.prop.isRealTimeVisualization()) {
-            frame = new VisualizationFrame(this, "Simple Double Buffer");
+            frame = new VisualizationFrame(this, "Simulation");
             frame.addKeyListener(new VisualizationKeyListener(this));
 
             /* Get window dimension */
@@ -52,6 +52,7 @@ public class VisualizerImpl implements Visualizer {
     public void closeWindow() {
         logger.info("Release graphic resources.");
         frame.dispose();
+        C.mainForm.onVisualizationWindowClosed();
     }
 
     double convertCoordinatesForDisplayX(double x) {

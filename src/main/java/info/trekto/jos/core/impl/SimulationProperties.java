@@ -16,7 +16,7 @@ public class SimulationProperties {
     private String outputFile;
     private boolean saveToFile = false;
     private boolean realTimeVisualization = false;
-    private int playingSpeed = 1;
+    private int playingSpeed = 33;
     private boolean bounceFromWalls;
     
     /* Java {@link ArrayList} is limited to Integer.MAX_VALUE */
@@ -34,7 +34,7 @@ public class SimulationProperties {
     }
 
     public boolean isInfiniteSimulation() {
-        return numberOfIterations == -1;
+        return numberOfIterations == 0;
     }
 
     public int getNumberOfObjects() {

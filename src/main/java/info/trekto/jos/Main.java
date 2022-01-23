@@ -1,12 +1,10 @@
 package info.trekto.jos;
 
+import info.trekto.jos.core.impl.SimulationImpl;
 import info.trekto.jos.exceptions.SimulationException;
-import info.trekto.jos.io.JsonReaderWriter;
 import info.trekto.jos.visualization.java2dgraphics.VisualizerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.FileNotFoundException;
 
 /**
  * @author Trayan Momkov
@@ -20,8 +18,8 @@ public class Main {
             return;
         }
 
-        String inputFile = args[0];
-        init(inputFile);
+        SimulationImpl.init(args[0]);
+
         if (C.prop.isRealTimeVisualization()) {
             C.visualizer = new VisualizerImpl();
         }
@@ -32,21 +30,9 @@ public class Main {
             if (ex.getMessage().contains("zero")) {
                 String message = "Operation with zero. Please increase the precision and try again. " + ex.getMessage();
                 logger.error(message, ex);
-                if (C.mainForm != null) {
-                    C.mainForm.appendMessage(message);
-                }
             } else {
                 throw ex;
             }
-        }
-    }
-
-    public static void init(String inputFile) {
-        C.io = new JsonReaderWriter();
-        try {
-            C.prop = C.io.readProperties(inputFile);
-        } catch (FileNotFoundException e) {
-            logger.error("Cannot read properties file.", e);
         }
     }
 }
