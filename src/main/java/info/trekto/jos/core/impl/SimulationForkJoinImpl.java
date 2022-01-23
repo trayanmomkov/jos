@@ -59,7 +59,11 @@ public class SimulationForkJoinImpl implements Simulation {
         new SimulationRecursiveAction(0, objects.size()).compute();
 
         /* Collision and merging */
+        CollisionCheck.prepare();
+        new CollisionCheck(0, auxiliaryObjects.size()).compute();
+        if (CollisionCheck.collisionExists()) {
         processCollisions(C.simulation);
+        }
 
         objects = auxiliaryObjects;
         if (C.prop.isSaveToFile()) {

@@ -60,26 +60,26 @@ public class SimulationGenerator {
 
     public static List<SimulationObject> generateObjects(SimulationProperties prop) {
         List<SimulationObject> objects = new ArrayList<>();
-        Random random = new Random(897L);
+        Random random = new Random(898L);
 
         for (int i = 0; i < prop.getNumberOfObjects(); i++) {
             SimulationObject o = new SimulationObjectImpl();
 
-            o.setX(New.num(random.nextDouble()).subtract(New.num("0.5")).multiply(New.num(1000)));
+            o.setX(New.num(random.nextDouble()).subtract(New.num("0.5")).multiply(New.num(1630)));
             o.setY(New.num(random.nextDouble()).subtract(New.num("0.5")).multiply(New.num(1000)));
             o.setZ(ZERO);
-            Number radiusMultiplier = i % 7 == 0 ? New.num(4) : New.num(1.5);
+            Number radiusMultiplier = i % 120 == 0 ? New.num(2) : New.num(04);
             o.setRadius(New.num(random.nextDouble()).multiply(radiusMultiplier));
 
             outerloop:
             while (collisionExists(objects)) {
-                for (int j = 0; j < 100; j++) {
-                    o.setX(New.num(random.nextDouble()).subtract(New.num("0.5")).multiply(New.num(1000)));
+                for (int j = 0; j < 1000; j++) {
+                    o.setX(New.num(random.nextDouble()).subtract(New.num("0.5")).multiply(New.num(1630)));
                     if (!collisionExists(objects)) {
                         break outerloop;
                     }
                 }
-                for (int j = 0; j < 100 && collisionExists(objects); j++) {
+                for (int j = 0; j < 1000 && collisionExists(objects); j++) {
                     o.setY(New.num(random.nextDouble()).subtract(New.num("0.5")).multiply(New.num(1000)));
                     if (!collisionExists(objects)) {
                         break outerloop;
