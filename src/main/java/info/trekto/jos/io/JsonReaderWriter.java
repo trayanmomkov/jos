@@ -10,20 +10,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * @author Trayan Momkov
  */
 public class JsonReaderWriter implements ReaderWriter {
     private static final Logger logger = LoggerFactory.getLogger(JsonReaderWriter.class);
-    private BufferedWriter writer;
+    private OutputStreamWriter writer;
 
     public void writeProperties(SimulationProperties properties, String outputFilePath) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -93,9 +91,9 @@ public class JsonReaderWriter implements ReaderWriter {
             properties.setNumberOfIterations(json.get("numberOfIterations").getAsLong());
             properties.setSecondsPerIteration(Double.parseDouble(json.get("secondsPerIteration").getAsString()));
             properties.setNumberOfObjects(json.get("numberOfObjects").getAsInt());
-            
+
             C.simulation = new SimulationImpl(properties.getNumberOfObjects(), properties.getSecondsPerIteration());
-            
+
             properties.setOutputFile(json.get("outputFile").getAsString());
             properties.setSaveToFile(json.get("saveToFile").getAsBoolean());
             properties.setRealTimeVisualization(json.get("realTimeVisualization").getAsBoolean());
@@ -130,7 +128,7 @@ public class JsonReaderWriter implements ReaderWriter {
 
         return properties;
     }
-    
+
     private void initArrays(List<SimulationObject> initialObjects) {
         for (int i = 0; i < initialObjects.size(); i++) {
             SimulationObject o = initialObjects.get(i);
@@ -230,7 +228,13 @@ public class JsonReaderWriter implements ReaderWriter {
 
     public void initWriter(SimulationProperties properties, String inputFilePath) {
         try {
-            writer = Files.newBufferedWriter(new File(properties.getOutputFile()).toPath(), UTF_8);
+            if (!inputFilePath.endsWith(".zip")) {
+                inputFilePath = inputFilePath + ".zip";
+            }
+            writer = new OutputStreamWriter(new BufferedOutputStream(
+                    new GZIPOutputStream(
+                            new FileOutputStream(inputFilePath)
+                    )));
         } catch (IOException e) {
             logger.info("Cannot open output file " + inputFilePath, e);
         }
