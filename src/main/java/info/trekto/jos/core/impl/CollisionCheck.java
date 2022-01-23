@@ -12,9 +12,9 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 
-public class CollisionCheck extends RecursiveAction {
+import static info.trekto.jos.core.impl.SimulationRecursiveAction.THRESHOLD;
 
-    public static int THRESHOLD = 4;
+public class CollisionCheck extends RecursiveAction {
     private final int fromIndex;
     private final int toIndex;
 
