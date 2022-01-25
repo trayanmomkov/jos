@@ -100,6 +100,9 @@ public class Utils {
 
         long remainingIterations = numberOfIterations - i;
         long remainingTime = Math.round(remainingIterations * averageTimePerIteration);
+        if (remainingTime < 0) {
+            remainingTime = 0;
+        }
 
         String remainingString = "Iteration " + i
                 + ", elapsed time: " + nanoToHumanReadable(System.nanoTime() - startTime)

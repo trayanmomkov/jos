@@ -1,5 +1,9 @@
 package info.trekto.jos.visualization;
 
+import info.trekto.jos.model.SimulationObject;
+
+import java.util.List;
+
 /**
  * @author Trayan Momkov
  * 2016-Oct-17 23:11
@@ -23,4 +27,6 @@ public interface Visualizer {
     void visualize();
 
     void end();
+
+    void visualize(List<SimulationObject> objects);
 }

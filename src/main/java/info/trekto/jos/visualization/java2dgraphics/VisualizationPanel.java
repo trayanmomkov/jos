@@ -1,5 +1,6 @@
 package info.trekto.jos.visualization.java2dgraphics;
 
+import info.trekto.jos.C;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +17,7 @@ public class VisualizationPanel extends JPanel {
 
     private final double scaleStep = 0.1;
     private final double translateStep = 1;
-    private List<ShapeWithColor> shapes;
+    private List<ShapeWithColorAndText> shapes;
     private int displayWidth;
     private int displayHeight;
     private Image image = null;
@@ -43,7 +44,7 @@ public class VisualizationPanel extends JPanel {
         if (image == null) {
             /* Double-buffer: clear the offscreen image. */
             image = createImage(dimension.width, dimension.height);
-            //            image = new BufferedImage(dimension.width, dimension.height, BufferedImage.TYPE_INT_RGB);
+//                        image = new BufferedImage(dimension.width, dimension.height, BufferedImage.TYPE_INT_RGB);
         }
         graphics = image.getGraphics();
         graphics.setColor(backgroundColor);
@@ -63,10 +64,10 @@ public class VisualizationPanel extends JPanel {
 
     public void renderOffScreen(final Graphics g) {
         if (shapes != null) {
-            for (ShapeWithColor shape : shapes) {
+            for (ShapeWithColorAndText shape : shapes) {
                 g.setColor(shape.getColor());
                 if (shape.getText() != null) {
-                    g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 96));
+                    g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, C.mainForm.getFontSize()));
                     ((Graphics2D) g).drawString(shape.getText(),
                                                 Math.round(shape.getShape().getBounds2D().getX()),
                                                 Math.round(shape.getShape().getBounds2D().getY()));
@@ -77,7 +78,7 @@ public class VisualizationPanel extends JPanel {
         }
     }
 
-    public void draw(List<ShapeWithColor> shapes) {
+    public void draw(List<ShapeWithColorAndText> shapes) {
         this.shapes = shapes;
         repaint();
     }

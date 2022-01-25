@@ -24,7 +24,7 @@ public class SimulationGenerator {
 
     public static void generateObjects(SimulationProperties prop, MainForm mainForm) {
         String filename = System.getProperty("user.home") + File.separator
-                + new SimpleDateFormat("yyyy-MMM-dd_HH-mm-ss").format(new Date()) + ".json.zip";
+                + new SimpleDateFormat("yyyy-MMM-dd_HH-mm-ss").format(new Date()) + ".json.gz";
         prop.setOutputFile(filename);
 
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();

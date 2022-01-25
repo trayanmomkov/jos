@@ -6,14 +6,17 @@ import info.trekto.jos.exceptions.SimulationException;
 import info.trekto.jos.io.JsonReaderWriter;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.util.Utils;
+import info.trekto.jos.visualization.java2dgraphics.VisualizerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
 import static com.aparapi.Kernel.EXECUTION_MODE.GPU;
+import static info.trekto.jos.formulas.ScientificConstants.NANOSECONDS_IN_ONE_MILLISECOND;
 import static info.trekto.jos.formulas.ScientificConstants.NANOSECONDS_IN_ONE_SECOND;
 import static info.trekto.jos.util.Utils.*;
 
@@ -50,6 +53,7 @@ public class SimulationImpl {
     }
 
     public static void initArrays(List<SimulationObject> initialObjects) {
+        Arrays.fill(C.simulation.simulationLogicKernel.deleted, true);
         for (int i = 0; i < initialObjects.size(); i++) {
             SimulationObject o = initialObjects.get(i);
             C.simulation.simulationLogicKernel.positionX[i] = o.getX();
@@ -60,8 +64,8 @@ public class SimulationImpl {
             C.simulation.simulationLogicKernel.radius[i] = o.getRadius();
             C.simulation.simulationLogicKernel.id[i] = o.getId();
             C.simulation.simulationLogicKernel.color[i] = o.getColor();
+            C.simulation.simulationLogicKernel.deleted[i] = false;
         }
-        Arrays.fill(C.simulation.simulationLogicKernel.deleted, false);
     }
 
     public static void init(String inputFile) {
@@ -79,7 +83,66 @@ public class SimulationImpl {
         C.simulation = new SimulationImpl(C.prop.getNumberOfObjects(), C.prop.getSecondsPerIteration());
     }
 
-    public long startSimulation() throws SimulationException {
+    public static void initForPlaying(String inputFile) throws IOException {
+        C.io = new JsonReaderWriter();
+        try {
+            C.prop = C.io.readPropertiesForPlaying(inputFile);
+            C.prop.setRealTimeVisualization(true);
+        } catch (FileNotFoundException e) {
+            logger.error("Cannot read properties file.", e);
+        }
+    }
+
+    public void playSimulation(String inputFile) {
+        try {
+            // Only reset reader pointer. Do not change properties! We want to have the latest changes from GUI.
+            C.io.readPropertiesForPlaying(inputFile);
+            C.simulation = this;
+        } catch (IOException e) {
+            logger.error("Cannot reset input file for playing.", e);
+        }
+        C.visualizer = new VisualizerImpl();
+        long previousTime = System.nanoTime();
+        running = true;
+        try {
+            while (C.io.hasMoreIterations()) {
+                if (C.hasToStop) {
+                    doStop();
+                    break;
+                }
+                Iteration iteration = C.io.readNextIteration();
+                if (iteration == null) {
+                    break;
+                }
+
+                if (C.prop.getPlayingSpeed() < 0) {
+                    Thread.sleep(-C.prop.getPlayingSpeed());
+                } else if ((System.nanoTime() - previousTime) / NANOSECONDS_IN_ONE_MILLISECOND < C.prop.getPlayingSpeed()) {
+                    continue;
+                }
+                C.visualizer.visualize(iteration.getObjects());
+                previousTime = System.nanoTime();
+                logger.info("Cycle: " + iteration.getCycle() + ", number of objects: " + iteration.getNumberOfObjects());
+            }
+        } catch (IOException e) {
+            logger.error("Error while reading simulation object.", e);
+        } catch (InterruptedException e) {
+            logger.error("Thread interrupted.", e);
+        } finally {
+            running = false;
+        }
+    }
+
+    private void doStop() {
+        C.hasToStop = false;
+        if (C.prop.isSaveToFile()) {
+            C.io.endFile();
+        }
+        C.endText = "Stopped!";
+        C.visualizer.closeWindow();
+    }
+
+    public void startSimulation() throws SimulationException {
         initArrays(C.prop.getInitialObjects());
         if (duplicateIdExists(simulationLogicKernel.id)) {
             throw new SimulationException("Objects with duplicate IDs exist!");
@@ -103,12 +166,7 @@ public class SimulationImpl {
             for (long i = 0; C.prop.isInfiniteSimulation() || i < C.prop.getNumberOfIterations(); i++) {
                 try {
                     if (C.hasToStop) {
-                        C.hasToStop = false;
-                        if (C.prop.isSaveToFile()) {
-                            C.io.endFile();
-                        }
-                        C.endText = "Stopped!";
-                        C.visualizer.closeWindow();
+                        doStop();
                         break;
                     }
 
@@ -128,7 +186,7 @@ public class SimulationImpl {
                     logger.error("Concurrency failure. One of the threads interrupted in cycle " + i, e);
                 }
             }
-            
+
             if (C.prop.isRealTimeVisualization()) {
                 C.visualizer.end();
             }
@@ -141,7 +199,6 @@ public class SimulationImpl {
         }
 
         logger.info("End of simulation. Time: " + nanoToHumanReadable(endTime - startTime));
-        return endTime - startTime;
     }
 
     private void doIteration() throws InterruptedException {
@@ -155,15 +212,25 @@ public class SimulationImpl {
         deepCopy(simulationLogicKernel.deleted, simulationLogicKernel.readOnlyDeleted);
 
         simulationLogicKernel.execute(simulationLogicRange);
-        if (!GPU.equals(simulationLogicKernel.getExecutionMode()) || iterationCounter == 1) {
-            logger.warn("Execution mode = " + simulationLogicKernel.getExecutionMode());
+        if (iterationCounter == 1) {
+            String message = "Execution mode = " + simulationLogicKernel.getExecutionMode();
+            if (GPU.equals(simulationLogicKernel.getExecutionMode())) {
+                logger.info(message);
+            } else {
+                logger.warn(message);
+            }
         }
 
         /* Collision and merging */
         collisionCheckKernel.prepare();
         collisionCheckKernel.execute(collisionCheckRange);
-        if (!GPU.equals(collisionCheckKernel.getExecutionMode()) || iterationCounter == 1) {
-            logger.warn("CollisionCheckKernel Execution mode = " + collisionCheckKernel.getExecutionMode());
+        if (iterationCounter == 1) {
+            String message = "Execution mode = " + simulationLogicKernel.getExecutionMode();
+            if (GPU.equals(simulationLogicKernel.getExecutionMode())) {
+                logger.info(message);
+            } else {
+                logger.warn(message);
+            }
         }
         if (collisionCheckKernel.collisionExists()) {
             simulationLogicKernel.processCollisions();

@@ -14,6 +14,7 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,9 +64,18 @@ public class MainForm {
     private JButton playButton;
     private JScrollPane initialObjectsPanel;
     private JButton generateObjectsButton;
+    private JPanel playingPanel;
+    private JPanel browsePropertiesPanel;
+    private JTextField fontSize;
+    private JCheckBox showObjectIDsCheckBox;
+    private JCheckBox showTrailCheckBox;
+    private JTextField trailSizeTextField;
+    private JLabel fontSizeLabel;
+    private JLabel trailSizeTextLabel;
     private ButtonGroup buttonGroup;
     private List<Component> runningComponents;
     private List<Component> playingComponents;
+    private File playFile;
 
     public MainForm() {
         initialObjectsTable.setModel(new InitialObjectsTableModelAndListener(this));
@@ -114,7 +124,11 @@ public class MainForm {
             }
         });
 
-        saveToFileCheckBox.addActionListener(actionEvent -> C.prop.setSaveToFile(saveToFileCheckBox.isSelected()));
+        saveToFileCheckBox.addActionListener(actionEvent -> {
+            outputFileLabel.setEnabled(saveToFileCheckBox.isSelected());
+            outputFileTextField.setEnabled(saveToFileCheckBox.isSelected());
+            C.prop.setSaveToFile(saveToFileCheckBox.isSelected());
+        });
 
         precisionTextField.getDocument().addUndoableEditListener(actionEvent -> {
             if (!precisionTextField.getText().isBlank()) {
@@ -132,7 +146,7 @@ public class MainForm {
         bounceFromScreenWallsCheckBox.addActionListener(actionEvent -> C.prop.setBounceFromWalls(bounceFromScreenWallsCheckBox.isSelected()));
 
         playingSpeedTextField.getDocument().addUndoableEditListener(actionEvent -> {
-            if (!playingSpeedTextField.getText().isBlank()) {
+            if (!playingSpeedTextField.getText().replace("-", "").isBlank()) {
                 C.prop.setPlayingSpeed(Integer.parseInt(playingSpeedTextField.getText()));
             }
         });
@@ -169,12 +183,11 @@ public class MainForm {
         runningComponents = new ArrayList<>(List.of(
                 numberOfIterationsTextField, secondsPerIterationTextField, browseButton, saveToFileCheckBox, outputFileTextField,
                 realTimeVisualizationCheckBox, numberOfObjectsTextField, initialObjectsTable, numberOfIterationsLabel,
-                startButton, stopButton, savePropertiesButton, inputFilePathLabel, simulationPropertiesPanel, numberOfObjectsLabel,
+                startButton, savePropertiesButton, inputFilePathLabel, simulationPropertiesPanel, numberOfObjectsLabel,
                 secondsPerIterationLabel, numberTypeLabel, interactingLawLabel, outputFileLabel, numberTypeDropdown, lawDropdown,
                 initialObjectsTable, initialObjectsPanel, generateObjectsButton));
 
-        playingComponents = new ArrayList<>(List.of(playingSpeedTextField, playFileLabel, playFromLabel, browsePlayingFileButton,
-                                                    playingSpeedLabel, playingSpeedTextField, playButton));
+        playingComponents = new ArrayList<>(List.of(playingSpeedTextField, playFileLabel, playFromLabel, browsePlayingFileButton, playButton));
 
         generateObjectsButton.addActionListener(actionEvent -> {
             SimulationProperties prop = new SimulationProperties();
@@ -191,8 +204,39 @@ public class MainForm {
             }
             prop.setRealTimeVisualization(realTimeVisualizationCheckBox.isSelected());
             prop.setSaveToFile(saveToFileCheckBox.isSelected());
-            
+
             new Thread(() -> SimulationGenerator.generateObjects(prop, this)).start();
+        });
+
+        browsePlayingFileButton.addActionListener(actionEvent -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileFilter(new FileNameExtensionFilter("GZipped JSON file", "gz"));
+            int option = fileChooser.showOpenDialog(mainPanel);
+            if (option == JFileChooser.APPROVE_OPTION) {
+                playFile = fileChooser.getSelectedFile();
+                playFileLabel.setText(playFile.getAbsolutePath());
+                try {
+                    SimulationImpl.initForPlaying(playFile.getAbsolutePath());
+                    refreshProperties(C.prop);
+                } catch (IOException e) {
+                    showError(mainPanel, "Cannot read ZIP file.", e);
+                }
+            }
+        });
+
+        playingSpeedLabel.setLabelFor(playingSpeedTextField);
+
+        playButton.addActionListener(actionEvent -> {
+            stopButton.setEnabled(true);
+            new Thread(() -> C.simulation.playSimulation(playFile.getAbsolutePath())).start();
+        });
+        showObjectIDsCheckBox.addActionListener(actionEvent -> {
+            fontSize.setEnabled(showObjectIDsCheckBox.isSelected());
+            fontSizeLabel.setEnabled(showObjectIDsCheckBox.isSelected());
+        });
+        showTrailCheckBox.addActionListener(actionEvent -> {
+            trailSizeTextField.setEnabled(showTrailCheckBox.isSelected());
+            trailSizeTextLabel.setEnabled(showTrailCheckBox.isSelected());
         });
     }
 
@@ -283,7 +327,9 @@ public class MainForm {
     }
 
     public void onVisualizationWindowClosed() {
-        startButton.setEnabled(true);
+        if (runningRadioButton.isSelected()) {
+            startButton.setEnabled(true);
+        }
         if (runningRadioButton.isSelected()) {
             runningComponents.forEach(c -> c.setEnabled(true));
         } else {
@@ -292,5 +338,29 @@ public class MainForm {
         runningRadioButton.setEnabled(true);
         playRadioButton.setEnabled(true);
         stopButton.setEnabled(false);
+    }
+
+    public int getFontSize() {
+        if (!fontSize.getText().replace("-", "").isBlank()) {
+            return Integer.parseInt(fontSize.getText());
+        } else {
+            return 48;
+        }
+    }
+
+    public boolean isShowIds() {
+        return showObjectIDsCheckBox.isSelected();
+    }
+
+    public boolean isShowTrail() {
+        return showTrailCheckBox.isSelected();
+    }
+
+    public int getTrailSize() {
+        if (!trailSizeTextField.getText().replace("-", "").isBlank()) {
+            return Integer.parseInt(trailSizeTextField.getText());
+        } else {
+            return 500;
+        }
     }
 }
