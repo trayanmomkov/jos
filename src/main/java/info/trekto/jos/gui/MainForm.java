@@ -13,11 +13,14 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import static info.trekto.jos.util.Utils.error;
 import static info.trekto.jos.util.Utils.isNullOrBlank;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.WARNING_MESSAGE;
@@ -206,7 +209,19 @@ public class MainForm {
             prop.setRealTimeVisualization(realTimeVisualizationCheckBox.isSelected());
             prop.setSaveToFile(saveToFileCheckBox.isSelected());
 
-            new Thread(() -> SimulationGenerator.generateObjects(prop, this)).start();
+            new Thread(() -> {
+                try {
+                    SimulationGenerator.generateObjects(prop, this);
+                } catch (Exception ex) {
+                    String message = "Error during object generation.";
+                    error(logger, message, ex);
+                    C.visualizer.closeWindow();
+                    showError(mainPanel, message + " " + ex.getMessage());
+                } finally {
+                    onVisualizationWindowClosed();
+                }
+            }).start();
+
         });
 
         browsePlayingFileButton.addActionListener(actionEvent -> {
@@ -229,8 +244,9 @@ public class MainForm {
 
         playButton.addActionListener(actionEvent -> {
             stopButton.setEnabled(true);
-            new Thread(() -> C.simulation.playSimulation(playFile.getAbsolutePath())).start();
+            play();
         });
+
         showObjectIDsCheckBox.addActionListener(actionEvent -> {
             fontSize.setEnabled(showObjectIDsCheckBox.isSelected());
             fontSizeLabel.setEnabled(showObjectIDsCheckBox.isSelected());
@@ -239,11 +255,42 @@ public class MainForm {
             trailSizeTextField.setEnabled(showTrailCheckBox.isSelected());
             trailSizeTextLabel.setEnabled(showTrailCheckBox.isSelected());
         });
+        outputFileTextField.addActionListener(actionEvent -> C.prop.setOutputFile(outputFileTextField.getText()));
+        numberOfObjectsTextField.addActionListener(actionEvent -> {
+            if (!isNullOrBlank(numberOfObjectsTextField.getText())) {
+                C.prop.setNumberOfObjects(Integer.parseInt(numberOfObjectsTextField.getText()));
+            }
+        });
+        numberOfIterationsTextField.addActionListener(actionEvent -> {
+            if (!isNullOrBlank(numberOfIterationsTextField.getText())) {
+                C.prop.setNumberOfIterations(Integer.parseInt(numberOfIterationsTextField.getText()));
+            }
+        });
+        secondsPerIterationTextField.addActionListener(actionEvent -> {
+            if (!isNullOrBlank(secondsPerIterationTextField.getText())) {
+                C.prop.setSecondsPerIteration(Integer.parseInt(secondsPerIterationTextField.getText()));
+            }
+        });
     }
 
     private void enableRunning(boolean enable) {
         runningComponents.forEach(c -> c.setEnabled(enable));
         playingComponents.forEach(c -> c.setEnabled(!enable));
+    }
+
+    private void play() {
+        new Thread(() -> {
+            try {
+                C.simulation.playSimulation(playFile.getAbsolutePath());
+            } catch (Exception ex) {
+                String message = "Error during playing.";
+                error(logger, message, ex);
+                C.visualizer.closeWindow();
+                showError(mainPanel, message + " " + ex.getMessage());
+            } finally {
+                onVisualizationWindowClosed();
+            }
+        }).start();
     }
 
     private void start() {
@@ -254,18 +301,28 @@ public class MainForm {
                         C.visualizer = new VisualizerImpl();
                     }
                     C.simulation.startSimulation();
-                } catch (SimulationException e) {
-                    showError(mainPanel, "Error during simulation.", e);
+                } catch (SimulationException ex) {
+                    String message = "Error during simulation.";
+                    error(logger, message, ex);
                     C.visualizer.closeWindow();
+                    showError(mainPanel, message + " " + ex.getMessage());
                 } catch (ArithmeticException ex) {
                     if (ex.getMessage().contains("zero")) {
-                        String message = "Operation with zero. Please increase the precision and try again. " + ex.getMessage();
-                        logger.error(message, ex);
-                        appendMessage(message);
+                        String message = "Operation with zero. Please increase the precision and try again.";
+                        error(logger, message, ex);
                         C.visualizer.closeWindow();
+                        showError(mainPanel, message + " " + ex.getMessage());
                     } else {
-                        throw ex;
+                        String message = "Arithmetic exception.";
+                        error(logger, message, ex);
+                        C.visualizer.closeWindow();
+                        showError(mainPanel, message + " " + ex.getMessage());
                     }
+                } catch (Exception ex) {
+                    String message = "Unexpected exception.";
+                    error(logger, message, ex);
+                    C.visualizer.closeWindow();
+                    showError(mainPanel, message + " " + ex.getMessage());
                 } finally {
                     onVisualizationWindowClosed();
                 }

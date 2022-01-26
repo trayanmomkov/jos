@@ -8,6 +8,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
+import static info.trekto.jos.util.Utils.info;
+
 /**
  * @author Trayan Momkov
  * 2016-окт-17 23:16
@@ -84,12 +86,12 @@ public class VisualizationPanel extends JPanel {
     }
 
     public void zoomIn() {
-        logger.info("zoomIn");
+        info(logger, "zoomIn");
         scale += scaleStep;
     }
 
     public void zoomOut() {
-        logger.info("zoomOut");
+        info(logger, "zoomOut");
         scale -= scaleStep;
     }
 

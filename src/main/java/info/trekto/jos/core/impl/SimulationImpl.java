@@ -73,7 +73,7 @@ public class SimulationImpl {
         try {
             C.prop = C.io.readProperties(inputFile);
         } catch (FileNotFoundException e) {
-            logger.error("Cannot read properties file.", e);
+            error(logger, "Cannot read properties file.", e);
         }
     }
 
@@ -89,7 +89,7 @@ public class SimulationImpl {
             C.prop = C.io.readPropertiesForPlaying(inputFile);
             C.prop.setRealTimeVisualization(true);
         } catch (FileNotFoundException e) {
-            logger.error("Cannot read properties file.", e);
+            error(logger, "Cannot read properties file.", e);
         }
     }
 
@@ -99,7 +99,7 @@ public class SimulationImpl {
             C.io.readPropertiesForPlaying(inputFile);
             C.simulation = this;
         } catch (IOException e) {
-            logger.error("Cannot reset input file for playing.", e);
+            error(logger, "Cannot reset input file for playing.", e);
         }
         C.visualizer = new VisualizerImpl();
         long previousTime = System.nanoTime();
@@ -122,12 +122,12 @@ public class SimulationImpl {
                 }
                 C.visualizer.visualize(iteration.getObjects());
                 previousTime = System.nanoTime();
-                logger.info("Cycle: " + iteration.getCycle() + ", number of objects: " + iteration.getNumberOfObjects());
+                info(logger, "Cycle: " + iteration.getCycle() + ", number of objects: " + iteration.getNumberOfObjects());
             }
         } catch (IOException e) {
-            logger.error("Error while reading simulation object.", e);
+            error(logger, "Error while reading simulation object.", e);
         } catch (InterruptedException e) {
-            logger.error("Thread interrupted.", e);
+            error(logger, "Thread interrupted.", e);
         } finally {
             running = false;
         }
@@ -152,10 +152,10 @@ public class SimulationImpl {
             throw new SimulationException("Initial collision exists!");
         }
 
-        logger.info("Done.\n");
+        info(logger, "Done.\n");
         Utils.printConfiguration(C.prop);
 
-        logger.info("\nStart simulation...");
+        info(logger, "\nStart simulation...");
         C.endText = "END.";
         long startTime = System.nanoTime();
         long previousTime = startTime;
@@ -183,7 +183,7 @@ public class SimulationImpl {
 
                     doIteration();
                 } catch (InterruptedException e) {
-                    logger.error("Concurrency failure. One of the threads interrupted in cycle " + i, e);
+                    error(logger, "Concurrency failure. One of the threads interrupted in cycle " + i, e);
                 }
             }
 
@@ -198,7 +198,7 @@ public class SimulationImpl {
             }
         }
 
-        logger.info("End of simulation. Time: " + nanoToHumanReadable(endTime - startTime));
+        info(logger, "End of simulation. Time: " + nanoToHumanReadable(endTime - startTime));
     }
 
     private void doIteration() throws InterruptedException {
@@ -215,9 +215,9 @@ public class SimulationImpl {
         if (iterationCounter == 1) {
             String message = "Execution mode = " + simulationLogicKernel.getExecutionMode();
             if (GPU.equals(simulationLogicKernel.getExecutionMode())) {
-                logger.info(message);
+                info(logger, message);
             } else {
-                logger.warn(message);
+                warn(logger, message);
             }
         }
 
@@ -227,9 +227,9 @@ public class SimulationImpl {
         if (iterationCounter == 1) {
             String message = "Execution mode = " + simulationLogicKernel.getExecutionMode();
             if (GPU.equals(simulationLogicKernel.getExecutionMode())) {
-                logger.info(message);
+                info(logger, message);
             } else {
-                logger.warn(message);
+                warn(logger, message);
             }
         }
         if (collisionCheckKernel.collisionExists()) {

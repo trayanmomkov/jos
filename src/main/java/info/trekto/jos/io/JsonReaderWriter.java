@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import static info.trekto.jos.util.Utils.error;
+import static info.trekto.jos.util.Utils.info;
 import static org.codehaus.jackson.JsonToken.END_OBJECT;
 
 /**
@@ -39,7 +41,7 @@ public class JsonReaderWriter implements ReaderWriter {
             gson.toJson(json, writer);
             writer.write("\n}");
         } catch (IOException e) {
-            logger.error("Cannot save properties.");
+            error(logger, "Cannot save properties.");
         }
     }
 
@@ -95,7 +97,7 @@ public class JsonReaderWriter implements ReaderWriter {
             JsonObject json = JsonParser.parseReader(new FileReader(inputFilePath)).getAsJsonObject().get("properties").getAsJsonObject();
             readProperties(json, properties);
         } catch (ClassCastException | IllegalStateException ex) {
-            logger.error("Cannot parse properties file: '" + inputFilePath + "'", ex);
+            error(logger, "Cannot parse properties file: '" + inputFilePath + "'", ex);
         }
         return properties;
     }
@@ -153,7 +155,7 @@ public class JsonReaderWriter implements ReaderWriter {
             parser.nextToken(); // Field "simulation"
             parser.nextToken(); // Start array
         } catch (ClassCastException | IllegalStateException ex) {
-            logger.error("Cannot read input file: '" + inputFile + "'", ex);
+            error(logger, "Cannot read input file: '" + inputFile + "'", ex);
         }
 
         return prop;
@@ -204,7 +206,7 @@ public class JsonReaderWriter implements ReaderWriter {
                 gson.toJson(mapPropertiesAndInitialObjects(C.prop, gson), writer);
                 writer.write(",\n  \"simulation\": [\n");
             } catch (IOException e) {
-                logger.error("Cannot write 'simulation' element to output JSON file.", e);
+                error(logger, "Cannot write 'simulation' element to output JSON file.", e);
             }
         }
 
@@ -225,7 +227,7 @@ public class JsonReaderWriter implements ReaderWriter {
             try {
                 writer.write(",\n");
             } catch (IOException e) {
-                logger.error("Cannot write comma after writing cycle in the output file.", e);
+                error(logger, "Cannot write comma after writing cycle in the output file.", e);
             }
         }
     }
@@ -239,7 +241,7 @@ public class JsonReaderWriter implements ReaderWriter {
                 writer = null;
             }
         } catch (IOException e) {
-            logger.info("Error while closing file.", e);
+            info(logger, "Error while closing file.", e);
         }
     }
 
@@ -250,7 +252,7 @@ public class JsonReaderWriter implements ReaderWriter {
             }
             writer = new OutputStreamWriter(new BufferedOutputStream(new GZIPOutputStream(new FileOutputStream(inputFilePath))));
         } catch (IOException e) {
-            logger.info("Cannot open output file " + inputFilePath, e);
+            info(logger, "Cannot open output file " + inputFilePath, e);
         }
     }
 }

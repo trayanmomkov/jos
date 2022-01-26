@@ -18,6 +18,7 @@ import java.util.Random;
 
 import static info.trekto.jos.core.impl.SimulationImpl.init;
 import static info.trekto.jos.formulas.CommonFormulas.calculateVolumeFromRadius;
+import static info.trekto.jos.util.Utils.info;
 
 public class SimulationGenerator {
     private static final Logger logger = LoggerFactory.getLogger(SimulationGenerator.class);
@@ -62,7 +63,7 @@ public class SimulationGenerator {
 
                 objects.add(o);
                 generatedObjects++;
-                C.mainForm.appendMessage(generatedObjects + " objects generated.");
+                info(logger, generatedObjects + " objects generated.");
                 if (generatedObjects == n) {
                     break outerloop;
                 }

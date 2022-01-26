@@ -6,6 +6,8 @@ import info.trekto.jos.visualization.java2dgraphics.VisualizerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static info.trekto.jos.util.Utils.error;
+
 /**
  * @author Trayan Momkov
  */
@@ -14,7 +16,7 @@ public class Main {
 
     public static void main(String[] args) throws SimulationException {
         if (args.length == 0) {
-            System.err.println("Missing input file. Please pass it as program argument.");
+            error(logger, "Missing input file. Please pass it as program argument.");
             return;
         }
 
@@ -29,7 +31,7 @@ public class Main {
         } catch (ArithmeticException ex) {
             if (ex.getMessage().contains("zero")) {
                 String message = "Operation with zero. Please increase the precision and try again. " + ex.getMessage();
-                logger.error(message, ex);
+                error(logger, message, ex);
             } else {
                 throw ex;
             }

@@ -17,6 +17,7 @@ import java.util.Queue;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static info.trekto.jos.util.Utils.info;
 import static java.awt.Color.BLUE;
 import static java.awt.Color.RED;
 
@@ -57,7 +58,7 @@ public class VisualizerImpl implements Visualizer {
 
     @Override
     public void closeWindow() {
-        logger.info("Release graphic resources.");
+        info(logger, "Release graphic resources.");
         frame.dispose();
         C.mainForm.onVisualizationWindowClosed();
     }
