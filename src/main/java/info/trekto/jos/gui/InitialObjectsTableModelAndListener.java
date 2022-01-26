@@ -67,19 +67,20 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
 
     public void refreshInitialObjects() {
         C.prop.setInitialObjects(new ArrayList<>());
-        for (Vector vector : dataVector) {
+        for (Object vector : dataVector) {
+            Vector v = (Vector) vector;
             SimulationObject o = new SimulationObjectImpl();
             int i = 0;
-            o.setId(String.valueOf(vector.get(i++)));
-            o.setMass(Double.parseDouble(String.valueOf(vector.get(i++))));
-            o.setX(Double.parseDouble(String.valueOf(vector.get(i++))));
-            o.setY(Double.parseDouble(String.valueOf(vector.get(i++))));
-            o.setZ(Double.parseDouble(String.valueOf(vector.get(i++))));
-            o.setRadius(Double.parseDouble(String.valueOf(vector.get(i++))));
-            o.setSpeedX(Double.parseDouble(String.valueOf(vector.get(i++))));
-            o.setSpeedY(Double.parseDouble(String.valueOf(vector.get(i++))));
-            o.setSpeedZ(Double.parseDouble(String.valueOf(vector.get(i++))));
-            o.setColor(Integer.parseInt(String.valueOf(vector.get(i++))));
+            o.setId(String.valueOf(v.get(i++)));
+            o.setMass(Double.parseDouble(String.valueOf(v.get(i++))));
+            o.setX(Double.parseDouble(String.valueOf(v.get(i++))));
+            o.setY(Double.parseDouble(String.valueOf(v.get(i++))));
+            o.setZ(Double.parseDouble(String.valueOf(v.get(i++))));
+            o.setRadius(Double.parseDouble(String.valueOf(v.get(i++))));
+            o.setSpeedX(Double.parseDouble(String.valueOf(v.get(i++))));
+            o.setSpeedY(Double.parseDouble(String.valueOf(v.get(i++))));
+            o.setSpeedZ(Double.parseDouble(String.valueOf(v.get(i++))));
+            o.setColor(Integer.parseInt(String.valueOf(v.get(i++))));
 
             C.prop.getInitialObjects().add(o);
         }

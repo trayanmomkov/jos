@@ -15,9 +15,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import static info.trekto.jos.util.Utils.isNullOrBlank;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
@@ -107,19 +108,19 @@ public class MainForm {
         });
 
         numberOfObjectsTextField.getDocument().addUndoableEditListener(actionEvent -> {
-            if (!numberOfObjectsTextField.getText().isBlank()) {
+            if (!isNullOrBlank(numberOfObjectsTextField.getText())) {
                 C.prop.setNumberOfObjects(Integer.parseInt(numberOfObjectsTextField.getText()));
             }
         });
 
         numberOfIterationsTextField.getDocument().addUndoableEditListener(actionEvent -> {
-            if (!numberOfIterationsTextField.getText().isBlank()) {
+            if (!isNullOrBlank(numberOfIterationsTextField.getText())) {
                 C.prop.setNumberOfIterations(Integer.parseInt(numberOfIterationsTextField.getText()));
             }
         });
 
         secondsPerIterationTextField.getDocument().addUndoableEditListener(actionEvent -> {
-            if (!secondsPerIterationTextField.getText().isBlank()) {
+            if (!isNullOrBlank(secondsPerIterationTextField.getText())) {
                 C.prop.setSecondsPerIteration(Double.parseDouble(secondsPerIterationTextField.getText()));
             }
         });
@@ -131,13 +132,13 @@ public class MainForm {
         });
 
         precisionTextField.getDocument().addUndoableEditListener(actionEvent -> {
-            if (!precisionTextField.getText().isBlank()) {
+            if (!isNullOrBlank(precisionTextField.getText())) {
                 C.prop.setPrecision(Integer.parseInt(precisionTextField.getText()));
             }
         });
 
         scaleTextField.getDocument().addUndoableEditListener(actionEvent -> {
-            if (!scaleTextField.getText().isBlank()) {
+            if (!isNullOrBlank(scaleTextField.getText())) {
                 C.prop.setScale(Integer.parseInt(scaleTextField.getText()));
             }
         });
@@ -146,13 +147,13 @@ public class MainForm {
         bounceFromScreenWallsCheckBox.addActionListener(actionEvent -> C.prop.setBounceFromWalls(bounceFromScreenWallsCheckBox.isSelected()));
 
         playingSpeedTextField.getDocument().addUndoableEditListener(actionEvent -> {
-            if (!playingSpeedTextField.getText().replace("-", "").isBlank()) {
+            if (!isNullOrBlank(playingSpeedTextField.getText().replace("-", ""))) {
                 C.prop.setPlayingSpeed(Integer.parseInt(playingSpeedTextField.getText()));
             }
         });
 
         outputFileTextField.getDocument().addUndoableEditListener(actionEvent -> {
-            if (!outputFileTextField.getText().isBlank()) {
+            if (!isNullOrBlank(outputFileTextField.getText())) {
                 C.prop.setOutputFile(outputFileTextField.getText());
             }
         });
@@ -180,26 +181,26 @@ public class MainForm {
         runningRadioButton.addActionListener(actionEvent -> enableRunning(true));
         playRadioButton.addActionListener(actionEvent -> enableRunning(false));
 
-        runningComponents = new ArrayList<>(List.of(
+        runningComponents = Arrays.asList(
                 numberOfIterationsTextField, secondsPerIterationTextField, browseButton, saveToFileCheckBox, outputFileTextField,
                 realTimeVisualizationCheckBox, numberOfObjectsTextField, initialObjectsTable, numberOfIterationsLabel,
                 startButton, savePropertiesButton, inputFilePathLabel, simulationPropertiesPanel, numberOfObjectsLabel,
                 secondsPerIterationLabel, numberTypeLabel, interactingLawLabel, outputFileLabel, numberTypeDropdown, lawDropdown,
-                initialObjectsTable, initialObjectsPanel, generateObjectsButton));
+                initialObjectsTable, initialObjectsPanel, generateObjectsButton);
 
-        playingComponents = new ArrayList<>(List.of(playingSpeedTextField, playFileLabel, playFromLabel, browsePlayingFileButton, playButton));
+        playingComponents = Arrays.asList(playingSpeedTextField, playFileLabel, playFromLabel, browsePlayingFileButton, playButton);
 
         generateObjectsButton.addActionListener(actionEvent -> {
             SimulationProperties prop = new SimulationProperties();
-            if (!numberOfObjectsTextField.getText().isBlank()) {
+            if (!isNullOrBlank(numberOfObjectsTextField.getText())) {
                 prop.setNumberOfObjects(Integer.parseInt(numberOfObjectsTextField.getText()));
             }
 
-            if (!numberOfIterationsTextField.getText().isBlank()) {
+            if (!isNullOrBlank(numberOfIterationsTextField.getText())) {
                 prop.setNumberOfIterations(Integer.parseInt(numberOfIterationsTextField.getText()));
             }
 
-            if (!secondsPerIterationTextField.getText().isBlank()) {
+            if (!isNullOrBlank(secondsPerIterationTextField.getText())) {
                 prop.setSecondsPerIteration(Double.parseDouble(secondsPerIterationTextField.getText()));
             }
             prop.setRealTimeVisualization(realTimeVisualizationCheckBox.isSelected());
@@ -341,7 +342,7 @@ public class MainForm {
     }
 
     public int getFontSize() {
-        if (!fontSize.getText().replace("-", "").isBlank()) {
+        if (!isNullOrBlank(fontSize.getText().replace("-", ""))) {
             return Integer.parseInt(fontSize.getText());
         } else {
             return 48;
@@ -357,7 +358,7 @@ public class MainForm {
     }
 
     public int getTrailSize() {
-        if (!trailSizeTextField.getText().replace("-", "").isBlank()) {
+        if (!isNullOrBlank(trailSizeTextField.getText().replace("-", ""))) {
             return Integer.parseInt(trailSizeTextField.getText());
         } else {
             return 500;

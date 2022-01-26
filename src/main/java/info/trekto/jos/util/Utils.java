@@ -176,6 +176,10 @@ public class Utils {
         }
         return false;
     }
+    
+    public static boolean isNullOrBlank(String s) {
+        return s == null || s.trim().isEmpty();
+    }
 
     public static void main(String[] args) {
         int rgb = 255;
