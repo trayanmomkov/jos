@@ -22,10 +22,10 @@ public class SimulationProperties {
     /* Java {@link ArrayList} is limited to Integer.MAX_VALUE */
     private int numberOfObjects;
     
-    /* Significant digits. In 1.2300 we have 3 significant digits */
+    /* BigDecimal precision */
     private int precision = 32;
     
-    /* Number of digits after decimal point. In 12.34 the scale is 2 */
+    /* BigDecimal scale */
     private int scale = 16;
 
     private List<SimulationObject> initialObjects;

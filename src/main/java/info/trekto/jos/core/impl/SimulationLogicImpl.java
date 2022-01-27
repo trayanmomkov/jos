@@ -61,6 +61,11 @@ public class SimulationLogicImpl extends Kernel {
         calculateNewValues(getGlobalId());
     }
 
+    /**
+     * !!! DO NOT CHANGE THIS METHOD, run() method and methods called from them if you don't have experience with Aparapi library!!!
+     * This code is translated to OpenCL and executed on the GPU.
+     * You cannot use even simple 'break' here - it is not supported by Aparapi.
+     */
     public void calculateNewValues(int i) {
         if (!deleted[i]) {
             /* Calculate acceleration */
@@ -138,6 +143,10 @@ public class SimulationLogicImpl extends Kernel {
         }
     }
 
+    /**
+     * Because processCollisions() method does not run on GPU
+     * we can remove this method and replace color encode/decode with java.awt.Color
+     */
     private int calculateColor(int smaller, int bigger) {
         double bigVolume = calculateVolumeFromRadius(radius[bigger]);
         double smallVolume = calculateVolumeFromRadius(radius[smaller]);

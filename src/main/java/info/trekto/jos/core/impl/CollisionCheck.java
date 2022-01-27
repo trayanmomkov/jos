@@ -38,6 +38,11 @@ public class CollisionCheck extends Kernel {
         return false;
     }
 
+    /**
+     * !!! DO NOT CHANGE THIS METHOD and methods called from it if you don't have experience with Aparapi library!!!
+     * This code is translated to OpenCL and executed on the GPU.
+     * You cannot use even simple 'break' here - it is not supported by Aparapi.
+     */
     @Override
     public void run() {
         int i = getGlobalId();

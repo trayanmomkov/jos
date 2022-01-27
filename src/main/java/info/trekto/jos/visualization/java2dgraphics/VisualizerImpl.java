@@ -23,7 +23,7 @@ import static java.awt.Color.RED;
 
 /**
  * @author Trayan Momkov
- * 2016-окт-17 23:13
+ * 2016-Oct-17 23:13
  */
 public class VisualizerImpl implements Visualizer {
     private static final Logger logger = LoggerFactory.getLogger(VisualizerImpl.class);

@@ -95,7 +95,7 @@ public class SimulationImpl {
 
     public void playSimulation(String inputFile) {
         try {
-            // Only reset reader pointer. Do not change properties! We want to have the latest changes from GUI.
+            // Only reset reader pointer. Do not change properties! We want to have the latest changes from the GUI.
             C.io.readPropertiesForPlaying(inputFile);
             C.simulation = this;
         } catch (IOException e) {

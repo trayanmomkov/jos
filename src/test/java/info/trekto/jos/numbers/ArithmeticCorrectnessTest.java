@@ -8,7 +8,7 @@ import java.text.DecimalFormat;
 import static org.testng.Assert.assertEquals;
 
 public class ArithmeticCorrectnessTest {
-    DecimalFormat df = new DecimalFormat("#.#");
+     final DecimalFormat df = new DecimalFormat("#.#");
 
     @BeforeClass
     public void init() {

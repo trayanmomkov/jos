@@ -12,7 +12,7 @@ import static info.trekto.jos.util.Utils.info;
 
 /**
  * @author Trayan Momkov
- * 2016-окт-17 23:16
+ * 2016-Oct-17 23:16
  */
 public class VisualizationPanel extends JPanel {
     private static final Logger logger = LoggerFactory.getLogger(VisualizationPanel.class);
@@ -20,11 +20,8 @@ public class VisualizationPanel extends JPanel {
     private final double scaleStep = 0.1;
     private final double translateStep = 1;
     private List<ShapeWithColorAndText> shapes;
-    private int displayWidth;
-    private int displayHeight;
     private Image image = null;
-    private Graphics graphics = null;
-    private Color backgroundColor;
+    private final Color backgroundColor;
     private double scale = 1;
     private double translateX = 0;
     private double translateY = 0;
@@ -33,8 +30,8 @@ public class VisualizationPanel extends JPanel {
         super();
         this.backgroundColor = backgroundColor;
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        displayWidth = gd.getDisplayMode().getWidth();
-        displayHeight = gd.getDisplayMode().getHeight();
+        int displayWidth = gd.getDisplayMode().getWidth();
+        int displayHeight = gd.getDisplayMode().getHeight();
         setSize(displayWidth, displayHeight);
         setBackground(backgroundColor);
     }
@@ -48,7 +45,7 @@ public class VisualizationPanel extends JPanel {
             image = createImage(dimension.width, dimension.height);
 //                        image = new BufferedImage(dimension.width, dimension.height, BufferedImage.TYPE_INT_RGB);
         }
-        graphics = image.getGraphics();
+        Graphics graphics = image.getGraphics();
         graphics.setColor(backgroundColor);
         graphics.fillRect(0, 0, dimension.width, dimension.height);
 

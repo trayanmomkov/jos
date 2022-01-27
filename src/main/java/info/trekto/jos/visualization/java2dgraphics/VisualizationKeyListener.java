@@ -7,7 +7,7 @@ import java.awt.event.KeyListener;
 
 /**
  * @author Trayan Momkov
- * 2016-дек-27 19:16
+ * 2016-Dec-27 19:16
  *
  */
 public class VisualizationKeyListener implements KeyListener {

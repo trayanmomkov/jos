@@ -7,15 +7,12 @@ import info.trekto.jos.model.SimulationObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.List;
 
 import static info.trekto.jos.core.impl.SimulationLogicImpl.calculateDistance;
 import static info.trekto.jos.formulas.ScientificConstants.*;
-import static java.awt.Color.BLUE;
 
 /**
  * @author Trayan Momkov
@@ -26,26 +23,20 @@ public class Utils {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Utils.class);
     private static final int LAST_N_INTERVALS = 3;
 
-    private static List<Long> lastIterationsCount = new ArrayList<>();
-    private static List<Long> lastTime = new ArrayList<>();
-    public static DateFormat df = new SimpleDateFormat("HH-mm-ss.SSS");
+    private static final List<Long> lastIterationsCount = new ArrayList<>();
+    private static final List<Long> lastTime = new ArrayList<>();
+    public static final DateFormat df = new SimpleDateFormat("HH-mm-ss.SSS");
 
     public static void deepCopy(double[] src, double[] dst) {
-        for (int i = 0; i < src.length; i++) {
-            dst[i] = src[i];
-        }
+        System.arraycopy(src, 0, dst, 0, src.length);
     }
 
     public static void deepCopy(int[] src, int[] dst) {
-        for (int i = 0; i < src.length; i++) {
-            dst[i] = src[i];
-        }
+        System.arraycopy(src, 0, dst, 0, src.length);
     }
 
     public static void deepCopy(boolean[] src, boolean[] dst) {
-        for (int i = 0; i < src.length; i++) {
-            dst[i] = src[i];
-        }
+        System.arraycopy(src, 0, dst, 0, src.length);
     }
 
     public static void printConfiguration(SimulationProperties properties) {
@@ -77,9 +68,9 @@ public class Utils {
         info(logger, "'Number' implementation: double");
     }
 
-    public static String showRemainingTime(long i, long startTime, long numberOfIterations, int numberOfObjects) {
+    public static void showRemainingTime(long i, long startTime, long numberOfIterations, int numberOfObjects) {
         if (i == 0) {
-            return "";
+            return;
         }
 
         if (lastIterationsCount.size() == LAST_N_INTERVALS) {
@@ -112,7 +103,6 @@ public class Utils {
                 + (numberOfIterations < 1 ? "" : ", remaining time: " + milliToHumanReadable(remainingTime));
 
         info(logger, remainingString);
-        return remainingString;
     }
 
     public static String nanoToHumanReadable(long nanoseconds) {
