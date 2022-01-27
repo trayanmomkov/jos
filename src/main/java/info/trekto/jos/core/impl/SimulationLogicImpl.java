@@ -129,7 +129,7 @@ public class SimulationLogicImpl extends Kernel {
 
                             if (i == smaller) {
                                 /* If the current object is deleted stop processing it further. */
-                                break;  // TODO Aparapi doesn't support breaks
+                                break;
                             }
                         }
                     }

@@ -155,7 +155,7 @@ public class SimulationImpl {
         info(logger, "Done.\n");
         Utils.printConfiguration(C.prop);
 
-        info(logger, "\nStart simulation...");
+        info(logger, "Start simulation...");
         C.endText = "END.";
         long startTime = System.nanoTime();
         long previousTime = startTime;
@@ -213,7 +213,7 @@ public class SimulationImpl {
 
         simulationLogicKernel.execute(simulationLogicRange);
         if (iterationCounter == 1) {
-            String message = "Execution mode = " + simulationLogicKernel.getExecutionMode();
+            String message = "Simulation logic execution mode = " + simulationLogicKernel.getExecutionMode();
             if (GPU.equals(simulationLogicKernel.getExecutionMode())) {
                 info(logger, message);
             } else {
@@ -225,7 +225,7 @@ public class SimulationImpl {
         collisionCheckKernel.prepare();
         collisionCheckKernel.execute(collisionCheckRange);
         if (iterationCounter == 1) {
-            String message = "Execution mode = " + simulationLogicKernel.getExecutionMode();
+            String message = "Collision detection execution mode = " + simulationLogicKernel.getExecutionMode();
             if (GPU.equals(simulationLogicKernel.getExecutionMode())) {
                 info(logger, message);
             } else {

@@ -55,7 +55,7 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
                 o.getSpeedX(),
                 o.getSpeedY(),
                 o.getSpeedZ(),
-                o.getColor()});
+                String.format("%08X", o.getColor()).substring(2)});
     }
 
     @Override
@@ -80,7 +80,7 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
             o.setSpeedX(Double.parseDouble(String.valueOf(v.get(i++))));
             o.setSpeedY(Double.parseDouble(String.valueOf(v.get(i++))));
             o.setSpeedZ(Double.parseDouble(String.valueOf(v.get(i++))));
-            o.setColor(Integer.parseInt(String.valueOf(v.get(i++))));
+            o.setColor(Integer.parseInt(String.valueOf(v.get(i++)), 16));
 
             C.prop.getInitialObjects().add(o);
         }
