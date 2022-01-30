@@ -1,9 +1,11 @@
 package info.trekto.jos.io;
 
+import info.trekto.jos.core.impl.Iteration;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.model.SimulationObject;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 public interface ReaderWriter {
@@ -14,4 +16,10 @@ public interface ReaderWriter {
     void appendObjectsToFile(List<SimulationObject> objects);
 
     void endFile();
+
+    SimulationProperties readPropertiesForPlaying(String inputFile) throws IOException;
+
+    boolean hasMoreIterations();
+
+    Iteration readNextIteration() throws IOException;
 }

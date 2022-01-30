@@ -57,8 +57,6 @@ public class Benchmark {
 
         C.simulationLogic = new SimulationLogicImpl();
 
-        long durationInNanoseconds = C.simulation.startSimulation();
-
-        logger.info(C.prop.getPrecision() + "\t" + C.prop.getNumberType() + "\t" + (durationInNanoseconds / 1000000) + " ms");
+        C.simulation.startSimulation();
     }
 }

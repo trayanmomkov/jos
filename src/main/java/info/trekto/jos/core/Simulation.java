@@ -1,19 +1,20 @@
 package info.trekto.jos.core;
 
+import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.exceptions.SimulationException;
 import info.trekto.jos.formulas.ForceCalculator;
 import info.trekto.jos.model.SimulationObject;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.Flow;
 
 /**
  * @author Trayan Momkov
  * 2016-Mar-6
  */
-public interface Simulation extends Flow.Publisher<List<SimulationObject>> {
+public interface Simulation {
 
-    long startSimulation() throws SimulationException;
+    void startSimulation() throws SimulationException;
 
     List<SimulationObject> getObjects();
 
@@ -23,7 +24,13 @@ public interface Simulation extends Flow.Publisher<List<SimulationObject>> {
 
     ForceCalculator getForceCalculator();
     
-    List<Flow.Subscriber<? super List<SimulationObject>>> getSubscribers();
-    
-    void removeAllSubscribers();
+    boolean isRunning();
+
+    void init(SimulationProperties prop);
+
+    void initForPlaying(String absolutePath) throws IOException;
+
+    void playSimulation(String absolutePath);
+
+    void init(String absolutePath);
 }

@@ -4,8 +4,7 @@ import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.numbers.New;
 import info.trekto.jos.numbers.Number;
 
-import java.util.ArrayList;
-import java.util.List;
+import static java.awt.Color.BLUE;
 
 /**
  * @author Trayan Momkov
@@ -13,26 +12,23 @@ import java.util.List;
  */
 public class SimulationObjectImpl implements SimulationObject {
 
-    Number x;
-    Number y;
-    Number z;
-    TripleNumber speed;
-    Number radius;
-    TripleInt color;
-    Number mass;
+    private Number x;
+    private Number y;
+    private Number z;
+    private TripleNumber speed;
+    private Number radius;
+    private int color;
+    private Number mass;
 
     /* Whether the object is static */
     boolean motionless = false;
     String id;
 
-    /* Array with points through which object passed. */
-    List<TripleNumber> trajectory;
-
     public SimulationObjectImpl() {
         this.x = New.ZERO;
         this.y = New.ZERO;
         this.z = New.ZERO;
-        color = new TripleInt(0, 0, 255);
+        color = BLUE.getRGB();
     }
 
     public SimulationObjectImpl(SimulationObject simulationObject) {
@@ -41,7 +37,6 @@ public class SimulationObjectImpl implements SimulationObject {
         this.mass = simulationObject.getMass();
         this.radius = simulationObject.getRadius();
         this.speed = simulationObject.getSpeed();
-        this.trajectory = (simulationObject.getTrajectory() == null) ? null : new ArrayList<>(simulationObject.getTrajectory());
         this.x = simulationObject.getX();
         this.y = simulationObject.getY();
         this.z = simulationObject.getZ();
@@ -98,12 +93,12 @@ public class SimulationObjectImpl implements SimulationObject {
     }
 
     @Override
-    public TripleInt getColor() {
+    public int getColor() {
         return color;
     }
 
     @Override
-    public void setColor(TripleInt color) {
+    public void setColor(int color) {
         this.color = color;
     }
 
@@ -125,15 +120,5 @@ public class SimulationObjectImpl implements SimulationObject {
     @Override
     public void setId(String id) {
         this.id = id;
-    }
-
-    @Override
-    public List<TripleNumber> getTrajectory() {
-        return trajectory;
-    }
-
-    @Override
-    public void setTrajectory(List<TripleNumber> trajectory) {
-        this.trajectory = trajectory;
     }
 }

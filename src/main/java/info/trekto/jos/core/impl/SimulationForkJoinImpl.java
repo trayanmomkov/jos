@@ -5,6 +5,7 @@ import info.trekto.jos.core.Simulation;
 import info.trekto.jos.exceptions.SimulationException;
 import info.trekto.jos.formulas.ForceCalculator;
 import info.trekto.jos.formulas.NewtonGravity;
+import info.trekto.jos.io.JsonReaderWriter;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.SimulationObjectImpl;
 import info.trekto.jos.util.Utils;
@@ -13,11 +14,13 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Flow;
 
 import static info.trekto.jos.core.impl.SimulationLogicImpl.processCollisions;
+import static info.trekto.jos.formulas.ScientificConstants.NANOSECONDS_IN_ONE_MILLISECOND;
 import static info.trekto.jos.formulas.ScientificConstants.NANOSECONDS_IN_ONE_SECOND;
 import static info.trekto.jos.util.Utils.*;
 
@@ -30,28 +33,16 @@ import static info.trekto.jos.util.Utils.*;
 public class SimulationForkJoinImpl implements Simulation {
     private static final Logger logger = LoggerFactory.getLogger(SimulationForkJoinImpl.class);
     public static final int SHOW_REMAINING_INTERVAL_SECONDS = 2;
+    public boolean running = false;
 
     private long iterationCounter;
     private ForceCalculator forceCalculator;
 
-    /**
-     * We cannot use array and just mark objects as disappeared because distribution per threads
-     * will not work - we will not be able to distribute objects equally per thread. We need to
-     * remove objects from lists. We need second auxiliary list in which to store objects with new
-     * values. When calculation finished just swap lists. Auxiliary list must contain another
-     * objects (not just references to original ones). This is need because we need to keep original
-     * values when calculating new values. This approach prevents creation of new objects in every
-     * iteration. We create objects at the beginning of the simulation and after that only remove
-     * objects when collision appear. Good candidate for implementation of the lists is LinkedList
-     * because during simulation we will not add any new objects to the lists, nor we will access
-     * them randomly (via indices). We only remove from them, get sublists and iterate sequentially.
-     * But getting sublist is done by indices in every iteration. On the other hand removing objects
-     * happens relatively rarely so ArrayList is faster than LinkedList.
-     */
     private List<SimulationObject> objects;
     private List<SimulationObject> auxiliaryObjects;
-    private List<Flow.Subscriber<? super List<SimulationObject>>> subscribers;
-
+    
+    
+    
     private void doIteration() throws InterruptedException {
         auxiliaryObjects = deepCopy(objects);
 
@@ -66,79 +57,143 @@ public class SimulationForkJoinImpl implements Simulation {
         }
 
         objects = auxiliaryObjects;
+
+        if (C.prop.isRealTimeVisualization() && C.prop.getPlayingSpeed() < 0) {
+            Thread.sleep(-C.prop.getPlayingSpeed());
+        }
+        
         if (C.prop.isSaveToFile()) {
             C.io.appendObjectsToFile(objects);
         }
     }
+    
+    @Override
+    public void init(String inputFile) {
+        C.io = new JsonReaderWriter();
+        try {
+            C.prop = C.io.readProperties(inputFile);
+        } catch (FileNotFoundException e) {
+            error(logger, "Cannot read properties file.", e);
+        }
+    }
 
     @Override
-    public long startSimulation() throws SimulationException {
+    public void init(SimulationProperties prop) {
+        C.io = new JsonReaderWriter();
+        C.prop = prop;
+        C.simulation = new SimulationForkJoinImpl();
+    }
+
+    public void initForPlaying(String inputFile) throws IOException {
+        C.io = new JsonReaderWriter();
+        try {
+            C.prop = C.io.readPropertiesForPlaying(inputFile);
+            C.prop.setRealTimeVisualization(true);
+        } catch (FileNotFoundException e) {
+            error(logger, "Cannot read properties file.", e);
+        }
+    }
+    
+    public void playSimulation(String inputFile) {
+        try {
+            // Only reset reader pointer. Do not change properties! We want to have the latest changes from the GUI.
+            C.io.readPropertiesForPlaying(inputFile);
+            C.simulation = this;
+        } catch (IOException e) {
+            error(logger, "Cannot reset input file for playing.", e);
+        }
+        C.visualizer = new VisualizerImpl();
+        long previousTime = System.nanoTime();
+        running = true;
+        try {
+            while (C.io.hasMoreIterations()) {
+                if (C.hasToStop) {
+                    doStop();
+                    break;
+                }
+                Iteration iteration = C.io.readNextIteration();
+                if (iteration == null) {
+                    break;
+                }
+
+                if (C.prop.getPlayingSpeed() < 0) {
+                    Thread.sleep(-C.prop.getPlayingSpeed());
+                } else if ((System.nanoTime() - previousTime) / NANOSECONDS_IN_ONE_MILLISECOND < C.prop.getPlayingSpeed()) {
+                    continue;
+                }
+                C.visualizer.visualize(iteration.getObjects());
+                previousTime = System.nanoTime();
+                info(logger, "Cycle: " + iteration.getCycle() + ", number of objects: " + iteration.getNumberOfObjects());
+            }
+        } catch (IOException e) {
+            error(logger, "Error while reading simulation object.", e);
+        } catch (InterruptedException e) {
+            error(logger, "Thread interrupted.", e);
+        } finally {
+            running = false;
+        }
+    }
+
+    private void doStop() {
+        C.hasToStop = false;
+        if (C.prop.isSaveToFile()) {
+            C.io.endFile();
+        }
+        C.endText = "Stopped!";
+        C.visualizer.closeWindow();
+    }
+
+    @Override
+    public void startSimulation() throws SimulationException {
         init();
 
-        logger.info("\nStart simulation...");
+        info(logger, "Done.\n");
+        Utils.printConfiguration(C.prop);
+
+        info(logger, "Start simulation...");
         C.endText = "END.";
         long startTime = System.nanoTime();
         long previousTime = startTime;
         long endTime;
 
+        running = true;
         try {
             for (long i = 0; C.prop.isInfiniteSimulation() || i < C.prop.getNumberOfIterations(); i++) {
                 try {
                     if (C.hasToStop) {
-                        C.hasToStop = false;
-                        C.io.endFile();
-                        C.endText = "Stopped!";
+                        doStop();
                         break;
                     }
 
                     iterationCounter = i + 1;
 
                     if (System.nanoTime() - previousTime >= NANOSECONDS_IN_ONE_SECOND * SHOW_REMAINING_INTERVAL_SECONDS) {
-                        showRemainingTimeBasedOnLastNIterations(i, startTime, C.prop.getNumberOfIterations(), objects.size());
+                        showRemainingTime(i, startTime, C.prop.getNumberOfIterations(), objects.size());
                         previousTime = System.nanoTime();
                     }
 
-                    if (C.prop.isRealTimeVisualization() && i % C.prop.getPlayingSpeed() == 0) {
-                        notifySubscribers();
+                    if (C.prop.isRealTimeVisualization() && System.nanoTime() - previousTime >= C.prop.getPlayingSpeed()) {
+                        C.visualizer.visualize(objects);
                     }
 
                     doIteration();
-
-                    if (C.prop.isRealTimeVisualization() && C.prop.getPlayingSpeed() < 0) {
-                        Thread.sleep(-C.prop.getPlayingSpeed());
-                    }
                 } catch (InterruptedException e) {
-                    logger.error("Concurrency failure. One of the threads interrupted in cycle " + i, e);
+                    error(logger, "Concurrency failure. One of the threads interrupted in cycle " + i, e);
                 }
             }
 
-            notifySubscribersEnd();
+            if (C.prop.isRealTimeVisualization()) {
+                C.visualizer.end();
+            }
             endTime = System.nanoTime();
         } finally {
+            running = false;
             if (C.prop.isSaveToFile()) {
                 C.io.endFile();
             }
         }
 
-
-        logger.info("End of simulation. Time: " + nanoToHumanReadable (endTime - startTime));
-        return endTime - startTime;
-    }
-
-    private void notifySubscribers() {
-        if (subscribers != null) {
-            for (Flow.Subscriber<? super List<SimulationObject>> subscriber : subscribers) {
-                subscriber.onNext(objects);
-            }
-        }
-    }
-
-    private void notifySubscribersEnd() {
-        if (subscribers != null) {
-            for (Flow.Subscriber<? super List<SimulationObject>> subscriber : subscribers) {
-                subscriber.onComplete();
-            }
-        }
+        info(logger, "End of simulation. Time: " + nanoToHumanReadable(endTime - startTime));
     }
 
     private void init() throws SimulationException {
@@ -199,27 +254,7 @@ public class SimulationForkJoinImpl implements Simulation {
     }
 
     @Override
-    public List<Flow.Subscriber<? super List<SimulationObject>>> getSubscribers() {
-        return subscribers;
-    }
-
-    @Override
-    public void removeAllSubscribers() {
-        if (subscribers != null) {
-            for (Flow.Subscriber<? super List<SimulationObject>> subscriber : subscribers) {
-                if (subscriber instanceof VisualizerImpl) {
-                    ((VisualizerImpl) subscriber).closeWindow();
-                }
-            }
-        }
-        subscribers = new ArrayList<>();
-    }
-
-    @Override
-    public void subscribe(Flow.Subscriber<? super List<SimulationObject>> subscriber) {
-        if (subscribers == null) {
-            subscribers = new ArrayList<>();
-        }
-        subscribers.add(subscriber);
+    public boolean isRunning() {
+        return running;
     }
 }

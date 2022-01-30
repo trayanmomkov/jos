@@ -2,34 +2,40 @@ package info.trekto.jos.io;
 
 import com.google.gson.*;
 import info.trekto.jos.C;
+import info.trekto.jos.core.impl.Iteration;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.formulas.ForceCalculator;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.SimulationObjectImpl;
-import info.trekto.jos.model.impl.TripleInt;
 import info.trekto.jos.model.impl.TripleNumber;
 import info.trekto.jos.numbers.New;
 import info.trekto.jos.numbers.NumberFactory;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonToken;
+import org.codehaus.jackson.map.MappingJsonFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
 import java.io.*;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import static info.trekto.jos.numbers.NumberFactoryProxy.createNumberFactory;
-import static java.nio.charset.StandardCharsets.UTF_8;
+import static info.trekto.jos.util.Utils.error;
+import static info.trekto.jos.util.Utils.info;
+import static org.codehaus.jackson.JsonToken.END_OBJECT;
 
 /**
  * @author Trayan Momkov
  */
 public class JsonReaderWriter implements ReaderWriter {
     private static final Logger logger = LoggerFactory.getLogger(JsonReaderWriter.class);
-    private BufferedWriter writer;
+    private OutputStreamWriter writer;
+    private org.codehaus.jackson.JsonParser parser;
 
     public void writeProperties(SimulationProperties properties, String outputFilePath) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -39,7 +45,7 @@ public class JsonReaderWriter implements ReaderWriter {
             gson.toJson(json, writer);
             writer.write("\n}");
         } catch (IOException e) {
-            logger.error("Cannot save properties.");
+            error(logger, "Cannot save properties.");
         }
     }
 
@@ -89,8 +95,7 @@ public class JsonReaderWriter implements ReaderWriter {
 
         simulationObjectMap.put("radius", simulationObject.getRadius().toString());
 
-        Color color = new Color(simulationObject.getColor().getR(), simulationObject.getColor().getG(), simulationObject.getColor().getB());
-        simulationObjectMap.put("color", String.format("%08X", color.getRGB()).substring(2));
+        simulationObjectMap.put("color", String.format("%08X", simulationObject.getColor()).substring(2));
         return gson.toJsonTree(simulationObjectMap).getAsJsonObject();
     }
 
@@ -99,66 +104,123 @@ public class JsonReaderWriter implements ReaderWriter {
         SimulationProperties properties = new SimulationProperties();
         try {
             JsonObject json = JsonParser.parseReader(new FileReader(inputFilePath)).getAsJsonObject().get("properties").getAsJsonObject();
-            properties.setNumberType(NumberFactory.NumberType.valueOf(json.get("numberType").getAsString()));
-            properties.setPrecision(json.get("precision").getAsInt());
-            properties.setScale(json.get("scale").getAsInt());
-
-            createNumberFactory(properties.getNumberType(), properties.getPrecision(), properties.getScale());
-
-            properties.setNumberOfIterations(json.get("numberOfIterations").getAsLong());
-            properties.setSecondsPerIteration(New.num(json.get("secondsPerIteration").getAsString()));
-            properties.setNumberOfObjects(json.get("numberOfObjects").getAsInt());
-            properties.setOutputFile(json.get("outputFile").getAsString());
-            properties.setSaveToFile(json.get("saveToFile").getAsBoolean());
-            properties.setInteractingLaw(ForceCalculator.InteractingLaw.valueOf(json.get("interactingLaw").getAsString()));
-            properties.setRealTimeVisualization(json.get("realTimeVisualization").getAsBoolean());
-            properties.setPlayingSpeed(json.get("playingSpeed").getAsInt());
-            JsonElement bounceFromWall = json.get("bounceFromWalls");
-            properties.setBounceFromWalls(bounceFromWall != null && bounceFromWall.getAsBoolean());
-
-            List<SimulationObject> initialObjects = new ArrayList<>();
-            for (JsonElement jsonElement : json.get("initialObjects").getAsJsonArray()) {
-                JsonObject o = jsonElement.getAsJsonObject();
-                SimulationObject simo = new SimulationObjectImpl();
-
-                simo.setId(o.get("id").getAsString());
-
-                simo.setX(New.num(o.get("x").getAsString()));
-                simo.setY(New.num(o.get("y").getAsString()));
-                simo.setZ(New.num(o.get("z").getAsString()));
-
-                simo.setMass(New.num(o.get("mass").getAsString()));
-
-                simo.setSpeed(new TripleNumber(New.num(o.get("speedX").getAsString()),
-                                               New.num(o.get("speedY").getAsString()),
-                                               New.num(o.get("speedZ").getAsString())));
-
-                simo.setRadius(New.num(o.get("radius").getAsString()));
-                Color color = new Color(Integer.parseInt(o.get("color").getAsString(), 16));
-                simo.setColor(new TripleInt(color.getRed(), color.getGreen(), color.getBlue()));
-
-                initialObjects.add(simo);
-            }
-
-            properties.setInitialObjects(initialObjects);
+            readProperties(json, properties);
         } catch (ClassCastException | IllegalStateException ex) {
-            logger.error("Cannot parse properties file: '" + inputFilePath + "'", ex);
+            error(logger, "Cannot parse properties file: '" + inputFilePath + "'", ex);
+        }
+        return properties;
+    }
+
+    private void readProperties(JsonObject json, SimulationProperties properties) {
+        properties.setNumberType(NumberFactory.NumberType.valueOf(json.get("numberType").getAsString()));
+        properties.setPrecision(json.get("precision").getAsInt());
+        properties.setScale(json.get("scale").getAsInt());
+
+        createNumberFactory(properties.getNumberType(), properties.getPrecision(), properties.getScale());
+
+        properties.setNumberOfIterations(json.get("numberOfIterations").getAsLong());
+        properties.setSecondsPerIteration(New.num(json.get("secondsPerIteration").getAsString()));
+        properties.setNumberOfObjects(json.get("numberOfObjects").getAsInt());
+        properties.setOutputFile(json.get("outputFile").getAsString());
+        properties.setSaveToFile(json.get("saveToFile").getAsBoolean());
+        properties.setInteractingLaw(ForceCalculator.InteractingLaw.valueOf(json.get("interactingLaw").getAsString()));
+        properties.setRealTimeVisualization(json.get("realTimeVisualization").getAsBoolean());
+        properties.setPlayingSpeed(json.get("playingSpeed").getAsInt());
+        JsonElement bounceFromWall = json.get("bounceFromWalls");
+        properties.setBounceFromWalls(bounceFromWall != null && bounceFromWall.getAsBoolean());
+
+        List<SimulationObject> initialObjects = new ArrayList<>();
+        for (JsonElement jsonElement : json.get("initialObjects").getAsJsonArray()) {
+            JsonObject o = jsonElement.getAsJsonObject();
+            SimulationObject simo = new SimulationObjectImpl();
+
+            simo.setId(o.get("id").getAsString());
+
+            simo.setX(New.num(o.get("x").getAsString()));
+            simo.setY(New.num(o.get("y").getAsString()));
+            simo.setZ(New.num(o.get("z").getAsString()));
+
+            simo.setMass(New.num(o.get("mass").getAsString()));
+
+            simo.setSpeed(new TripleNumber(New.num(o.get("speedX").getAsString()),
+                                           New.num(o.get("speedY").getAsString()),
+                                           New.num(o.get("speedZ").getAsString())));
+
+            simo.setRadius(New.num(o.get("radius").getAsString()));
+            simo.setColor(Integer.parseInt(o.get("color").getAsString(), 16));
+
+            initialObjects.add(simo);
         }
 
-        return properties;
+        properties.setInitialObjects(initialObjects);
+    }
+
+    @Override
+    public SimulationProperties readPropertiesForPlaying(String inputFile) throws IOException {
+        SimulationProperties prop = new SimulationProperties();
+        try {
+            parser = new MappingJsonFactory()
+                    .createJsonParser(new InputStreamReader(new BufferedInputStream(new GZIPInputStream(new FileInputStream(inputFile)))));
+
+            parser.nextToken(); // Start root
+            parser.nextToken(); // Field properties
+            parser.nextToken(); // Start object
+            readProperties(JsonParser.parseString(parser.readValueAsTree().toString()).getAsJsonObject(), prop);
+            parser.nextToken(); // Field "simulation"
+            parser.nextToken(); // Start array
+        } catch (ClassCastException | IllegalStateException ex) {
+            error(logger, "Cannot read input file: '" + inputFile + "'", ex);
+        }
+
+        return prop;
+    }
+
+    @Override
+    public boolean hasMoreIterations() {
+        return parser != null && !parser.isClosed();
+    }
+
+    @Override
+    public Iteration readNextIteration() throws IOException {
+        JsonToken currentToken = parser.nextToken(); // Object start
+        if (currentToken.equals(END_OBJECT)) {
+            return null;
+        }
+        JsonNode iteration = parser.readValueAsTree();
+        long cycle = iteration.get("cycle").getLongValue();
+        int numberOfObjects = iteration.get("numberOfObjects").getIntValue();
+        List<SimulationObject> objects = new ArrayList<>();
+        if (iteration.get("objects").isArray()) {
+            for (final JsonNode node : iteration.get("objects")) {
+                SimulationObject o = new SimulationObjectImpl();
+                o.setId(node.get("id").getTextValue());
+                o.setX(New.num(node.get("x").asText()));
+                o.setY(New.num(node.get("y").asText()));
+                o.setZ(New.num(node.get("z").asText()));
+                o.setSpeed(new TripleNumber(New.num(node.get("speedX").asText()),
+                                            New.num(node.get("speedY").asText()),
+                                            New.num(node.get("speedZ").asText())));
+                o.setMass(New.num(node.get("mass").asText()));
+                o.setRadius(New.num(node.get("radius").asText()));
+                o.setColor(Integer.parseInt(node.get("color").getTextValue(), 16));
+                objects.add(o);
+            }
+        }
+        parser.nextToken(); // Object end
+        return new Iteration(cycle, numberOfObjects, objects);
     }
 
     @Override
     public void appendObjectsToFile(List<SimulationObject> simulationObjects) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         if (writer == null) {
-            initWriter(C.prop, C.prop.getOutputFile());
+            initWriter(C.prop.getOutputFile());
             try {
                 writer.write("{\n  \"properties\":\n");
                 gson.toJson(mapPropertiesAndInitialObjects(C.prop, gson), writer);
                 writer.write(",\n  \"simulation\": [\n");
             } catch (IOException e) {
-                logger.error("Cannot write 'simulation' element to output JSON file.", e);
+                error(logger, "Cannot write 'simulation' element to output JSON file.", e);
             }
         }
 
@@ -177,7 +239,7 @@ public class JsonReaderWriter implements ReaderWriter {
             try {
                 writer.write(",\n");
             } catch (IOException e) {
-                logger.error("Cannot write comma after writing cycle in the output file.", e);
+                error(logger, "Cannot write comma after writing cycle in the output file.", e);
             }
         }
     }
@@ -191,15 +253,18 @@ public class JsonReaderWriter implements ReaderWriter {
                 writer = null;
             }
         } catch (IOException e) {
-            logger.info("Error while closing file.", e);
+            info(logger, "Error while closing file.", e);
         }
     }
 
-    public void initWriter(SimulationProperties properties, String inputFilePath) {
+    public void initWriter(String inputFilePath) {
         try {
-            writer = Files.newBufferedWriter(new File(properties.getOutputFile()).toPath(), UTF_8);
+            if (!inputFilePath.endsWith(".gz")) {
+                inputFilePath = inputFilePath + ".gz";
+            }
+            writer = new OutputStreamWriter(new BufferedOutputStream(new GZIPOutputStream(new FileOutputStream(inputFilePath))));
         } catch (IOException e) {
-            logger.info("Cannot open output file " + inputFilePath, e);
+            info(logger, "Cannot open output file " + inputFilePath, e);
         }
     }
 }

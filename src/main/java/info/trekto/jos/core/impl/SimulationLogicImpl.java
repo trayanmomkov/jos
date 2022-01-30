@@ -8,8 +8,8 @@ import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.TripleInt;
 import info.trekto.jos.model.impl.TripleNumber;
 import info.trekto.jos.numbers.Number;
-import info.trekto.jos.visualization.java2dgraphics.VisualizerImpl;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -111,14 +111,14 @@ public class SimulationLogicImpl implements SimulationLogic {
         simulation.getAuxiliaryObjects().removeAll(forRemoval);
     }
 
-    private static TripleInt calculateColor(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
-        double bigVolume = calculateVolumeFromRadius(bigger.getRadius()).doubleValue();
-        double smallVolume = calculateVolumeFromRadius(smaller.getRadius()).doubleValue();
-        int r = (int) Math.round((bigger.getColor().getR() * bigVolume + smaller.getColor().getR() * smallVolume) / (bigVolume + smallVolume));
-        int g = (int) Math.round((bigger.getColor().getG() * bigVolume + smaller.getColor().getG() * smallVolume) / (bigVolume + smallVolume));
-        int b = (int) Math.round((bigger.getColor().getB() * bigVolume + smaller.getColor().getB() * smallVolume) / (bigVolume + smallVolume));
+    private static int calculateColor(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
+        double bigV = calculateVolumeFromRadius(bigger.getRadius()).doubleValue();
+        double smallV = calculateVolumeFromRadius(smaller.getRadius()).doubleValue();
+        long r = Math.round((new Color(bigger.getColor()).getRed() * bigV + new Color(smaller.getColor()).getRed() * smallV) / (bigV + smallV));
+        long g = Math.round((new Color(bigger.getColor()).getGreen() * bigV + new Color(smaller.getColor()).getGreen() * smallV) / (bigV + smallV));
+        long b = Math.round((new Color(bigger.getColor()).getBlue() * bigV + new Color(smaller.getColor()).getBlue() * smallV) / (bigV + smallV));
 
-        return new TripleInt(r, g, b);
+        return new Color((int) r, (int) g, (int) b).getRGB();
     }
 
     /**
@@ -168,9 +168,9 @@ public class SimulationLogicImpl implements SimulationLogic {
     }
 
     private void bounceFromWalls(SimulationObject newObject) {
-        if (C.simulation.getSubscribers() != null && !C.simulation.getSubscribers().isEmpty()) {
-            int width = ((VisualizerImpl) C.simulation.getSubscribers().get(0)).getVisualizationPanel().getWidth();
-            int height = ((VisualizerImpl) C.simulation.getSubscribers().get(0)).getVisualizationPanel().getHeight();
+        if (C.visualizer != null) {
+            int width = C.visualizer.getVisualizationPanel().getWidth();
+            int height = C.visualizer.getVisualizationPanel().getHeight();
 
             if (newObject.getX().add(newObject.getRadius()).doubleValue() > width / 2.0
                     || newObject.getX().subtract(newObject.getRadius()).doubleValue() < -width / 2.0) {

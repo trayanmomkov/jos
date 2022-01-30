@@ -9,3 +9,7 @@ compiler.xml
 *.idea/*
 *.iml
 *.out
+/.idea/
+/build/
+/gradle/
+/src/test/resources/.idea/

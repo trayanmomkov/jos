@@ -2,116 +2,75 @@ package info.trekto.jos.util;
 
 import info.trekto.jos.C;
 import info.trekto.jos.core.impl.SimulationProperties;
-import info.trekto.jos.io.JsonReaderWriter;
+import info.trekto.jos.gui.MainForm;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.SimulationObjectImpl;
-import info.trekto.jos.model.impl.TripleInt;
 import info.trekto.jos.model.impl.TripleNumber;
 import info.trekto.jos.numbers.New;
-import info.trekto.jos.numbers.Number;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
 import static info.trekto.jos.formulas.CommonFormulas.calculateVolumeFromRadius;
-import static info.trekto.jos.formulas.ForceCalculator.InteractingLaw.NEWTON_LAW_OF_GRAVITATION;
 import static info.trekto.jos.numbers.New.ZERO;
-import static info.trekto.jos.numbers.NumberFactory.NumberType.DOUBLE;
-import static info.trekto.jos.numbers.NumberFactoryProxy.createNumberFactory;
-import static info.trekto.jos.util.Utils.collisionExists;
+import static info.trekto.jos.util.Utils.info;
 
 public class SimulationGenerator {
     private static final Logger logger = LoggerFactory.getLogger(SimulationGenerator.class);
 
-    public static void main(String[] args) {
-        String filename = "/home/john/384_objects.json";
-        if (args.length > 0) {
-            filename = args[0];
-        }
+    public static void generateObjects(SimulationProperties prop, MainForm mainForm) {
+        String filename = System.getProperty("user.home") + File.separator
+                + new SimpleDateFormat("yyyy-MMM-dd_HH-mm-ss").format(new Date()) + ".json.gz";
+        prop.setOutputFile(filename);
 
-        String[] splitFileName = filename.split("\\.");
-        String head = splitFileName[splitFileName.length - 2];
-        String tail = splitFileName[splitFileName.length - 1];
+        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        int width = gd.getDisplayMode().getWidth();
+        int height = gd.getDisplayMode().getHeight();
 
-        C.prop = new SimulationProperties();
-
-        C.prop.setNumberType(DOUBLE);
-        C.prop.setPrecision(16);
-        C.prop.setScale(16);
-
-        createNumberFactory(C.prop.getNumberType(), C.prop.getPrecision(), C.prop.getScale());
-
-        C.prop.setInteractingLaw(NEWTON_LAW_OF_GRAVITATION);
-        C.prop.setNumberOfIterations(100_000);
-        C.prop.setSecondsPerIteration(New.num("0.001"));
-        C.prop.setNumberOfObjects(384);
-        C.prop.setOutputFile(head + "_out." + tail);
-        C.prop.setSaveToFile(true);
-        C.prop.setRealTimeVisualization(true);
-        C.prop.setBounceFromWalls(false);
-        C.prop.setPlayingSpeed(1);
-        C.prop.setInitialObjects(generateObjects(C.prop));
-
-        new JsonReaderWriter().writeProperties(C.prop, filename);
-    }
-
-    public static List<SimulationObject> generateObjects(SimulationProperties prop) {
         List<SimulationObject> objects = new ArrayList<>();
-        Random random = new Random(898L);
+        Random random = new Random(System.currentTimeMillis());
+        int n = prop.getNumberOfObjects();
+        double areaForObject = width * height / (double) n;
+        double areaSide = Math.sqrt(areaForObject);
+        int generatedObjects = 0;
 
-        for (int i = 0; i < prop.getNumberOfObjects(); i++) {
-            SimulationObject o = new SimulationObjectImpl();
+        long horizontalZones = Math.round(width / areaSide);
+        long verticalZones = Math.round(n / (double) horizontalZones + 0.5);
 
-            o.setX(New.num(random.nextDouble()).subtract(New.num("0.5")).multiply(New.num(1630)));
-            o.setY(New.num(random.nextDouble()).subtract(New.num("0.5")).multiply(New.num(1000)));
-            o.setZ(ZERO);
-            Number radiusMultiplier = i % 120 == 0 ? New.num(2) : New.num(04);
-            o.setRadius(New.num(random.nextDouble()).multiply(radiusMultiplier));
+        outerloop:
+        for (int i = 0; i < horizontalZones; i++) {
+            for (int j = 0; j < verticalZones; j++) {
+                double radius = random.nextDouble() * areaSide / 10.0;
+                SimulationObject o = new SimulationObjectImpl();
 
-            outerloop:
-            while (collisionExists(objects)) {
-                for (int j = 0; j < 1000; j++) {
-                    o.setX(New.num(random.nextDouble()).subtract(New.num("0.5")).multiply(New.num(1630)));
-                    if (!collisionExists(objects)) {
-                        break outerloop;
-                    }
-                }
-                for (int j = 0; j < 1000 && collisionExists(objects); j++) {
-                    o.setY(New.num(random.nextDouble()).subtract(New.num("0.5")).multiply(New.num(1000)));
-                    if (!collisionExists(objects)) {
-                        break outerloop;
-                    }
-                }
+                o.setX(New.num(i * areaSide + radius * 1.1 + (random.nextDouble() * (areaSide - 2 * radius * 1.1)) - width / 2.0));
+                o.setY(New.num(j * areaSide + radius * 1.1 + (random.nextDouble() * (areaSide - 2 * radius * 1.1)) - height / 2.0));
+                o.setZ(ZERO);
+                o.setRadius(New.num(radius));
+                o.setSpeed(new TripleNumber(New.num((random.nextDouble() - 0.5) * 10), New.num((random.nextDouble() - 0.5) * 10), ZERO));
+                o.setColor(Color.BLUE.getRGB());
 
-//                System.out.println("████████");
-//                for (SimulationObject object : objects) {
-//                    System.out.println("(" + object.getX() + ", " + object.getY() + ") " + object.getRadius());
-//                }
-                
-                for (int j = 1; j <= 100 && collisionExists(objects); j++) {
-                    o.setRadius(New.num(random.nextDouble()).multiply(New.num(5).divide(New.num(j))));
-                    if (!collisionExists(objects)) {
-                        break outerloop;
-                    }
+                // density = mass / volume
+                o.setMass(calculateVolumeFromRadius(o.getRadius()).multiply(New.num(100_000_000_000L)));
+                o.setId(String.valueOf(generatedObjects));
+
+                objects.add(o);
+                generatedObjects++;
+                info(logger, generatedObjects + " objects generated.");
+                if (generatedObjects == n) {
+                    break outerloop;
                 }
             }
-
-            o.setSpeed(new TripleNumber(New.num(random.nextDouble()).subtract(New.num("0.5")).multiply(New.num(10)),
-                                        New.num(random.nextDouble()).subtract(New.num("0.5")).multiply(New.num(10)),
-                                        ZERO));
-
-            o.setColor(new TripleInt(random.nextInt(100), random.nextInt(100), random.nextInt(100)));
-            
-            // density = mass / volume
-            o.setMass(New.num(random.nextDouble()).multiply(calculateVolumeFromRadius(o.getRadius()).multiply(New.num(100_000_000_000_000L))));
-            o.setId(String.valueOf(i));
-
-            objects.add(o);
-            System.out.println(i + " objects generated.");
         }
-        return objects;
+        prop.setInitialObjects(objects);
+        C.simulation.init(prop);
+        mainForm.refreshProperties(C.prop);
     }
 }

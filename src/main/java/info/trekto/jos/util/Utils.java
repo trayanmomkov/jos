@@ -6,8 +6,11 @@ import info.trekto.jos.formulas.CommonFormulas;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.SimulationObjectImpl;
 import info.trekto.jos.numbers.Number;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static info.trekto.jos.formulas.ScientificConstants.*;
@@ -21,8 +24,9 @@ public class Utils {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Utils.class);
     private static final int LAST_N_INTERVALS = 3;
 
-    private static List<Long> lastIterationsCount = new ArrayList<>();
-    private static List<Long> lastTime = new ArrayList<>();
+    private static final List<Long> lastIterationsCount = new ArrayList<>();
+    private static final List<Long> lastTime = new ArrayList<>();
+    public static final DateFormat df = new SimpleDateFormat("HH-mm-ss.SSS");
 
     public static List<SimulationObject> deepCopy(List<SimulationObject> src) {
         ArrayList<SimulationObject> dst = new ArrayList<>();
@@ -34,36 +38,36 @@ public class Utils {
 
     public static void printConfiguration(SimulationProperties properties) {
         if (!properties.isSaveToFile()) {
-            logger.info("███ NOT SAVING TO FILE! ███");
+            warn(logger, "NOT SAVING TO FILE!");
         }
-        logger.info("JRE version: " + System.getProperty("java.specification.version"));
-        logger.info("JVM  implementation name: " + System.getProperty("java.vm.name"));
-        logger.info("Free memory (Mbytes): " + Runtime.getRuntime().freeMemory() / (1024 * 1024));
+        info(logger, "JRE version: " + System.getProperty("java.specification.version"));
+        info(logger, "JVM  implementation name: " + System.getProperty("java.vm.name"));
+        info(logger, "Free memory (Mbytes): " + Runtime.getRuntime().freeMemory() / (1024 * 1024));
 
         /* This will return Long.MAX_VALUE if there is no preset limit */
         long maxMemory = Runtime.getRuntime().maxMemory();
         /* Maximum amount of memory the JVM will attempt to use */
-        logger.info("Maximum memory (Mbytes): " + (maxMemory == Long.MAX_VALUE ? "no limit" : maxMemory / (1024 * 1024)));
+        info(logger, "Maximum memory (Mbytes): " + (maxMemory == Long.MAX_VALUE ? "no limit" : maxMemory / (1024 * 1024)));
 
         /* Total memory currently available to the JVM */
-        logger.info("Total memory available to JVM (Mbytes): " + Runtime.getRuntime().totalMemory() / (1024 * 1024));
+        info(logger, "Total memory available to JVM (Mbytes): " + Runtime.getRuntime().totalMemory() / (1024 * 1024));
 
-        logger.info("OS name: " + System.getProperty("os.name"));
-        logger.info("OS version: " + System.getProperty("os.version"));
-        logger.info("OS architecture: " + System.getProperty("os.arch"));
-        logger.info("Host machine native word size: " + System.getProperty("sun.arch.data.model"));
+        info(logger, "OS name: " + System.getProperty("os.name"));
+        info(logger, "OS version: " + System.getProperty("os.version"));
+        info(logger, "OS architecture: " + System.getProperty("os.arch"));
+        info(logger, "Host machine native word size: " + System.getProperty("sun.arch.data.model"));
 
-        logger.info("Number of cores: " + CORES);
-        logger.info("Precision: " + properties.getPrecision());
-        logger.info("Scale: " + properties.getScale());
-        logger.info("Number of objects: " + properties.getNumberOfObjects());
-        logger.info("Number of iterations: " + properties.getNumberOfIterations());
-        logger.info("'Number' implementation: " + properties.getNumberType());
+        info(logger, "Number of cores: " + CORES);
+        info(logger, "Precision: " + properties.getPrecision());
+        info(logger, "Scale: " + properties.getScale());
+        info(logger, "Number of objects: " + properties.getNumberOfObjects());
+        info(logger, "Number of iterations: " + properties.getNumberOfIterations());
+        info(logger, "'Number' implementation: double");
     }
     
-    public static String showRemainingTimeBasedOnLastNIterations(long i, long startTime, long numberOfIterations, int numberOfObjects) {
+    public static void showRemainingTime(long i, long startTime, long numberOfIterations, int numberOfObjects) {
         if (i == 0) {
-            return "";
+            return;
         }
 
         if (lastIterationsCount.size() == LAST_N_INTERVALS) {
@@ -86,17 +90,16 @@ public class Utils {
 
         long remainingIterations = numberOfIterations - i;
         long remainingTime = Math.round(remainingIterations * averageTimePerIteration);
+        if (remainingTime < 0) {
+            remainingTime = 0;
+        }
 
         String remainingString = "Iteration " + i
                 + ", elapsed time: " + nanoToHumanReadable(System.nanoTime() - startTime)
                 + ", objects: " + numberOfObjects
-                + ", remaining time: " + milliToHumanReadable(remainingTime);
+                + (numberOfIterations < 1 ? "" : ", remaining time: " + milliToHumanReadable(remainingTime));
 
-        if (C.mainForm != null) {
-            C.mainForm.appendMessage(remainingString);
-        }
-        logger.info(remainingString);
-        return remainingString;
+        info(logger, remainingString);
     }
 
     public static String nanoToHumanReadable(long nanoseconds) {
@@ -139,5 +142,45 @@ public class Utils {
             }
         }
         return false;
+    }
+    
+    public static boolean isNullOrBlank(String s) {
+        return s == null || s.trim().isEmpty();
+    }
+    
+    private static void append(String message) {
+    if (C.mainForm != null) {
+            C.mainForm.appendMessage(df.format(new Date()) + " " + message);
+        }
+    }
+    
+    public static void error(Logger logger, String s) {
+        logger.error(s);
+        append("███ ERROR: " + s);
+    }
+    
+    public static void info(Logger logger, String s) {
+        logger.info(s);
+        append("INFO: " + s);
+    }
+    
+    public static void warn(Logger logger, String s) {
+        logger.warn(s);
+        append("█ WARN: " + s);
+    }
+    
+    public static void error(Logger logger, String s, Throwable tr) {
+        logger.error(s, tr);
+        append("███ ERROR: " + s + " - " + tr.getMessage());
+    }
+    
+    public static void warn(Logger logger, String s, Throwable tr) {
+        logger.warn(s, tr);
+        append("█ WARN: " + s + " - " + tr.getMessage());
+    }
+    
+    public static void info(Logger logger, String s, Throwable tr) {
+        logger.info(s, tr);
+        append("INFO: " + s + " - " + tr.getMessage());
     }
 }

@@ -1,7 +1,9 @@
 package info.trekto.jos.visualization.java2dgraphics;
 
 import info.trekto.jos.C;
+import info.trekto.jos.model.ImmutableSimulationObject;
 import info.trekto.jos.model.SimulationObject;
+import info.trekto.jos.numbers.Number;
 import info.trekto.jos.visualization.Visualizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,25 +13,32 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Ellipse2D;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Flow;
+import java.util.Queue;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import static info.trekto.jos.numbers.New.TWO;
+import static info.trekto.jos.util.Utils.info;
 import static java.awt.Color.BLUE;
+import static java.awt.Color.RED;
 
 /**
  * @author Trayan Momkov
- * 2016-окт-17 23:13
+ * 2016-Oct-17 23:13
  */
 public class VisualizerImpl implements Visualizer {
     private static final Logger logger = LoggerFactory.getLogger(VisualizerImpl.class);
+    public static final int TRAIL_SIZE = 1;
     private VisualizationPanel visualizationPanel;
     private JFrame frame = null;
-    List<ShapeWithColor> lastShapes;
+    List<ShapeWithColorAndText> latestShapes;
+    Map<String, Queue<ShapeWithColorAndText>> trails;
 
     public VisualizerImpl() {
+        trails = new HashMap<>();
         if (C.prop.isRealTimeVisualization()) {
-            frame = new VisualizationFrame(this, "Simple Double Buffer");
+            frame = new VisualizationFrame(this, "Simulation");
             frame.addKeyListener(new VisualizationKeyListener(this));
 
             /* Get window dimension */
@@ -52,8 +61,9 @@ public class VisualizerImpl implements Visualizer {
 
     @Override
     public void closeWindow() {
-        logger.info("Release graphic resources.");
+        info(logger, "Release graphic resources.");
         frame.dispose();
+        C.mainForm.onVisualizationWindowClosed();
     }
 
     double convertCoordinatesForDisplayX(double x) {
@@ -65,24 +75,71 @@ public class VisualizerImpl implements Visualizer {
     }
 
     @Override
-    public void onNext(List<SimulationObject> simulationObject) {
-        lastShapes = createShapes(simulationObject);
-        visualizationPanel.draw(lastShapes);
+    public void visualize(List<SimulationObject> objects) {
+        latestShapes = createShapes(objects);
+        visualizationPanel.draw(latestShapes);
     }
 
-    private List<ShapeWithColor> createShapes(List<SimulationObject> simulationObjects) {
-        List<ShapeWithColor> shapes = new ArrayList<>();
-        for (SimulationObject simulationObject : simulationObjects) {
+    private List<ShapeWithColorAndText> createShapes(List<SimulationObject> objects) {
+        List<ShapeWithColorAndText> shapes = new ArrayList<>();
+        if (C.mainForm.isShowTrail()) {
+            if (C.mainForm.isShowTrail() && trails.isEmpty()) {
+                for (SimulationObject object : objects) {
+                    trails.put(object.getId(), new ArrayDeque<>());
+                }
+            } else {
+                Set<String> ids = objects.stream().map(ImmutableSimulationObject::getId).collect(Collectors.toSet());
+                trails.entrySet().removeIf(e -> !ids.contains(e.getKey()));
+            }
+        }
+        for (SimulationObject object : objects) {
             Ellipse2D ellipse = new Ellipse2D.Double();
-            ellipse.setFrame(convertCoordinatesForDisplayX(simulationObject.getX().subtract(simulationObject.getRadius()).doubleValue()),
-                             convertCoordinatesForDisplayY(simulationObject.getY().subtract(simulationObject.getRadius()).doubleValue()),
-                             simulationObject.getRadius().doubleValue() * 2,
-                             simulationObject.getRadius().doubleValue() * 2);
+            Number radius = object.getRadius();
+            double x = object.getX().subtract(radius).doubleValue();
+            double y = object.getY().subtract(radius).doubleValue();
+            double w = radius.multiply(TWO).doubleValue();
+            double h = w;
+            ellipse.setFrame(convertCoordinatesForDisplayX(x), convertCoordinatesForDisplayY(y), w, h);
 
-            Color color = new Color(simulationObject.getColor().getR(), simulationObject.getColor().getG(), simulationObject.getColor().getB());
-            shapes.add(new ShapeWithColor(ellipse, color));
+            Color color = new Color(object.getColor());
+
+            shapes.add(new ShapeWithColorAndText(ellipse, color));
+            if (C.mainForm.isShowIds()) {
+                ShapeWithColorAndText text = new ShapeWithColorAndText(ellipse, RED);
+                text.setText(object.getId());
+                shapes.add(text);
+            }
+
+            if (C.mainForm.isShowTrail()) {
+                Queue<ShapeWithColorAndText> trail = trails.get(object.getId());
+                if (trail.size() >= 5) {
+                    shapes.addAll(trail);
+                }
+                Ellipse2D trailEllipse = new Ellipse2D.Double();
+                double trailEllipseRadius = TRAIL_SIZE / 2.0;
+                double trailEllipseX = convertCoordinatesForDisplayX(x + radius.doubleValue() - trailEllipseRadius / 2);
+                double trailEllipseY = convertCoordinatesForDisplayY(y + radius.doubleValue() - trailEllipseRadius / 2);
+                trailEllipse.setFrame(trailEllipseX, trailEllipseY, trailEllipseRadius * TRAIL_SIZE, trailEllipseRadius * TRAIL_SIZE);
+                ShapeWithColorAndText newTrailElement = new ShapeWithColorAndText(trailEllipse, color);
+                if (trail.size() >= C.mainForm.getTrailSize()) {
+                    trail.poll();
+                }
+                trail.offer(newTrailElement);
+            }
         }
         return shapes;
+    }
+
+    public void end() {
+        Ellipse2D ellipse = new Ellipse2D.Double();
+        ellipse.setFrame(convertCoordinatesForDisplayX(-100), convertCoordinatesForDisplayY(-10), 1, 1);
+        ShapeWithColorAndText text = new ShapeWithColorAndText(ellipse, BLUE);
+        text.setText(C.endText);
+        if (latestShapes == null) {
+            latestShapes = new ArrayList<>();
+        }
+        latestShapes.add(text);
+        visualizationPanel.draw(latestShapes);
     }
 
     @Override
@@ -116,28 +173,6 @@ public class VisualizerImpl implements Visualizer {
     }
 
     @Override
-    public void onSubscribe(Flow.Subscription subscription) {
-        subscription.request(1);
-    }
-
-    @Override
-    public void onError(Throwable throwable) {
-        logger.error("onError called.", throwable);
-    }
-
-    @Override
-    public void onComplete() {
-        Ellipse2D ellipse = new Ellipse2D.Double();
-        ellipse.setFrame(convertCoordinatesForDisplayX(-100), convertCoordinatesForDisplayY(-10), 1, 1);
-        ShapeWithColor text = new ShapeWithColor(ellipse, BLUE);
-        text.setText(C.endText);
-        if (lastShapes == null) {
-            lastShapes = new ArrayList<>();
-        }
-        lastShapes.add(text);
-        visualizationPanel.draw(lastShapes);
-    }
-
     public VisualizationPanel getVisualizationPanel() {
         return visualizationPanel;
     }

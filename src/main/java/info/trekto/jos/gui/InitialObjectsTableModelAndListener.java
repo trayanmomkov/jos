@@ -3,7 +3,6 @@ package info.trekto.jos.gui;
 import info.trekto.jos.C;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.model.impl.SimulationObjectImpl;
-import info.trekto.jos.model.impl.TripleInt;
 import info.trekto.jos.model.impl.TripleNumber;
 import info.trekto.jos.numbers.New;
 
@@ -35,10 +34,7 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
         addCol("speedX", i++);
         addCol("speedY", i++);
         addCol("speedX", i++);
-        addCol("motionless", i++);
-        addCol("colorR", i++);
-        addCol("colorG", i++);
-        addCol("colorB", i++);
+        addCol("color", i++);
 
         addTableModelListener(this);
     }
@@ -59,36 +55,33 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
                 o.getSpeed().getX(),
                 o.getSpeed().getY(),
                 o.getSpeed().getZ(),
-                o.getColor().getR(),
-                o.getColor().getG(),
-                o.getColor().getB()});
+                String.format("%08X", o.getColor()).substring(2)});
     }
 
     @Override
     public void tableChanged(TableModelEvent e) {
-        if (e.getType() != TableModelEvent.DELETE) {
+        if (e.getType() != TableModelEvent.DELETE && e.getColumn() != -1) {
             refreshInitialObjects();
         }
     }
 
     public void refreshInitialObjects() {
         C.prop.setInitialObjects(new ArrayList<>());
-        for (Vector vector : dataVector) {
+        for (Object vector : dataVector) {
+            Vector v = (Vector) vector;
             SimulationObject o = new SimulationObjectImpl();
             int i = 0;
-            o.setId(String.valueOf(vector.get(i++)));
-            o.setMass(New.num(String.valueOf(vector.get(i++))));
-            o.setX(New.num(String.valueOf(vector.get(i++))));
-            o.setY(New.num(String.valueOf(vector.get(i++))));
-            o.setZ(New.num(String.valueOf(vector.get(i++))));
-            o.setRadius(New.num(String.valueOf(vector.get(i++))));
+            o.setId(String.valueOf(v.get(i++)));
+            o.setMass(New.num(String.valueOf(v.get(i++))));
+            o.setX(New.num(String.valueOf(v.get(i++))));
+            o.setY(New.num(String.valueOf(v.get(i++))));
+            o.setZ(New.num(String.valueOf(v.get(i++))));
+            o.setRadius(New.num(String.valueOf(v.get(i++))));
             o.setSpeed(new TripleNumber(
-                    New.num(String.valueOf(vector.get(i++))),
-                    New.num(String.valueOf(vector.get(i++))),
-                    New.num(String.valueOf(vector.get(i++)))));
-            o.setColor(new TripleInt(Integer.parseInt(String.valueOf(vector.get(i++))),
-                                     Integer.parseInt(String.valueOf(vector.get(i++))),
-                                     Integer.parseInt(String.valueOf(vector.get(i++)))));
+                    New.num(String.valueOf(v.get(i++))),
+                    New.num(String.valueOf(v.get(i++))),
+                    New.num(String.valueOf(v.get(i++)))));
+            o.setColor(Integer.parseInt(String.valueOf(v.get(i++)), 16));
 
             C.prop.getInitialObjects().add(o);
         }

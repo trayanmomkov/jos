@@ -2,12 +2,12 @@ package info.trekto.jos.visualization.java2dgraphics;
 
 import java.awt.*;
 
-public class ShapeWithColor {
+public class ShapeWithColorAndText {
     private Shape shape;
     private Color color;
     private String text;
 
-    public ShapeWithColor(Shape shape, Color color) {
+    public ShapeWithColorAndText(Shape shape, Color color) {
         this.shape = shape;
         this.color = color;
     }

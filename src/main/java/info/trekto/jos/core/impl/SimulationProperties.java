@@ -18,19 +18,19 @@ public class SimulationProperties {
     private Number secondsPerIteration;
     private String outputFile;
     private boolean saveToFile = false;
-    private NumberType numberType;
+    private NumberType numberType = NumberType.DOUBLE;
     private InteractingLaw interactingLaw = NEWTON_LAW_OF_GRAVITATION;
     private boolean realTimeVisualization = false;
-    private int playingSpeed = 1;
+    private int playingSpeed = 33;
     private boolean bounceFromWalls;
     
     /* Java {@link ArrayList} is limited to Integer.MAX_VALUE */
     private int numberOfObjects;
     
-    /* Significant digits. In 1.2300 we have 3 significant digits */
-    private int precision = 32;
+    /* BigDecimal precision */
+    private int precision = 16;
     
-    /* Number of digits after decimal point. In 12.34 the scale is 2 */
+    /* BigDecimal scale */
     private int scale = 16;
 
     private List<SimulationObject> initialObjects;
@@ -39,7 +39,7 @@ public class SimulationProperties {
     }
 
     public boolean isInfiniteSimulation() {
-        return numberOfIterations == -1;
+        return numberOfIterations == 0;
     }
 
     public int getNumberOfObjects() {

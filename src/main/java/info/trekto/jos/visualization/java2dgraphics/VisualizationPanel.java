@@ -1,5 +1,6 @@
 package info.trekto.jos.visualization.java2dgraphics;
 
+import info.trekto.jos.C;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,21 +8,20 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
+import static info.trekto.jos.util.Utils.info;
+
 /**
  * @author Trayan Momkov
- * 2016-окт-17 23:16
+ * 2016-Oct-17 23:16
  */
 public class VisualizationPanel extends JPanel {
     private static final Logger logger = LoggerFactory.getLogger(VisualizationPanel.class);
 
     private final double scaleStep = 0.1;
     private final double translateStep = 1;
-    private List<ShapeWithColor> shapes;
-    private int displayWidth;
-    private int displayHeight;
+    private List<ShapeWithColorAndText> shapes;
     private Image image = null;
-    private Graphics graphics = null;
-    private Color backgroundColor;
+    private final Color backgroundColor;
     private double scale = 1;
     private double translateX = 0;
     private double translateY = 0;
@@ -30,8 +30,8 @@ public class VisualizationPanel extends JPanel {
         super();
         this.backgroundColor = backgroundColor;
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        displayWidth = gd.getDisplayMode().getWidth();
-        displayHeight = gd.getDisplayMode().getHeight();
+        int displayWidth = gd.getDisplayMode().getWidth();
+        int displayHeight = gd.getDisplayMode().getHeight();
         setSize(displayWidth, displayHeight);
         setBackground(backgroundColor);
     }
@@ -45,7 +45,7 @@ public class VisualizationPanel extends JPanel {
             image = createImage(dimension.width, dimension.height);
             //            image = new BufferedImage(dimension.width, dimension.height, BufferedImage.TYPE_INT_RGB);
         }
-        graphics = image.getGraphics();
+        Graphics graphics = image.getGraphics();
         graphics.setColor(backgroundColor);
         graphics.fillRect(0, 0, dimension.width, dimension.height);
 
@@ -63,10 +63,10 @@ public class VisualizationPanel extends JPanel {
 
     public void renderOffScreen(final Graphics g) {
         if (shapes != null) {
-            for (ShapeWithColor shape : shapes) {
+            for (ShapeWithColorAndText shape : shapes) {
                 g.setColor(shape.getColor());
                 if (shape.getText() != null) {
-                    g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 96));
+                    g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, C.mainForm.getFontSize()));
                     ((Graphics2D) g).drawString(shape.getText(),
                                                 Math.round(shape.getShape().getBounds2D().getX()),
                                                 Math.round(shape.getShape().getBounds2D().getY()));
@@ -77,18 +77,18 @@ public class VisualizationPanel extends JPanel {
         }
     }
 
-    public void draw(List<ShapeWithColor> shapes) {
+    public void draw(List<ShapeWithColorAndText> shapes) {
         this.shapes = shapes;
         repaint();
     }
 
     public void zoomIn() {
-        logger.info("zoomIn");
+        info(logger, "zoomIn");
         scale += scaleStep;
     }
 
     public void zoomOut() {
-        logger.info("zoomOut");
+        info(logger, "zoomOut");
         scale -= scaleStep;
     }
 

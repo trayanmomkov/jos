@@ -1,16 +1,16 @@
 package info.trekto.jos.visualization;
 
 import info.trekto.jos.model.SimulationObject;
+import info.trekto.jos.visualization.java2dgraphics.VisualizationPanel;
 
 import java.util.List;
-import java.util.concurrent.Flow;
 
 /**
  * @author Trayan Momkov
  * 2016-Oct-17 23:11
  *
  */
-public interface Visualizer extends Flow.Subscriber<List<SimulationObject>> {
+public interface Visualizer {
     void closeWindow();
 
     void zoomIn();
@@ -24,4 +24,10 @@ public interface Visualizer extends Flow.Subscriber<List<SimulationObject>> {
     void translateRight();
 
     void translateDown();
+    
+    void end();
+
+    void visualize(List<SimulationObject> objects);
+
+    VisualizationPanel getVisualizationPanel();
 }

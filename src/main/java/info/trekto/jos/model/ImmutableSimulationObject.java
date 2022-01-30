@@ -1,10 +1,7 @@
 package info.trekto.jos.model;
 
-import info.trekto.jos.model.impl.TripleInt;
 import info.trekto.jos.model.impl.TripleNumber;
 import info.trekto.jos.numbers.Number;
-
-import java.util.List;
 
 /**
  * @author Trayan Momkov
@@ -21,12 +18,9 @@ public interface ImmutableSimulationObject {
 
     Number getRadius();
 
-    TripleInt getColor();
+    int getColor();
 
     Number getMass();
 
     String getId();
-
-    /** This must be used only for visualization purposes. Trajectory list consumes memory and CPU. */
-    List<TripleNumber> getTrajectory();
 }
