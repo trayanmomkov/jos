@@ -235,7 +235,7 @@ public class JsonReaderWriter implements ReaderWriter {
         cycleJson.add("objects", objectsAsJsonArray);
 
         gson.toJson(cycleJson, writer);
-        if (C.simulation.getCurrentIterationNumber() < C.prop.getNumberOfIterations()) {
+        if (!C.hasToStop && (C.prop.isInfiniteSimulation() || C.simulation.getCurrentIterationNumber() < C.prop.getNumberOfIterations())) {
             try {
                 writer.write(",\n");
             } catch (IOException e) {
