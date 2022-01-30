@@ -1,6 +1,7 @@
 package info.trekto.jos.visualization;
 
 import info.trekto.jos.model.SimulationObject;
+import info.trekto.jos.visualization.java2dgraphics.VisualizationPanel;
 
 import java.util.List;
 
@@ -29,4 +30,6 @@ public interface Visualizer {
     void end();
 
     void visualize(List<SimulationObject> objects);
+
+    VisualizationPanel getVisualizationPanel();
 }

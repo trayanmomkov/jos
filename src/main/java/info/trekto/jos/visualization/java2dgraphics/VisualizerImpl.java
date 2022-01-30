@@ -27,6 +27,7 @@ import static java.awt.Color.RED;
  */
 public class VisualizerImpl implements Visualizer {
     private static final Logger logger = LoggerFactory.getLogger(VisualizerImpl.class);
+    public static final int TRAIL_SIZE = 1;
     private VisualizationPanel visualizationPanel;
     private JFrame frame = null;
     List<ShapeWithColorAndText> latestShapes;
@@ -119,10 +120,10 @@ public class VisualizerImpl implements Visualizer {
                     shapes.addAll(trail);
                 }
                 Ellipse2D trailEllipse = new Ellipse2D.Double();
-                double trailEllipseRadius = 1;
+                double trailEllipseRadius = TRAIL_SIZE / 2.0;
                 double trailEllipseX = convertCoordinatesForDisplayX(x + radius - trailEllipseRadius / 2);
                 double trailEllipseY = convertCoordinatesForDisplayY(y + radius - trailEllipseRadius / 2);
-                trailEllipse.setFrame(trailEllipseX, trailEllipseY, trailEllipseRadius * 2, trailEllipseRadius * 2);
+                trailEllipse.setFrame(trailEllipseX, trailEllipseY, trailEllipseRadius * TRAIL_SIZE, trailEllipseRadius * TRAIL_SIZE);
                 ShapeWithColorAndText newTrailElement = new ShapeWithColorAndText(trailEllipse, color);
                 if (trail.size() >= C.mainForm.getTrailSize()) {
                     trail.poll();
@@ -169,10 +170,10 @@ public class VisualizerImpl implements Visualizer {
                     shapes.addAll(trail);
                 }
                 Ellipse2D trailEllipse = new Ellipse2D.Double();
-                double trailEllipseRadius = 1;
+                double trailEllipseRadius = TRAIL_SIZE / 2.0;
                 double trailEllipseX = convertCoordinatesForDisplayX(x + radius - trailEllipseRadius / 2);
                 double trailEllipseY = convertCoordinatesForDisplayY(y + radius - trailEllipseRadius / 2);
-                trailEllipse.setFrame(trailEllipseX, trailEllipseY, trailEllipseRadius * 2, trailEllipseRadius * 2);
+                trailEllipse.setFrame(trailEllipseX, trailEllipseY, trailEllipseRadius * TRAIL_SIZE, trailEllipseRadius * TRAIL_SIZE);
                 ShapeWithColorAndText newTrailElement = new ShapeWithColorAndText(trailEllipse, color);
                 if (trail.size() >= C.mainForm.getTrailSize()) {
                     trail.poll();
@@ -225,6 +226,7 @@ public class VisualizerImpl implements Visualizer {
         visualizationPanel.translateDown();
     }
 
+    @Override
     public VisualizationPanel getVisualizationPanel() {
         return visualizationPanel;
     }
