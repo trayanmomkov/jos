@@ -16,6 +16,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.StyleContext;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -31,6 +33,7 @@ import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 public class MainForm {
     private static final Logger logger = LoggerFactory.getLogger(MainForm.class);
     public static final String PROGRAM_NAME = "JOS";
+    private static final String ABOUT_MESSAGE = "Trayan Momkov 2022";
 
     private JButton browseButton;
     private JTextField numberOfIterationsTextField;
@@ -79,6 +82,7 @@ public class MainForm {
     private JLabel fontSizeLabel;
     private JLabel trailSizeTextLabel;
     private JScrollPane consolePanel;
+    private JLabel aboutLabel;
     private ButtonGroup buttonGroup;
     private List<Component> runningComponents;
     private List<Component> playingComponents;
@@ -276,6 +280,14 @@ public class MainForm {
         });
 
         initialObjectsPanel.setSize(initialObjectsPanel.getWidth(), initialObjectsPanel.getHeight() * 2);
+
+        aboutLabel.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                JOptionPane.showMessageDialog(mainPanel, ABOUT_MESSAGE, "About", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
+        aboutLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }
 
     private void enableRunning(boolean enable) {
@@ -647,6 +659,14 @@ public class MainForm {
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.EAST;
         panel2.add(generateObjectsButton, gbc);
+        aboutLabel = new JLabel();
+        aboutLabel.setForeground(new Color(-16776961));
+        aboutLabel.setText("About");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.anchor = GridBagConstraints.EAST;
+        panel2.add(aboutLabel, gbc);
         outputFileTextField = new JTextField();
         outputFileTextField.setEnabled(false);
         gbc = new GridBagConstraints();
@@ -732,6 +752,7 @@ public class MainForm {
         consoleTextArea.setWrapStyleWord(false);
         consolePanel.setViewportView(consoleTextArea);
         initialObjectsPanel = new JScrollPane();
+        initialObjectsPanel.setForeground(new Color(-16777216));
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 1;
