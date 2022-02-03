@@ -105,6 +105,7 @@ public class SimulationForkJoinImpl implements Simulation {
         C.visualizer = new VisualizerImpl();
         long previousTime = System.nanoTime();
         running = true;
+        C.endText = "END.";
         try {
             while (C.io.hasMoreIterations()) {
                 if (C.hasToStop) {
@@ -125,6 +126,8 @@ public class SimulationForkJoinImpl implements Simulation {
                 previousTime = System.nanoTime();
                 info(logger, "Cycle: " + iteration.getCycle() + ", number of objects: " + iteration.getNumberOfObjects());
             }
+            info(logger, "End.");
+            C.visualizer.end();
         } catch (IOException e) {
             error(logger, "Error while reading simulation object.", e);
         } catch (InterruptedException e) {
@@ -139,8 +142,10 @@ public class SimulationForkJoinImpl implements Simulation {
         if (C.prop.isSaveToFile()) {
             C.io.endFile();
         }
-        C.endText = "Stopped!";
-        C.visualizer.closeWindow();
+        if (C.visualizer != null) {
+            C.endText = "Stopped!";
+            C.visualizer.closeWindow();
+        }
     }
 
     @Override
