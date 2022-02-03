@@ -286,11 +286,15 @@ public class MainForm {
     private void play() {
         new Thread(() -> {
             try {
-                C.simulation.playSimulation(playFile.getAbsolutePath());
+                if (C.simulation != null && playFile != null) {
+                    C.simulation.playSimulation(playFile.getAbsolutePath());
+                }
             } catch (Exception ex) {
                 String message = "Error during playing.";
                 error(logger, message, ex);
-                C.visualizer.closeWindow();
+                if (C.visualizer != null) {
+                    C.visualizer.closeWindow();
+                }
                 showError(mainPanel, message + " " + ex.getMessage());
             } finally {
                 onVisualizationWindowClosed();
