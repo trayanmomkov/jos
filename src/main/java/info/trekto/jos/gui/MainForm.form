@@ -206,6 +206,16 @@
                   <text value="Generate objects"/>
                 </properties>
               </component>
+              <component id="ab3b2" class="javax.swing.JLabel" binding="aboutLabel">
+                <constraints>
+                  <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <foreground color="-16776961"/>
+                  <text value="About"/>
+                </properties>
+              </component>
             </children>
           </grid>
           <component id="2f42d" class="javax.swing.JTextField" binding="outputFileTextField">

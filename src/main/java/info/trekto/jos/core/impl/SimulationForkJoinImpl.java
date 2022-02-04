@@ -40,9 +40,8 @@ public class SimulationForkJoinImpl implements Simulation {
 
     private List<SimulationObject> objects;
     private List<SimulationObject> auxiliaryObjects;
-    
-    
-    
+
+
     private void doIteration() throws InterruptedException {
         auxiliaryObjects = deepCopy(objects);
 
@@ -52,12 +51,15 @@ public class SimulationForkJoinImpl implements Simulation {
         /* Collision and merging */
         CollisionCheck.prepare();
         new CollisionCheck(0, auxiliaryObjects.size()).compute();
+        
+        /* If collision/s exists execute sequentially on a single thread */
         if (CollisionCheck.collisionExists()) {
-        processCollisions(C.simulation);
+            processCollisions(C.simulation);
         }
 
         objects = auxiliaryObjects;
 
+        /* Slow down visualization */
         if (C.prop.isRealTimeVisualization() && C.prop.getPlayingSpeed() < 0) {
             Thread.sleep(-C.prop.getPlayingSpeed());
         }
@@ -66,7 +68,7 @@ public class SimulationForkJoinImpl implements Simulation {
             C.io.appendObjectsToFile(objects);
         }
     }
-    
+
     @Override
     public void init(String inputFile) {
         C.io = new JsonReaderWriter();
@@ -93,7 +95,7 @@ public class SimulationForkJoinImpl implements Simulation {
             error(logger, "Cannot read properties file.", e);
         }
     }
-    
+
     public void playSimulation(String inputFile) {
         try {
             // Only reset reader pointer. Do not change properties! We want to have the latest changes from the GUI.
@@ -118,8 +120,10 @@ public class SimulationForkJoinImpl implements Simulation {
                 }
 
                 if (C.prop.getPlayingSpeed() < 0) {
+                    /* Slow down */
                     Thread.sleep(-C.prop.getPlayingSpeed());
                 } else if ((System.nanoTime() - previousTime) / NANOSECONDS_IN_ONE_MILLISECOND < C.prop.getPlayingSpeed()) {
+                    /* Speed up by not visualizing current iteration */
                     continue;
                 }
                 C.visualizer.visualize(iteration.getObjects());
