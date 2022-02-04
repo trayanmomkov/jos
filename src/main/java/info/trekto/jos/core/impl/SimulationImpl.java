@@ -117,8 +117,10 @@ public class SimulationImpl {
                 }
 
                 if (C.prop.getPlayingSpeed() < 0) {
+                    /* Slow down */
                     Thread.sleep(-C.prop.getPlayingSpeed());
                 } else if ((System.nanoTime() - previousTime) / NANOSECONDS_IN_ONE_MILLISECOND < C.prop.getPlayingSpeed()) {
+                    /* Speed up by not visualizing current iteration */
                     continue;
                 }
                 C.visualizer.visualize(iteration.getObjects());
@@ -216,6 +218,7 @@ public class SimulationImpl {
         deepCopy(simulationLogicKernel.color, simulationLogicKernel.readOnlyColor);
         deepCopy(simulationLogicKernel.deleted, simulationLogicKernel.readOnlyDeleted);
 
+        /* Execute in parallel on GPU if available */
         simulationLogicKernel.execute(simulationLogicRange);
         if (iterationCounter == 1) {
             String message = "Simulation logic execution mode = " + simulationLogicKernel.getExecutionMode();
@@ -228,6 +231,8 @@ public class SimulationImpl {
 
         /* Collision and merging */
         collisionCheckKernel.prepare();
+        
+        /* Execute in parallel on GPU if available */
         collisionCheckKernel.execute(collisionCheckRange);
         if (iterationCounter == 1) {
             String message = "Collision detection execution mode = " + simulationLogicKernel.getExecutionMode();
@@ -237,10 +242,13 @@ public class SimulationImpl {
                 warn(logger, message);
             }
         }
+        
+        /* If collision/s exists execute sequentially on a single thread */
         if (collisionCheckKernel.collisionExists()) {
             simulationLogicKernel.processCollisions();
         }
 
+        /* Slow down visualization */
         if (C.prop.isRealTimeVisualization() && C.prop.getPlayingSpeed() < 0) {
             Thread.sleep(-C.prop.getPlayingSpeed());
         }

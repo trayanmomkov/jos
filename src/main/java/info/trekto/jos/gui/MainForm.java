@@ -32,7 +32,7 @@ import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 public class MainForm {
     private static final Logger logger = LoggerFactory.getLogger(MainForm.class);
-    public static final String PROGRAM_NAME = "JOS";
+    public static final String PROGRAM_NAME = "JOS - 2D version, using 'double' numbers and GPU";
     private static final String ABOUT_MESSAGE = "Trayan Momkov 2022";
 
     private JButton browseButton;
