@@ -1,5 +1,6 @@
 package info.trekto.jos.visualization.java2dgraphics;
 
+import info.trekto.jos.C;
 import info.trekto.jos.visualization.Visualizer;
 
 import java.awt.event.KeyEvent;
@@ -31,7 +32,7 @@ public class VisualizationKeyListener implements KeyListener {
         switch (e.getKeyCode()) {
 
             case KeyEvent.VK_ESCAPE:
-                visualizer.closeWindow();
+                C.hasToStop = true;
                 break;
 
             case KeyEvent.VK_EQUALS: // Plus sign '+'

@@ -10,6 +10,7 @@ import info.trekto.jos.visualization.java2dgraphics.VisualizerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -18,22 +19,28 @@ import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 
 import static info.trekto.jos.util.Utils.error;
 import static info.trekto.jos.util.Utils.isNullOrBlank;
+import static java.awt.Component.CENTER_ALIGNMENT;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.WARNING_MESSAGE;
+import static javax.swing.SwingConstants.CENTER;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 public class MainForm {
     private static final Logger logger = LoggerFactory.getLogger(MainForm.class);
     public static final String PROGRAM_NAME = "JOS - 2D version, using 'double' numbers and GPU";
-    private static final String ABOUT_MESSAGE = "Trayan Momkov 2022";
+    private static String ABOUT_MESSAGE;
+    public static BufferedImage icon;
+    public static Properties properties;
 
     private JButton browseButton;
     private JTextField numberOfIterationsTextField;
@@ -198,7 +205,7 @@ public class MainForm {
                 secondsPerIterationLabel, numberTypeLabel, interactingLawLabel, outputFileLabel, numberTypeDropdown, lawDropdown,
                 initialObjectsTable, initialObjectsPanel, generateObjectsButton);
 
-        playingComponents = Arrays.asList(playingSpeedTextField, playFileLabel, playFromLabel, browsePlayingFileButton, playButton);
+        playingComponents = Arrays.asList(playFileLabel, playFromLabel, browsePlayingFileButton, playButton);
 
         generateObjectsButton.addActionListener(actionEvent -> {
             SimulationProperties prop = new SimulationProperties();
@@ -388,7 +395,23 @@ public class MainForm {
     }
 
     public static void main(String[] args) {
+        properties = new Properties();
         JFrame jFrame = new JFrame();
+        
+        try {
+            properties.load(MainForm.class.getClassLoader().getResourceAsStream("application.properties"));
+            icon = ImageIO.read(MainForm.class.getClassLoader().getResource("jos-icon.png"));
+            jFrame.setIconImage(icon);
+        } catch (Exception e) {
+            logger.error("Cannot load properties and/or icon image.", e);
+        }
+        
+        if (isNullOrBlank(properties.getProperty("version"))) {
+            properties.setProperty("version", "Unknown");
+        }
+        
+        ABOUT_MESSAGE = "JOS\n\nv. " + properties.getProperty("version") + "\n2D, 'double' precision, GPU\n\nAuthor: Trayan Momkov\n2022";
+        
         MainForm mainForm = new MainForm();
         C.mainForm = mainForm;
         C.prop = new SimulationProperties();
@@ -667,30 +690,12 @@ public class MainForm {
         gbc.gridy = 4;
         gbc.anchor = GridBagConstraints.EAST;
         panel2.add(aboutLabel, gbc);
-        outputFileTextField = new JTextField();
-        outputFileTextField.setEnabled(false);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 2;
-        gbc.gridy = 2;
-        gbc.gridwidth = 2;
-        gbc.weightx = 1.0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        simulationPropertiesPanel.add(outputFileTextField, gbc);
-        outputFileLabel = new JLabel();
-        outputFileLabel.setEnabled(false);
-        outputFileLabel.setText("Output file");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        gbc.anchor = GridBagConstraints.WEST;
-        simulationPropertiesPanel.add(outputFileLabel, gbc);
         saveToFileCheckBox = new JCheckBox();
         saveToFileCheckBox.setHorizontalTextPosition(10);
         saveToFileCheckBox.setText("Save to file");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 2;
-        gbc.weightx = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(0, 2, 0, 0);
         simulationPropertiesPanel.add(saveToFileCheckBox, gbc);
@@ -699,6 +704,7 @@ public class MainForm {
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
+        gbc.gridwidth = 3;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
@@ -731,6 +737,23 @@ public class MainForm {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(0, 2, 0, 0);
         browsePropertiesPanel.add(inputFilePathLabel, gbc);
+        outputFileLabel = new JLabel();
+        outputFileLabel.setEnabled(false);
+        outputFileLabel.setText("Output file");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        gbc.anchor = GridBagConstraints.WEST;
+        simulationPropertiesPanel.add(outputFileLabel, gbc);
+        outputFileTextField = new JTextField();
+        outputFileTextField.setEnabled(false);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 2;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        simulationPropertiesPanel.add(outputFileTextField, gbc);
         consolePanel = new JScrollPane();
         consolePanel.setToolTipText("");
         gbc = new GridBagConstraints();
@@ -806,6 +829,8 @@ public class MainForm {
         playingPanel.add(playingSpeedLabel, gbc);
         playingSpeedTextField = new JTextField();
         playingSpeedTextField.setColumns(3);
+        playingSpeedTextField.setEnabled(true);
+        playingSpeedTextField.setToolTipText("aaaa");
         gbc = new GridBagConstraints();
         gbc.gridx = 10;
         gbc.gridy = 0;
@@ -940,6 +965,7 @@ public class MainForm {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(0, 2, 0, 0);
         panel3.add(runningRadioButton, gbc);
+        outputFileLabel.setLabelFor(outputFileTextField);
     }
 
     /**

@@ -1,6 +1,7 @@
 package info.trekto.jos.visualization.java2dgraphics;
 
 import info.trekto.jos.C;
+import info.trekto.jos.gui.MainForm;
 import info.trekto.jos.model.ImmutableSimulationObject;
 import info.trekto.jos.model.SimulationObject;
 import info.trekto.jos.visualization.Visualizer;
@@ -27,7 +28,7 @@ import static java.awt.Color.RED;
  */
 public class VisualizerImpl implements Visualizer {
     private static final Logger logger = LoggerFactory.getLogger(VisualizerImpl.class);
-    public static final int TRAIL_SIZE = 1;
+    public static final int TRAIL_SIZE = 2;
     private VisualizationPanel visualizationPanel;
     private JFrame frame = null;
     List<ShapeWithColorAndText> latestShapes;
@@ -37,6 +38,9 @@ public class VisualizerImpl implements Visualizer {
         trails = new HashMap<>();
         if (C.prop.isRealTimeVisualization()) {
             frame = new VisualizationFrame(this, "Simulation");
+            if (MainForm.icon != null) {
+                frame.setIconImage(MainForm.icon);
+            }
             frame.addKeyListener(new VisualizationKeyListener(this));
 
             /* Get window dimension */
