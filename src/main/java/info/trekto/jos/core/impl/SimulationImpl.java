@@ -103,6 +103,7 @@ public class SimulationImpl {
         }
         C.visualizer = new VisualizerImpl();
         long previousTime = System.nanoTime();
+        long previousVisualizationTime = previousTime;
         running = true;
         C.endText = "END.";
         try {
@@ -116,16 +117,20 @@ public class SimulationImpl {
                     break;
                 }
 
+                if (System.nanoTime() - previousTime >= NANOSECONDS_IN_ONE_SECOND * SHOW_REMAINING_INTERVAL_SECONDS) {
+                    previousTime = System.nanoTime();
+                    info(logger, "Cycle: " + iteration.getCycle() + ", number of objects: " + iteration.getNumberOfObjects());
+                }
+
                 if (C.prop.getPlayingSpeed() < 0) {
                     /* Slow down */
                     Thread.sleep(-C.prop.getPlayingSpeed());
-                } else if ((System.nanoTime() - previousTime) / NANOSECONDS_IN_ONE_MILLISECOND < C.prop.getPlayingSpeed()) {
-                    /* Speed up by not visualizing current iteration */
-                    continue;
+                    C.visualizer.visualize(iteration);
+                    previousVisualizationTime = System.nanoTime();
+                } else if ((System.nanoTime() - previousVisualizationTime) / NANOSECONDS_IN_ONE_MILLISECOND >= C.prop.getPlayingSpeed()) {
+                    C.visualizer.visualize(iteration);
+                    previousVisualizationTime = System.nanoTime();
                 }
-                C.visualizer.visualize(iteration.getObjects());
-                previousTime = System.nanoTime();
-                info(logger, "Cycle: " + iteration.getCycle() + ", number of objects: " + iteration.getNumberOfObjects());
             }
             info(logger, "End.");
             C.visualizer.end();
@@ -166,6 +171,7 @@ public class SimulationImpl {
         C.endText = "END.";
         long startTime = System.nanoTime();
         long previousTime = startTime;
+        long previousVisualizationTime = startTime;
         long endTime;
 
         running = true;
@@ -184,8 +190,16 @@ public class SimulationImpl {
                         previousTime = System.nanoTime();
                     }
 
-                    if (C.prop.isRealTimeVisualization() && System.nanoTime() - previousTime >= C.prop.getPlayingSpeed()) {
-                        C.visualizer.visualize();
+                    if (C.prop.isRealTimeVisualization()) {
+                        if (C.prop.getPlayingSpeed() < 0) {
+                            /* Slow down */
+                            Thread.sleep(-C.prop.getPlayingSpeed());
+                            C.visualizer.visualize();
+                            previousVisualizationTime = System.nanoTime();
+                        } else if ((System.nanoTime() - previousVisualizationTime) / NANOSECONDS_IN_ONE_MILLISECOND >= C.prop.getPlayingSpeed()) {
+                            C.visualizer.visualize();
+                            previousVisualizationTime = System.nanoTime();
+                        }
                     }
 
                     doIteration();
@@ -231,7 +245,7 @@ public class SimulationImpl {
 
         /* Collision and merging */
         collisionCheckKernel.prepare();
-        
+
         /* Execute in parallel on GPU if available */
         collisionCheckKernel.execute(collisionCheckRange);
         if (iterationCounter == 1) {
@@ -242,15 +256,10 @@ public class SimulationImpl {
                 warn(logger, message);
             }
         }
-        
+
         /* If collision/s exists execute sequentially on a single thread */
         if (collisionCheckKernel.collisionExists()) {
             simulationLogicKernel.processCollisions();
-        }
-
-        /* Slow down visualization */
-        if (C.prop.isRealTimeVisualization() && C.prop.getPlayingSpeed() < 0) {
-            Thread.sleep(-C.prop.getPlayingSpeed());
         }
 
         if (C.prop.isSaveToFile()) {

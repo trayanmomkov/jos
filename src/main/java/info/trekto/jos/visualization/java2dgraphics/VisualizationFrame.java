@@ -7,7 +7,7 @@ import java.awt.event.WindowEvent;
 
 /**
  * @author Trayan Momkov
- * 2016-дек-27 19:12
+ * 2016-Dec-27 19:12
  *
  */
 public class VisualizationFrame extends JFrame {

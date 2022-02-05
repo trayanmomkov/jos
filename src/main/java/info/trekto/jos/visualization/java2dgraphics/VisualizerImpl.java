@@ -1,6 +1,7 @@
 package info.trekto.jos.visualization.java2dgraphics;
 
 import info.trekto.jos.C;
+import info.trekto.jos.core.impl.Iteration;
 import info.trekto.jos.gui.MainForm;
 import info.trekto.jos.model.ImmutableSimulationObject;
 import info.trekto.jos.model.SimulationObject;
@@ -13,12 +14,13 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.util.List;
 import java.util.Queue;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static info.trekto.jos.util.Utils.info;
+import static info.trekto.jos.util.Utils.secondsToHumanReadable;
 import static java.awt.Color.BLUE;
 import static java.awt.Color.RED;
 
@@ -63,7 +65,6 @@ public class VisualizerImpl implements Visualizer {
 
     @Override
     public void closeWindow() {
-        info(logger, "Release graphic resources.");
         frame.dispose();
         C.mainForm.onVisualizationWindowClosed();
     }
@@ -76,14 +77,15 @@ public class VisualizerImpl implements Visualizer {
         return y + visualizationPanel.getHeight() / 2.0;
     }
 
+    @Override
     public void visualize() {
         latestShapes = createShapes();
         visualizationPanel.draw(latestShapes);
     }
 
     @Override
-    public void visualize(List<SimulationObject> objects) {
-        latestShapes = createShapes(objects);
+    public void visualize(Iteration iteration) {
+        latestShapes = createShapes(iteration);
         visualizationPanel.draw(latestShapes);
     }
 
@@ -135,10 +137,15 @@ public class VisualizerImpl implements Visualizer {
                 trail.offer(newTrailElement);
             }
         }
+        
+        if (C.mainForm.getShowTimeAndIteration()) {
+            shapes.addAll(createInfo(C.simulation.getCurrentIterationNumber(), C.prop.getSecondsPerIteration()));
+        }
         return shapes;
     }
 
-    private List<ShapeWithColorAndText> createShapes(List<SimulationObject> objects) {
+    private List<ShapeWithColorAndText> createShapes(Iteration iteration) {
+        List<SimulationObject> objects = iteration.getObjects();
         List<ShapeWithColorAndText> shapes = new ArrayList<>();
         if (C.mainForm.isShowTrail()) {
             if (trails.isEmpty()) {
@@ -185,7 +192,21 @@ public class VisualizerImpl implements Visualizer {
                 trail.offer(newTrailElement);
             }
         }
+
+        if (C.mainForm.getShowTimeAndIteration()) {
+            shapes.addAll(createInfo(iteration.getCycle(), C.prop.getSecondsPerIteration()));
+        }
         return shapes;
+    }
+
+    private Collection<? extends ShapeWithColorAndText> createInfo(long iteration, double secondsPerIteration) {
+        ShapeWithColorAndText info1 = new ShapeWithColorAndText(
+                new Rectangle2D.Double(0, 20, 100, 40), BLUE, "Iteration: " + iteration);
+
+        ShapeWithColorAndText info2 = new ShapeWithColorAndText(
+                new Rectangle2D.Double(0, 60, 100, 40), BLUE, "Time: " + secondsToHumanReadable(iteration * secondsPerIteration));
+
+        return Arrays.asList(info1, info2);
     }
 
     public void end() {

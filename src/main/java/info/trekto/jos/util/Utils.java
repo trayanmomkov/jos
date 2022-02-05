@@ -109,6 +109,10 @@ public class Utils {
         return milliToHumanReadable(Math.round(nanoseconds / (double) NANOSECONDS_IN_ONE_MILLISECOND));
     }
 
+    public static String secondsToHumanReadable(double seconds) {
+        return milliToHumanReadable(Math.round(seconds * MILLISECONDS_IN_ONE_SECOND));
+    }
+
     public static String milliToHumanReadable(long milliseconds) {
         long days = milliseconds / MILLI_IN_DAY;
         long hours = (milliseconds - (days * MILLI_IN_DAY)) / MILLI_IN_HOUR;
