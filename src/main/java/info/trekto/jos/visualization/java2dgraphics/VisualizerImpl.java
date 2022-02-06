@@ -69,7 +69,6 @@ public class VisualizerImpl implements Visualizer {
 
     @Override
     public void closeWindow() {
-        info(logger, "Release graphic resources.");
         frame.dispose();
         C.mainForm.onVisualizationWindowClosed();
     }
@@ -145,12 +144,12 @@ public class VisualizerImpl implements Visualizer {
         }
 
         if (C.mainForm.getShowTimeAndIteration()) {
-            shapes.addAll(createInfo(iteration.getCycle(), C.prop.getSecondsPerIteration()));
+            shapes.addAll(createInfo(iteration.getCycle(), C.prop.getSecondsPerIteration(), iteration.getNumberOfObjects()));
         }
         return shapes;
     }
 
-    private Collection<? extends ShapeWithColorAndText> createInfo(long iteration, Number secondsPerIteration) {
+    private Collection<? extends ShapeWithColorAndText> createInfo(long iteration, Number secondsPerIteration, int objectsCount) {
         ShapeWithColorAndText info1 = new ShapeWithColorAndText(
                 new Rectangle2D.Double(0, 20, 100, 40), BLUE, "Iteration: " + iteration);
 
@@ -158,7 +157,10 @@ public class VisualizerImpl implements Visualizer {
                 new Rectangle2D.Double(0, 60, 100, 40), BLUE, "Time: "
                 + secondsToHumanReadable(secondsPerIteration.multiply(New.num(iteration)).doubleValue()));
 
-        return Arrays.asList(info1, info2);
+        ShapeWithColorAndText info3 = new ShapeWithColorAndText(
+                new Rectangle2D.Double(0, 100, 100, 40), BLUE, "Objects: " + objectsCount);
+
+        return Arrays.asList(info1, info2, info3);
     }
 
     public void end() {

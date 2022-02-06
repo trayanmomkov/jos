@@ -39,7 +39,7 @@ import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 public class MainForm {
     private static final Logger logger = LoggerFactory.getLogger(MainForm.class);
     public static final String PROGRAM_NAME = "JOS - 2D version, using 'double' numbers and GPU";
-    private static final String PLAYING_SPEED_TIP = "x < 0: every iteration sleep x milliseconds; x >= 0: visualize every x milliseconds";
+    private static final String PLAYING_SPEED_TIP = "If x < 0: every iteration sleep x milliseconds; If x >= 0: visualize every x milliseconds";
     private static String ABOUT_MESSAGE;
     public static BufferedImage icon;
     public static Properties properties;
@@ -335,6 +335,12 @@ public class MainForm {
         aboutLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 JOptionPane.showMessageDialog(mainPanel, ABOUT_MESSAGE, "About", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
+        playingSpeedLabel.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                JOptionPane.showMessageDialog(mainPanel, PLAYING_SPEED_TIP, "Playing speed", JOptionPane.INFORMATION_MESSAGE);
             }
         });
 
@@ -854,6 +860,7 @@ public class MainForm {
         mainPanel.add(playingPanel, gbc);
         playingSpeedLabel = new JLabel();
         playingSpeedLabel.setEnabled(true);
+        playingSpeedLabel.setForeground(new Color(-16776961));
         playingSpeedLabel.setText("Playing speed?");
         gbc = new GridBagConstraints();
         gbc.gridx = 9;
