@@ -12,6 +12,12 @@ public class ShapeWithColorAndText {
         this.color = color;
     }
 
+    public ShapeWithColorAndText(Shape shape, Color color, String text) {
+        this.shape = shape;
+        this.color = color;
+        this.text = text;
+    }
+
     public Color getColor() {
         return color;
     }

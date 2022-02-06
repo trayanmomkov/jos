@@ -8,6 +8,7 @@ import info.trekto.jos.io.ReaderWriter;
 import info.trekto.jos.visualization.Visualizer;
 
 /**
+ * Sorry - no time for better design :/
  * Contains instances of main application classes.
  *
  * @author Trayan Momkov

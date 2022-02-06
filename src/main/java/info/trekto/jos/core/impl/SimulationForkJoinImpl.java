@@ -126,7 +126,7 @@ public class SimulationForkJoinImpl implements Simulation {
                     /* Speed up by not visualizing current iteration */
                     continue;
                 }
-                C.visualizer.visualize(iteration.getObjects());
+                C.visualizer.visualize(iteration);
                 previousTime = System.nanoTime();
                 info(logger, "Cycle: " + iteration.getCycle() + ", number of objects: " + iteration.getNumberOfObjects());
             }
