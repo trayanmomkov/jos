@@ -271,7 +271,7 @@ public class SimulationImpl {
         return iterationCounter;
     }
 
-    private int countObjects() {
+    public int countObjects() {
         int numberOfObjects = 0;
         for (int j = 0; j < simulationLogicKernel.deleted.length; j++) {
             if (!simulationLogicKernel.deleted[j]) {

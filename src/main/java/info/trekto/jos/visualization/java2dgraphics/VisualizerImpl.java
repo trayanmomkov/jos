@@ -139,7 +139,7 @@ public class VisualizerImpl implements Visualizer {
         }
         
         if (C.mainForm.getShowTimeAndIteration()) {
-            shapes.addAll(createInfo(C.simulation.getCurrentIterationNumber(), C.prop.getSecondsPerIteration()));
+            shapes.addAll(createInfo(C.simulation.getCurrentIterationNumber(), C.prop.getSecondsPerIteration(), C.simulation.countObjects()));
         }
         return shapes;
     }
@@ -148,7 +148,7 @@ public class VisualizerImpl implements Visualizer {
         List<SimulationObject> objects = iteration.getObjects();
         List<ShapeWithColorAndText> shapes = new ArrayList<>();
         if (C.mainForm.isShowTrail()) {
-            if (trails.isEmpty()) {
+            if (C.mainForm.isShowTrail() && trails.isEmpty()) {
                 for (SimulationObject object : objects) {
                     trails.put(object.getId(), new ArrayDeque<>());
                 }
@@ -194,19 +194,22 @@ public class VisualizerImpl implements Visualizer {
         }
 
         if (C.mainForm.getShowTimeAndIteration()) {
-            shapes.addAll(createInfo(iteration.getCycle(), C.prop.getSecondsPerIteration()));
+            shapes.addAll(createInfo(iteration.getCycle(), C.prop.getSecondsPerIteration(), iteration.getNumberOfObjects()));
         }
         return shapes;
     }
 
-    private Collection<? extends ShapeWithColorAndText> createInfo(long iteration, double secondsPerIteration) {
+    private Collection<? extends ShapeWithColorAndText> createInfo(long iteration, double secondsPerIteration, int objectsCount) {
         ShapeWithColorAndText info1 = new ShapeWithColorAndText(
                 new Rectangle2D.Double(0, 20, 100, 40), BLUE, "Iteration: " + iteration);
 
         ShapeWithColorAndText info2 = new ShapeWithColorAndText(
                 new Rectangle2D.Double(0, 60, 100, 40), BLUE, "Time: " + secondsToHumanReadable(iteration * secondsPerIteration));
 
-        return Arrays.asList(info1, info2);
+        ShapeWithColorAndText info3 = new ShapeWithColorAndText(
+                new Rectangle2D.Double(0, 100, 100, 40), BLUE, "Objects: " + objectsCount);
+
+        return Arrays.asList(info1, info2, info3);
     }
 
     public void end() {
