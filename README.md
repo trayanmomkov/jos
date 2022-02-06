@@ -1,4 +1,4 @@
-# JOS <img src="src/main/resources/jos-icon.png" alt="drawing" width="36"/> N-body Simulation in Java
+# JOS &nbsp;<img src="src/main/resources/jos-icon.png" alt="JOS - N-body Simulation" width="36"/> &nbsp;N-body Simulation in Java
 
 ![GitHub repo size](https://img.shields.io/github/repo-size/trayanmomkov/zec)
 ![License](https://img.shields.io/github/license/trayanmomkov/zec)
@@ -52,6 +52,13 @@ Current version implements only **Newton's law** and is written in Java.
 
 For GUI it uses **Swing** and **Java 2D Graphics**.
 
+GPU version (master branch) **does not use Z coordinate** of the objects. This is done
+for faster calculations but can be easily changed.
+
+CPU version (arbitrary_precision branch) **use Z coordinate**.
+
+Current visualization is only 2D.
+
 **[Aparapi](https://aparapi.com/)** library is used for GPU computations.
 
 The version which is running only on the CPU (jos-cpu.jar) introduces an abstraction for numbers
@@ -68,7 +75,50 @@ JSON but the file is **GZipped** to be smaller. You can unzip the output
 file with any archiver supporting gzip and read the values for
 a particular iteration and object.
 
-### Input/Output files format
+### Simulation properties (input) file format
+<pre style='color:#1f1c1b;background-color:#ffffff;'>
+<b><span style='color:#644a9b;'>{</span></b>
+   <span style='color:#0057ae;'>&quot;properties&quot;</span><b><span style='color:#644a9b;'>:{</span></b>
+      <span style='color:#0057ae;'>&quot;numberOfIterations&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>0</span><b><span style='color:#644a9b;'>,</span></b>
+      <span style='color:#0057ae;'>&quot;secondsPerIteration&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>0.001</span><b><span style='color:#644a9b;'>,</span></b>
+      <span style='color:#0057ae;'>&quot;numberOfObjects&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>2</span><b><span style='color:#644a9b;'>,</span></b>
+      <span style='color:#0057ae;'>&quot;outputFile&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#bf0303;'>&quot;2022-Feb-07_00-26-53.json.gz&quot;</span><b><span style='color:#644a9b;'>,</span></b>  <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Where</span> <span style='color:#bf0303;'>to</span> <span style='color:#bf0303;'>save</span> <span style='color:#bf0303;'>the</span> <span style='color:#bf0303;'>simulation</span> <span style='color:#bf0303;'>run</span>
+      <span style='color:#0057ae;'>&quot;saveToFile&quot;</span><b><span style='color:#644a9b;'>:</span></b><b>true</b><b><span style='color:#644a9b;'>,</span></b>                            <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Whether</span> <span style='color:#bf0303;'>to</span> <span style='color:#bf0303;'>save</span> <span style='color:#bf0303;'>the</span> <span style='color:#bf0303;'>simulation</span> <span style='color:#bf0303;'>run</span>
+      <span style='color:#0057ae;'>&quot;numberType&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#bf0303;'>&quot;DOUBLE&quot;</span><b><span style='color:#644a9b;'>,</span></b>                        <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>What</span> <span style='color:#bf0303;'>type</span> <span style='color:#bf0303;'>to</span> <span style='color:#bf0303;'>use</span> <span style='color:#bf0303;'>for</span> <span style='color:#bf0303;'>numbers</span>
+      <span style='color:#0057ae;'>&quot;interactingLaw&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#bf0303;'>&quot;NEWTON_LAW_OF_GRAVITATION&quot;</span><b><span style='color:#644a9b;'>,</span></b>
+      <span style='color:#0057ae;'>&quot;precision&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>32</span><b><span style='color:#644a9b;'>,</span></b>                               <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Used</span> <span style='color:#bf0303;'>by</span> <span style='color:#bf0303;'>BigDecimal</span> <span style='color:#bf0303;'>and</span> <span style='color:#bf0303;'>ApFloat</span>
+      <span style='color:#0057ae;'>&quot;scale&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>16</span><b><span style='color:#644a9b;'>,</span></b>                                   <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Only</span> <span style='color:#bf0303;'>Used</span> <span style='color:#bf0303;'>by</span> <span style='color:#bf0303;'>BigDecimal</span>
+      <span style='color:#0057ae;'>&quot;realTimeVisualization&quot;</span><b><span style='color:#644a9b;'>:</span></b><b>true</b><b><span style='color:#644a9b;'>,</span></b>                 <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Whether</span> <span style='color:#bf0303;'>to</span> <span style='color:#bf0303;'>visualize</span> <span style='color:#bf0303;'>during</span> <span style='color:#bf0303;'>simulation</span> <span style='color:#bf0303;'>run</span>
+      <span style='color:#0057ae;'>&quot;playingSpeed&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>33</span><b><span style='color:#644a9b;'>,</span></b>                            <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>If</span> <span style='color:#bf0303;'>playingSpeed</span> <span style='color:#bf0303;'>&lt;</span> <span style='color:#bf0303;'>0</span><b><span style='color:#644a9b;'>:</span></b> <span style='color:#bf0303;'>every</span> <span style='color:#bf0303;'>iteration</span> <span style='color:#bf0303;'>sleep</span> <span style='color:#bf0303;'>playingSpeed</span> <span style='color:#bf0303;'>milliseconds</span>
+                                                    <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>If</span> <span style='color:#bf0303;'>playingSpeed</span> <span style='color:#bf0303;'>&gt;=</span> <span style='color:#b08000;'>0</span><span style='color:#bf0303;'>:</span> <span style='color:#bf0303;'>visualize</span> <span style='color:#bf0303;'>every</span> <span style='color:#bf0303;'>playingSpeed</span> <span style='color:#bf0303;'>milliseconds</span>
+      <span style='color:#bf0303;'>&quot;initialObjects&quot;</span><span style='color:#bf0303;'>:</span><b><span style='color:#006e28;'>[</span></b>
+         <b><span style='color:#644a9b;'>{</span></b>
+            <span style='color:#0057ae;'>&quot;color&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#bf0303;'>&quot;0000FF&quot;</span><b><span style='color:#644a9b;'>,</span></b>                       <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Blue</span>
+            <span style='color:#0057ae;'>&quot;speedY&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>-4</span><b><span style='color:#644a9b;'>,</span></b>
+            <span style='color:#0057ae;'>&quot;speedX&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>-2.5</span><b><span style='color:#644a9b;'>,</span></b>
+            <span style='color:#0057ae;'>&quot;speedZ&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>0.0</span><b><span style='color:#644a9b;'>,</span></b>
+            <span style='color:#0057ae;'>&quot;mass&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>1E17</span><b><span style='color:#644a9b;'>,</span></b>
+            <span style='color:#0057ae;'>&quot;x&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>-200</span><b><span style='color:#644a9b;'>,</span></b>
+            <span style='color:#0057ae;'>&quot;y&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>0</span><b><span style='color:#644a9b;'>,</span></b>
+            <span style='color:#0057ae;'>&quot;z&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>0</span><b><span style='color:#644a9b;'>,</span></b>
+            <span style='color:#0057ae;'>&quot;id&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#bf0303;'>&quot;0&quot;</span><b><span style='color:#644a9b;'>,</span></b>                               <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Unique</span> <span style='color:#bf0303;'>id</span> <span style='color:#bf0303;'>of</span> <span style='color:#bf0303;'>the</span> <span style='color:#bf0303;'>object</span>
+            <span style='color:#0057ae;'>&quot;radius&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>80</span>
+         <b><span style='color:#644a9b;'>}</span></b><b><span style='color:#006e28;'>,</span></b>
+         <b><span style='color:#644a9b;'>{</span></b>
+            <span style='color:#0057ae;'>&quot;color&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#bf0303;'>&quot;FF0000&quot;</span><b><span style='color:#644a9b;'>,</span></b>                       <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Red</span>
+            <span style='color:#0057ae;'>&quot;speedY&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>-1.5</span><b><span style='color:#644a9b;'>,</span></b>
+            <span style='color:#0057ae;'>&quot;speedX&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>3</span><b><span style='color:#644a9b;'>,</span></b>
+            <span style='color:#0057ae;'>&quot;speedZ&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>0.0</span><b><span style='color:#644a9b;'>,</span></b>
+            <span style='color:#0057ae;'>&quot;mass&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>2E17</span><b><span style='color:#644a9b;'>,</span></b>
+            <span style='color:#0057ae;'>&quot;x&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>200</span><b><span style='color:#644a9b;'>,</span></b>
+            <span style='color:#0057ae;'>&quot;y&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>0</span><b><span style='color:#644a9b;'>,</span></b>
+            <span style='color:#0057ae;'>&quot;z&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>0</span><b><span style='color:#644a9b;'>,</span></b>
+            <span style='color:#0057ae;'>&quot;id&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#bf0303;'>&quot;1&quot;</span><b><span style='color:#644a9b;'>,</span></b>
+            <span style='color:#0057ae;'>&quot;radius&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>70</span>
+         <b><span style='color:#644a9b;'>}</span></b>
+      <b><span style='color:#006e28;'>]</span></b>
+   <b><span style='color:#644a9b;'>}</span></b>
+<b><span style='color:#644a9b;'>}</span></b></pre>
 
 ## Source code description (for developers)
 There is a lot of things which are not finished or implemented (such as viewport navigation),
@@ -84,7 +134,6 @@ Main calculations translated to OpenCL are in methods:
  - CollisionCheck.**run**();
 
 !!! DO NOT CHANGE THESE METHODS and methods called from them if you don't have experience with Aparapi library!!!
-
 
 The branch which uses CPU is called **arbitrary_precision** and as its name
 suggests, it offers arbitrary precision for arithmetic calculations.
@@ -112,6 +161,7 @@ You should be able to import it as a maven project in your favorite IDE.
 - Implement video recording of the simulation
 - Implement simulation generator using formula for placing objects in more
 complex structures or create GUI for that
+- Implement 3D visualization
 
  If you can implement anything from the TODO list or you want to fix a bug
  you are welcome to contribute.
