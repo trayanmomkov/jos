@@ -282,7 +282,7 @@ public class MainForm {
         });
         secondsPerIterationTextField.addActionListener(actionEvent -> {
             if (!isNullOrBlank(secondsPerIterationTextField.getText())) {
-                C.prop.setSecondsPerIteration(Integer.parseInt(secondsPerIterationTextField.getText()));
+                C.prop.setSecondsPerIteration(Double.parseDouble(secondsPerIterationTextField.getText()));
             }
         });
 

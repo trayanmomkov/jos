@@ -118,10 +118,11 @@ public class Utils {
         long hours = (milliseconds - (days * MILLI_IN_DAY)) / MILLI_IN_HOUR;
         long minutes = (milliseconds - (days * MILLI_IN_DAY + hours * MILLI_IN_HOUR)) / MILLI_IN_MINUTE;
         long seconds = (milliseconds - (days * MILLI_IN_DAY + hours * MILLI_IN_HOUR + minutes * MILLI_IN_MINUTE)) / MILLISECONDS_IN_ONE_SECOND;
+        milliseconds = milliseconds - (days * MILLI_IN_DAY + hours * MILLI_IN_HOUR + minutes * MILLI_IN_MINUTE + seconds * MILLISECONDS_IN_ONE_SECOND);
         return (days > 0 ? days + " d. " : "")
                 + (hours > 0 ? hours + " h. " : "")
                 + (minutes > 0 ? minutes + " m. " : "")
-                + seconds + " s.";
+                + seconds + "." + milliseconds + " s.";
     }
 
     public static boolean collisionExists(double[] positionX, double[] positionY, double[] radius) {
