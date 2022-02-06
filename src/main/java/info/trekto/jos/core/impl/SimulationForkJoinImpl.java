@@ -166,6 +166,7 @@ public class SimulationForkJoinImpl implements Simulation {
         long endTime;
 
         running = true;
+        C.hasToStop = false;
         try {
             for (long i = 0; C.prop.isInfiniteSimulation() || i < C.prop.getNumberOfIterations(); i++) {
                 try {

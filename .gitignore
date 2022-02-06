@@ -9,6 +9,7 @@ compiler.xml
 *.idea/*
 *.iml
 *.out
+*.h
 /.idea/
 /build/
 /gradle/

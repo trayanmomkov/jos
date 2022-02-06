@@ -1,5 +1,1 @@
-## TODO
-- mvn assembly:single
-- Write README
-- Deploy on GitHub.
-- Implement tests
+See README.md in the master branch.
