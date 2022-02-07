@@ -1,1 +1,1 @@
-See README.md in the master branch.
+See README.md in master branch.
