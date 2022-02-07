@@ -38,7 +38,7 @@ import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 public class MainForm {
     private static final Logger logger = LoggerFactory.getLogger(MainForm.class);
-    public static final String PROGRAM_NAME = "JOS - 2D version, using 'double' numbers and GPU";
+    public static final String PROGRAM_NAME = "JOS - arbitrary precision version";
     private static final String PLAYING_SPEED_TIP = "If x < 0: every iteration sleep x milliseconds; If x >= 0: visualize every x milliseconds";
     private static String ABOUT_MESSAGE;
     public static BufferedImage icon;
@@ -465,7 +465,7 @@ public class MainForm {
             properties.setProperty("version", "Unknown");
         }
 
-        ABOUT_MESSAGE = "JOS\n\nv. " + properties.getProperty("version") + "\n2D, 'double' precision, GPU\n\nAuthor: Trayan Momkov\n2022";
+        ABOUT_MESSAGE = "JOS\n\nv. " + properties.getProperty("version") + "\narbitrary precision\n\nAuthor: Trayan Momkov\n2022";
 
         MainForm mainForm = new MainForm();
         C.mainForm = mainForm;
