@@ -144,23 +144,6 @@ public class Utils {
         return false;
     }
 
-    public static boolean collisionExists(List<SimulationObject> objects) {
-        for (SimulationObject object : objects) {
-            for (SimulationObject object1 : objects) {
-                if (object == object1) {
-                    continue;
-                }
-                // distance between centres
-                double distance = CommonFormulas.calculateDistance(object, object1);
-
-                if (distance < object.getRadius() + object1.getRadius()) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     public static boolean duplicateIdExists(String[] id) {
         Set<String> ids = new HashSet<>();
         for (String s : id) {

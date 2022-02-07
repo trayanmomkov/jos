@@ -16,11 +16,9 @@ import static info.trekto.jos.core.impl.SimulationImpl.initArrays;
 
 public class InitialObjectsTableModelAndListener extends DefaultTableModel implements TableModelListener {
     Map<String, Integer> columnNameIndexMap;
-    MainForm mainForm;
 
-    public InitialObjectsTableModelAndListener(MainForm mainForm) {
+    public InitialObjectsTableModelAndListener() {
         super();
-        this.mainForm = mainForm;
 
         columnNameIndexMap = new HashMap<>();
 

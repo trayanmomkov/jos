@@ -5,7 +5,6 @@ import com.aparapi.Kernel;
 import java.util.Arrays;
 
 public class CollisionCheck extends Kernel {
-    SimulationLogicImpl simulationLogic;
     public final boolean[] collisions;
     public final int n;
 
@@ -14,8 +13,7 @@ public class CollisionCheck extends Kernel {
     public final double[] radius;
     public final boolean[] deleted;
 
-    public CollisionCheck(SimulationLogicImpl simulationLogic, int n, double[] positionX, double[] positionY, double[] radius, boolean[] deleted) {
-        this.simulationLogic = simulationLogic;
+    public CollisionCheck(int n, double[] positionX, double[] positionY, double[] radius, boolean[] deleted) {
         this.n = n;
         collisions = new boolean[n];
 

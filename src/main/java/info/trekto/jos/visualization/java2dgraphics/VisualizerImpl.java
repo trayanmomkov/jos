@@ -253,9 +253,4 @@ public class VisualizerImpl implements Visualizer {
     public void translateDown() {
         visualizationPanel.translateDown();
     }
-
-    @Override
-    public VisualizationPanel getVisualizationPanel() {
-        return visualizationPanel;
-    }
 }

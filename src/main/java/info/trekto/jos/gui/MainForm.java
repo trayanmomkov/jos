@@ -96,7 +96,7 @@ public class MainForm {
     private File playFile;
 
     public MainForm() {
-        initialObjectsTable.setModel(new InitialObjectsTableModelAndListener(this));
+        initialObjectsTable.setModel(new InitialObjectsTableModelAndListener());
         browseButton.addActionListener(actionEvent -> {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setFileFilter(new FileNameExtensionFilter("JSON file", "json"));

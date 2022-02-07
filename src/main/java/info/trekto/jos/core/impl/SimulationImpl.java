@@ -27,7 +27,6 @@ import static info.trekto.jos.util.Utils.*;
 public class SimulationImpl {
     private static final Logger logger = LoggerFactory.getLogger(SimulationImpl.class);
     public static double RATIO_FOUR_THREE = 4 / 3.0;
-    public static double BILLION = 1000000000;
     public static final int SHOW_REMAINING_INTERVAL_SECONDS = 2;
     public boolean running = false;
 
@@ -43,7 +42,7 @@ public class SimulationImpl {
         simulationLogicKernel.setExecutionMode(GPU);
 
         collisionCheckKernel = new CollisionCheck(
-                simulationLogicKernel, numberOfObjects,
+                numberOfObjects,
                 simulationLogicKernel.positionX,
                 simulationLogicKernel.positionY,
                 simulationLogicKernel.radius,
@@ -223,7 +222,7 @@ public class SimulationImpl {
         info(logger, "End of simulation. Time: " + nanoToHumanReadable(endTime - startTime));
     }
 
-    private void doIteration() throws InterruptedException {
+    private void doIteration() {
         deepCopy(simulationLogicKernel.positionX, simulationLogicKernel.readOnlyPositionX);
         deepCopy(simulationLogicKernel.positionY, simulationLogicKernel.readOnlyPositionY);
         deepCopy(simulationLogicKernel.speedX, simulationLogicKernel.readOnlySpeedX);

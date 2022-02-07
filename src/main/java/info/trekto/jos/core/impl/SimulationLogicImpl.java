@@ -25,7 +25,6 @@ public class SimulationLogicImpl extends Kernel {
     public final double[] readOnlySpeedY;
     public final double[] readOnlyMass;
     public final double[] readOnlyRadius;
-    public final String[] readOnlyLabel;
     public final int[] readOnlyColor;
     public final boolean[] readOnlyDeleted;
 
@@ -51,7 +50,6 @@ public class SimulationLogicImpl extends Kernel {
         readOnlySpeedY = new double[n];
         readOnlyMass = new double[n];
         readOnlyRadius = new double[n];
-        readOnlyLabel = new String[n];
         readOnlyColor = new int[n];
         readOnlyDeleted = new boolean[n];
     }
