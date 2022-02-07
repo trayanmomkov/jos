@@ -8,8 +8,8 @@
 ![JOS - N-body simulation](resources/JOS-N-Body-Simulation.png)
 
 ## Download
- - GPU version: **[jos.jar](raw/master/jos.jar)** - Faster. Main calculations run on video card. Limited precision. Compatible video card required.
- - CPU version: **[jos-cpu.jar](raw/master/jos-cpu.jar)** - Slower. Runs on CPU. Arbitrary precision.
+ - GPU version: **[jos.jar](jos.jar)** - Faster. Main calculations run on video card. Limited precision. Compatible video card required.
+ - CPU version: **[jos-cpu.jar](jos-cpu.jar)** - Slower. Runs on CPU. Arbitrary precision.
  
 ## Prerequisites
 - JOS should run on every system with **Java 8** or later installed, including Linux, Mac OS and Windows.
@@ -29,7 +29,7 @@ You can run the simulation **without visualization**, for faster computations, a
 
 ## Video card compatibility
 GPU version **jos.jar** does not run on every video card.
- If you experience any problem, please try the CPU version: [jos.jar](raw/master/jos.jar).
+ If you experience any problem, please try the CPU version: [jos.jar](jos.jar).
 
 Please help me to create a list with compatible video cards. Tell me what is yours
  and whether there is a problem or everything is running fine.
