@@ -1,7 +1,7 @@
 # JOS &nbsp;<img src="src/main/resources/jos-icon.png" alt="JOS - N-body Simulation" width="36"/> &nbsp;N-body Simulation in Java
 
-![GitHub repo size](https://img.shields.io/github/repo-size/trayanmomkov/zec)
-![License](https://img.shields.io/github/license/trayanmomkov/zec)
+![GitHub repo size](https://img.shields.io/github/repo-size/trayanmomkov/jos)
+![License](https://img.shields.io/github/license/trayanmomkov/jos)
 
 **J**ava **O**bjects **S**imulation (**JOS**) is an N-body simulation system written in Java.
 
