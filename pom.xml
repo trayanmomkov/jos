@@ -1,12 +1,46 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>jos</groupId>
+    <groupId>info.trekto</groupId>
     <artifactId>jos</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.3</version>
+    <packaging>jar</packaging>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>JOS - N-body Simulation in Java</name>
+            <url>https://maven.pkg.github.com/trayanmomkov/jos</url>
+            <uniqueVersion>false</uniqueVersion>
+        </repository>
+    </distributionManagement>
 
     <build>
+        <finalName>jos</finalName>
         <plugins>
+
+            <plugin>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>deploy-file</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                        <configuration>
+                            <repositoryId>github</repositoryId>
+                            <url>https://maven.pkg.github.com/trayanmomkov/jos</url>
+                            <file>jos.jar</file>
+                            <generatePom>false</generatePom>
+                            <pomFile>pom.xml</pomFile>
+                            <!--                            <version>4.5.1</version>-->
+                            <uniqueVersion>false</uniqueVersion>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -29,13 +63,13 @@
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
                     <finalName>jos</finalName>
-                    <outputDirectory>./</outputDirectory>
+                    <!--                    <outputDirectory>./</outputDirectory>-->
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
-                        <phase>package</phase> <!-- bind to the packaging phase -->
+                        <id>make-assembly</id>
+                        <phase>package</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
@@ -59,12 +93,60 @@
                 </configuration>
             </plugin>
 
+            <!--            <plugin>-->
+            <!--                <artifactId>maven-antrun-plugin</artifactId>-->
+            <!--                <version>1.4</version>-->
+            <!--                <executions>-->
+            <!--                    <execution>-->
+            <!--                        <phase>process-resources</phase>-->
+            <!--                        <configuration>-->
+            <!--                            <tasks>-->
+            <!--                                <move file="README.md"-->
+            <!--                                      toFile="README.md" overwrite="true"/>-->
+            <!--                            </tasks>-->
+            <!--                        </configuration>-->
+            <!--                        <goals>-->
+            <!--                            <goal>run</goal>-->
+            <!--                        </goals>-->
+            <!--                    </execution>-->
+            <!--                </executions>-->
+            <!--            </plugin>-->
+
+<!--            <plugin>-->
+<!--                <artifactId>maven-resources-plugin</artifactId>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>copy</id>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>copy-resources</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <outputDirectory>${basedir}/</outputDirectory>-->
+<!--                            <resources>-->
+<!--                                <resource>-->
+<!--                                    <directory>${basedir}/</directory>-->
+<!--                                    <includes>-->
+<!--                                        <include>README.md</include>-->
+<!--                                    </includes>-->
+<!--                                    <filtering>true</filtering>-->
+<!--                                </resource>-->
+<!--                            </resources>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
+
+
         </plugins>
 
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
+<!--                <includes>-->
+<!--                    <include>**/README.md</include>-->
+<!--                </includes>-->
             </resource>
         </resources>
 
