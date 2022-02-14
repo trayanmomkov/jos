@@ -8,7 +8,7 @@
 ![JOS - N-body simulation](resources/JOS-N-Body-Simulation.png)
 
 ## Download
- - GPU version: **[jos.jar](jos.jar)** - Faster. Main calculations run on video card. Limited precision. Compatible video card required.
+ - GPU version: **[jos.jar](https://sourceforge.net/projects/jos-n-body/)** - Faster. Main calculations run on video card. Limited precision. Compatible video card required.
  - CPU version: **[jos-cpu.jar](jos-cpu.jar)** - Slower. Runs on CPU. Arbitrary precision.
  
 ## Prerequisites
@@ -29,7 +29,7 @@ You can run the simulation **without visualization**, for faster computations, a
 
 ## Video card compatibility
 GPU version **jos.jar** does not run on every video card.
- If you experience any problem, please try the CPU version: [jos.jar](jos.jar).
+ If you experience any problem, please try the CPU version: [jos.jar](https://sourceforge.net/projects/jos-n-body/).
 
 Please help me to create a list with compatible video cards. Tell me what is yours
  and whether there is a problem or everything is running fine.
@@ -155,7 +155,9 @@ give you some simple steps for compiling and running the project.
 JOS is **maven** project. I've used **Java Swing** and IntelliJ GUI builder for the GUI.
 You should be able to import it as a maven project in your favorite IDE.
  - To run it from source code you can use: `mvn clean compile exec:java`
- - To package as a single JAR file with dependencies use: `mvn assembly:single`
+ - To package as a single JAR file with dependencies use:
+   - `mvn clean install`
+   - `mvn assembly:single`
  - You can run the JAR with: `java -jar jos.jar`
 
 ## Contributing to JOS
