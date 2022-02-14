@@ -29,7 +29,7 @@ You can run the simulation **without visualization**, for faster computations, a
 
 ## Video card compatibility
 GPU version **jos.jar** does not run on every video card.
- If you experience any problem, please try the CPU version: [jos.jar](https://sourceforge.net/projects/jos-n-body/files/jos.jar/download).
+ If you experience any problem, please try the CPU version: [jos-cpu.jar](https://sourceforge.net/projects/jos-n-body/files/jos-cpu.jar/download).
 
 Please help me to create a list with compatible video cards. Tell me what is yours
  and whether there is a problem or everything is running fine.
