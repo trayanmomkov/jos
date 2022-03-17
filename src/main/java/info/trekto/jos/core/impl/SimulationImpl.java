@@ -202,7 +202,7 @@ public class SimulationImpl {
                         }
                     }
 
-                    doIteration();
+                    doIteration(i % C.mainForm.getSaveEveryNthIteration() == 0);
                 } catch (InterruptedException e) {
                     error(logger, "Concurrency failure. One of the threads interrupted in cycle " + i, e);
                 }
@@ -222,7 +222,7 @@ public class SimulationImpl {
         info(logger, "End of simulation. Time: " + nanoToHumanReadable(endTime - startTime));
     }
 
-    private void doIteration() {
+    private void doIteration(boolean saveCurrentIterationToFile) {
         deepCopy(simulationLogicKernel.positionX, simulationLogicKernel.readOnlyPositionX);
         deepCopy(simulationLogicKernel.positionY, simulationLogicKernel.readOnlyPositionY);
         deepCopy(simulationLogicKernel.speedX, simulationLogicKernel.readOnlySpeedX);
@@ -262,7 +262,7 @@ public class SimulationImpl {
             simulationLogicKernel.processCollisions();
         }
 
-        if (C.prop.isSaveToFile()) {
+        if (C.prop.isSaveToFile() && saveCurrentIterationToFile) {
             C.io.appendObjectsToFile();
         }
     }
