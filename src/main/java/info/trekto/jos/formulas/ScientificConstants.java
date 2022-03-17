@@ -6,6 +6,7 @@ package info.trekto.jos.formulas;
  */
 public class ScientificConstants {
     public static final double PI = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862;
+    public static final double DEG_TO_RAD = PI / 180.0;
     public static final long NANOSECONDS_IN_ONE_SECOND = 1000 * 1000 * 1000;
     public static final long MILLISECONDS_IN_ONE_SECOND = 1000;
     public static final long NANOSECONDS_IN_ONE_MILLISECOND = 1000 * 1000;
