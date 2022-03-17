@@ -26,7 +26,7 @@ public class Utils {
 
     private static final List<Long> lastIterationsCount = new ArrayList<>();
     private static final List<Long> lastTime = new ArrayList<>();
-    public static final DateFormat df = new SimpleDateFormat("HH-mm-ss.SSS");
+    public static final DateFormat df = new SimpleDateFormat("HH:mm:ss.SSS");
 
     public static List<SimulationObject> deepCopy(List<SimulationObject> src) {
         ArrayList<SimulationObject> dst = new ArrayList<>();

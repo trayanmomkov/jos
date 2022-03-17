@@ -21,7 +21,7 @@ public class SimulationProperties {
     private NumberType numberType = NumberType.DOUBLE;
     private InteractingLaw interactingLaw = NEWTON_LAW_OF_GRAVITATION;
     private boolean realTimeVisualization = false;
-    private int playingSpeed = 33;
+    private int playingSpeed = 0;
     private boolean bounceFromWalls;
     
     /* Java {@link ArrayList} is limited to Integer.MAX_VALUE */

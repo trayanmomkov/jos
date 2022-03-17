@@ -134,9 +134,9 @@ public class SimulationLogicImpl implements SimulationLogic {
         Number bigDensity = bigger.getMass().divide(bigVolume);
         Number newMass = bigger.getMass().add(smaller.getMass());
 
-        /* Volume and density are two sides of one coin. We should decide what we want to be one of them
-         * and calculate the other. Here we wanted the new object to have an average density of the two collided. */
-        Number newDensity = smallDensity.add(bigDensity).divide(TWO);
+        /* Volume and density are two sides of one coin. We should decide what we want one of them to be, 
+         * and calculate the other. Here we want the new object to have an average density of the two collided. */
+        Number newDensity = (smallDensity.multiply(smaller.getMass()).add((bigDensity.multiply(bigger.getMass()))).divide(newMass));
         Number newVolume = newMass.divide(newDensity);
 
         return calculateRadiusFromVolume(newVolume);

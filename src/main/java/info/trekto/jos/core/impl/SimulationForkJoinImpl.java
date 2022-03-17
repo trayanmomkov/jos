@@ -42,7 +42,7 @@ public class SimulationForkJoinImpl implements Simulation {
     private List<SimulationObject> auxiliaryObjects;
 
 
-    private void doIteration() throws InterruptedException {
+    private void doIteration(boolean saveCurrentIterationToFile) throws InterruptedException {
         auxiliaryObjects = deepCopy(objects);
 
         /* Distribute simulation objects per threads and start execution */
@@ -64,7 +64,7 @@ public class SimulationForkJoinImpl implements Simulation {
             Thread.sleep(-C.prop.getPlayingSpeed());
         }
         
-        if (C.prop.isSaveToFile()) {
+        if (C.prop.isSaveToFile() && saveCurrentIterationToFile) {
             C.io.appendObjectsToFile(objects);
         }
     }
@@ -186,7 +186,7 @@ public class SimulationForkJoinImpl implements Simulation {
                         C.visualizer.visualize(objects);
                     }
 
-                    doIteration();
+                    doIteration(i % C.mainForm.getSaveEveryNthIteration() == 0);
                 } catch (InterruptedException e) {
                     error(logger, "Concurrency failure. One of the threads interrupted in cycle " + i, e);
                 }
