@@ -16,7 +16,7 @@ public class SimulationProperties {
     private String outputFile;
     private boolean saveToFile = false;
     private boolean realTimeVisualization = false;
-    private int playingSpeed = 33;
+    private int playingSpeed = 0;
     private boolean bounceFromWalls;
     
     /* Java {@link ArrayList} is limited to Integer.MAX_VALUE */

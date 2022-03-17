@@ -825,7 +825,7 @@ public class MainForm {
         playingSpeedTextField = new JTextField();
         playingSpeedTextField.setColumns(3);
         playingSpeedTextField.setEnabled(true);
-        playingSpeedTextField.setText("33");
+        playingSpeedTextField.setText("0");
         playingSpeedTextField.setToolTipText("");
         gbc = new GridBagConstraints();
         gbc.gridx = 10;

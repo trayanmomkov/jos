@@ -184,9 +184,9 @@ public class SimulationLogicImpl extends Kernel {
         double bigDensity = mass[bigger] / bigVolume;
         double newMass = mass[bigger] + mass[smaller];
 
-        /* Volume and density are two sides of one coin. We should decide what we want to be one of them
-         * and calculate the other. Here we wanted the new object to have an average density of the two collided. */
-        double newDensity = (smallDensity + bigDensity) / 2.0;
+        /* Volume and density are two sides of one coin. We should decide what we want one of them to be, 
+         * and calculate the other. Here we want the new object to have an average density of the two collided. */
+        double newDensity = (smallDensity * mass[smaller] + bigDensity * mass[bigger]) / newMass;
         double newVolume = newMass / newDensity;
 
         return calculateRadiusFromVolume(newVolume);

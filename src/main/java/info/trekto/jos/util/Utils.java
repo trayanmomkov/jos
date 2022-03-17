@@ -25,7 +25,7 @@ public class Utils {
 
     private static final List<Long> lastIterationsCount = new ArrayList<>();
     private static final List<Long> lastTime = new ArrayList<>();
-    public static final DateFormat df = new SimpleDateFormat("HH-mm-ss.SSS");
+    public static final DateFormat df = new SimpleDateFormat("HH:mm:ss.SSS");
 
     public static void deepCopy(double[] src, double[] dst) {
         System.arraycopy(src, 0, dst, 0, src.length);

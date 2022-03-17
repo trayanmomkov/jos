@@ -20,6 +20,7 @@ import java.util.Queue;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static info.trekto.jos.gui.MainForm.PROGRAM_NAME;
 import static info.trekto.jos.util.Utils.secondsToHumanReadable;
 import static java.awt.Color.BLUE;
 import static java.awt.Color.RED;
@@ -39,7 +40,7 @@ public class VisualizerImpl implements Visualizer {
     public VisualizerImpl() {
         trails = new HashMap<>();
         if (C.prop.isRealTimeVisualization()) {
-            frame = new VisualizationFrame(this, "Simulation");
+            frame = new VisualizationFrame(this, PROGRAM_NAME);
             if (MainForm.icon != null) {
                 frame.setIconImage(MainForm.icon);
             }
