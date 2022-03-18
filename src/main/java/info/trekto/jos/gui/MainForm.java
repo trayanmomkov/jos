@@ -94,8 +94,9 @@ public class MainForm {
     private JLabel saveEveryNthIterationLabel1;
     private JLabel saveEveryNthIterationLabel2;
     private ButtonGroup buttonGroup;
-    private List<Component> runningComponents;
-    private List<Component> playingComponents;
+    private final List<Component> runningComponents;
+    private final List<Component> playingComponents;
+    private final List<Component> savingToFileComponents;
     private File playFile;
 
     public MainForm() {
@@ -143,12 +144,6 @@ public class MainForm {
             if (!isNullOrBlank(secondsPerIterationTextField.getText())) {
                 C.prop.setSecondsPerIteration(Double.parseDouble(secondsPerIterationTextField.getText()));
             }
-        });
-
-        saveToFileCheckBox.addActionListener(actionEvent -> {
-            outputFileLabel.setEnabled(saveToFileCheckBox.isSelected());
-            outputFileTextField.setEnabled(saveToFileCheckBox.isSelected());
-            C.prop.setSaveToFile(saveToFileCheckBox.isSelected());
         });
 
         precisionTextField.getDocument().addUndoableEditListener(actionEvent -> {
@@ -210,6 +205,14 @@ public class MainForm {
 
         playingComponents = Arrays.asList(playFileLabel, playFromLabel, browsePlayingFileButton, playButton);
 
+        savingToFileComponents = Arrays.asList(outputFileLabel, outputFileTextField, saveEveryNthIterationLabel1, saveEveryNthIterationTextField,
+                                               saveEveryNthIterationLabel2);
+
+        saveToFileCheckBox.addActionListener(actionEvent -> {
+            savingToFileComponents.forEach(c -> c.setEnabled(saveToFileCheckBox.isSelected()));
+            C.prop.setSaveToFile(saveToFileCheckBox.isSelected());
+        });
+
         generateObjectsButton.addActionListener(actionEvent -> {
             SimulationProperties prop = new SimulationProperties();
             if (!isNullOrBlank(numberOfObjectsTextField.getText())) {
@@ -238,7 +241,6 @@ public class MainForm {
                     onVisualizationWindowClosed();
                 }
             }).start();
-
         });
 
         browsePlayingFileButton.addActionListener(actionEvent -> {
@@ -309,6 +311,7 @@ public class MainForm {
     private void enableRunning(boolean enable) {
         runningComponents.forEach(c -> c.setEnabled(enable));
         playingComponents.forEach(c -> c.setEnabled(!enable));
+        savingToFileComponents.forEach(c -> c.setEnabled(enable && saveToFileCheckBox.isSelected()));
     }
 
     private void play() {
@@ -368,6 +371,7 @@ public class MainForm {
             startButton.setEnabled(false);
             runningComponents.forEach(c -> c.setEnabled(false));
             playingComponents.forEach(c -> c.setEnabled(false));
+            savingToFileComponents.forEach(c -> c.setEnabled(false));
             runningRadioButton.setEnabled(false);
             playRadioButton.setEnabled(false);
             stopButton.setEnabled(true);
@@ -444,6 +448,7 @@ public class MainForm {
         }
         if (runningRadioButton.isSelected()) {
             runningComponents.forEach(c -> c.setEnabled(true));
+            savingToFileComponents.forEach(c -> c.setEnabled(saveToFileCheckBox.isSelected()));
         } else {
             playingComponents.forEach(c -> c.setEnabled(true));
         }
@@ -775,6 +780,7 @@ public class MainForm {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         simulationPropertiesPanel.add(outputFileTextField, gbc);
         saveEveryNthIterationLabel1 = new JLabel();
+        saveEveryNthIterationLabel1.setEnabled(false);
         saveEveryNthIterationLabel1.setText("Save every");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -783,6 +789,7 @@ public class MainForm {
         gbc.insets = new Insets(0, 2, 0, 1);
         simulationPropertiesPanel.add(saveEveryNthIterationLabel1, gbc);
         saveEveryNthIterationTextField = new JTextField();
+        saveEveryNthIterationTextField.setEnabled(false);
         saveEveryNthIterationTextField.setText("1");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
@@ -791,6 +798,7 @@ public class MainForm {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         simulationPropertiesPanel.add(saveEveryNthIterationTextField, gbc);
         saveEveryNthIterationLabel2 = new JLabel();
+        saveEveryNthIterationLabel2.setEnabled(false);
         saveEveryNthIterationLabel2.setText("-th iteration");
         gbc = new GridBagConstraints();
         gbc.gridx = 2;

@@ -292,6 +292,7 @@
               <gridbag top="0" left="2" bottom="0" right="1" weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
+              <enabled value="false"/>
               <text value="Save every"/>
             </properties>
           </component>
@@ -303,6 +304,7 @@
               <gridbag weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
+              <enabled value="false"/>
               <text value="1"/>
             </properties>
           </component>
@@ -312,6 +314,7 @@
               <gridbag weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
+              <enabled value="false"/>
               <text value="-th iteration"/>
             </properties>
           </component>
