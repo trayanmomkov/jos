@@ -304,6 +304,7 @@
               <gridbag weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
+              <columns value="4"/>
               <enabled value="false"/>
               <text value="1"/>
             </properties>

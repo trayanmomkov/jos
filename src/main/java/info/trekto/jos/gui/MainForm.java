@@ -219,6 +219,7 @@ public class MainForm {
         appendMessage("\tMove down: ↓");
         appendMessage("\tMove right: →");
         appendMessage("\tMove left: ←");
+        appendMessage("\tSwitch trails: t");
 
         buttonGroup = new ButtonGroup();
         buttonGroup.add(runningRadioButton);
@@ -519,6 +520,10 @@ public class MainForm {
 
     public boolean isShowTrail() {
         return showTrailCheckBox.isSelected();
+    }
+
+    public void setShowTrail(boolean selected) {
+        showTrailCheckBox.setSelected(selected);
     }
 
     public int getTrailSize() {
@@ -835,6 +840,7 @@ public class MainForm {
         gbc.insets = new Insets(0, 2, 0, 1);
         simulationPropertiesPanel.add(saveEveryNthIterationLabel1, gbc);
         saveEveryNthIterationTextField = new JTextField();
+        saveEveryNthIterationTextField.setColumns(4);
         saveEveryNthIterationTextField.setEnabled(false);
         saveEveryNthIterationTextField.setText("1");
         gbc = new GridBagConstraints();
