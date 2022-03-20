@@ -20,6 +20,7 @@ import static info.trekto.jos.core.impl.SimulationImpl.init;
 import static info.trekto.jos.formulas.CommonFormulas.calculateVolumeFromRadius;
 import static info.trekto.jos.formulas.ScientificConstants.DEG_TO_RAD;
 import static info.trekto.jos.util.Utils.info;
+import static java.awt.Color.BLUE;
 import static java.lang.Math.*;
 
 public class SimulationGenerator {
@@ -57,7 +58,7 @@ public class SimulationGenerator {
                 o.setSpeedX((random.nextDouble() - 0.5) * 10);
                 o.setSpeedY((random.nextDouble() - 0.5) * 10);
                 o.setSpeedZ(0);
-                o.setColor(Color.BLUE.getRGB());
+                o.setColor(BLUE.getRGB());
 
                 // density = mass / volume
                 o.setMass(calculateVolumeFromRadius(o.getRadius()) * 100_000_000_000L);
@@ -77,30 +78,35 @@ public class SimulationGenerator {
     }
 
     public static List<SimulationObject> generateComplexObject(double x, double y, double radius, double mass, String id, double rotationDirection,
-                                                               double speedX, double speedY) {
+                                                               double speedX, double speedY, Color color) {
         List<SimulationObject> objectParticles = new ArrayList<>();
         double object_number_factor = 0.4;    // bigger = less objects
-        int object_radial_density = 1;    // bigger = less objects
-        double exponential_speed_factor = 0.45;
-        double exponential_mass_change_in_depth = -0.78;
+        int object_radial_density = 4;    // bigger = less objects
+        double exponential_speed_factor = 0.5;   // smaller = lower speed (including negative values) 
+        double exponential_mass_change_in_depth = 2;
         double particleRadius = 1;
 
-        for (double r = radius; r >= particleRadius * 2 + 1; r -= object_radial_density) {
+        // Circles
+        double centerObjectRadius = 10;
+//        double minRadius = particleRadius * 2 + 1;
+        double minRadius = centerObjectRadius * 2;
+        for (double r = radius; r >= minRadius; r -= particleRadius * object_radial_density) {
             double particlesInCurrentCircle = round(r / object_number_factor);
             double step = 360 / particlesInCurrentCircle;
 
-            for (int ii = 0; ii < r / object_number_factor; ii++) {
-                double i = ii * step;
-                double radians = i * DEG_TO_RAD; //convert degrees into radians
+            // Objects in the current circle
+            for (int i = 0; i < r / object_number_factor; i++) {
+                double radians = i * step * DEG_TO_RAD; //convert degrees into radians
 
                 SimulationObject o = new SimulationObjectImpl();
-                o.setX(cos(radians) * r * 5 + x);
-                o.setY(sin(radians) * r * 5 + y);
-                o.setSpeedX((cos(radians - 300) * pow(r, exponential_speed_factor)) * rotationDirection + speedX);
-                o.setSpeedY((sin(radians - 300) * pow(r, exponential_speed_factor)) * rotationDirection + speedY);
+                o.setX(cos(radians) * r + x);
+                o.setY(sin(radians) * r + y);
+                o.setSpeedX((cos(radians - 300) * pow(r, exponential_speed_factor)) * PI * rotationDirection + speedX);
+                o.setSpeedY((sin(radians - 300) * pow(r, exponential_speed_factor)) * PI * rotationDirection + speedY);
                 o.setMass(mass * pow(r, exponential_mass_change_in_depth)); 
                 o.setRadius(particleRadius);
-                o.setId(id + r + ii);
+                o.setId(id + r + i);
+                o.setColor(color.getRGB());
                 objectParticles.add(o);
             }
         }
