@@ -26,9 +26,11 @@ import static info.trekto.jos.util.Utils.*;
  */
 public class SimulationImpl {
     private static final Logger logger = LoggerFactory.getLogger(SimulationImpl.class);
+    public static final int PAUSE_SLEEP_MILLISECONDS = 100;
     public static double RATIO_FOUR_THREE = 4 / 3.0;
     public static final int SHOW_REMAINING_INTERVAL_SECONDS = 2;
     public boolean running = false;
+    public boolean paused = false;
 
     private long iterationCounter;
     public SimulationLogicImpl simulationLogicKernel;
@@ -111,6 +113,9 @@ public class SimulationImpl {
                     doStop();
                     break;
                 }
+                while (paused) {
+                    Thread.sleep(PAUSE_SLEEP_MILLISECONDS);
+                }
                 Iteration iteration = C.io.readNextIteration();
                 if (iteration == null) {
                     break;
@@ -181,6 +186,10 @@ public class SimulationImpl {
                     if (C.hasToStop) {
                         doStop();
                         break;
+                    }
+
+                    while (paused) {
+                        Thread.sleep(PAUSE_SLEEP_MILLISECONDS);
                     }
 
                     iterationCounter = i + 1;
