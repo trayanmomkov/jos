@@ -33,4 +33,8 @@ public interface Simulation {
     void playSimulation(String absolutePath);
 
     void init(String absolutePath);
+    
+    void setPaused(boolean paused);
+    
+    boolean isPaused();
 }

@@ -206,8 +206,11 @@ public class MainForm {
 
         startButton.addActionListener(actionEvent -> start());
         stopButton.addActionListener(actionEvent -> {
-            if (C.simulation != null && C.simulation.isRunning()) {
-                C.hasToStop = true;
+            if (C.simulation != null) {
+                C.simulation.setPaused(false);
+                if (C.simulation.isRunning()) {
+                    C.hasToStop = true;
+                }
             }
         });
 
@@ -306,10 +309,7 @@ public class MainForm {
 
         playingSpeedLabel.setLabelFor(playingSpeedTextField);
 
-        playButton.addActionListener(actionEvent -> {
-            stopButton.setEnabled(true);
-            play();
-        });
+        playButton.addActionListener(actionEvent -> play());
 
         showObjectIDsCheckBox.addActionListener(actionEvent -> {
             fontSize.setEnabled(showObjectIDsCheckBox.isSelected());
@@ -362,6 +362,7 @@ public class MainForm {
     }
 
     private void play() {
+        C.simulation.setPaused(false);
         new Thread(() -> {
             try {
                 if (C.simulation != null && playFile != null) {
@@ -379,9 +380,12 @@ public class MainForm {
                 onVisualizationWindowClosed();
             }
         }).start();
+        playingComponents.forEach(c -> c.setEnabled(false));
+        stopButton.setEnabled(true);
     }
 
     private void start() {
+        C.simulation.setPaused(false);
         if (C.prop != null && C.prop.getInitialObjects() != null) {
             new Thread(() -> {
                 try {
@@ -492,6 +496,7 @@ public class MainForm {
     }
 
     public void onVisualizationWindowClosed() {
+        C.simulation.setPaused(false);
         if (runningRadioButton.isSelected()) {
             startButton.setEnabled(true);
         }

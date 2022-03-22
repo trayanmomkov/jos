@@ -49,6 +49,7 @@ public class VisualizerImpl implements Visualizer {
                 frame.setIconImage(MainForm.icon);
             }
             frame.addKeyListener(new VisualizationKeyListener(this));
+            frame.addMouseListener(new VisualizationMouseListener(this));
 
             /* Get window dimension */
             GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();

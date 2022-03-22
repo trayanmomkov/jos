@@ -32,8 +32,10 @@ import static info.trekto.jos.util.Utils.*;
  */
 public class SimulationForkJoinImpl implements Simulation {
     private static final Logger logger = LoggerFactory.getLogger(SimulationForkJoinImpl.class);
+    public static final int PAUSE_SLEEP_MILLISECONDS = 100;
     public static final int SHOW_REMAINING_INTERVAL_SECONDS = 2;
     public boolean running = false;
+    public boolean paused = false;
 
     private long iterationCounter;
     private ForceCalculator forceCalculator;
@@ -80,6 +82,16 @@ public class SimulationForkJoinImpl implements Simulation {
     }
 
     @Override
+    public void setPaused(boolean paused) {
+        this.paused = paused;
+    }
+
+    @Override
+    public boolean isPaused() {
+        return paused;
+    }
+
+    @Override
     public void init(SimulationProperties prop) {
         C.io = new JsonReaderWriter();
         C.prop = prop;
@@ -113,6 +125,9 @@ public class SimulationForkJoinImpl implements Simulation {
                 if (C.hasToStop) {
                     doStop();
                     break;
+                }
+                while (paused) {
+                    Thread.sleep(PAUSE_SLEEP_MILLISECONDS);
                 }
                 Iteration iteration = C.io.readNextIteration();
                 if (iteration == null) {
@@ -173,6 +188,9 @@ public class SimulationForkJoinImpl implements Simulation {
                     if (C.hasToStop) {
                         doStop();
                         break;
+                    }
+                    while (paused) {
+                        Thread.sleep(PAUSE_SLEEP_MILLISECONDS);
                     }
 
                     iterationCounter = i + 1;
