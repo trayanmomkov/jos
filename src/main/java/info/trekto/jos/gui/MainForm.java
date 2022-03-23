@@ -93,6 +93,7 @@ public class MainForm {
     private JTextField saveEveryNthIterationTextField;
     private JLabel saveEveryNthIterationLabel1;
     private JLabel saveEveryNthIterationLabel2;
+    private JButton pauseButton;
     private ButtonGroup buttonGroup;
     private final List<Component> runningComponents;
     private final List<Component> playingComponents;
@@ -180,6 +181,12 @@ public class MainForm {
                 if (C.simulation.running) {
                     C.hasToStop = true;
                 }
+            }
+        });
+
+        pauseButton.addActionListener(actionEvent -> {
+            if (C.simulation != null) {
+                switchPause();
             }
         });
 
@@ -309,6 +316,11 @@ public class MainForm {
         aboutLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }
 
+    public void switchPause() {
+        C.simulation.paused = !C.simulation.paused;
+        pauseButton.setText(C.simulation.paused ? "Unpause" : "Pause");
+    }
+
     private void enableRunning(boolean enable) {
         runningComponents.forEach(c -> c.setEnabled(enable));
         playingComponents.forEach(c -> c.setEnabled(!enable));
@@ -336,6 +348,7 @@ public class MainForm {
         }).start();
         playingComponents.forEach(c -> c.setEnabled(false));
         stopButton.setEnabled(true);
+        pauseButton.setEnabled(true);
     }
 
     private void start() {
@@ -380,6 +393,7 @@ public class MainForm {
             runningRadioButton.setEnabled(false);
             playRadioButton.setEnabled(false);
             stopButton.setEnabled(true);
+            pauseButton.setEnabled(true);
         }
     }
 
@@ -461,6 +475,7 @@ public class MainForm {
         runningRadioButton.setEnabled(true);
         playRadioButton.setEnabled(true);
         stopButton.setEnabled(false);
+        pauseButton.setEnabled(false);
     }
 
     public int getFontSize() {
@@ -1037,6 +1052,16 @@ public class MainForm {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(0, 2, 0, 0);
         panel4.add(runningRadioButton, gbc);
+        pauseButton = new JButton();
+        pauseButton.setEnabled(false);
+        pauseButton.setText("Pause");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 3;
+        gbc.gridy = 0;
+        gbc.weighty = 1.0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(0, 2, 0, 0);
+        panel4.add(pauseButton, gbc);
         showTimeAndIterationCheckBox = new JCheckBox();
         showTimeAndIterationCheckBox.setHorizontalAlignment(10);
         showTimeAndIterationCheckBox.setHorizontalTextPosition(10);

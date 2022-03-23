@@ -289,4 +289,8 @@ public class SimulationImpl {
         }
         return numberOfObjects;
     }
+    
+    public void switchPause() {
+        C.mainForm.switchPause();
+    }
 }
