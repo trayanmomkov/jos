@@ -285,4 +285,8 @@ public class SimulationForkJoinImpl implements Simulation {
     public boolean isRunning() {
         return running;
     }
+    
+    public void switchPause() {
+        C.mainForm.switchPause();
+    }
 }

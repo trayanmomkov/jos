@@ -550,6 +550,16 @@
               <text value="Run simulation"/>
             </properties>
           </component>
+          <component id="f20f1" class="javax.swing.JButton" binding="pauseButton" default-binding="true">
+            <constraints>
+              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag top="0" left="2" bottom="0" right="0" weightx="0.0" weighty="1.0"/>
+            </constraints>
+            <properties>
+              <enabled value="false"/>
+              <text value="Pause"/>
+            </properties>
+          </component>
         </children>
       </grid>
       <component id="a3aef" class="javax.swing.JCheckBox" binding="showTimeAndIterationCheckBox" default-binding="true">
