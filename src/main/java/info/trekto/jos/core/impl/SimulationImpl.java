@@ -27,6 +27,7 @@ import static info.trekto.jos.util.Utils.*;
 public class SimulationImpl {
     private static final Logger logger = LoggerFactory.getLogger(SimulationImpl.class);
     public static final int PAUSE_SLEEP_MILLISECONDS = 100;
+    private static final String CPU_VERSION_LINK = "https://sourceforge.net/projects/jos-n-body/files/jos-cpu.jar/download";
     public static double RATIO_FOUR_THREE = 4 / 3.0;
     public static final int SHOW_REMAINING_INTERVAL_SECONDS = 2;
     public boolean running = false;
@@ -259,7 +260,7 @@ public class SimulationImpl {
         collisionCheckKernel.execute(collisionCheckRange);
         if (iterationCounter == 1) {
             String message = "Collision detection execution mode = " + simulationLogicKernel.getExecutionMode();
-            if (GPU.equals(simulationLogicKernel.getExecutionMode())) {
+            if (GPU.equals(collisionCheckKernel.getExecutionMode())) {
                 info(logger, message);
             } else {
                 warn(logger, message);
@@ -289,8 +290,34 @@ public class SimulationImpl {
         }
         return numberOfObjects;
     }
-    
+
     public void switchPause() {
         C.mainForm.switchPause();
+    }
+
+    public static void checkGpu() {
+        String message = "Looks like your video card is not compatible with Aparapi.\n"
+                + "Please download the CPU version: " + CPU_VERSION_LINK + "\n"
+                + "Please send me email with this message and your video card model:\n"
+                + "trayan.momkov аt gmail with subject: JOS - Error.\n";
+
+        String htmlMessage = "<p>Looks like your video card is not compatible with Aparapi.</p>"
+                + "<p>Please download the CPU version: <a href=\"" + CPU_VERSION_LINK + "\">" + CPU_VERSION_LINK + "</a></p>"
+                + "<p>Please send me email with this message and your video card model:</p>"
+                + "<p>trayan.momkov аt gmail with subject: JOS - Error.</p>";
+        try {
+            AparapiTestKernel testKernel = new AparapiTestKernel();
+            Range testKernelRange = Range.create(5);
+            testKernel.setExecutionMode(GPU);
+
+            testKernel.execute(testKernelRange);
+            if (!GPU.equals(testKernel.getExecutionMode())) {
+                error(logger, message);
+                C.mainForm.showHtmlError(htmlMessage);
+            }
+        } catch (Exception ex) {
+            error(logger, message, ex);
+            C.mainForm.showHtmlError(htmlMessage, ex);
+        }
     }
 }

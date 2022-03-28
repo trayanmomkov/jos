@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.HyperlinkEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.StyleContext;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
+import static info.trekto.jos.core.impl.SimulationImpl.checkGpu;
 import static info.trekto.jos.util.Utils.error;
 import static info.trekto.jos.util.Utils.isNullOrBlank;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
@@ -423,6 +425,30 @@ public class MainForm {
         JOptionPane.showMessageDialog(parent, message, "Error", ERROR_MESSAGE);
     }
 
+    public void showHtmlError(String message, Exception exception) {
+        showHtmlError(message + "<p>" + exception.getMessage() + "</p>");
+    }
+
+    public void showHtmlError(String message) {
+        JEditorPane ep = new JEditorPane();
+        ep.setContentType("text/html");
+        ep.setText(message);
+
+        ep.setEditable(false);  //so it s not editable
+        ep.setOpaque(false);    //so we don't see white background
+
+        ep.addHyperlinkListener(event -> {
+            if (HyperlinkEvent.EventType.ACTIVATED.equals(event.getEventType())) {
+                try {
+                    Desktop.getDesktop().browse(event.getURL().toURI());
+                } catch (Exception ignored) {
+                }
+            }
+        });
+
+        JOptionPane.showMessageDialog(mainPanel, ep, "Error", ERROR_MESSAGE);
+    }
+
     private void showWarn(Component parent, String message) {
         JOptionPane.showMessageDialog(parent, message, "Warning", WARNING_MESSAGE);
     }
@@ -454,6 +480,7 @@ public class MainForm {
         jFrame.pack();
         jFrame.setLocationRelativeTo(null); // Center of the screen
         jFrame.setVisible(true);
+        checkGpu();
     }
 
     public void appendMessage(String message) {
