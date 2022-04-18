@@ -2,6 +2,7 @@ package info.trekto.jos.core.impl;
 
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.SimulationLogic;
+import info.trekto.jos.core.formulas.ScientificConstants;
 import info.trekto.jos.core.model.ImmutableSimulationObject;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.model.impl.TripleNumber;
@@ -13,8 +14,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import static info.trekto.jos.core.Controller.C;
-import static info.trekto.jos.core.formulas.CommonFormulas.*;
-import static info.trekto.jos.core.numbers.New.TWO;
+import static info.trekto.jos.core.numbers.New.*;
+import static info.trekto.jos.core.numbers.New.RATIO_FOUR_THREE;
 
 /**
  * @author Trayan Momkov
@@ -57,7 +58,8 @@ public class SimulationLogicImpl implements SimulationLogic {
         }
     }
 
-    public static void processCollisions(Simulation simulation) {
+    @Override
+    public void processCollisions(Simulation simulation) {
         List<SimulationObject> forRemoval = new ArrayList<>();
         for (SimulationObject newObject : simulation.getAuxiliaryObjects()) {
             if (forRemoval.contains(newObject)) {
@@ -110,7 +112,7 @@ public class SimulationLogicImpl implements SimulationLogic {
         simulation.getAuxiliaryObjects().removeAll(forRemoval);
     }
 
-    private static int calculateColor(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
+    private int calculateColor(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
         double bigV = calculateVolumeFromRadius(bigger.getRadius()).doubleValue();
         double smallV = calculateVolumeFromRadius(smaller.getRadius()).doubleValue();
         long r = Math.round((new Color(bigger.getColor()).getRed() * bigV + new Color(smaller.getColor()).getRed() * smallV) / (bigV + smallV));
@@ -123,7 +125,7 @@ public class SimulationLogicImpl implements SimulationLogic {
     /**
      * We calculate for sphere, not for circle, so in 2D volume may not look real.
      */
-    public static Number calculateRadiusBasedOnNewVolumeAndDensity(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
+    public Number calculateRadiusBasedOnNewVolumeAndDensity(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
         // density = mass / volume
         // calculate volume of smaller and add it to volume of bigger
         // calculate new radius of bigger based on new volume
@@ -203,5 +205,32 @@ public class SimulationLogicImpl implements SimulationLogic {
         Number speedZ = object.getSpeed().getZ().add(acceleration.getZ().multiply(C.prop.getSecondsPerIteration()));
 
         return new TripleNumber(speedX, speedY, speedZ);
+    }
+
+    @Override
+    public Number calculateDistance(ImmutableSimulationObject object1, ImmutableSimulationObject object2) {
+        Number x = object2.getX().subtract(object1.getX());
+        Number y = object2.getY().subtract(object1.getY());
+        Number z = object2.getZ().subtract(object1.getZ());
+        return (x.multiply(x).add(y.multiply(y)).add(z.multiply(z))).sqrt();
+    }
+
+    @Override
+    public Number calculateVolumeFromRadius(Number radius) {
+        // V = 4/3 * pi * r^3
+        return RATIO_FOUR_THREE.multiply(ScientificConstants.PI).multiply(radius.pow(3));
+    }
+
+    public Number calculateRadiusFromVolume(Number volume) {
+        // V = 4/3 * pi * r^3
+        return IGNORED.cbrt(volume.divide(RATIO_FOUR_THREE.multiply(ScientificConstants.PI)));
+    }
+
+    public TripleNumber calculateAcceleration(ImmutableSimulationObject object, TripleNumber acceleration, TripleNumber force) {
+        // ax = Fx / m
+        Number newAccelerationX = acceleration.getX().add(force.getX().divide(object.getMass()));
+        Number newAccelerationY = acceleration.getY().add(force.getY().divide(object.getMass()));
+        Number newAccelerationZ = acceleration.getZ().add(force.getZ().divide(object.getMass()));
+        return new TripleNumber(newAccelerationX, newAccelerationY, newAccelerationZ);
     }
 }

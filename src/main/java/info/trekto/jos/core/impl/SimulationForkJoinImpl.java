@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static info.trekto.jos.core.Controller.C;
-import static info.trekto.jos.core.impl.SimulationLogicImpl.processCollisions;
+import static info.trekto.jos.core.Controller.simulationLogic;
 import static info.trekto.jos.core.formulas.ScientificConstants.NANOSECONDS_IN_ONE_MILLISECOND;
 import static info.trekto.jos.core.formulas.ScientificConstants.NANOSECONDS_IN_ONE_SECOND;
 import static info.trekto.jos.util.Utils.*;
@@ -56,7 +56,7 @@ public class SimulationForkJoinImpl implements Simulation {
         
         /* If collision/s exists execute sequentially on a single thread */
         if (CollisionCheck.collisionExists()) {
-            processCollisions(C.simulation);
+            simulationLogic.processCollisions(C.simulation);
         }
 
         objects = auxiliaryObjects;

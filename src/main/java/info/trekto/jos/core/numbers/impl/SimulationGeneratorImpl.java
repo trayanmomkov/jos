@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Random;
 
 import static info.trekto.jos.core.Controller.C;
-import static info.trekto.jos.core.formulas.CommonFormulas.calculateVolumeFromRadius;
+import static info.trekto.jos.core.Controller.simulationLogic;
 import static info.trekto.jos.core.numbers.New.ZERO;
 import static info.trekto.jos.util.Utils.info;
 
@@ -60,7 +60,7 @@ public class SimulationGeneratorImpl implements SimulationGenerator {
                 o.setColor(Color.BLUE.getRGB());
 
                 // density = mass / volume
-                o.setMass(calculateVolumeFromRadius(o.getRadius()).multiply(New.num(100_000_000_000L)));
+                o.setMass(simulationLogic.calculateVolumeFromRadius(o.getRadius()).multiply(New.num(100_000_000_000L)));
                 o.setId(String.valueOf(generatedObjects));
 
                 objects.add(o);

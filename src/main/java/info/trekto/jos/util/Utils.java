@@ -1,7 +1,6 @@
 package info.trekto.jos.util;
 
 import info.trekto.jos.core.impl.SimulationProperties;
-import info.trekto.jos.core.formulas.CommonFormulas;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.model.impl.SimulationObjectImpl;
 import info.trekto.jos.core.numbers.Number;
@@ -13,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static info.trekto.jos.core.Controller.C;
+import static info.trekto.jos.core.Controller.simulationLogic;
 import static info.trekto.jos.core.formulas.ScientificConstants.*;
 
 /**
@@ -129,7 +129,7 @@ public class Utils {
                     continue;
                 }
                 // distance between centres
-                Number distance = CommonFormulas.calculateDistance(object, object1);
+                Number distance = simulationLogic.calculateDistance(object, object1);
 
                 if (distance.compareTo(object.getRadius().add(object1.getRadius())) < 0) {
                     return true;
