@@ -112,9 +112,9 @@ public class MainForm {
             if (option == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
                 inputFilePathLabel.setText(file.getAbsolutePath());
-                C.simulation = new SimulationForkJoinImpl();
+                C.setSimulation(new SimulationForkJoinImpl());
                 C.simulationLogic = new SimulationLogicImpl();
-                C.simulation.init(file.getAbsolutePath());
+                C.getSimulation().init(file.getAbsolutePath());
                 refreshProperties(C.prop);
             }
         });
@@ -125,11 +125,11 @@ public class MainForm {
             int userSelection = fileChooser.showSaveDialog(mainPanel);
             if (userSelection == JFileChooser.APPROVE_OPTION) {
                 File fileToSave = fileChooser.getSelectedFile();
-                C.io.writeProperties(C.prop, fileToSave.getAbsolutePath());
+                C.getReaderWriter().writeProperties(C.prop, fileToSave.getAbsolutePath());
 
                 /* Reopen just saved file */
                 inputFilePathLabel.setText(fileToSave.getAbsolutePath());
-                C.simulation.init(fileToSave.getAbsolutePath());
+                C.getSimulation().init(fileToSave.getAbsolutePath());
                 refreshProperties(C.prop);
             }
         });
@@ -207,16 +207,16 @@ public class MainForm {
 
         startButton.addActionListener(actionEvent -> start());
         stopButton.addActionListener(actionEvent -> {
-            if (C.simulation != null) {
-                C.simulation.setPaused(false);
-                if (C.simulation.isRunning()) {
-                    C.hasToStop = true;
+            if (C.getSimulation() != null) {
+                C.getSimulation().setPaused(false);
+                if (C.getSimulation().isRunning()) {
+                    C.setHasToStop(true);
                 }
             }
         });
 
         pauseButton.addActionListener(actionEvent -> {
-            if (C.simulation != null) {
+            if (C.getSimulation() != null) {
                 switchPause();
             }
         });
@@ -279,7 +279,7 @@ public class MainForm {
             prop.setScale(Integer.parseInt(scaleTextField.getText()));
             prop.setPrecision(Integer.parseInt(precisionTextField.getText()));
 
-            C.simulation = new SimulationForkJoinImpl();
+            C.setSimulation(new SimulationForkJoinImpl());
             C.simulationLogic = new SimulationLogicImpl();
 
             new Thread(() -> {
@@ -288,7 +288,7 @@ public class MainForm {
                 } catch (Exception ex) {
                     String message = "Error during object generation.";
                     error(logger, message, ex);
-                    C.visualizer.closeWindow();
+                    C.getVisualizer().closeWindow();
                     showError(mainPanel, message + " " + ex.getMessage());
                 } finally {
                     onVisualizationWindowClosed();
@@ -304,9 +304,9 @@ public class MainForm {
                 playFile = fileChooser.getSelectedFile();
                 playFileLabel.setText(playFile.getAbsolutePath());
                 try {
-                    C.simulation = new SimulationForkJoinImpl();
+                    C.setSimulation(new SimulationForkJoinImpl());
                     C.simulationLogic = new SimulationLogicImpl();
-                    C.simulation.initForPlaying(playFile.getAbsolutePath());
+                    C.getSimulation().initForPlaying(playFile.getAbsolutePath());
                     refreshProperties(C.prop);
                 } catch (IOException e) {
                     showError(mainPanel, "Cannot read ZIP file.", e);
@@ -363,8 +363,8 @@ public class MainForm {
     }
 
     public void switchPause() {
-        C.simulation.setPaused(!C.simulation.isPaused());
-        pauseButton.setText(C.simulation.isPaused() ? "Unpause" : "Pause");
+        C.getSimulation().setPaused(!C.getSimulation().isPaused());
+        pauseButton.setText(C.getSimulation().isPaused() ? "Unpause" : "Pause");
     }
 
     private void enableRunning(boolean enable) {
@@ -374,18 +374,18 @@ public class MainForm {
     }
 
     private void play() {
-        C.simulation.setPaused(false);
+        C.getSimulation().setPaused(false);
         new Thread(() -> {
             try {
-                if (C.simulation != null && playFile != null) {
-                    C.hasToStop = false;
-                    C.simulation.playSimulation(playFile.getAbsolutePath());
+                if (C.getSimulation() != null && playFile != null) {
+                    C.setHasToStop(false);
+                    C.getSimulation().playSimulation(playFile.getAbsolutePath());
                 }
             } catch (Exception ex) {
                 String message = "Error during playing.";
                 error(logger, message, ex);
-                if (C.visualizer != null) {
-                    C.visualizer.closeWindow();
+                if (C.getVisualizer() != null) {
+                    C.getVisualizer().closeWindow();
                 }
                 showError(mainPanel, message + " " + ex.getMessage());
             } finally {
@@ -398,35 +398,35 @@ public class MainForm {
     }
 
     private void start() {
-        C.simulation.setPaused(false);
+        C.getSimulation().setPaused(false);
         if (C.prop != null && C.prop.getInitialObjects() != null) {
             new Thread(() -> {
                 try {
                     if (C.prop.isRealTimeVisualization()) {
-                        C.visualizer = new VisualizerImpl();
+                        C.setVisualizer(new VisualizerImpl());
                     }
-                    C.simulation.startSimulation();
+                    C.getSimulation().startSimulation();
                 } catch (SimulationException ex) {
                     String message = "Error during simulation.";
                     error(logger, message, ex);
-                    C.visualizer.closeWindow();
+                    C.getVisualizer().closeWindow();
                     showError(mainPanel, message + " " + ex.getMessage());
                 } catch (ArithmeticException ex) {
                     if (ex.getMessage().contains("zero")) {
                         String message = "Operation with zero. Please increase the precision and try again.";
                         error(logger, message, ex);
-                        C.visualizer.closeWindow();
+                        C.getVisualizer().closeWindow();
                         showError(mainPanel, message + " " + ex.getMessage());
                     } else {
                         String message = "Arithmetic exception.";
                         error(logger, message, ex);
-                        C.visualizer.closeWindow();
+                        C.getVisualizer().closeWindow();
                         showError(mainPanel, message + " " + ex.getMessage());
                     }
                 } catch (Exception ex) {
                     String message = "Unexpected exception.";
                     error(logger, message, ex);
-                    C.visualizer.closeWindow();
+                    C.getVisualizer().closeWindow();
                     showError(mainPanel, message + " " + ex.getMessage());
                 } finally {
                     onVisualizationWindowClosed();
@@ -510,7 +510,7 @@ public class MainForm {
     }
 
     public void onVisualizationWindowClosed() {
-        C.simulation.setPaused(false);
+        C.getSimulation().setPaused(false);
         if (runningRadioButton.isSelected()) {
             startButton.setEnabled(true);
         }

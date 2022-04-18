@@ -32,7 +32,7 @@ public class VisualizationKeyListener implements KeyListener {
         switch (e.getKeyCode()) {
 
             case KeyEvent.VK_ESCAPE:
-                C.hasToStop = true;
+                C.setHasToStop(true);
                 break;
 
             case KeyEvent.VK_EQUALS: // Plus sign '+'

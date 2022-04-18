@@ -42,8 +42,8 @@ public class CollisionCheck extends RecursiveAction {
     protected void compute() {
         if (toIndex - fromIndex <= THRESHOLD) {
             outerloop:
-            for (SimulationObject object : C.simulation.getAuxiliaryObjects().subList(fromIndex, toIndex)) {
-                for (SimulationObject object1 : C.simulation.getAuxiliaryObjects()) {
+            for (SimulationObject object : C.getSimulation().getAuxiliaryObjects().subList(fromIndex, toIndex)) {
+                for (SimulationObject object1 : C.getSimulation().getAuxiliaryObjects()) {
                     if (object == object1) {
                         continue;
                     }

@@ -56,7 +56,7 @@ public class SimulationForkJoinImpl implements Simulation {
         
         /* If collision/s exists execute sequentially on a single thread */
         if (CollisionCheck.collisionExists()) {
-            simulationLogic.processCollisions(C.simulation);
+            simulationLogic.processCollisions(C.getSimulation());
         }
 
         objects = auxiliaryObjects;
@@ -67,15 +67,15 @@ public class SimulationForkJoinImpl implements Simulation {
         }
         
         if (C.prop.isSaveToFile() && saveCurrentIterationToFile) {
-            C.io.appendObjectsToFile(objects);
+            C.getReaderWriter().appendObjectsToFile(objects);
         }
     }
 
     @Override
     public void init(String inputFile) {
-        C.io = new JsonReaderWriter();
+        C.setReaderWriter(new JsonReaderWriter());
         try {
-            C.prop = C.io.readProperties(inputFile);
+            C.prop = C.getReaderWriter().readProperties(inputFile);
         } catch (FileNotFoundException e) {
             error(logger, "Cannot read properties file.", e);
         }
@@ -93,15 +93,15 @@ public class SimulationForkJoinImpl implements Simulation {
 
     @Override
     public void init(SimulationProperties prop) {
-        C.io = new JsonReaderWriter();
+        C.setReaderWriter(new JsonReaderWriter());
         C.prop = prop;
-        C.simulation = new SimulationForkJoinImpl();
+        C.setSimulation(new SimulationForkJoinImpl());
     }
 
     public void initForPlaying(String inputFile) throws IOException {
-        C.io = new JsonReaderWriter();
+        C.setReaderWriter(new JsonReaderWriter());
         try {
-            C.prop = C.io.readPropertiesForPlaying(inputFile);
+            C.prop = C.getReaderWriter().readPropertiesForPlaying(inputFile);
             C.prop.setRealTimeVisualization(true);
         } catch (FileNotFoundException e) {
             error(logger, "Cannot read properties file.", e);
@@ -111,25 +111,25 @@ public class SimulationForkJoinImpl implements Simulation {
     public void playSimulation(String inputFile) {
         try {
             // Only reset reader pointer. Do not change properties! We want to have the latest changes from the GUI.
-            C.io.readPropertiesForPlaying(inputFile);
-            C.simulation = this;
+            C.getReaderWriter().readPropertiesForPlaying(inputFile);
+            C.setSimulation(this);
         } catch (IOException e) {
             error(logger, "Cannot reset input file for playing.", e);
         }
-        C.visualizer = new VisualizerImpl();
+        C.setVisualizer(new VisualizerImpl());
         long previousTime = System.nanoTime();
         running = true;
-        C.endText = "END.";
+        C.setEndText("END.");
         try {
-            while (C.io.hasMoreIterations()) {
-                if (C.hasToStop) {
+            while (C.getReaderWriter().hasMoreIterations()) {
+                if (C.hasToStop()) {
                     doStop();
                     break;
                 }
                 while (paused) {
                     Thread.sleep(PAUSE_SLEEP_MILLISECONDS);
                 }
-                Iteration iteration = C.io.readNextIteration();
+                Iteration iteration = C.getReaderWriter().readNextIteration();
                 if (iteration == null) {
                     break;
                 }
@@ -141,12 +141,12 @@ public class SimulationForkJoinImpl implements Simulation {
                     /* Speed up by not visualizing current iteration */
                     continue;
                 }
-                C.visualizer.visualize(iteration);
+                C.getVisualizer().visualize(iteration);
                 previousTime = System.nanoTime();
                 info(logger, "Cycle: " + iteration.getCycle() + ", number of objects: " + iteration.getNumberOfObjects());
             }
             info(logger, "End.");
-            C.visualizer.end();
+            C.getVisualizer().end();
         } catch (IOException e) {
             error(logger, "Error while reading simulation object.", e);
         } catch (InterruptedException e) {
@@ -157,13 +157,13 @@ public class SimulationForkJoinImpl implements Simulation {
     }
 
     private void doStop() {
-        C.hasToStop = false;
+        C.setHasToStop(false);
         if (C.prop.isSaveToFile()) {
-            C.io.endFile();
+            C.getReaderWriter().endFile();
         }
-        if (C.visualizer != null) {
-            C.endText = "Stopped!";
-            C.visualizer.closeWindow();
+        if (C.getVisualizer() != null) {
+            C.setEndText("Stopped!");
+            C.getVisualizer().closeWindow();
         }
     }
 
@@ -175,17 +175,17 @@ public class SimulationForkJoinImpl implements Simulation {
         Utils.printConfiguration(C.prop);
 
         info(logger, "Start simulation...");
-        C.endText = "END.";
+        C.setEndText("END.");
         long startTime = System.nanoTime();
         long previousTime = startTime;
         long endTime;
 
         running = true;
-        C.hasToStop = false;
+        C.setHasToStop(false);
         try {
             for (long i = 0; C.prop.isInfiniteSimulation() || i < C.prop.getNumberOfIterations(); i++) {
                 try {
-                    if (C.hasToStop) {
+                    if (C.hasToStop()) {
                         doStop();
                         break;
                     }
@@ -201,7 +201,7 @@ public class SimulationForkJoinImpl implements Simulation {
                     }
 
                     if (C.prop.isRealTimeVisualization() && System.nanoTime() - previousTime >= C.prop.getPlayingSpeed()) {
-                        C.visualizer.visualize(objects);
+                        C.getVisualizer().visualize(objects);
                     }
 
                     doIteration(i % C.mainForm.getSaveEveryNthIteration() == 0);
@@ -211,13 +211,13 @@ public class SimulationForkJoinImpl implements Simulation {
             }
 
             if (C.prop.isRealTimeVisualization()) {
-                C.visualizer.end();
+                C.getVisualizer().end();
             }
             endTime = System.nanoTime();
         } finally {
             running = false;
             if (C.prop.isSaveToFile()) {
-                C.io.endFile();
+                C.getReaderWriter().endFile();
             }
         }
 

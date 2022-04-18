@@ -61,7 +61,7 @@ public class VisualizerImpl implements Visualizer {
             frame.add(visualizationPanel);
             frame.addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
-                    C.hasToStop = true;
+                    C.setHasToStop(true);
                 }
             });
             frame.setVisible(true);
@@ -90,7 +90,7 @@ public class VisualizerImpl implements Visualizer {
 
     @Override
     public void visualize(List<SimulationObject> objects) {
-        Iteration iteration = new Iteration(C.simulation.getCurrentIterationNumber(), C.simulation.getObjects().size(), objects);
+        Iteration iteration = new Iteration(C.getSimulation().getCurrentIterationNumber(), C.getSimulation().getObjects().size(), objects);
         latestShapes = createShapes(iteration);
         visualizationPanel.draw(latestShapes);
     }
@@ -168,7 +168,7 @@ public class VisualizerImpl implements Visualizer {
         Ellipse2D ellipse = new Ellipse2D.Double();
         ellipse.setFrame(convertCoordinatesForDisplayX(-100), convertCoordinatesForDisplayY(-10), 1, 1);
         ShapeWithColorAndText text = new ShapeWithColorAndText(ellipse, BLUE);
-        text.setText(C.endText);
+        text.setText(C.getEndText());
         if (latestShapes == null) {
             latestShapes = new ArrayList<>();
         }

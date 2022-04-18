@@ -230,14 +230,14 @@ public class JsonReaderWriter implements ReaderWriter {
         }
 
         JsonObject cycleJson = new JsonObject();
-        cycleJson.addProperty("cycle", C.simulation.getCurrentIterationNumber());
+        cycleJson.addProperty("cycle", C.getSimulation().getCurrentIterationNumber());
         cycleJson.addProperty("numberOfObjects", simulationObjects.size());
         cycleJson.add("objects", objectsAsJsonArray);
 
         gson.toJson(cycleJson, writer);
-        boolean lastIterationToSave = C.simulation.getCurrentIterationNumber() >= C.prop.getNumberOfIterations()
-                || C.simulation.getCurrentIterationNumber() + C.mainForm.getSaveEveryNthIteration() > C.prop.getNumberOfIterations();
-        if (!C.hasToStop && (C.prop.isInfiniteSimulation() || !lastIterationToSave)) {
+        boolean lastIterationToSave = C.getSimulation().getCurrentIterationNumber() >= C.prop.getNumberOfIterations()
+                || C.getSimulation().getCurrentIterationNumber() + C.mainForm.getSaveEveryNthIteration() > C.prop.getNumberOfIterations();
+        if (!C.hasToStop() && (C.prop.isInfiniteSimulation() || !lastIterationToSave)) {
             try {
                 writer.write(",\n");
             } catch (IOException e) {

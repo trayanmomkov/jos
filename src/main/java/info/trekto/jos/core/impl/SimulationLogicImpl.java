@@ -169,9 +169,9 @@ public class SimulationLogicImpl implements SimulationLogic {
     }
 
     private void bounceFromWalls(SimulationObject newObject) {
-        if (C.visualizer != null) {
-            int width = C.visualizer.getVisualizationPanel().getWidth();
-            int height = C.visualizer.getVisualizationPanel().getHeight();
+        if (C.getVisualizer() != null) {
+            int width = C.getVisualizer().getVisualizationPanel().getWidth();
+            int height = C.getVisualizer().getVisualizationPanel().getHeight();
 
             if (newObject.getX().add(newObject.getRadius()).doubleValue() > width / 2.0
                     || newObject.getX().subtract(newObject.getRadius()).doubleValue() < -width / 2.0) {
