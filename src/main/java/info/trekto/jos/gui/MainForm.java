@@ -115,7 +115,7 @@ public class MainForm {
                 C.setSimulation(new SimulationForkJoinImpl());
                 C.getSimulation().setSimulationLogic(new SimulationLogicImpl(C.getSimulation()));
                 C.getSimulation().init(file.getAbsolutePath());
-                refreshProperties(C.prop);
+                refreshProperties(C.getSimulation().getProperties());
             }
         });
 
@@ -125,30 +125,30 @@ public class MainForm {
             int userSelection = fileChooser.showSaveDialog(mainPanel);
             if (userSelection == JFileChooser.APPROVE_OPTION) {
                 File fileToSave = fileChooser.getSelectedFile();
-                C.getReaderWriter().writeProperties(C.prop, fileToSave.getAbsolutePath());
+                C.getReaderWriter().writeProperties(C.getSimulation().getProperties(), fileToSave.getAbsolutePath());
 
                 /* Reopen just saved file */
                 inputFilePathLabel.setText(fileToSave.getAbsolutePath());
                 C.getSimulation().init(fileToSave.getAbsolutePath());
-                refreshProperties(C.prop);
+                refreshProperties(C.getSimulation().getProperties());
             }
         });
 
         numberOfObjectsTextField.getDocument().addUndoableEditListener(actionEvent -> {
             if (!isNullOrBlank(numberOfObjectsTextField.getText())) {
-                C.prop.setNumberOfObjects(Integer.parseInt(numberOfObjectsTextField.getText()));
+                C.getSimulation().getProperties().setNumberOfObjects(Integer.parseInt(numberOfObjectsTextField.getText()));
             }
         });
 
         numberOfIterationsTextField.getDocument().addUndoableEditListener(actionEvent -> {
             if (!isNullOrBlank(numberOfIterationsTextField.getText())) {
-                C.prop.setNumberOfIterations(Integer.parseInt(numberOfIterationsTextField.getText()));
+                C.getSimulation().getProperties().setNumberOfIterations(Integer.parseInt(numberOfIterationsTextField.getText()));
             }
         });
 
         secondsPerIterationTextField.getDocument().addUndoableEditListener(actionEvent -> {
             if (!isNullOrBlank(secondsPerIterationTextField.getText())) {
-                C.prop.setSecondsPerIteration(New.num(secondsPerIterationTextField.getText()));
+                C.getSimulation().getProperties().setSecondsPerIteration(New.num(secondsPerIterationTextField.getText()));
             }
         });
 
@@ -167,41 +167,41 @@ public class MainForm {
         numberTypeComboBox.addActionListener(
                 actionEvent -> {
                     if (actionEvent.getModifiers() != 0) {
-                        C.prop.setNumberType(NumberFactory.NumberType.valueOf(String.valueOf(numberTypeComboBox.getSelectedItem())));
-//                    createNumberFactory(C.prop.getNumberType(), C.prop.getPrecision(), C.prop.getScale());
-//                    C.prop.setSecondsPerIteration(New.num(secondsPerIterationTextField.getText()));
+                        C.getSimulation().getProperties().setNumberType(NumberFactory.NumberType.valueOf(String.valueOf(numberTypeComboBox.getSelectedItem())));
+//                    createNumberFactory(C.getSimulation().getProperties().getNumberType(), C.getSimulation().getProperties().getPrecision(), C.getSimulation().getProperties().getScale());
+//                    C.getSimulation().getProperties().setSecondsPerIteration(New.num(secondsPerIterationTextField.getText()));
 //                    ((InitialObjectsTableModelAndListener) initialObjectsTable.getModel()).refreshInitialObjects();
                         showWarn(mainPanel, "You have to save properties, number type change to take effect.");
                     }
                 });
 
         interactingLawComboBox.addActionListener(
-                actionEvent -> C.prop.setInteractingLaw(ForceCalculator.InteractingLaw.valueOf(String.valueOf(interactingLawComboBox.getSelectedItem()))));
+                actionEvent -> C.getSimulation().getProperties().setInteractingLaw(ForceCalculator.InteractingLaw.valueOf(String.valueOf(interactingLawComboBox.getSelectedItem()))));
 
         precisionTextField.getDocument().addUndoableEditListener(actionEvent -> {
             if (!isNullOrBlank(precisionTextField.getText())) {
-                C.prop.setPrecision(Integer.parseInt(precisionTextField.getText()));
+                C.getSimulation().getProperties().setPrecision(Integer.parseInt(precisionTextField.getText()));
             }
         });
 
         scaleTextField.getDocument().addUndoableEditListener(actionEvent -> {
             if (!isNullOrBlank(scaleTextField.getText())) {
-                C.prop.setScale(Integer.parseInt(scaleTextField.getText()));
+                C.getSimulation().getProperties().setScale(Integer.parseInt(scaleTextField.getText()));
             }
         });
 
-        realTimeVisualizationCheckBox.addActionListener(actionEvent -> C.prop.setRealTimeVisualization(realTimeVisualizationCheckBox.isSelected()));
-        bounceFromScreenWallsCheckBox.addActionListener(actionEvent -> C.prop.setBounceFromWalls(bounceFromScreenWallsCheckBox.isSelected()));
+        realTimeVisualizationCheckBox.addActionListener(actionEvent -> C.getSimulation().getProperties().setRealTimeVisualization(realTimeVisualizationCheckBox.isSelected()));
+        bounceFromScreenWallsCheckBox.addActionListener(actionEvent -> C.getSimulation().getProperties().setBounceFromWalls(bounceFromScreenWallsCheckBox.isSelected()));
 
         playingSpeedTextField.getDocument().addUndoableEditListener(actionEvent -> {
             if (!isNullOrBlank(playingSpeedTextField.getText().replace("-", ""))) {
-                C.prop.setPlayingSpeed(Integer.parseInt(playingSpeedTextField.getText()));
+                C.getSimulation().getProperties().setPlayingSpeed(Integer.parseInt(playingSpeedTextField.getText()));
             }
         });
 
         outputFileTextField.getDocument().addUndoableEditListener(actionEvent -> {
             if (!isNullOrBlank(outputFileTextField.getText())) {
-                C.prop.setOutputFile(outputFileTextField.getText());
+                C.getSimulation().getProperties().setOutputFile(outputFileTextField.getText());
             }
         });
 
@@ -253,7 +253,7 @@ public class MainForm {
 
         saveToFileCheckBox.addActionListener(actionEvent -> {
             savingToFileComponents.forEach(c -> c.setEnabled(saveToFileCheckBox.isSelected()));
-            C.prop.setSaveToFile(saveToFileCheckBox.isSelected());
+            C.getSimulation().getProperties().setSaveToFile(saveToFileCheckBox.isSelected());
         });
 
         generateObjectsButton.addActionListener(actionEvent -> {
@@ -307,7 +307,7 @@ public class MainForm {
                     C.setSimulation(new SimulationForkJoinImpl());
                     C.getSimulation().setSimulationLogic(new SimulationLogicImpl(C.getSimulation()));
                     C.getSimulation().initForPlaying(playFile.getAbsolutePath());
-                    refreshProperties(C.prop);
+                    refreshProperties(C.getSimulation().getProperties());
                 } catch (IOException e) {
                     showError(mainPanel, "Cannot read ZIP file.", e);
                 }
@@ -326,20 +326,20 @@ public class MainForm {
             trailSizeTextField.setEnabled(showTrailCheckBox.isSelected());
             trailSizeTextLabel.setEnabled(showTrailCheckBox.isSelected());
         });
-        outputFileTextField.addActionListener(actionEvent -> C.prop.setOutputFile(outputFileTextField.getText()));
+        outputFileTextField.addActionListener(actionEvent -> C.getSimulation().getProperties().setOutputFile(outputFileTextField.getText()));
         numberOfObjectsTextField.addActionListener(actionEvent -> {
             if (!isNullOrBlank(numberOfObjectsTextField.getText())) {
-                C.prop.setNumberOfObjects(Integer.parseInt(numberOfObjectsTextField.getText()));
+                C.getSimulation().getProperties().setNumberOfObjects(Integer.parseInt(numberOfObjectsTextField.getText()));
             }
         });
         numberOfIterationsTextField.addActionListener(actionEvent -> {
             if (!isNullOrBlank(numberOfIterationsTextField.getText())) {
-                C.prop.setNumberOfIterations(Integer.parseInt(numberOfIterationsTextField.getText()));
+                C.getSimulation().getProperties().setNumberOfIterations(Integer.parseInt(numberOfIterationsTextField.getText()));
             }
         });
         secondsPerIterationTextField.addActionListener(actionEvent -> {
             if (!isNullOrBlank(secondsPerIterationTextField.getText())) {
-                C.prop.setSecondsPerIteration(New.num(secondsPerIterationTextField.getText()));
+                C.getSimulation().getProperties().setSecondsPerIteration(New.num(secondsPerIterationTextField.getText()));
             }
         });
 
@@ -399,10 +399,10 @@ public class MainForm {
 
     private void start() {
         C.getSimulation().setPaused(false);
-        if (C.prop != null && C.prop.getInitialObjects() != null) {
+        if (C.getSimulation().getProperties() != null && C.getSimulation().getProperties().getInitialObjects() != null) {
             new Thread(() -> {
                 try {
-                    if (C.prop.isRealTimeVisualization()) {
+                    if (C.getSimulation().getProperties().isRealTimeVisualization()) {
                         C.setVisualizer(new VisualizerImpl());
                     }
                     C.getSimulation().startSimulation();
@@ -495,7 +495,8 @@ public class MainForm {
 
         MainForm mainForm = new MainForm();
         C.mainForm = mainForm;
-        C.prop = new SimulationProperties();
+        C.setSimulation(new SimulationForkJoinImpl());
+        C.getSimulation().setProperties(new SimulationProperties());
         jFrame.setContentPane(mainForm.mainPanel);
         jFrame.setTitle(PROGRAM_NAME);
         jFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);

@@ -214,10 +214,10 @@ public class JsonReaderWriter implements ReaderWriter {
     public void appendObjectsToFile(List<SimulationObject> simulationObjects) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         if (writer == null) {
-            initWriter(C.prop.getOutputFile());
+            initWriter(C.getSimulation().getProperties().getOutputFile());
             try {
                 writer.write("{\n  \"properties\":\n");
-                gson.toJson(mapPropertiesAndInitialObjects(C.prop, gson), writer);
+                gson.toJson(mapPropertiesAndInitialObjects(C.getSimulation().getProperties(), gson), writer);
                 writer.write(",\n  \"simulation\": [\n");
             } catch (IOException e) {
                 error(logger, "Cannot write 'simulation' element to output JSON file.", e);
@@ -235,9 +235,9 @@ public class JsonReaderWriter implements ReaderWriter {
         cycleJson.add("objects", objectsAsJsonArray);
 
         gson.toJson(cycleJson, writer);
-        boolean lastIterationToSave = C.getSimulation().getCurrentIterationNumber() >= C.prop.getNumberOfIterations()
-                || C.getSimulation().getCurrentIterationNumber() + C.mainForm.getSaveEveryNthIteration() > C.prop.getNumberOfIterations();
-        if (!C.hasToStop() && (C.prop.isInfiniteSimulation() || !lastIterationToSave)) {
+        boolean lastIterationToSave = C.getSimulation().getCurrentIterationNumber() >= C.getSimulation().getProperties().getNumberOfIterations()
+                || C.getSimulation().getCurrentIterationNumber() + C.mainForm.getSaveEveryNthIteration() > C.getSimulation().getProperties().getNumberOfIterations();
+        if (!C.hasToStop() && (C.getSimulation().getProperties().isInfiniteSimulation() || !lastIterationToSave)) {
             try {
                 writer.write(",\n");
             } catch (IOException e) {

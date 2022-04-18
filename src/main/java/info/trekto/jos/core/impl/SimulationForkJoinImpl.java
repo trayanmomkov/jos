@@ -36,6 +36,7 @@ public class SimulationForkJoinImpl implements Simulation {
     public static final int SHOW_REMAINING_INTERVAL_SECONDS = 2;
 
     private SimulationLogic simulationLogic;
+    private SimulationProperties properties;
     public boolean running = false;
     public boolean paused = false;
 
@@ -64,11 +65,11 @@ public class SimulationForkJoinImpl implements Simulation {
         objects = auxiliaryObjects;
 
         /* Slow down visualization */
-        if (C.prop.isRealTimeVisualization() && C.prop.getPlayingSpeed() < 0) {
-            Thread.sleep(-C.prop.getPlayingSpeed());
+        if (properties.isRealTimeVisualization() && properties.getPlayingSpeed() < 0) {
+            Thread.sleep(-properties.getPlayingSpeed());
         }
         
-        if (C.prop.isSaveToFile() && saveCurrentIterationToFile) {
+        if (properties.isSaveToFile() && saveCurrentIterationToFile) {
             C.getReaderWriter().appendObjectsToFile(objects);
         }
     }
@@ -77,7 +78,7 @@ public class SimulationForkJoinImpl implements Simulation {
     public void init(String inputFile) {
         C.setReaderWriter(new JsonReaderWriter());
         try {
-            C.prop = C.getReaderWriter().readProperties(inputFile);
+            properties = C.getReaderWriter().readProperties(inputFile);
         } catch (FileNotFoundException e) {
             error(logger, "Cannot read properties file.", e);
         }
@@ -96,15 +97,15 @@ public class SimulationForkJoinImpl implements Simulation {
     @Override
     public void init(SimulationProperties prop) {
         C.setReaderWriter(new JsonReaderWriter());
-        C.prop = prop;
-        C.setSimulation(new SimulationForkJoinImpl());
+        properties = prop;
+        C.setSimulation(this);
     }
 
     public void initForPlaying(String inputFile) throws IOException {
         C.setReaderWriter(new JsonReaderWriter());
         try {
-            C.prop = C.getReaderWriter().readPropertiesForPlaying(inputFile);
-            C.prop.setRealTimeVisualization(true);
+            properties = C.getReaderWriter().readPropertiesForPlaying(inputFile);
+            properties.setRealTimeVisualization(true);
         } catch (FileNotFoundException e) {
             error(logger, "Cannot read properties file.", e);
         }
@@ -136,10 +137,10 @@ public class SimulationForkJoinImpl implements Simulation {
                     break;
                 }
 
-                if (C.prop.getPlayingSpeed() < 0) {
+                if (properties.getPlayingSpeed() < 0) {
                     /* Slow down */
-                    Thread.sleep(-C.prop.getPlayingSpeed());
-                } else if ((System.nanoTime() - previousTime) / NANOSECONDS_IN_ONE_MILLISECOND < C.prop.getPlayingSpeed()) {
+                    Thread.sleep(-properties.getPlayingSpeed());
+                } else if ((System.nanoTime() - previousTime) / NANOSECONDS_IN_ONE_MILLISECOND < properties.getPlayingSpeed()) {
                     /* Speed up by not visualizing current iteration */
                     continue;
                 }
@@ -160,7 +161,7 @@ public class SimulationForkJoinImpl implements Simulation {
 
     private void doStop() {
         C.setHasToStop(false);
-        if (C.prop.isSaveToFile()) {
+        if (properties.isSaveToFile()) {
             C.getReaderWriter().endFile();
         }
         if (C.getVisualizer() != null) {
@@ -174,7 +175,7 @@ public class SimulationForkJoinImpl implements Simulation {
         init();
 
         info(logger, "Done.\n");
-        Utils.printConfiguration(C.prop);
+        Utils.printConfiguration(properties);
 
         info(logger, "Start simulation...");
         C.setEndText("END.");
@@ -185,7 +186,7 @@ public class SimulationForkJoinImpl implements Simulation {
         running = true;
         C.setHasToStop(false);
         try {
-            for (long i = 0; C.prop.isInfiniteSimulation() || i < C.prop.getNumberOfIterations(); i++) {
+            for (long i = 0; properties.isInfiniteSimulation() || i < properties.getNumberOfIterations(); i++) {
                 try {
                     if (C.hasToStop()) {
                         doStop();
@@ -198,11 +199,11 @@ public class SimulationForkJoinImpl implements Simulation {
                     iterationCounter = i + 1;
 
                     if (System.nanoTime() - previousTime >= NANOSECONDS_IN_ONE_SECOND * SHOW_REMAINING_INTERVAL_SECONDS) {
-                        showRemainingTime(i, startTime, C.prop.getNumberOfIterations(), objects.size());
+                        showRemainingTime(i, startTime, properties.getNumberOfIterations(), objects.size());
                         previousTime = System.nanoTime();
                     }
 
-                    if (C.prop.isRealTimeVisualization() && System.nanoTime() - previousTime >= C.prop.getPlayingSpeed()) {
+                    if (properties.isRealTimeVisualization() && System.nanoTime() - previousTime >= properties.getPlayingSpeed()) {
                         C.getVisualizer().visualize(objects);
                     }
 
@@ -212,13 +213,13 @@ public class SimulationForkJoinImpl implements Simulation {
                 }
             }
 
-            if (C.prop.isRealTimeVisualization()) {
+            if (properties.isRealTimeVisualization()) {
                 C.getVisualizer().end();
             }
             endTime = System.nanoTime();
         } finally {
             running = false;
-            if (C.prop.isSaveToFile()) {
+            if (properties.isSaveToFile()) {
                 C.getReaderWriter().endFile();
             }
         }
@@ -231,9 +232,9 @@ public class SimulationForkJoinImpl implements Simulation {
 
         /* This is need because we don't know the type of secondsPerItaration field before number
          * factory is set */
-        C.prop.setSecondsPerIteration(C.prop.getSecondsPerIteration());
+        properties.setSecondsPerIteration(properties.getSecondsPerIteration());
 
-        switch (C.prop.getInteractingLaw()) {
+        switch (properties.getInteractingLaw()) {
             case NEWTON_LAW_OF_GRAVITATION:
                 forceCalculator = new NewtonGravity();
                 break;
@@ -247,7 +248,7 @@ public class SimulationForkJoinImpl implements Simulation {
 
         objects = new ArrayList<>();
 
-        for (SimulationObject simulationObject : C.prop.getInitialObjects()) {
+        for (SimulationObject simulationObject : properties.getInitialObjects()) {
             objects.add(new SimulationObjectImpl(simulationObject));
         }
 
@@ -260,7 +261,7 @@ public class SimulationForkJoinImpl implements Simulation {
         }
         logger.info("Done.\n");
 
-        Utils.printConfiguration(C.prop);
+        Utils.printConfiguration(properties);
     }
 
     @Override
@@ -288,15 +289,28 @@ public class SimulationForkJoinImpl implements Simulation {
         return running;
     }
     
+    @Override
     public void switchPause() {
         C.mainForm.switchPause();
     }
 
+    @Override
     public SimulationLogic getSimulationLogic() {
         return simulationLogic;
     }
 
+    @Override
     public void setSimulationLogic(SimulationLogic simulationLogic) {
         this.simulationLogic = simulationLogic;
+    }
+
+    @Override
+    public SimulationProperties getProperties() {
+        return properties;
+    }
+
+    @Override
+    public void setProperties(SimulationProperties properties) {
+        this.properties = properties;
     }
 }

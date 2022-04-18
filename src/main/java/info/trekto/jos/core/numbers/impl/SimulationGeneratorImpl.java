@@ -72,6 +72,6 @@ public class SimulationGeneratorImpl implements SimulationGenerator {
         }
         prop.setInitialObjects(objects);
         C.getSimulation().init(prop);
-        mainForm.refreshProperties(C.prop);
+        mainForm.refreshProperties(C.getSimulation().getProperties());
     }
 }

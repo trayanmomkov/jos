@@ -67,7 +67,7 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
     }
 
     public void refreshInitialObjects() {
-        C.prop.setInitialObjects(new ArrayList<>());
+        C.getSimulation().getProperties().setInitialObjects(new ArrayList<>());
         for (Object vector : dataVector) {
             Vector v = (Vector) vector;
             SimulationObject o = new SimulationObjectImpl();
@@ -84,7 +84,7 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
                     New.num(String.valueOf(v.get(i++)))));
             o.setColor(Integer.parseInt(String.valueOf(v.get(i++)), 16));
 
-            C.prop.getInitialObjects().add(o);
+            C.getSimulation().getProperties().getInitialObjects().add(o);
         }
     }
 }

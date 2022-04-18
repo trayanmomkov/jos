@@ -58,7 +58,7 @@ public class BigDecimalNumberImpl implements Number {
 
     @Override
     public Number add(Number augend) {
-        return newNumber(value.add(((BigDecimalNumberImpl) augend).value).setScale(C.prop.getScale(), roundingMode));
+        return newNumber(value.add(((BigDecimalNumberImpl) augend).value).setScale(C.getSimulation().getProperties().getScale(), roundingMode));
     }
 
     @Override
@@ -68,7 +68,7 @@ public class BigDecimalNumberImpl implements Number {
 
     @Override
     public Number multiply(Number multiplicand) {
-        return newNumber(value.multiply(((BigDecimalNumberImpl) multiplicand).value).setScale(C.prop.getScale(), roundingMode));
+        return newNumber(value.multiply(((BigDecimalNumberImpl) multiplicand).value).setScale(C.getSimulation().getProperties().getScale(), roundingMode));
         // return new NumberBigDecimalImpl((value.multiply(((NumberBigDecimalImpl) multiplicand).value)));
     }
 
@@ -96,7 +96,7 @@ public class BigDecimalNumberImpl implements Number {
 
     @Override
     public Number pow(int n) {
-        return newNumber(value.pow(n).setScale(C.prop.getScale(), roundingMode));
+        return newNumber(value.pow(n).setScale(C.getSimulation().getProperties().getScale(), roundingMode));
     }
 
     @Override
@@ -190,7 +190,7 @@ public class BigDecimalNumberImpl implements Number {
 
     @Override
     public Number sqrt() {
-        return new BigDecimalNumberImpl(BigDecimalSqrtCalculator.sqrt(value, roundingMode).setScale(C.prop.getScale(), roundingMode));
+        return new BigDecimalNumberImpl(BigDecimalSqrtCalculator.sqrt(value, roundingMode).setScale(C.getSimulation().getProperties().getScale(), roundingMode));
     }
 
     public Number atan2(Number n1, Number n2) {

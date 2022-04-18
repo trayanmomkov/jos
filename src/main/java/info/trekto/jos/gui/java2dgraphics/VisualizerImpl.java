@@ -42,7 +42,7 @@ public class VisualizerImpl implements Visualizer {
 
     public VisualizerImpl() {
         trails = new HashMap<>();
-        if (C.prop.isRealTimeVisualization()) {
+        if (C.getSimulation().getProperties().isRealTimeVisualization()) {
             frame = new VisualizationFrame(this, PROGRAM_NAME);
             if (MainForm.icon != null) {
                 frame.setIconImage(MainForm.icon);
@@ -145,7 +145,7 @@ public class VisualizerImpl implements Visualizer {
         }
 
         if (C.mainForm.getShowTimeAndIteration()) {
-            shapes.addAll(createInfo(iteration.getCycle(), C.prop.getSecondsPerIteration(), iteration.getNumberOfObjects()));
+            shapes.addAll(createInfo(iteration.getCycle(), C.getSimulation().getProperties().getSecondsPerIteration(), iteration.getNumberOfObjects()));
         }
         return shapes;
     }

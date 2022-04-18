@@ -50,8 +50,8 @@ public class ArithmeticCorrectnessTest {
         int scale = 16;
 
         MathContext mathContext = new MathContext(precision, roundingMode);
-        C.prop = new SimulationProperties();
-        C.prop.setScale(scale);
+        C.getSimulation().setProperties(new SimulationProperties());
+        C.getSimulation().getProperties().setScale(scale);
         NumberFactoryProxy.setFactory(new BigDecimalNumberFactory(mathContext, scale));
 
         Number a = New.num(2);

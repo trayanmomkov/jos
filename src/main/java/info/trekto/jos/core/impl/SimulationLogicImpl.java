@@ -54,7 +54,7 @@ public class SimulationLogicImpl implements SimulationLogic {
             newObject.setSpeed(calculateSpeed(oldObject, acceleration));
 
             /* Bounce from walls */
-            if (C.prop.isBounceFromWalls()) {
+            if (simulation.getProperties().isBounceFromWalls()) {
                 bounceFromWalls(newObject);
             }
 
@@ -198,16 +198,16 @@ public class SimulationLogicImpl implements SimulationLogic {
 
     private void moveObject(ImmutableSimulationObject oldObject, SimulationObject newObject) {
         // members[i]->x = members[i]->x + members[i]->speed.x * simulationProperties.secondsPerCycle;
-        newObject.setX(newObject.getX().add(newObject.getSpeed().getX().multiply(C.prop.getSecondsPerIteration())));
-        newObject.setY(newObject.getY().add(newObject.getSpeed().getY().multiply(C.prop.getSecondsPerIteration())));
-        newObject.setZ(newObject.getZ().add(newObject.getSpeed().getZ().multiply(C.prop.getSecondsPerIteration())));
+        newObject.setX(newObject.getX().add(newObject.getSpeed().getX().multiply(simulation.getProperties().getSecondsPerIteration())));
+        newObject.setY(newObject.getY().add(newObject.getSpeed().getY().multiply(simulation.getProperties().getSecondsPerIteration())));
+        newObject.setZ(newObject.getZ().add(newObject.getSpeed().getZ().multiply(simulation.getProperties().getSecondsPerIteration())));
     }
 
     private TripleNumber calculateSpeed(ImmutableSimulationObject object, TripleNumber acceleration) {
         // members[i]->speed.x += a.x * simulationProperties.secondsPerCycle;//* t;
-        Number speedX = object.getSpeed().getX().add(acceleration.getX().multiply(C.prop.getSecondsPerIteration()));
-        Number speedY = object.getSpeed().getY().add(acceleration.getY().multiply(C.prop.getSecondsPerIteration()));
-        Number speedZ = object.getSpeed().getZ().add(acceleration.getZ().multiply(C.prop.getSecondsPerIteration()));
+        Number speedX = object.getSpeed().getX().add(acceleration.getX().multiply(simulation.getProperties().getSecondsPerIteration()));
+        Number speedY = object.getSpeed().getY().add(acceleration.getY().multiply(simulation.getProperties().getSecondsPerIteration()));
+        Number speedZ = object.getSpeed().getZ().add(acceleration.getZ().multiply(simulation.getProperties().getSecondsPerIteration()));
 
         return new TripleNumber(speedX, speedY, speedZ);
     }
