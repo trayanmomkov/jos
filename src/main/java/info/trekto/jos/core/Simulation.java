@@ -39,4 +39,8 @@ public interface Simulation {
     boolean isPaused();
 
     void switchPause();
+
+    SimulationLogic getSimulationLogic();
+
+    void setSimulationLogic(SimulationLogic simulationLogic);
 }

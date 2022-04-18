@@ -12,7 +12,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static info.trekto.jos.core.Controller.C;
-import static info.trekto.jos.core.Controller.simulationLogic;
 import static info.trekto.jos.core.formulas.ScientificConstants.*;
 
 /**
@@ -129,7 +128,7 @@ public class Utils {
                     continue;
                 }
                 // distance between centres
-                Number distance = simulationLogic.calculateDistance(object, object1);
+                Number distance = C.getSimulation().getSimulationLogic().calculateDistance(object, object1);
 
                 if (distance.compareTo(object.getRadius().add(object1.getRadius())) < 0) {
                     return true;

@@ -1,6 +1,7 @@
 package info.trekto.jos.core.impl;
 
 import info.trekto.jos.core.Simulation;
+import info.trekto.jos.core.SimulationLogic;
 import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.formulas.ForceCalculator;
 import info.trekto.jos.core.formulas.NewtonGravity;
@@ -19,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static info.trekto.jos.core.Controller.C;
-import static info.trekto.jos.core.Controller.simulationLogic;
 import static info.trekto.jos.core.formulas.ScientificConstants.NANOSECONDS_IN_ONE_MILLISECOND;
 import static info.trekto.jos.core.formulas.ScientificConstants.NANOSECONDS_IN_ONE_SECOND;
 import static info.trekto.jos.util.Utils.*;
@@ -34,6 +34,8 @@ public class SimulationForkJoinImpl implements Simulation {
     private static final Logger logger = LoggerFactory.getLogger(SimulationForkJoinImpl.class);
     public static final int PAUSE_SLEEP_MILLISECONDS = 100;
     public static final int SHOW_REMAINING_INTERVAL_SECONDS = 2;
+
+    private SimulationLogic simulationLogic;
     public boolean running = false;
     public boolean paused = false;
 
@@ -288,5 +290,13 @@ public class SimulationForkJoinImpl implements Simulation {
     
     public void switchPause() {
         C.mainForm.switchPause();
+    }
+
+    public SimulationLogic getSimulationLogic() {
+        return simulationLogic;
+    }
+
+    public void setSimulationLogic(SimulationLogic simulationLogic) {
+        this.simulationLogic = simulationLogic;
     }
 }

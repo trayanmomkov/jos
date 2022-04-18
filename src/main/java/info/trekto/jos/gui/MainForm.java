@@ -113,7 +113,7 @@ public class MainForm {
                 File file = fileChooser.getSelectedFile();
                 inputFilePathLabel.setText(file.getAbsolutePath());
                 C.setSimulation(new SimulationForkJoinImpl());
-                C.simulationLogic = new SimulationLogicImpl();
+                C.getSimulation().setSimulationLogic(new SimulationLogicImpl(C.getSimulation()));
                 C.getSimulation().init(file.getAbsolutePath());
                 refreshProperties(C.prop);
             }
@@ -280,7 +280,7 @@ public class MainForm {
             prop.setPrecision(Integer.parseInt(precisionTextField.getText()));
 
             C.setSimulation(new SimulationForkJoinImpl());
-            C.simulationLogic = new SimulationLogicImpl();
+            C.getSimulation().setSimulationLogic(new SimulationLogicImpl(C.getSimulation()));
 
             new Thread(() -> {
                 try {
@@ -305,7 +305,7 @@ public class MainForm {
                 playFileLabel.setText(playFile.getAbsolutePath());
                 try {
                     C.setSimulation(new SimulationForkJoinImpl());
-                    C.simulationLogic = new SimulationLogicImpl();
+                    C.getSimulation().setSimulationLogic(new SimulationLogicImpl(C.getSimulation()));
                     C.getSimulation().initForPlaying(playFile.getAbsolutePath());
                     refreshProperties(C.prop);
                 } catch (IOException e) {

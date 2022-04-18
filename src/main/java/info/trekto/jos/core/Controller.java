@@ -14,7 +14,6 @@ public enum Controller {
     C;
 
     private static final Logger logger = LoggerFactory.getLogger(Controller.class);
-    public static SimulationLogic simulationLogic;
     private Simulation simulation;
     public static SimulationProperties prop;
     private Visualizer visualizer;

@@ -25,7 +25,7 @@ public class SimulationRecursiveAction extends RecursiveAction {
     @Override
     protected void compute() {
         if (toIndex - fromIndex <= THRESHOLD) {
-            C.simulationLogic.calculateNewValues(C.getSimulation(), fromIndex, toIndex);
+            C.getSimulation().getSimulationLogic().calculateNewValues(C.getSimulation(), fromIndex, toIndex);
         } else {
             List<RecursiveAction> subtasks = new ArrayList<>();
             int middle = fromIndex + ((toIndex - fromIndex) / 2);

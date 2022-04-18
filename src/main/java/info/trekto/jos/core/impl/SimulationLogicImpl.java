@@ -22,6 +22,11 @@ import static info.trekto.jos.core.numbers.New.RATIO_FOUR_THREE;
  * 2016-Mar-6
  */
 public class SimulationLogicImpl implements SimulationLogic {
+    private final Simulation simulation;
+
+    public SimulationLogicImpl(Simulation simulation) {
+        this.simulation = simulation;
+    }
 
     @Override
     public void calculateNewValues(Simulation simulation, int fromIndex, int toIndex) {
@@ -135,7 +140,7 @@ public class SimulationLogicImpl implements SimulationLogic {
         Number bigDensity = bigger.getMass().divide(bigVolume);
         Number newMass = bigger.getMass().add(smaller.getMass());
 
-        /* Volume and density are two sides of one coin. We should decide what we want one of them to be, 
+        /* Volume and density are two sides of one coin. We should decide what we want one of them to be,
          * and calculate the other. Here we want the new object to have an average density of the two collided. */
         Number newDensity = (smallDensity.multiply(smaller.getMass()).add((bigDensity.multiply(bigger.getMass()))).divide(newMass));
         Number newVolume = newMass.divide(newDensity);
@@ -143,7 +148,7 @@ public class SimulationLogicImpl implements SimulationLogic {
         return calculateRadiusFromVolume(newVolume);
     }
 
-    private static TripleNumber calculatePosition(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
+    private TripleNumber calculatePosition(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
         Number distanceX = bigger.getX().subtract(smaller.getX());
         Number distanceY = bigger.getY().subtract(smaller.getY());
         Number distanceZ = bigger.getZ().subtract(smaller.getZ());

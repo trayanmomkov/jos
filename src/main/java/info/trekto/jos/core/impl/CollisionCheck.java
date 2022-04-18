@@ -11,7 +11,6 @@ import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 
 import static info.trekto.jos.core.Controller.C;
-import static info.trekto.jos.core.Controller.simulationLogic;
 import static info.trekto.jos.core.impl.SimulationRecursiveAction.THRESHOLD;
 
 public class CollisionCheck extends RecursiveAction {
@@ -48,7 +47,7 @@ public class CollisionCheck extends RecursiveAction {
                         continue;
                     }
                     // distance between centres
-                    Number distance = simulationLogic.calculateDistance(object, object1);
+                    Number distance = C.getSimulation().getSimulationLogic().calculateDistance(object, object1);
 
                     if (distance.compareTo(object.getRadius().add(object1.getRadius())) < 0) {
                         collisions.put(object, true);
