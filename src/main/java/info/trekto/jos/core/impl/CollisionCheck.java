@@ -1,6 +1,5 @@
 package info.trekto.jos.core.impl;
 
-import info.trekto.jos.core.C;
 import info.trekto.jos.core.formulas.CommonFormulas;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.numbers.Number;
@@ -12,6 +11,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 
+import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.impl.SimulationRecursiveAction.THRESHOLD;
 
 public class CollisionCheck extends RecursiveAction {

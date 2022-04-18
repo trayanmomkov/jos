@@ -1,6 +1,5 @@
 package info.trekto.jos.gui.java2dgraphics;
 
-import info.trekto.jos.core.C;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
+import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.util.Utils.info;
 
 /**

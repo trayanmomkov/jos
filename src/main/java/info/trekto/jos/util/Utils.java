@@ -1,6 +1,5 @@
 package info.trekto.jos.util;
 
-import info.trekto.jos.core.C;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.formulas.CommonFormulas;
 import info.trekto.jos.core.model.SimulationObject;
@@ -13,6 +12,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.formulas.ScientificConstants.*;
 
 /**

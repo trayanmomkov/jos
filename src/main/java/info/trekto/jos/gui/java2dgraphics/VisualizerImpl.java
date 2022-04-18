@@ -1,6 +1,5 @@
 package info.trekto.jos.gui.java2dgraphics;
 
-import info.trekto.jos.core.C;
 import info.trekto.jos.core.impl.Iteration;
 import info.trekto.jos.gui.MainForm;
 import info.trekto.jos.core.model.ImmutableSimulationObject;
@@ -22,9 +21,9 @@ import java.util.Queue;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.gui.MainForm.PROGRAM_NAME;
 import static info.trekto.jos.core.numbers.New.TWO;
-import static info.trekto.jos.util.Utils.info;
 import static info.trekto.jos.util.Utils.secondsToHumanReadable;
 import static java.awt.Color.BLUE;
 import static java.awt.Color.RED;

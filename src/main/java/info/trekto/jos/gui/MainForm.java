@@ -1,6 +1,5 @@
 package info.trekto.jos.gui;
 
-import info.trekto.jos.core.C;
 import info.trekto.jos.core.impl.SimulationForkJoinImpl;
 import info.trekto.jos.core.impl.SimulationLogicImpl;
 import info.trekto.jos.core.impl.SimulationProperties;
@@ -9,7 +8,7 @@ import info.trekto.jos.core.formulas.ForceCalculator;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.numbers.New;
 import info.trekto.jos.core.numbers.NumberFactory;
-import info.trekto.jos.core.SimulationGenerator;
+import info.trekto.jos.core.numbers.impl.SimulationGeneratorImpl;
 import info.trekto.jos.gui.java2dgraphics.VisualizerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +28,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.*;
 
+import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumberFactory;
 import static info.trekto.jos.util.Utils.error;
 import static info.trekto.jos.util.Utils.isNullOrBlank;
@@ -284,7 +284,7 @@ public class MainForm {
 
             new Thread(() -> {
                 try {
-                    SimulationGenerator.generateObjects(prop, this);
+                    new SimulationGeneratorImpl().generateObjects(prop, this);
                 } catch (Exception ex) {
                     String message = "Error during object generation.";
                     error(logger, message, ex);

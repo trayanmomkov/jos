@@ -1,15 +1,15 @@
 package info.trekto.jos.gui.java2dgraphics;
 
-import info.trekto.jos.core.C;
 import info.trekto.jos.gui.Visualizer;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+import static info.trekto.jos.core.Controller.C;
+
 /**
  * @author Trayan Momkov
  * 2016-Dec-27 19:16
- *
  */
 public class VisualizationKeyListener implements KeyListener {
 

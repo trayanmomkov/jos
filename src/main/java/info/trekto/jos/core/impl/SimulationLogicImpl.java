@@ -1,6 +1,5 @@
 package info.trekto.jos.core.impl;
 
-import info.trekto.jos.core.C;
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.SimulationLogic;
 import info.trekto.jos.core.model.ImmutableSimulationObject;
@@ -13,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.formulas.CommonFormulas.*;
 import static info.trekto.jos.core.numbers.New.TWO;
 

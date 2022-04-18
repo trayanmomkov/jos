@@ -1,7 +1,6 @@
 package info.trekto.jos.io;
 
 import com.google.gson.*;
-import info.trekto.jos.core.C;
 import info.trekto.jos.core.formulas.ForceCalculator;
 import info.trekto.jos.core.impl.Iteration;
 import info.trekto.jos.core.impl.SimulationProperties;
@@ -24,6 +23,7 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumberFactory;
 import static info.trekto.jos.util.Utils.error;
 import static info.trekto.jos.util.Utils.info;

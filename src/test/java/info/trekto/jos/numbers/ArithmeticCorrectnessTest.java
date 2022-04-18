@@ -1,6 +1,5 @@
 package info.trekto.jos.numbers;
 
-import info.trekto.jos.core.C;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.numbers.New;
 import info.trekto.jos.core.numbers.Number;
@@ -14,6 +13,7 @@ import java.math.MathContext;
 import java.text.DecimalFormat;
 import java.util.regex.Pattern;
 
+import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.numbers.impl.BigDecimalNumberImpl.roundingMode;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;

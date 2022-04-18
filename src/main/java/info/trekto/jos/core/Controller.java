@@ -12,7 +12,8 @@ import info.trekto.jos.gui.Visualizer;
  * @author Trayan Momkov
  * C from Container
  */
-public class C {
+public enum Controller {
+    C;
     public static SimulationLogic simulationLogic;
     public static Simulation simulation;
     public static SimulationProperties prop;

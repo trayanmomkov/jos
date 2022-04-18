@@ -1,10 +1,11 @@
 package info.trekto.jos.gui.java2dgraphics;
 
-import info.trekto.jos.core.C;
 import info.trekto.jos.gui.Visualizer;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+
+import static info.trekto.jos.core.Controller.C;
 
 /**
  * @author Trayan Momkov

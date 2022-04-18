@@ -1,6 +1,5 @@
 package info.trekto.jos.gui;
 
-import info.trekto.jos.core.C;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.model.impl.SimulationObjectImpl;
 import info.trekto.jos.core.model.impl.TripleNumber;
@@ -13,6 +12,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
+
+import static info.trekto.jos.core.Controller.C;
 
 public class InitialObjectsTableModelAndListener extends DefaultTableModel implements TableModelListener {
     Map<String, Integer> columnNameIndexMap;

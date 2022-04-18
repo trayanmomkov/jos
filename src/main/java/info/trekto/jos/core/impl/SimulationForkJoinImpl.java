@@ -1,6 +1,5 @@
 package info.trekto.jos.core.impl;
 
-import info.trekto.jos.core.C;
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.formulas.ForceCalculator;
@@ -19,6 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.impl.SimulationLogicImpl.processCollisions;
 import static info.trekto.jos.core.formulas.ScientificConstants.NANOSECONDS_IN_ONE_MILLISECOND;
 import static info.trekto.jos.core.formulas.ScientificConstants.NANOSECONDS_IN_ONE_SECOND;

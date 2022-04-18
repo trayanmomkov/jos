@@ -1,11 +1,11 @@
 package info.trekto.jos.core.impl;
 
-import info.trekto.jos.core.C;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
+
+import static info.trekto.jos.core.Controller.C;
 
 /**
  * @author Trayan Momkov

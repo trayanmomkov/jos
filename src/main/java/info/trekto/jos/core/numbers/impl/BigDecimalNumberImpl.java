@@ -1,6 +1,5 @@
 package info.trekto.jos.core.numbers.impl;
 
-import info.trekto.jos.core.C;
 import info.trekto.jos.core.numbers.New;
 import info.trekto.jos.core.numbers.Number;
 
@@ -10,6 +9,7 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Objects;
 
+import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumber;
 
 /**
