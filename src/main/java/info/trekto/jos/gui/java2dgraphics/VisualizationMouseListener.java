@@ -9,7 +9,6 @@ import java.awt.event.MouseListener;
 /**
  * @author Trayan Momkov
  * 2022-Mar-22
- *
  */
 public class VisualizationMouseListener implements MouseListener {
 
@@ -22,7 +21,7 @@ public class VisualizationMouseListener implements MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent mouseEvent) {
-    
+
     }
 
     @Override

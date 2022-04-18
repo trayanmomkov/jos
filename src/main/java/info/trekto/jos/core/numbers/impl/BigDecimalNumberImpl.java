@@ -208,7 +208,7 @@ public class BigDecimalNumberImpl implements Number {
         // TODO Use ApFloat for trigonometry
         return New.num(Math.sin(n.doubleValue()));
     }
-    
+
     public Number cbrt(Number n) {
         // TODO cbrt to be replaced by function from ApFloat
         return New.num(Math.cbrt(n.doubleValue()));

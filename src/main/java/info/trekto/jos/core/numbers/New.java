@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 /**
  * Just a shortcut for NumberFactoryProxy.
+ *
  * @author Trayan Momkov
  * 7 Dec 2015
  */

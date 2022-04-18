@@ -32,15 +32,15 @@ public class ArithmeticCorrectnessTest {
         Number a = New.num(2);
         Number b = a.divide(New.num(3));
         Number c = a.add(b);
-        assertEquals(c.doubleValue(), 2/3.0+2);
-        
-        assertEquals(New.num(1).divide(New.num(3)).doubleValue(), 1/3.0);
-                
+        assertEquals(c.doubleValue(), 2 / 3.0 + 2);
+
+        assertEquals(New.num(1).divide(New.num(3)).doubleValue(), 1 / 3.0);
+
         assertEquals(New.num("0.0000000000000001").multiply(New.num("10000000000000000")).doubleValue(), 1.0);
-        
+
         assertEquals(New.num("0.0000000000000001").subtract(New.num("10000000000000000")).doubleValue(),
-         -9999999999999999.9999999999999999);
-         
+                     -9999999999999999.9999999999999999);
+
         assertEquals(New.num("2").sqrt().doubleValue(), Math.sqrt(2));
     }
 
@@ -60,13 +60,13 @@ public class ArithmeticCorrectnessTest {
 
         assertTrue(Pattern.compile("2\\.6{" + (scale - 1) + "}7").matcher(df.format(c.bigDecimalValue())).matches());
         assertEquals(New.num(1).divide(New.num(3)).bigDecimalValue().setScale(scale),
-                New.num("0.3333333333333333333333333333333333333333").bigDecimalValue().setScale(scale));
-                
+                     New.num("0.3333333333333333333333333333333333333333").bigDecimalValue().setScale(scale));
+
         assertEquals(df.format(New.num("0.0000000000000001").multiply(New.num("10000000000000000")).bigDecimalValue()), "1");
-        
+
         assertEquals(df.format(New.num("0.0000000000000001").subtract(New.num("10000000000000000")).bigDecimalValue()),
-         "-9999999999999999.9999999999999999");
-         
+                     "-9999999999999999.9999999999999999");
+
         assertEquals(df.format(New.num("2").sqrt().bigDecimalValue()), "1.414213562373095");
     }
 }

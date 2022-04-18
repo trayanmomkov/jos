@@ -1,17 +1,14 @@
 package info.trekto.jos.core.numbers;
 
 import info.trekto.jos.core.formulas.ScientificConstants;
-import info.trekto.jos.core.numbers.impl.BigDecimalNumberImpl;
-import info.trekto.jos.core.numbers.impl.DoubleNumberFactory;
-import info.trekto.jos.core.numbers.impl.ApfloatNumberFactory;
-import info.trekto.jos.core.numbers.impl.BigDecimalNumberFactory;
-import info.trekto.jos.core.numbers.impl.FloatNumberFactory;
+import info.trekto.jos.core.numbers.impl.*;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
 
 /**
  * In this class you can change the number factory and respectively type of every number in the program.
+ *
  * @author Trayan Momkov
  * 19 Aug 2015
  */

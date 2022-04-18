@@ -9,6 +9,7 @@ import java.awt.*;
  * Container for three objects of type byte.
  * Used for representing the color of {@link SimulationObject}.
  * Immutable.
+ *
  * @author Trayan Momkov
  * 3 Mar 2016
  */

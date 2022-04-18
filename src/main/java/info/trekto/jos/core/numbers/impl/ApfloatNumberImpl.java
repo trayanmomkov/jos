@@ -137,7 +137,7 @@ public class ApfloatNumberImpl implements Number {
 
     @Override
     public BigDecimal bigDecimalValue() {
-        return BigDecimal.valueOf(value.doubleValue()).setScale((int)value.precision(), BigDecimalNumberImpl.roundingMode);
+        return BigDecimal.valueOf(value.doubleValue()).setScale((int) value.precision(), BigDecimalNumberImpl.roundingMode);
     }
 
     @Override
@@ -175,19 +175,19 @@ public class ApfloatNumberImpl implements Number {
     }
 
     public Number atan2(Number n1, Number n2) {
-        return new ApfloatNumberImpl(ApfloatMath.atan2(((ApfloatNumberImpl)n1).value, ((ApfloatNumberImpl)n2).value));
+        return new ApfloatNumberImpl(ApfloatMath.atan2(((ApfloatNumberImpl) n1).value, ((ApfloatNumberImpl) n2).value));
     }
 
     public Number cos(Number n) {
-        return new ApfloatNumberImpl(ApfloatMath.cos(((ApfloatNumberImpl)n).value));
+        return new ApfloatNumberImpl(ApfloatMath.cos(((ApfloatNumberImpl) n).value));
     }
 
     @Override
     public Number sin(Number n) {
-        return new ApfloatNumberImpl(ApfloatMath.sin(((ApfloatNumberImpl)n).value));
+        return new ApfloatNumberImpl(ApfloatMath.sin(((ApfloatNumberImpl) n).value));
     }
 
     public Number cbrt(Number n) {
-        return new ApfloatNumberImpl(ApfloatMath.cbrt(((ApfloatNumberImpl)n).value));
+        return new ApfloatNumberImpl(ApfloatMath.cbrt(((ApfloatNumberImpl) n).value));
     }
 }

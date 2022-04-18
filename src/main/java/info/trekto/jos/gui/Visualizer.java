@@ -9,7 +9,6 @@ import java.util.List;
 /**
  * @author Trayan Momkov
  * 2016-Oct-17 23:11
- *
  */
 public interface Visualizer {
     void closeWindow();
@@ -29,7 +28,7 @@ public interface Visualizer {
     void end();
 
     void visualize(List<SimulationObject> objects);
-    
+
     void visualize(Iteration iteration);
 
     VisualizationPanel getVisualizationPanel();

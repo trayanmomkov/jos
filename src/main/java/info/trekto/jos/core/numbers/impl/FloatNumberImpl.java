@@ -141,7 +141,7 @@ public class FloatNumberImpl implements Number {
     public Number sqrt() {
         return new FloatNumberImpl((float) Math.sqrt(value));
     }
-    
+
     public Number atan2(Number n1, Number n2) {
         // TODO Use ApFloat for trigonometry
         return New.num(Math.atan2(n1.floatValue(), n2.floatValue()));

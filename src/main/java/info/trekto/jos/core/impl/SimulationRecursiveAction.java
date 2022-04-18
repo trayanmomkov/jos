@@ -13,7 +13,7 @@ import java.util.concurrent.RecursiveAction;
  */
 public class SimulationRecursiveAction extends RecursiveAction {
 
-    public static int THRESHOLD = 4;
+    public static final int THRESHOLD = 4;
     private final int fromIndex;
     private final int toIndex;
 

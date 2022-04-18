@@ -23,13 +23,13 @@ public class SimulationProperties {
     private boolean realTimeVisualization = false;
     private int playingSpeed = 0;
     private boolean bounceFromWalls;
-    
+
     /* Java {@link ArrayList} is limited to Integer.MAX_VALUE */
     private int numberOfObjects;
-    
+
     /* BigDecimal precision */
     private int precision = 16;
-    
+
     /* BigDecimal scale */
     private int scale = 16;
 

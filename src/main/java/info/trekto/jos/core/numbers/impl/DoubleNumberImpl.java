@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 /**
  * Double implementation.
  * Immutable.
+ *
  * @author Trayan Momkov
  * 19 Aug 2015
  */

@@ -7,7 +7,6 @@ import info.trekto.jos.core.numbers.Number;
 /**
  * @author Trayan Momkov
  * 7 Apr 2016
- *
  */
 public interface ForceCalculator {
     Number calculateForce(final ImmutableSimulationObject object1, final ImmutableSimulationObject object2, final Number distance);
@@ -19,6 +18,6 @@ public interface ForceCalculator {
 
     enum InteractingLaw {
         NEWTON_LAW_OF_GRAVITATION,
-        COULOMB_LAW_ELECTRICALLY;
+        COULOMB_LAW_ELECTRICALLY
     }
 }

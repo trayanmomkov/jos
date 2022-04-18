@@ -18,6 +18,6 @@ public interface NumberFactory {
     Number createNumber(long val);
 
     enum NumberType {
-        DOUBLE, APFLOAT, BIG_DECIMAL, FLOAT;
+        DOUBLE, APFLOAT, BIG_DECIMAL, FLOAT
     }
 }

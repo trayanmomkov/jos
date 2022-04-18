@@ -64,7 +64,7 @@ public class Utils {
         info(logger, "Number of iterations: " + properties.getNumberOfIterations());
         info(logger, "'Number' implementation: double");
     }
-    
+
     public static void showRemainingTime(long i, long startTime, long numberOfIterations, int numberOfObjects) {
         if (i == 0) {
             return;
@@ -79,7 +79,7 @@ public class Utils {
 
         long time = lastTime.get(lastTime.size() - 1) - lastTime.get(0);
         double iterations = lastIterationsCount.get(lastIterationsCount.size() - 1) - lastIterationsCount.get(0);
-        
+
         double averageTimePerIteration;
         if (time == 0) {
             long elapsed = (System.nanoTime() - startTime);
@@ -163,27 +163,27 @@ public class Utils {
         logger.error(s);
         append("███ ERROR: " + s);
     }
-    
+
     public static void info(Logger logger, String s) {
         logger.info(s);
         append("INFO: " + s);
     }
-    
+
     public static void warn(Logger logger, String s) {
         logger.warn(s);
         append("█ WARN: " + s);
     }
-    
+
     public static void error(Logger logger, String s, Throwable tr) {
         logger.error(s, tr);
         append("███ ERROR: " + s + " - " + tr.getMessage());
     }
-    
+
     public static void warn(Logger logger, String s, Throwable tr) {
         logger.warn(s, tr);
         append("█ WARN: " + s + " - " + tr.getMessage());
     }
-    
+
     public static void info(Logger logger, String s, Throwable tr) {
         logger.info(s, tr);
         append("INFO: " + s + " - " + tr.getMessage());
