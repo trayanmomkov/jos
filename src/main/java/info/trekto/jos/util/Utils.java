@@ -1,11 +1,11 @@
 package info.trekto.jos.util;
 
-import info.trekto.jos.C;
+import info.trekto.jos.core.C;
 import info.trekto.jos.core.impl.SimulationProperties;
-import info.trekto.jos.formulas.CommonFormulas;
-import info.trekto.jos.model.SimulationObject;
-import info.trekto.jos.model.impl.SimulationObjectImpl;
-import info.trekto.jos.numbers.Number;
+import info.trekto.jos.core.formulas.CommonFormulas;
+import info.trekto.jos.core.model.SimulationObject;
+import info.trekto.jos.core.model.impl.SimulationObjectImpl;
+import info.trekto.jos.core.numbers.Number;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +13,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static info.trekto.jos.formulas.ScientificConstants.*;
+import static info.trekto.jos.core.formulas.ScientificConstants.*;
 
 /**
  * @author Trayan Momkov

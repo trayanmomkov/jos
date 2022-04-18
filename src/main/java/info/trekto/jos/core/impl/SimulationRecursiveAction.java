@@ -1,6 +1,6 @@
 package info.trekto.jos.core.impl;
 
-import info.trekto.jos.C;
+import info.trekto.jos.core.C;
 
 import java.util.ArrayList;
 import java.util.List;

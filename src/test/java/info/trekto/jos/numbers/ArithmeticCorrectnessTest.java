@@ -1,9 +1,12 @@
 package info.trekto.jos.numbers;
 
-import info.trekto.jos.C;
+import info.trekto.jos.core.C;
 import info.trekto.jos.core.impl.SimulationProperties;
-import info.trekto.jos.numbers.impl.BigDecimalNumberFactory;
-import info.trekto.jos.numbers.impl.DoubleNumberFactory;
+import info.trekto.jos.core.numbers.New;
+import info.trekto.jos.core.numbers.Number;
+import info.trekto.jos.core.numbers.NumberFactoryProxy;
+import info.trekto.jos.core.numbers.impl.BigDecimalNumberFactory;
+import info.trekto.jos.core.numbers.impl.DoubleNumberFactory;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -11,7 +14,7 @@ import java.math.MathContext;
 import java.text.DecimalFormat;
 import java.util.regex.Pattern;
 
-import static info.trekto.jos.numbers.impl.BigDecimalNumberImpl.roundingMode;
+import static info.trekto.jos.core.numbers.impl.BigDecimalNumberImpl.roundingMode;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 

@@ -2,7 +2,7 @@ package info.trekto.jos.io;
 
 import info.trekto.jos.core.impl.Iteration;
 import info.trekto.jos.core.impl.SimulationProperties;
-import info.trekto.jos.model.SimulationObject;
+import info.trekto.jos.core.model.SimulationObject;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

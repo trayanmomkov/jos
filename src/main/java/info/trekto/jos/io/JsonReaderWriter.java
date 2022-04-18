@@ -1,15 +1,15 @@
 package info.trekto.jos.io;
 
 import com.google.gson.*;
-import info.trekto.jos.C;
+import info.trekto.jos.core.C;
+import info.trekto.jos.core.formulas.ForceCalculator;
 import info.trekto.jos.core.impl.Iteration;
 import info.trekto.jos.core.impl.SimulationProperties;
-import info.trekto.jos.formulas.ForceCalculator;
-import info.trekto.jos.model.SimulationObject;
-import info.trekto.jos.model.impl.SimulationObjectImpl;
-import info.trekto.jos.model.impl.TripleNumber;
-import info.trekto.jos.numbers.New;
-import info.trekto.jos.numbers.NumberFactory;
+import info.trekto.jos.core.model.SimulationObject;
+import info.trekto.jos.core.model.impl.SimulationObjectImpl;
+import info.trekto.jos.core.model.impl.TripleNumber;
+import info.trekto.jos.core.numbers.New;
+import info.trekto.jos.core.numbers.NumberFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonToken;
 import org.codehaus.jackson.map.MappingJsonFactory;
@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import static info.trekto.jos.numbers.NumberFactoryProxy.createNumberFactory;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumberFactory;
 import static info.trekto.jos.util.Utils.error;
 import static info.trekto.jos.util.Utils.info;
 import static org.codehaus.jackson.JsonToken.END_OBJECT;

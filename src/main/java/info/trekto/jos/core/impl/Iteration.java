@@ -1,6 +1,6 @@
 package info.trekto.jos.core.impl;
 
-import info.trekto.jos.model.SimulationObject;
+import info.trekto.jos.core.model.SimulationObject;
 
 import java.util.List;
 

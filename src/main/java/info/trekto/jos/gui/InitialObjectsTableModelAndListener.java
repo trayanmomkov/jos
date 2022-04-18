@@ -1,10 +1,10 @@
 package info.trekto.jos.gui;
 
-import info.trekto.jos.C;
-import info.trekto.jos.model.SimulationObject;
-import info.trekto.jos.model.impl.SimulationObjectImpl;
-import info.trekto.jos.model.impl.TripleNumber;
-import info.trekto.jos.numbers.New;
+import info.trekto.jos.core.C;
+import info.trekto.jos.core.model.SimulationObject;
+import info.trekto.jos.core.model.impl.SimulationObjectImpl;
+import info.trekto.jos.core.model.impl.TripleNumber;
+import info.trekto.jos.core.numbers.New;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;

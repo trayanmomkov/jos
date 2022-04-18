@@ -1,15 +1,15 @@
 package info.trekto.jos.core.impl;
 
-import info.trekto.jos.C;
+import info.trekto.jos.core.C;
 import info.trekto.jos.core.Simulation;
-import info.trekto.jos.exceptions.SimulationException;
-import info.trekto.jos.formulas.ForceCalculator;
-import info.trekto.jos.formulas.NewtonGravity;
+import info.trekto.jos.core.exceptions.SimulationException;
+import info.trekto.jos.core.formulas.ForceCalculator;
+import info.trekto.jos.core.formulas.NewtonGravity;
 import info.trekto.jos.io.JsonReaderWriter;
-import info.trekto.jos.model.SimulationObject;
-import info.trekto.jos.model.impl.SimulationObjectImpl;
+import info.trekto.jos.core.model.SimulationObject;
+import info.trekto.jos.core.model.impl.SimulationObjectImpl;
 import info.trekto.jos.util.Utils;
-import info.trekto.jos.visualization.java2dgraphics.VisualizerImpl;
+import info.trekto.jos.gui.java2dgraphics.VisualizerImpl;
 import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static info.trekto.jos.core.impl.SimulationLogicImpl.processCollisions;
-import static info.trekto.jos.formulas.ScientificConstants.NANOSECONDS_IN_ONE_MILLISECOND;
-import static info.trekto.jos.formulas.ScientificConstants.NANOSECONDS_IN_ONE_SECOND;
+import static info.trekto.jos.core.formulas.ScientificConstants.NANOSECONDS_IN_ONE_MILLISECOND;
+import static info.trekto.jos.core.formulas.ScientificConstants.NANOSECONDS_IN_ONE_SECOND;
 import static info.trekto.jos.util.Utils.*;
 
 /**

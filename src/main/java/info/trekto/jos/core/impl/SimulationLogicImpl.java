@@ -1,21 +1,20 @@
 package info.trekto.jos.core.impl;
 
-import info.trekto.jos.C;
+import info.trekto.jos.core.C;
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.SimulationLogic;
-import info.trekto.jos.model.ImmutableSimulationObject;
-import info.trekto.jos.model.SimulationObject;
-import info.trekto.jos.model.impl.TripleInt;
-import info.trekto.jos.model.impl.TripleNumber;
-import info.trekto.jos.numbers.Number;
+import info.trekto.jos.core.model.ImmutableSimulationObject;
+import info.trekto.jos.core.model.SimulationObject;
+import info.trekto.jos.core.model.impl.TripleNumber;
+import info.trekto.jos.core.numbers.Number;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static info.trekto.jos.formulas.CommonFormulas.*;
-import static info.trekto.jos.numbers.New.TWO;
+import static info.trekto.jos.core.formulas.CommonFormulas.*;
+import static info.trekto.jos.core.numbers.New.TWO;
 
 /**
  * @author Trayan Momkov

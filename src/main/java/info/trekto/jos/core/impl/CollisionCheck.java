@@ -1,9 +1,9 @@
 package info.trekto.jos.core.impl;
 
-import info.trekto.jos.C;
-import info.trekto.jos.formulas.CommonFormulas;
-import info.trekto.jos.model.SimulationObject;
-import info.trekto.jos.numbers.Number;
+import info.trekto.jos.core.C;
+import info.trekto.jos.core.formulas.CommonFormulas;
+import info.trekto.jos.core.model.SimulationObject;
+import info.trekto.jos.core.numbers.Number;
 
 import java.util.ArrayList;
 import java.util.List;

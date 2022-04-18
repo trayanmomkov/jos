@@ -1,9 +1,9 @@
 package info.trekto.jos.core;
 
 import info.trekto.jos.core.impl.SimulationProperties;
-import info.trekto.jos.exceptions.SimulationException;
-import info.trekto.jos.formulas.ForceCalculator;
-import info.trekto.jos.model.SimulationObject;
+import info.trekto.jos.core.exceptions.SimulationException;
+import info.trekto.jos.core.formulas.ForceCalculator;
+import info.trekto.jos.core.model.SimulationObject;
 
 import java.io.IOException;
 import java.util.List;
