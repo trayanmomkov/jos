@@ -238,7 +238,7 @@ public class SimulationForkJoinImpl implements Simulation {
                         C.getVisualizer().visualize(objects);
                     }
 
-                    doIteration(i % C.mainForm.getSaveEveryNthIteration() == 0);
+                    doIteration(i % C.gui.getSaveEveryNthIteration() == 0);
                 } catch (InterruptedException e) {
                     error(logger, "Concurrency failure. One of the threads interrupted in cycle " + i, e);
                 }
@@ -322,7 +322,7 @@ public class SimulationForkJoinImpl implements Simulation {
     
     @Override
     public void switchPause() {
-        C.mainForm.switchPause();
+        C.gui.switchPause();
     }
 
     @Override

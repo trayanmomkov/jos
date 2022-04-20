@@ -125,8 +125,8 @@ public class Utils {
     }
     
     private static void append(String message) {
-    if (C.mainForm != null) {
-            C.mainForm.appendMessage(df.format(new Date()) + " " + message);
+    if (C.gui != null) {
+            C.gui.appendMessage(df.format(new Date()) + " " + message);
         }
     }
     

@@ -494,7 +494,7 @@ public class MainForm {
         ABOUT_MESSAGE = "JOS\n\nv. " + properties.getProperty("version") + "\narbitrary precision\n\nAuthor: Trayan Momkov\n2022";
 
         MainForm mainForm = new MainForm();
-        C.mainForm = mainForm;
+        C.gui = mainForm;
         C.setSimulation(new SimulationForkJoinImpl());
         C.getSimulation().setProperties(new SimulationProperties());
         jFrame.setContentPane(mainForm.mainPanel);

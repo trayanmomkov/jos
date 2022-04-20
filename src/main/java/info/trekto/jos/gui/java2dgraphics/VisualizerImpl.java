@@ -74,7 +74,7 @@ public class VisualizerImpl implements Visualizer {
     @Override
     public void closeWindow() {
         frame.dispose();
-        C.mainForm.onVisualizationWindowClosed();
+        C.gui.onVisualizationWindowClosed();
     }
 
     double convertCoordinatesForDisplayX(double x) {
@@ -101,8 +101,8 @@ public class VisualizerImpl implements Visualizer {
     private List<ShapeWithColorAndText> createShapes(Iteration iteration) {
         List<SimulationObject> objects = iteration.getObjects();
         List<ShapeWithColorAndText> shapes = new ArrayList<>();
-        if (C.mainForm.isShowTrail()) {
-            if (C.mainForm.isShowTrail() && trails.isEmpty()) {
+        if (C.gui.isShowTrail()) {
+            if (C.gui.isShowTrail() && trails.isEmpty()) {
                 for (SimulationObject object : objects) {
                     trails.put(object.getId(), new ArrayDeque<>());
                 }
@@ -123,13 +123,13 @@ public class VisualizerImpl implements Visualizer {
             Color color = new Color(object.getColor());
 
             shapes.add(new ShapeWithColorAndText(ellipse, color));
-            if (C.mainForm.isShowIds()) {
+            if (C.gui.isShowIds()) {
                 ShapeWithColorAndText text = new ShapeWithColorAndText(ellipse, RED);
                 text.setText(object.getId());
                 shapes.add(text);
             }
 
-            if (C.mainForm.isShowTrail()) {
+            if (C.gui.isShowTrail()) {
                 Queue<ShapeWithColorAndText> trail = trails.get(object.getId());
                 if (trail.size() >= 5) {
                     shapes.addAll(trail);
@@ -140,14 +140,14 @@ public class VisualizerImpl implements Visualizer {
                 double trailEllipseY = convertCoordinatesForDisplayY(y + radius.doubleValue() - trailEllipseRadius / 2);
                 trailEllipse.setFrame(trailEllipseX, trailEllipseY, trailEllipseRadius * TRAIL_SIZE, trailEllipseRadius * TRAIL_SIZE);
                 ShapeWithColorAndText newTrailElement = new ShapeWithColorAndText(trailEllipse, color);
-                if (trail.size() >= C.mainForm.getTrailSize()) {
+                if (trail.size() >= C.gui.getTrailSize()) {
                     trail.poll();
                 }
                 trail.offer(newTrailElement);
             }
         }
 
-        if (C.mainForm.getShowTimeAndIteration()) {
+        if (C.gui.getShowTimeAndIteration()) {
             shapes.addAll(createInfo(iteration.getCycle(), properties.getSecondsPerIteration(), iteration.getNumberOfObjects()));
         }
         return shapes;

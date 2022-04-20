@@ -1,6 +1,5 @@
 package info.trekto.jos.core;
 
-import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.gui.MainForm;
 import info.trekto.jos.io.ReaderWriter;
 import info.trekto.jos.gui.Visualizer;
@@ -15,9 +14,9 @@ public enum Controller {
 
     private static final Logger logger = LoggerFactory.getLogger(Controller.class);
     private Simulation simulation;
+    public static MainForm gui;
     private Visualizer visualizer;
     private ReaderWriter readerWriter;
-    public static MainForm mainForm;
     
     private boolean hasToStop;
     private String endText;
