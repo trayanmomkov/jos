@@ -284,7 +284,7 @@ public class MainForm {
 
             new Thread(() -> {
                 try {
-                    new SimulationGeneratorImpl().generateObjects(prop, this);
+                    new SimulationGeneratorImpl().generateObjects(C.getSimulation());
                 } catch (Exception ex) {
                     String message = "Error during object generation.";
                     error(logger, message, ex);
@@ -403,7 +403,7 @@ public class MainForm {
             new Thread(() -> {
                 try {
                     if (C.getSimulation().getProperties().isRealTimeVisualization()) {
-                        C.setVisualizer(new VisualizerImpl());
+                        C.setVisualizer(new VisualizerImpl(C.getSimulation().getProperties()));
                     }
                     C.getSimulation().startSimulation();
                 } catch (SimulationException ex) {

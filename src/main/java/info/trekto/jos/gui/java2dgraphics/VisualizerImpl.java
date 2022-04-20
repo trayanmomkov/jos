@@ -1,6 +1,7 @@
 package info.trekto.jos.gui.java2dgraphics;
 
 import info.trekto.jos.core.impl.Iteration;
+import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.gui.MainForm;
 import info.trekto.jos.core.model.ImmutableSimulationObject;
 import info.trekto.jos.core.model.SimulationObject;
@@ -39,10 +40,12 @@ public class VisualizerImpl implements Visualizer {
     private JFrame frame = null;
     List<ShapeWithColorAndText> latestShapes;
     Map<String, Queue<ShapeWithColorAndText>> trails;
+    SimulationProperties properties;
 
-    public VisualizerImpl() {
+    public VisualizerImpl(SimulationProperties properties) {
+        this.properties = properties;
         trails = new HashMap<>();
-        if (C.getSimulation().getProperties().isRealTimeVisualization()) {
+        if (properties.isRealTimeVisualization()) {
             frame = new VisualizationFrame(this, PROGRAM_NAME);
             if (MainForm.icon != null) {
                 frame.setIconImage(MainForm.icon);
@@ -145,7 +148,7 @@ public class VisualizerImpl implements Visualizer {
         }
 
         if (C.mainForm.getShowTimeAndIteration()) {
-            shapes.addAll(createInfo(iteration.getCycle(), C.getSimulation().getProperties().getSecondsPerIteration(), iteration.getNumberOfObjects()));
+            shapes.addAll(createInfo(iteration.getCycle(), properties.getSecondsPerIteration(), iteration.getNumberOfObjects()));
         }
         return shapes;
     }

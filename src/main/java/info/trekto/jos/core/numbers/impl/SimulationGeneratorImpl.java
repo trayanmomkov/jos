@@ -1,8 +1,7 @@
 package info.trekto.jos.core.numbers.impl;
 
+import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.SimulationGenerator;
-import info.trekto.jos.core.impl.SimulationProperties;
-import info.trekto.jos.gui.MainForm;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.model.impl.SimulationObjectImpl;
 import info.trekto.jos.core.model.impl.TripleNumber;
@@ -26,10 +25,10 @@ public class SimulationGeneratorImpl implements SimulationGenerator {
     private static final Logger logger = LoggerFactory.getLogger(SimulationGeneratorImpl.class);
 
     @Override
-    public void generateObjects(SimulationProperties prop, MainForm mainForm) {
+    public void generateObjects(Simulation simulation) {
         String filename = System.getProperty("user.home") + File.separator
                 + new SimpleDateFormat("yyyy-MMM-dd_HH-mm-ss").format(new Date()) + ".json.gz";
-        prop.setOutputFile(filename);
+        simulation.getProperties().setOutputFile(filename);
 
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         int width = gd.getDisplayMode().getWidth();
@@ -37,7 +36,7 @@ public class SimulationGeneratorImpl implements SimulationGenerator {
 
         List<SimulationObject> objects = new ArrayList<>();
         Random random = new Random(System.currentTimeMillis());
-        int n = prop.getNumberOfObjects();
+        int n = simulation.getProperties().getNumberOfObjects();
         double areaForObject = width * height / (double) n;
         double areaSide = Math.sqrt(areaForObject);
         int generatedObjects = 0;
@@ -59,7 +58,7 @@ public class SimulationGeneratorImpl implements SimulationGenerator {
                 o.setColor(Color.BLUE.getRGB());
 
                 // density = mass / volume
-                o.setMass(C.getSimulation().getSimulationLogic().calculateVolumeFromRadius(o.getRadius()).multiply(New.num(100_000_000_000L)));
+                o.setMass(simulation.getSimulationLogic().calculateVolumeFromRadius(o.getRadius()).multiply(New.num(100_000_000_000L)));
                 o.setId(String.valueOf(generatedObjects));
 
                 objects.add(o);
@@ -70,8 +69,8 @@ public class SimulationGeneratorImpl implements SimulationGenerator {
                 }
             }
         }
-        prop.setInitialObjects(objects);
-        C.getSimulation().init(prop);
-        mainForm.refreshProperties(C.getSimulation().getProperties());
+        simulation.getProperties().setInitialObjects(objects);
+        C.getSimulation().init(simulation.getProperties());
+//        mainForm.refreshProperties(C.getSimulation().getProperties());
     }
 }

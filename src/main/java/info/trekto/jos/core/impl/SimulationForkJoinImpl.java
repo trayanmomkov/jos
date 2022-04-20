@@ -150,7 +150,7 @@ public class SimulationForkJoinImpl implements Simulation {
         } catch (IOException e) {
             error(logger, "Cannot reset input file for playing.", e);
         }
-        C.setVisualizer(new VisualizerImpl());
+        C.setVisualizer(new VisualizerImpl(properties));
         long previousTime = System.nanoTime();
         running = true;
         C.setEndText("END.");

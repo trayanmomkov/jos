@@ -3,7 +3,6 @@ package info.trekto.jos.util;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.model.impl.SimulationObjectImpl;
-import info.trekto.jos.core.numbers.Number;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
