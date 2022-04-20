@@ -3,7 +3,9 @@ package info.trekto.jos.core;
 import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.formulas.ForceCalculator;
 import info.trekto.jos.core.impl.SimulationProperties;
+import info.trekto.jos.core.model.ImmutableSimulationObject;
 import info.trekto.jos.core.model.SimulationObject;
+import info.trekto.jos.core.numbers.Number;
 
 import java.io.IOException;
 import java.util.List;
@@ -47,4 +49,6 @@ public interface Simulation {
     SimulationProperties getProperties();
 
     void setProperties(SimulationProperties properties);
+
+    Number calculateDistance(ImmutableSimulationObject object, ImmutableSimulationObject object1);
 }

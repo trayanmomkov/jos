@@ -5,8 +5,10 @@ import info.trekto.jos.core.SimulationLogic;
 import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.formulas.ForceCalculator;
 import info.trekto.jos.core.formulas.NewtonGravity;
+import info.trekto.jos.core.model.ImmutableSimulationObject;
 import info.trekto.jos.io.JsonReaderWriter;
 import info.trekto.jos.core.model.SimulationObject;
+import info.trekto.jos.core.numbers.Number;
 import info.trekto.jos.core.model.impl.SimulationObjectImpl;
 import info.trekto.jos.util.Utils;
 import info.trekto.jos.gui.java2dgraphics.VisualizerImpl;
@@ -37,11 +39,11 @@ public class SimulationForkJoinImpl implements Simulation {
 
     private SimulationLogic simulationLogic;
     private SimulationProperties properties;
+    private ForceCalculator forceCalculator;
     public boolean running = false;
     public boolean paused = false;
 
     private long iterationCounter;
-    private ForceCalculator forceCalculator;
 
     private List<SimulationObject> objects;
     private List<SimulationObject> auxiliaryObjects;
@@ -54,12 +56,13 @@ public class SimulationForkJoinImpl implements Simulation {
         new SimulationRecursiveAction(0, objects.size()).compute();
 
         /* Collision and merging */
-        CollisionCheck.prepare();
-        new CollisionCheck(0, auxiliaryObjects.size()).compute();
-        
+        CollisionCheck collisionCheck = new CollisionCheck(0, auxiliaryObjects.size(), this);
+        collisionCheck.prepare();
+        collisionCheck.compute();
+
         /* If collision/s exists execute sequentially on a single thread */
-        if (CollisionCheck.collisionExists()) {
-            simulationLogic.processCollisions(C.getSimulation());
+        if (collisionCheck.collisionExists()) {
+            simulationLogic.processCollisions(this);
         }
 
         objects = auxiliaryObjects;
@@ -68,7 +71,7 @@ public class SimulationForkJoinImpl implements Simulation {
         if (properties.isRealTimeVisualization() && properties.getPlayingSpeed() < 0) {
             Thread.sleep(-properties.getPlayingSpeed());
         }
-        
+
         if (properties.isSaveToFile() && saveCurrentIterationToFile) {
             C.getReaderWriter().appendObjectsToFile(objects);
         }
@@ -312,5 +315,10 @@ public class SimulationForkJoinImpl implements Simulation {
     @Override
     public void setProperties(SimulationProperties properties) {
         this.properties = properties;
+    }
+
+    @Override
+    public Number calculateDistance(ImmutableSimulationObject object, ImmutableSimulationObject object1) {
+        return simulationLogic.calculateDistance(object, object1);
     }
 }

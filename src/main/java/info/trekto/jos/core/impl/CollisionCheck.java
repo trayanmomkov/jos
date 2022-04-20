@@ -1,5 +1,6 @@
 package info.trekto.jos.core.impl;
 
+import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.numbers.Number;
 
@@ -10,44 +11,39 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 
-import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.impl.SimulationRecursiveAction.THRESHOLD;
 
 public class CollisionCheck extends RecursiveAction {
     private final int fromIndex;
     private final int toIndex;
+    private final Simulation simulation;
+    private static ConcurrentMap<SimulationObject, Boolean> collisions;
 
-    public static ConcurrentMap<SimulationObject, Boolean> collisions;
-
-    public CollisionCheck(int fromIndex, int toIndex) {
+    public CollisionCheck(int fromIndex, int toIndex, Simulation simulation) {
         this.fromIndex = fromIndex;
         this.toIndex = toIndex;
+        this.simulation = simulation;
     }
 
-    public static void prepare() {
+    public void prepare() {
         collisions = new ConcurrentHashMap<>();
     }
 
-    public static boolean collisionExists() {
-        for (Boolean collision : collisions.values()) {
-            if (collision) {
-                return true;
-            }
-        }
-        return false;
+    public boolean collisionExists() {
+        return collisions.values().stream().anyMatch(Boolean::booleanValue);
     }
 
     @Override
     protected void compute() {
         if (toIndex - fromIndex <= THRESHOLD) {
             outerloop:
-            for (SimulationObject object : C.getSimulation().getAuxiliaryObjects().subList(fromIndex, toIndex)) {
-                for (SimulationObject object1 : C.getSimulation().getAuxiliaryObjects()) {
+            for (SimulationObject object : simulation.getAuxiliaryObjects().subList(fromIndex, toIndex)) {
+                for (SimulationObject object1 : simulation.getAuxiliaryObjects()) {
                     if (object == object1) {
                         continue;
                     }
                     // distance between centres
-                    Number distance = C.getSimulation().getSimulationLogic().calculateDistance(object, object1);
+                    Number distance = simulation.calculateDistance(object, object1);
 
                     if (distance.compareTo(object.getRadius().add(object1.getRadius())) < 0) {
                         collisions.put(object, true);
@@ -58,8 +54,8 @@ public class CollisionCheck extends RecursiveAction {
         } else {
             List<RecursiveAction> subtasks = new ArrayList<>();
             int middle = fromIndex + ((toIndex - fromIndex) / 2);
-            subtasks.add(new CollisionCheck(fromIndex, middle));
-            subtasks.add(new CollisionCheck(middle, toIndex));
+            subtasks.add(new CollisionCheck(fromIndex, middle, simulation));
+            subtasks.add(new CollisionCheck(middle, toIndex, simulation));
             ForkJoinTask.invokeAll(subtasks);
         }
     }
