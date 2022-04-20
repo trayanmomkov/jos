@@ -8,7 +8,8 @@ import org.slf4j.LoggerFactory;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.formulas.ScientificConstants.*;
@@ -119,44 +120,38 @@ public class Utils {
                 + (minutes > 0 ? minutes + " m. " : "")
                 + seconds + "." + milliseconds + " s.";
     }
-    
+
     public static boolean isNullOrBlank(String s) {
         return s == null || s.trim().isEmpty();
     }
-    
-    private static void append(String message) {
-    if (C.gui != null) {
-            C.gui.appendMessage(df.format(new Date()) + " " + message);
-        }
-    }
-    
+
     public static void error(Logger logger, String s) {
         logger.error(s);
-        append("███ ERROR: " + s);
+        C.append("███ ERROR: " + s);
     }
 
     public static void info(Logger logger, String s) {
         logger.info(s);
-        append("INFO: " + s);
+        C.append("INFO: " + s);
     }
 
     public static void warn(Logger logger, String s) {
         logger.warn(s);
-        append("█ WARN: " + s);
+        C.append("█ WARN: " + s);
     }
 
     public static void error(Logger logger, String s, Throwable tr) {
         logger.error(s, tr);
-        append("███ ERROR: " + s + " - " + tr.getMessage());
+        C.append("███ ERROR: " + s + " - " + tr.getMessage());
     }
 
     public static void warn(Logger logger, String s, Throwable tr) {
         logger.warn(s, tr);
-        append("█ WARN: " + s + " - " + tr.getMessage());
+        C.append("█ WARN: " + s + " - " + tr.getMessage());
     }
 
     public static void info(Logger logger, String s, Throwable tr) {
         logger.info(s, tr);
-        append("INFO: " + s + " - " + tr.getMessage());
+        C.append("INFO: " + s + " - " + tr.getMessage());
     }
 }

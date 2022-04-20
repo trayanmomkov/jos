@@ -211,13 +211,13 @@ public class JsonReaderWriter implements ReaderWriter {
     }
 
     @Override
-    public void appendObjectsToFile(List<SimulationObject> simulationObjects) {
+    public void appendObjectsToFile(List<SimulationObject> simulationObjects, SimulationProperties properties, long currentIterationNumber) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         if (writer == null) {
-            initWriter(C.getSimulation().getProperties().getOutputFile());
+            initWriter(properties.getOutputFile());
             try {
                 writer.write("{\n  \"properties\":\n");
-                gson.toJson(mapPropertiesAndInitialObjects(C.getSimulation().getProperties(), gson), writer);
+                gson.toJson(mapPropertiesAndInitialObjects(properties, gson), writer);
                 writer.write(",\n  \"simulation\": [\n");
             } catch (IOException e) {
                 error(logger, "Cannot write 'simulation' element to output JSON file.", e);
@@ -230,14 +230,14 @@ public class JsonReaderWriter implements ReaderWriter {
         }
 
         JsonObject cycleJson = new JsonObject();
-        cycleJson.addProperty("cycle", C.getSimulation().getCurrentIterationNumber());
+        cycleJson.addProperty("cycle", currentIterationNumber);
         cycleJson.addProperty("numberOfObjects", simulationObjects.size());
         cycleJson.add("objects", objectsAsJsonArray);
 
         gson.toJson(cycleJson, writer);
-        boolean lastIterationToSave = C.getSimulation().getCurrentIterationNumber() >= C.getSimulation().getProperties().getNumberOfIterations()
-                || C.getSimulation().getCurrentIterationNumber() + C.gui.getSaveEveryNthIteration() > C.getSimulation().getProperties().getNumberOfIterations();
-        if (!C.hasToStop() && (C.getSimulation().getProperties().isInfiniteSimulation() || !lastIterationToSave)) {
+        boolean lastIterationToSave = currentIterationNumber >= properties.getNumberOfIterations()
+                || currentIterationNumber + C.getSaveEveryNthIteration() > properties.getNumberOfIterations();
+        if (!C.hasToStop() && (properties.isInfiniteSimulation() || !lastIterationToSave)) {
             try {
                 writer.write(",\n");
             } catch (IOException e) {

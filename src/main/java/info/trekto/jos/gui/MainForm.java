@@ -1,48 +1,28 @@
 package info.trekto.jos.gui;
 
-import info.trekto.jos.core.impl.SimulationForkJoinImpl;
-import info.trekto.jos.core.impl.SimulationLogicImpl;
-import info.trekto.jos.core.impl.SimulationProperties;
-import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.formulas.ForceCalculator;
-import info.trekto.jos.core.model.SimulationObject;
-import info.trekto.jos.core.numbers.New;
 import info.trekto.jos.core.numbers.NumberFactory;
-import info.trekto.jos.core.numbers.impl.SimulationGeneratorImpl;
-import info.trekto.jos.gui.java2dgraphics.VisualizerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.*;
 
 import static info.trekto.jos.core.Controller.C;
-import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumberFactory;
-import static info.trekto.jos.util.Utils.error;
-import static info.trekto.jos.util.Utils.isNullOrBlank;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.WARNING_MESSAGE;
-import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 public class MainForm {
     private static final Logger logger = LoggerFactory.getLogger(MainForm.class);
-    public static final String PROGRAM_NAME = "JOS - arbitrary precision version";
     private static final String PLAYING_SPEED_TIP = "If x < 0: every iteration sleep x milliseconds; If x >= 0: visualize every x milliseconds";
-    private static String ABOUT_MESSAGE;
-    public static BufferedImage icon;
-    public static Properties properties;
+    private String aboutMessage;
+    private BufferedImage icon;
 
     private JButton browseButton;
     private JTextField numberOfIterationsTextField;
@@ -98,59 +78,17 @@ public class MainForm {
     private JLabel saveEveryNthIterationLabel2;
     private JButton pauseButton;
     private ButtonGroup buttonGroup;
-    private final List<Component> runningComponents;
-    private final List<Component> playingComponents;
-    private final List<Component> savingToFileComponents;
-    private File playFile;
+    private List<Component> runningComponents;
+    private List<Component> playingComponents;
+    private List<Component> savingToFileComponents;
 
-    public MainForm() {
-        initialObjectsTable.setModel(new InitialObjectsTableModelAndListener(this));
-        browseButton.addActionListener(actionEvent -> {
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setFileFilter(new FileNameExtensionFilter("JSON file", "json"));
-            int option = fileChooser.showOpenDialog(mainPanel);
-            if (option == JFileChooser.APPROVE_OPTION) {
-                File file = fileChooser.getSelectedFile();
-                inputFilePathLabel.setText(file.getAbsolutePath());
-                C.setSimulation(new SimulationForkJoinImpl());
-                C.getSimulation().setSimulationLogic(new SimulationLogicImpl(C.getSimulation()));
-                C.getSimulation().init(file.getAbsolutePath());
-                refreshProperties(C.getSimulation().getProperties());
-            }
-        });
-
-        savePropertiesButton.addActionListener(actionEvent -> {
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setSelectedFile(new File(inputFilePathLabel.getText()));
-            int userSelection = fileChooser.showSaveDialog(mainPanel);
-            if (userSelection == JFileChooser.APPROVE_OPTION) {
-                File fileToSave = fileChooser.getSelectedFile();
-                C.getReaderWriter().writeProperties(C.getSimulation().getProperties(), fileToSave.getAbsolutePath());
-
-                /* Reopen just saved file */
-                inputFilePathLabel.setText(fileToSave.getAbsolutePath());
-                C.getSimulation().init(fileToSave.getAbsolutePath());
-                refreshProperties(C.getSimulation().getProperties());
-            }
-        });
-
-        numberOfObjectsTextField.getDocument().addUndoableEditListener(actionEvent -> {
-            if (!isNullOrBlank(numberOfObjectsTextField.getText())) {
-                C.getSimulation().getProperties().setNumberOfObjects(Integer.parseInt(numberOfObjectsTextField.getText()));
-            }
-        });
-
-        numberOfIterationsTextField.getDocument().addUndoableEditListener(actionEvent -> {
-            if (!isNullOrBlank(numberOfIterationsTextField.getText())) {
-                C.getSimulation().getProperties().setNumberOfIterations(Integer.parseInt(numberOfIterationsTextField.getText()));
-            }
-        });
-
-        secondsPerIterationTextField.getDocument().addUndoableEditListener(actionEvent -> {
-            if (!isNullOrBlank(secondsPerIterationTextField.getText())) {
-                C.getSimulation().getProperties().setSecondsPerIteration(New.num(secondsPerIterationTextField.getText()));
-            }
-        });
+    public void init() {
+        initialObjectsTable.setModel(new InitialObjectsTableModelAndListener());
+        browseButton.addActionListener(actionEvent -> C.browseButtonEvent());
+        savePropertiesButton.addActionListener(actionEvent -> C.savePropertiesButtonEvent());
+        numberOfObjectsTextField.getDocument().addUndoableEditListener(actionEvent -> C.numberOfObjectsTextFieldEvent());
+        numberOfIterationsTextField.getDocument().addUndoableEditListener(actionEvent -> C.numberOfIterationsTextFieldEvent());
+        secondsPerIterationTextField.getDocument().addUndoableEditListener(actionEvent -> C.secondsPerIterationTextFieldEvent());
 
         {
             Vector<NumberFactory.NumberType> comboBoxItems = new Vector<>();
@@ -164,79 +102,24 @@ public class MainForm {
             interactingLawComboBox.setModel(new DefaultComboBoxModel<>(comboBoxItems));
         }
 
-        numberTypeComboBox.addActionListener(
-                actionEvent -> {
-                    if (actionEvent.getModifiers() != 0) {
-                        C.getSimulation().getProperties().setNumberType(NumberFactory.NumberType.valueOf(String.valueOf(numberTypeComboBox.getSelectedItem())));
-//                    createNumberFactory(C.getSimulation().getProperties().getNumberType(), C.getSimulation().getProperties().getPrecision(), C.getSimulation().getProperties().getScale());
-//                    C.getSimulation().getProperties().setSecondsPerIteration(New.num(secondsPerIterationTextField.getText()));
-//                    ((InitialObjectsTableModelAndListener) initialObjectsTable.getModel()).refreshInitialObjects();
-                        showWarn(mainPanel, "You have to save properties, number type change to take effect.");
-                    }
-                });
-
-        interactingLawComboBox.addActionListener(
-                actionEvent -> C.getSimulation().getProperties().setInteractingLaw(ForceCalculator.InteractingLaw.valueOf(String.valueOf(interactingLawComboBox.getSelectedItem()))));
-
-        precisionTextField.getDocument().addUndoableEditListener(actionEvent -> {
-            if (!isNullOrBlank(precisionTextField.getText())) {
-                C.getSimulation().getProperties().setPrecision(Integer.parseInt(precisionTextField.getText()));
-            }
-        });
-
-        scaleTextField.getDocument().addUndoableEditListener(actionEvent -> {
-            if (!isNullOrBlank(scaleTextField.getText())) {
-                C.getSimulation().getProperties().setScale(Integer.parseInt(scaleTextField.getText()));
-            }
-        });
-
-        realTimeVisualizationCheckBox.addActionListener(actionEvent -> C.getSimulation().getProperties().setRealTimeVisualization(realTimeVisualizationCheckBox.isSelected()));
-        bounceFromScreenWallsCheckBox.addActionListener(actionEvent -> C.getSimulation().getProperties().setBounceFromWalls(bounceFromScreenWallsCheckBox.isSelected()));
-
-        playingSpeedTextField.getDocument().addUndoableEditListener(actionEvent -> {
-            if (!isNullOrBlank(playingSpeedTextField.getText().replace("-", ""))) {
-                C.getSimulation().getProperties().setPlayingSpeed(Integer.parseInt(playingSpeedTextField.getText()));
-            }
-        });
-
-        outputFileTextField.getDocument().addUndoableEditListener(actionEvent -> {
-            if (!isNullOrBlank(outputFileTextField.getText())) {
-                C.getSimulation().getProperties().setOutputFile(outputFileTextField.getText());
-            }
-        });
-
-        startButton.addActionListener(actionEvent -> start());
-        stopButton.addActionListener(actionEvent -> {
-            if (C.getSimulation() != null) {
-                C.getSimulation().setPaused(false);
-                if (C.getSimulation().isRunning()) {
-                    C.setHasToStop(true);
-                }
-            }
-        });
-
-        pauseButton.addActionListener(actionEvent -> {
-            if (C.getSimulation() != null) {
-                switchPause();
-            }
-        });
-
-        appendMessage("Controls:");
-        appendMessage("\tExit: Esc");
-        appendMessage("\tZoom in: +");
-        appendMessage("\tZoom out: -");
-        appendMessage("\tMove up: ↑");
-        appendMessage("\tMove down: ↓");
-        appendMessage("\tMove right: →");
-        appendMessage("\tMove left: ←");
-        appendMessage("\tSwitch trails: t");
+        numberTypeComboBox.addActionListener(C::numberTypeComboBoxEvent);
+        interactingLawComboBox.addActionListener(actionEvent -> C.interactingLawComboBoxEvent());
+        precisionTextField.getDocument().addUndoableEditListener(actionEvent -> C.precisionTextFieldEvent());
+        scaleTextField.getDocument().addUndoableEditListener(actionEvent -> C.scaleTextFieldEvent());
+        realTimeVisualizationCheckBox.addActionListener(actionEvent -> C.realTimeVisualizationCheckBoxEvent());
+        bounceFromScreenWallsCheckBox.addActionListener(actionEvent -> C.bounceFromScreenWallsCheckBoxEvent());
+        playingSpeedTextField.getDocument().addUndoableEditListener(actionEvent -> C.playingSpeedTextFieldEvent());
+        outputFileTextField.getDocument().addUndoableEditListener(actionEvent -> C.outputFileTextFieldEvent());
+        startButton.addActionListener(actionEvent -> C.start());
+        stopButton.addActionListener(actionEvent -> C.stopButtonEvent());
+        pauseButton.addActionListener(actionEvent -> C.pauseButtonEvent());
 
         buttonGroup = new ButtonGroup();
         buttonGroup.add(runningRadioButton);
         buttonGroup.add(playRadioButton);
 
-        runningRadioButton.addActionListener(actionEvent -> enableRunning(true));
-        playRadioButton.addActionListener(actionEvent -> enableRunning(false));
+        runningRadioButton.addActionListener(actionEvent -> C.enableRunning(true));
+        playRadioButton.addActionListener(actionEvent -> C.enableRunning(false));
 
         runningComponents = Arrays.asList(
                 numberOfIterationsTextField, secondsPerIterationTextField, browseButton, saveToFileCheckBox, outputFileTextField,
@@ -251,103 +134,22 @@ public class MainForm {
         savingToFileComponents = Arrays.asList(outputFileLabel, outputFileTextField, saveEveryNthIterationLabel1, saveEveryNthIterationTextField,
                                                saveEveryNthIterationLabel2);
 
-        saveToFileCheckBox.addActionListener(actionEvent -> {
-            savingToFileComponents.forEach(c -> c.setEnabled(saveToFileCheckBox.isSelected()));
-            C.getSimulation().getProperties().setSaveToFile(saveToFileCheckBox.isSelected());
-        });
-
-        generateObjectsButton.addActionListener(actionEvent -> {
-            createNumberFactory(
-                    NumberFactory.NumberType.valueOf(numberTypeComboBox.getSelectedItem().toString()),
-                    Integer.parseInt(precisionTextField.getText()), Integer.parseInt(scaleTextField.getText()));
-            SimulationProperties prop = new SimulationProperties();
-            if (!isNullOrBlank(numberOfObjectsTextField.getText())) {
-                prop.setNumberOfObjects(Integer.parseInt(numberOfObjectsTextField.getText()));
-            }
-
-            if (!isNullOrBlank(numberOfIterationsTextField.getText())) {
-                prop.setNumberOfIterations(Integer.parseInt(numberOfIterationsTextField.getText()));
-            }
-
-            if (!isNullOrBlank(secondsPerIterationTextField.getText())) {
-                prop.setSecondsPerIteration(New.num(secondsPerIterationTextField.getText()));
-            }
-            prop.setRealTimeVisualization(realTimeVisualizationCheckBox.isSelected());
-            prop.setSaveToFile(saveToFileCheckBox.isSelected());
-            prop.setNumberType(NumberFactory.NumberType.valueOf(numberTypeComboBox.getSelectedItem().toString()));
-            prop.setInteractingLaw(ForceCalculator.InteractingLaw.valueOf(interactingLawComboBox.getSelectedItem().toString()));
-            prop.setScale(Integer.parseInt(scaleTextField.getText()));
-            prop.setPrecision(Integer.parseInt(precisionTextField.getText()));
-
-            C.setSimulation(new SimulationForkJoinImpl());
-            C.getSimulation().setSimulationLogic(new SimulationLogicImpl(C.getSimulation()));
-
-            new Thread(() -> {
-                try {
-                    new SimulationGeneratorImpl().generateObjects(C.getSimulation());
-                } catch (Exception ex) {
-                    String message = "Error during object generation.";
-                    error(logger, message, ex);
-                    C.getVisualizer().closeWindow();
-                    showError(mainPanel, message + " " + ex.getMessage());
-                } finally {
-                    onVisualizationWindowClosed();
-                }
-            }).start();
-        });
-
-        browsePlayingFileButton.addActionListener(actionEvent -> {
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setFileFilter(new FileNameExtensionFilter("GZipped JSON file", "gz"));
-            int option = fileChooser.showOpenDialog(mainPanel);
-            if (option == JFileChooser.APPROVE_OPTION) {
-                playFile = fileChooser.getSelectedFile();
-                playFileLabel.setText(playFile.getAbsolutePath());
-                try {
-                    C.setSimulation(new SimulationForkJoinImpl());
-                    C.getSimulation().setSimulationLogic(new SimulationLogicImpl(C.getSimulation()));
-                    C.getSimulation().initForPlaying(playFile.getAbsolutePath());
-                    refreshProperties(C.getSimulation().getProperties());
-                } catch (IOException e) {
-                    showError(mainPanel, "Cannot read ZIP file.", e);
-                }
-            }
-        });
-
+        saveToFileCheckBox.addActionListener(actionEvent -> C.saveToFileCheckBoxEvent());
+        generateObjectsButton.addActionListener(actionEvent -> C.generateObjectButtonEvent());
+        browsePlayingFileButton.addActionListener(actionEvent -> C.browsePlayingFileButtonEvent());
         playingSpeedLabel.setLabelFor(playingSpeedTextField);
-
-        playButton.addActionListener(actionEvent -> play());
-
-        showObjectIDsCheckBox.addActionListener(actionEvent -> {
-            fontSize.setEnabled(showObjectIDsCheckBox.isSelected());
-            fontSizeLabel.setEnabled(showObjectIDsCheckBox.isSelected());
-        });
-        showTrailCheckBox.addActionListener(actionEvent -> {
-            trailSizeTextField.setEnabled(showTrailCheckBox.isSelected());
-            trailSizeTextLabel.setEnabled(showTrailCheckBox.isSelected());
-        });
-        outputFileTextField.addActionListener(actionEvent -> C.getSimulation().getProperties().setOutputFile(outputFileTextField.getText()));
-        numberOfObjectsTextField.addActionListener(actionEvent -> {
-            if (!isNullOrBlank(numberOfObjectsTextField.getText())) {
-                C.getSimulation().getProperties().setNumberOfObjects(Integer.parseInt(numberOfObjectsTextField.getText()));
-            }
-        });
-        numberOfIterationsTextField.addActionListener(actionEvent -> {
-            if (!isNullOrBlank(numberOfIterationsTextField.getText())) {
-                C.getSimulation().getProperties().setNumberOfIterations(Integer.parseInt(numberOfIterationsTextField.getText()));
-            }
-        });
-        secondsPerIterationTextField.addActionListener(actionEvent -> {
-            if (!isNullOrBlank(secondsPerIterationTextField.getText())) {
-                C.getSimulation().getProperties().setSecondsPerIteration(New.num(secondsPerIterationTextField.getText()));
-            }
-        });
-
+        playButton.addActionListener(actionEvent -> C.play());
+        showObjectIDsCheckBox.addActionListener(actionEvent -> C.showObjectIDsCheckBoxEvent());
+        showTrailCheckBox.addActionListener(actionEvent -> C.showTrailCheckBoxEvent());
+        outputFileTextField.addActionListener(actionEvent -> C.outputFileTextFieldEvent());
+        numberOfObjectsTextField.addActionListener(actionEvent -> C.numberOfObjectsTextFieldEvent());
+        numberOfIterationsTextField.addActionListener(actionEvent -> C.numberOfIterationsTextFieldEvent());
+        secondsPerIterationTextField.addActionListener(actionEvent -> C.secondsPerIterationTextFieldEvent());
         initialObjectsPanel.setSize(initialObjectsPanel.getWidth(), initialObjectsPanel.getHeight() * 2);
 
         aboutLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                JOptionPane.showMessageDialog(mainPanel, ABOUT_MESSAGE, "About", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(mainPanel, aboutMessage, "About", JOptionPane.INFORMATION_MESSAGE);
             }
         });
 
@@ -362,205 +164,251 @@ public class MainForm {
         playingSpeedTextField.setToolTipText(PLAYING_SPEED_TIP);
     }
 
-    public void switchPause() {
-        C.getSimulation().setPaused(!C.getSimulation().isPaused());
-        pauseButton.setText(C.getSimulation().isPaused() ? "Unpause" : "Pause");
+    /////////////////////////////////////////
+
+
+    public void setAboutMessage(String aboutMessage) {
+        this.aboutMessage = aboutMessage;
     }
 
-    private void enableRunning(boolean enable) {
-        runningComponents.forEach(c -> c.setEnabled(enable));
-        playingComponents.forEach(c -> c.setEnabled(!enable));
-        savingToFileComponents.forEach(c -> c.setEnabled(enable && saveToFileCheckBox.isSelected()));
+    public void setIcon(BufferedImage icon) {
+        this.icon = icon;
     }
 
-    private void play() {
-        C.getSimulation().setPaused(false);
-        new Thread(() -> {
-            try {
-                if (C.getSimulation() != null && playFile != null) {
-                    C.setHasToStop(false);
-                    C.getSimulation().playSimulation(playFile.getAbsolutePath());
-                }
-            } catch (Exception ex) {
-                String message = "Error during playing.";
-                error(logger, message, ex);
-                if (C.getVisualizer() != null) {
-                    C.getVisualizer().closeWindow();
-                }
-                showError(mainPanel, message + " " + ex.getMessage());
-            } finally {
-                onVisualizationWindowClosed();
-            }
-        }).start();
-        playingComponents.forEach(c -> c.setEnabled(false));
-        stopButton.setEnabled(true);
-        pauseButton.setEnabled(true);
+    public String getAboutMessage() {
+        return aboutMessage;
     }
 
-    private void start() {
-        C.getSimulation().setPaused(false);
-        if (C.getSimulation().getProperties() != null && C.getSimulation().getProperties().getInitialObjects() != null) {
-            new Thread(() -> {
-                try {
-                    if (C.getSimulation().getProperties().isRealTimeVisualization()) {
-                        C.setVisualizer(new VisualizerImpl(C.getSimulation().getProperties()));
-                    }
-                    C.getSimulation().startSimulation();
-                } catch (SimulationException ex) {
-                    String message = "Error during simulation.";
-                    error(logger, message, ex);
-                    C.getVisualizer().closeWindow();
-                    showError(mainPanel, message + " " + ex.getMessage());
-                } catch (ArithmeticException ex) {
-                    if (ex.getMessage().contains("zero")) {
-                        String message = "Operation with zero. Please increase the precision and try again.";
-                        error(logger, message, ex);
-                        C.getVisualizer().closeWindow();
-                        showError(mainPanel, message + " " + ex.getMessage());
-                    } else {
-                        String message = "Arithmetic exception.";
-                        error(logger, message, ex);
-                        C.getVisualizer().closeWindow();
-                        showError(mainPanel, message + " " + ex.getMessage());
-                    }
-                } catch (Exception ex) {
-                    String message = "Unexpected exception.";
-                    error(logger, message, ex);
-                    C.getVisualizer().closeWindow();
-                    showError(mainPanel, message + " " + ex.getMessage());
-                } finally {
-                    onVisualizationWindowClosed();
-                }
-            }).start();
-            startButton.setEnabled(false);
-            runningComponents.forEach(c -> c.setEnabled(false));
-            playingComponents.forEach(c -> c.setEnabled(false));
-            savingToFileComponents.forEach(c -> c.setEnabled(false));
-            runningRadioButton.setEnabled(false);
-            playRadioButton.setEnabled(false);
-            stopButton.setEnabled(true);
-            pauseButton.setEnabled(true);
-        }
+    public BufferedImage getIcon() {
+        return icon;
     }
 
-    public void refreshProperties(SimulationProperties prop) {
-        numberOfObjectsTextField.setText(String.valueOf(prop.getNumberOfObjects()));
-        numberOfIterationsTextField.setText(String.valueOf(prop.getNumberOfIterations()));
-        secondsPerIterationTextField.setText(String.valueOf(prop.getSecondsPerIteration()));
-        numberTypeComboBox.setSelectedItem(prop.getNumberType());
-        interactingLawComboBox.setSelectedItem(prop.getInteractingLaw());
-        saveToFileCheckBox.setSelected(prop.isSaveToFile());
-        outputFileTextField.setText(prop.getOutputFile());
-        precisionTextField.setText(String.valueOf(prop.getPrecision()));
-        scaleTextField.setText(String.valueOf(prop.getScale()));
-        realTimeVisualizationCheckBox.setSelected(prop.isRealTimeVisualization());
-        bounceFromScreenWallsCheckBox.setSelected(prop.isBounceFromWalls());
-        playingSpeedTextField.setText(String.valueOf(prop.getPlayingSpeed()));
-
-        ((InitialObjectsTableModelAndListener) initialObjectsTable.getModel()).setRowCount(0);
-        for (SimulationObject initialObject : prop.getInitialObjects()) {
-            ((InitialObjectsTableModelAndListener) initialObjectsTable.getModel()).addRow(initialObject);
-        }
+    public JButton getBrowseButton() {
+        return browseButton;
     }
 
-    private void showError(Component parent, String message, Exception exception) {
-        showError(parent, message + " " + exception.getMessage());
+    public JTextField getNumberOfIterationsTextField() {
+        return numberOfIterationsTextField;
     }
 
-    private void showError(Component parent, String message) {
-        JOptionPane.showMessageDialog(parent, message, "Error", ERROR_MESSAGE);
+    public JTextField getSecondsPerIterationTextField() {
+        return secondsPerIterationTextField;
     }
 
-    private void showWarn(Component parent, String message) {
-        JOptionPane.showMessageDialog(parent, message, "Warning", WARNING_MESSAGE);
+    public JCheckBox getSaveToFileCheckBox() {
+        return saveToFileCheckBox;
     }
 
-    public static void main(String[] args) {
-        properties = new Properties();
-        JFrame jFrame = new JFrame();
-
-        try {
-            properties.load(MainForm.class.getClassLoader().getResourceAsStream("application.properties"));
-            icon = ImageIO.read(MainForm.class.getClassLoader().getResource("jos-icon.png"));
-            jFrame.setIconImage(icon);
-        } catch (Exception e) {
-            logger.error("Cannot load properties and/or icon image.", e);
-        }
-
-        if (isNullOrBlank(properties.getProperty("version"))) {
-            properties.setProperty("version", "Unknown");
-        }
-
-        ABOUT_MESSAGE = "JOS\n\nv. " + properties.getProperty("version") + "\narbitrary precision\n\nAuthor: Trayan Momkov\n2022";
-
-        MainForm mainForm = new MainForm();
-        C.gui = mainForm;
-        C.setSimulation(new SimulationForkJoinImpl());
-        C.getSimulation().setProperties(new SimulationProperties());
-        jFrame.setContentPane(mainForm.mainPanel);
-        jFrame.setTitle(PROGRAM_NAME);
-        jFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        jFrame.pack();
-        jFrame.setLocationRelativeTo(null); // Center of the screen
-        jFrame.setVisible(true);
+    public JTextField getOutputFileTextField() {
+        return outputFileTextField;
     }
 
-    public void appendMessage(String message) {
-        consoleTextArea.append(message + "\n");
-        consoleTextArea.setCaretPosition(consoleTextArea.getDocument().getLength());
+    public JCheckBox getRealTimeVisualizationCheckBox() {
+        return realTimeVisualizationCheckBox;
     }
 
-    public void onVisualizationWindowClosed() {
-        C.getSimulation().setPaused(false);
-        if (runningRadioButton.isSelected()) {
-            startButton.setEnabled(true);
-        }
-        if (runningRadioButton.isSelected()) {
-            runningComponents.forEach(c -> c.setEnabled(true));
-            savingToFileComponents.forEach(c -> c.setEnabled(saveToFileCheckBox.isSelected()));
-        } else {
-            playingComponents.forEach(c -> c.setEnabled(true));
-        }
-        runningRadioButton.setEnabled(true);
-        playRadioButton.setEnabled(true);
-        stopButton.setEnabled(false);
-        pauseButton.setEnabled(false);
+    public JTextField getPlayingSpeedTextField() {
+        return playingSpeedTextField;
     }
 
-    public int getFontSize() {
-        if (!isNullOrBlank(fontSize.getText().replace("-", ""))) {
-            return Integer.parseInt(fontSize.getText());
-        } else {
-            return 48;
-        }
+    public JCheckBox getBounceFromScreenWallsCheckBox() {
+        return bounceFromScreenWallsCheckBox;
     }
 
-    public boolean isShowIds() {
-        return showObjectIDsCheckBox.isSelected();
+    public JTextField getNumberOfObjectsTextField() {
+        return numberOfObjectsTextField;
     }
 
-    public boolean isShowTrail() {
-        return showTrailCheckBox.isSelected();
+    public JTextField getPrecisionTextField() {
+        return precisionTextField;
     }
 
-    public void setShowTrail(boolean selected) {
-        showTrailCheckBox.setSelected(selected);
+    public JTextField getScaleTextField() {
+        return scaleTextField;
     }
 
-    public int getTrailSize() {
-        if (!isNullOrBlank(trailSizeTextField.getText().replace("-", ""))) {
-            return Integer.parseInt(trailSizeTextField.getText());
-        } else {
-            return 500;
-        }
+    public JTable getInitialObjectsTable() {
+        return initialObjectsTable;
     }
 
-    public boolean getShowTimeAndIteration() {
-        return showTimeAndIterationCheckBox.isSelected();
+    public JTextArea getConsoleTextArea() {
+        return consoleTextArea;
     }
 
-    public int getSaveEveryNthIteration() {
-        return Integer.parseInt(saveEveryNthIterationTextField.getText());
+    public JButton getStartButton() {
+        return startButton;
+    }
+
+    public JButton getStopButton() {
+        return stopButton;
+    }
+
+    public JButton getSavePropertiesButton() {
+        return savePropertiesButton;
+    }
+
+    public JPanel getMainPanel() {
+        return mainPanel;
+    }
+
+    public JLabel getInputFilePathLabel() {
+        return inputFilePathLabel;
+    }
+
+    public JRadioButton getRunningRadioButton() {
+        return runningRadioButton;
+    }
+
+    public JRadioButton getPlayRadioButton() {
+        return playRadioButton;
+    }
+
+    public JButton getBrowsePlayingFileButton() {
+        return browsePlayingFileButton;
+    }
+
+    public JLabel getPlayFileLabel() {
+        return playFileLabel;
+    }
+
+    public JPanel getSimulationPropertiesPanel() {
+        return simulationPropertiesPanel;
+    }
+
+    public JLabel getNumberOfObjectsLabel() {
+        return numberOfObjectsLabel;
+    }
+
+    public JLabel getSecondsPerIterationLabel() {
+        return secondsPerIterationLabel;
+    }
+
+    public JLabel getNumberTypeLabel() {
+        return numberTypeLabel;
+    }
+
+    public JLabel getInteractingLawLabel() {
+        return interactingLawLabel;
+    }
+
+    public JLabel getOutputFileLabel() {
+        return outputFileLabel;
+    }
+
+    public JLabel getPrecisionLabel() {
+        return precisionLabel;
+    }
+
+    public JLabel getScaleLabel() {
+        return scaleLabel;
+    }
+
+    public JLabel getNumberOfIterationsLabel() {
+        return numberOfIterationsLabel;
+    }
+
+    public JLabel getPlayFromLabel() {
+        return playFromLabel;
+    }
+
+    public JLabel getPlayingSpeedLabel() {
+        return playingSpeedLabel;
+    }
+
+    public JButton getPlayButton() {
+        return playButton;
+    }
+
+    public JScrollPane getInitialObjectsPanel() {
+        return initialObjectsPanel;
+    }
+
+    public JButton getGenerateObjectsButton() {
+        return generateObjectsButton;
+    }
+
+    public JPanel getPlayingPanel() {
+        return playingPanel;
+    }
+
+    public JPanel getBrowsePropertiesPanel() {
+        return browsePropertiesPanel;
+    }
+
+    public JTextField getFontSize() {
+        return fontSize;
+    }
+
+    public JCheckBox getShowObjectIDsCheckBox() {
+        return showObjectIDsCheckBox;
+    }
+
+    public JCheckBox getShowTrailCheckBox() {
+        return showTrailCheckBox;
+    }
+
+    public JTextField getTrailSizeTextField() {
+        return trailSizeTextField;
+    }
+
+    public JLabel getFontSizeLabel() {
+        return fontSizeLabel;
+    }
+
+    public JLabel getTrailSizeTextLabel() {
+        return trailSizeTextLabel;
+    }
+
+    public JScrollPane getConsolePanel() {
+        return consolePanel;
+    }
+
+    public JLabel getAboutLabel() {
+        return aboutLabel;
+    }
+
+    public JComboBox getNumberTypeComboBox() {
+        return numberTypeComboBox;
+    }
+
+    public JComboBox getInteractingLawComboBox() {
+        return interactingLawComboBox;
+    }
+
+    public JCheckBox getShowTimeAndIterationCheckBox() {
+        return showTimeAndIterationCheckBox;
+    }
+
+    public JTextField getSaveEveryNthIterationTextField() {
+        return saveEveryNthIterationTextField;
+    }
+
+    public JLabel getSaveEveryNthIterationLabel1() {
+        return saveEveryNthIterationLabel1;
+    }
+
+    public JLabel getSaveEveryNthIterationLabel2() {
+        return saveEveryNthIterationLabel2;
+    }
+
+    public JButton getPauseButton() {
+        return pauseButton;
+    }
+
+    public ButtonGroup getButtonGroup() {
+        return buttonGroup;
+    }
+
+    public List<Component> getRunningComponents() {
+        return runningComponents;
+    }
+
+    public List<Component> getPlayingComponents() {
+        return playingComponents;
+    }
+
+    public List<Component> getSavingToFileComponents() {
+        return savingToFileComponents;
     }
 
     {

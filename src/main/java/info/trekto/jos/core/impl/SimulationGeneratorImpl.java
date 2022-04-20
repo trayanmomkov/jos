@@ -1,4 +1,4 @@
-package info.trekto.jos.core.numbers.impl;
+package info.trekto.jos.core.impl;
 
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.SimulationGenerator;
@@ -17,7 +17,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.numbers.New.ZERO;
 import static info.trekto.jos.util.Utils.info;
 
@@ -70,7 +69,5 @@ public class SimulationGeneratorImpl implements SimulationGenerator {
             }
         }
         simulation.getProperties().setInitialObjects(objects);
-        C.getSimulation().init(simulation.getProperties());
-//        mainForm.refreshProperties(C.getSimulation().getProperties());
     }
 }

@@ -7,7 +7,6 @@ import info.trekto.jos.core.model.ImmutableSimulationObject;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.numbers.Number;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -25,20 +24,8 @@ public interface Simulation {
     long getCurrentIterationNumber();
 
     ForceCalculator getForceCalculator();
-    
-    boolean isRunning();
-
-    void init(SimulationProperties prop);
-
-    void initForPlaying(String absolutePath) throws IOException;
 
     void playSimulation(String absolutePath);
-
-    void init(String absolutePath);
-    
-    void setPaused(boolean paused);
-    
-    boolean isPaused();
 
     void switchPause();
 

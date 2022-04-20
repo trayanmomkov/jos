@@ -22,7 +22,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>info.trekto.jos.gui.MainForm</mainClass>
+                            <mainClass>info.trekto.jos.core.Controller</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

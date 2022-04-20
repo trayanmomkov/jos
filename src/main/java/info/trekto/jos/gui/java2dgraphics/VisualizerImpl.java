@@ -2,7 +2,6 @@ package info.trekto.jos.gui.java2dgraphics;
 
 import info.trekto.jos.core.impl.Iteration;
 import info.trekto.jos.core.impl.SimulationProperties;
-import info.trekto.jos.gui.MainForm;
 import info.trekto.jos.core.model.ImmutableSimulationObject;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.numbers.New;
@@ -23,7 +22,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static info.trekto.jos.core.Controller.C;
-import static info.trekto.jos.gui.MainForm.PROGRAM_NAME;
+import static info.trekto.jos.core.Controller.PROGRAM_NAME;
 import static info.trekto.jos.core.numbers.New.TWO;
 import static info.trekto.jos.util.Utils.secondsToHumanReadable;
 import static java.awt.Color.BLUE;
@@ -47,8 +46,8 @@ public class VisualizerImpl implements Visualizer {
         trails = new HashMap<>();
         if (properties.isRealTimeVisualization()) {
             frame = new VisualizationFrame(this, PROGRAM_NAME);
-            if (MainForm.icon != null) {
-                frame.setIconImage(MainForm.icon);
+            if (C.getIcon() != null) {
+                frame.setIconImage(C.getIcon());
             }
             frame.addKeyListener(new VisualizationKeyListener(this));
             frame.addMouseListener(new VisualizationMouseListener(this));
@@ -74,7 +73,7 @@ public class VisualizerImpl implements Visualizer {
     @Override
     public void closeWindow() {
         frame.dispose();
-        C.gui.onVisualizationWindowClosed();
+        C.onVisualizationWindowClosed();
     }
 
     double convertCoordinatesForDisplayX(double x) {
@@ -101,8 +100,8 @@ public class VisualizerImpl implements Visualizer {
     private List<ShapeWithColorAndText> createShapes(Iteration iteration) {
         List<SimulationObject> objects = iteration.getObjects();
         List<ShapeWithColorAndText> shapes = new ArrayList<>();
-        if (C.gui.isShowTrail()) {
-            if (C.gui.isShowTrail() && trails.isEmpty()) {
+        if (C.isShowTrail()) {
+            if (C.isShowTrail() && trails.isEmpty()) {
                 for (SimulationObject object : objects) {
                     trails.put(object.getId(), new ArrayDeque<>());
                 }
@@ -123,13 +122,13 @@ public class VisualizerImpl implements Visualizer {
             Color color = new Color(object.getColor());
 
             shapes.add(new ShapeWithColorAndText(ellipse, color));
-            if (C.gui.isShowIds()) {
+            if (C.isShowIds()) {
                 ShapeWithColorAndText text = new ShapeWithColorAndText(ellipse, RED);
                 text.setText(object.getId());
                 shapes.add(text);
             }
 
-            if (C.gui.isShowTrail()) {
+            if (C.isShowTrail()) {
                 Queue<ShapeWithColorAndText> trail = trails.get(object.getId());
                 if (trail.size() >= 5) {
                     shapes.addAll(trail);
@@ -140,14 +139,14 @@ public class VisualizerImpl implements Visualizer {
                 double trailEllipseY = convertCoordinatesForDisplayY(y + radius.doubleValue() - trailEllipseRadius / 2);
                 trailEllipse.setFrame(trailEllipseX, trailEllipseY, trailEllipseRadius * TRAIL_SIZE, trailEllipseRadius * TRAIL_SIZE);
                 ShapeWithColorAndText newTrailElement = new ShapeWithColorAndText(trailEllipse, color);
-                if (trail.size() >= C.gui.getTrailSize()) {
+                if (trail.size() >= C.getTrailSize()) {
                     trail.poll();
                 }
                 trail.offer(newTrailElement);
             }
         }
 
-        if (C.gui.getShowTimeAndIteration()) {
+        if (C.getShowTimeAndIteration()) {
             shapes.addAll(createInfo(iteration.getCycle(), properties.getSecondsPerIteration(), iteration.getNumberOfObjects()));
         }
         return shapes;

@@ -1,10 +1,42 @@
 package info.trekto.jos.core;
 
+import info.trekto.jos.core.exceptions.SimulationException;
+import info.trekto.jos.core.formulas.ForceCalculator;
+import info.trekto.jos.core.impl.SimulationForkJoinImpl;
+import info.trekto.jos.core.impl.SimulationGeneratorImpl;
+import info.trekto.jos.core.impl.SimulationLogicImpl;
+import info.trekto.jos.core.impl.SimulationProperties;
+import info.trekto.jos.core.model.SimulationObject;
+import info.trekto.jos.core.numbers.New;
+import info.trekto.jos.core.numbers.NumberFactory;
+import info.trekto.jos.gui.InitialObjectsTableModelAndListener;
 import info.trekto.jos.gui.MainForm;
-import info.trekto.jos.io.ReaderWriter;
 import info.trekto.jos.gui.Visualizer;
+import info.trekto.jos.gui.java2dgraphics.VisualizerImpl;
+import info.trekto.jos.io.JsonReaderWriter;
+import info.trekto.jos.io.ReaderWriter;
+import info.trekto.jos.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Date;
+import java.util.Properties;
+
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumberFactory;
+import static info.trekto.jos.util.Utils.error;
+import static info.trekto.jos.util.Utils.isNullOrBlank;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.WARNING_MESSAGE;
+import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 /**
  * @author Trayan Momkov
@@ -13,13 +45,193 @@ public enum Controller {
     C;
 
     private static final Logger logger = LoggerFactory.getLogger(Controller.class);
+    public static final String PROGRAM_NAME = "JOS - arbitrary precision version";
+
     private Simulation simulation;
-    public static MainForm gui;
+    private MainForm gui;
     private Visualizer visualizer;
     private ReaderWriter readerWriter;
-    
+    private SimulationGenerator simulationGenerator;
+
+    private boolean running = false;
+    private boolean paused = false;
     private boolean hasToStop;
     private String endText;
+    private File playFile;
+
+    public static void main(String[] args) {
+        Properties applicationProperties = new Properties();
+        JFrame jFrame = new JFrame();
+        MainForm mainForm = new MainForm();
+
+        try {
+            applicationProperties.load(Controller.class.getClassLoader().getResourceAsStream("application.properties"));
+            BufferedImage icon = ImageIO.read(Controller.class.getClassLoader().getResource("jos-icon.png"));
+            mainForm.setIcon(icon);
+            jFrame.setIconImage(icon);
+        } catch (Exception e) {
+            logger.error("Cannot load properties and/or icon image.", e);
+        }
+
+        if (isNullOrBlank(applicationProperties.getProperty("version"))) {
+            applicationProperties.setProperty("version", "Unknown");
+        }
+
+        mainForm.setAboutMessage("JOS\n\nv. " + applicationProperties.getProperty("version") + "\narbitrary precision\n\nAuthor: Trayan Momkov\n2022");
+        mainForm.init();
+        C.setMainForm(mainForm);
+
+        C.appendMessage("Controls:");
+        C.appendMessage("\tExit: Esc");
+        C.appendMessage("\tZoom in: +");
+        C.appendMessage("\tZoom out: -");
+        C.appendMessage("\tMove up: ↑");
+        C.appendMessage("\tMove down: ↓");
+        C.appendMessage("\tMove right: →");
+        C.appendMessage("\tMove left: ←");
+        C.appendMessage("\tSwitch trails: t");
+
+        jFrame.setContentPane(mainForm.getMainPanel());
+        jFrame.setTitle(PROGRAM_NAME);
+        jFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        jFrame.pack();
+        jFrame.setLocationRelativeTo(null); // Center of the screen
+        jFrame.setVisible(true);
+    }
+
+    private Simulation createSimulation(SimulationProperties properties) {
+        Simulation simulation = new SimulationForkJoinImpl();
+        simulation.setSimulationLogic(new SimulationLogicImpl(simulation));
+        simulation.setProperties(properties);
+        if (properties.isSaveToFile()) {
+            readerWriter = new JsonReaderWriter();
+        }
+        return simulation;
+    }
+
+    public SimulationProperties loadProperties(String inputFile) {
+        readerWriter = new JsonReaderWriter();
+        SimulationProperties properties = null;
+        try {
+            properties = readerWriter.readProperties(inputFile);
+        } catch (FileNotFoundException e) {
+            error(logger, "Cannot read properties file.", e);
+        }
+        return properties;
+    }
+
+    public SimulationProperties loadPropertiesForPlaying(String inputFile) {
+        readerWriter = new JsonReaderWriter();
+        SimulationProperties properties = null;
+        try {
+            properties = readerWriter.readPropertiesForPlaying(inputFile);
+            properties.setRealTimeVisualization(true);
+        } catch (IOException e) {
+            error(logger, "Cannot read properties file.", e);
+        }
+        return properties;
+    }
+
+    private SimulationGenerator createSimulationGenerator(SimulationProperties prop) {
+        SimulationGenerator simulationGenerator = new SimulationGeneratorImpl();
+        return simulationGenerator;
+    }
+
+    public void append(String message) {
+        if (gui != null) {
+            appendMessage(Utils.df.format(new Date()) + " " + message);
+        }
+    }
+
+    public void play() {
+        paused = false;
+        new Thread(() -> {
+            try {
+                if (simulation != null && playFile != null) {
+                    hasToStop = false;
+                    simulation.playSimulation(playFile.getAbsolutePath());
+                }
+            } catch (Exception ex) {
+                String message = "Error during playing.";
+                error(logger, message, ex);
+                if (visualizer != null) {
+                    visualizer.closeWindow();
+                }
+                showError(message + " " + ex.getMessage());
+            } finally {
+                onVisualizationWindowClosed();
+            }
+        }).start();
+        gui.getPlayingComponents().forEach(c -> c.setEnabled(false));
+        gui.getStopButton().setEnabled(true);
+        gui.getPauseButton().setEnabled(true);
+    }
+
+    public void start() {
+        paused = false;
+        if (simulation != null && simulation.getProperties() != null && simulation.getProperties().getInitialObjects() != null) {
+            new Thread(() -> {
+                try {
+                    if (simulation.getProperties().isRealTimeVisualization()) {
+                        visualizer = new VisualizerImpl(simulation.getProperties());
+                    }
+                    if (readerWriter == null && simulation.getProperties().isSaveToFile()) {
+                        readerWriter = new JsonReaderWriter();
+                    }
+                    simulation.startSimulation();
+                } catch (SimulationException ex) {
+                    String message = "Error during simulation.";
+                    error(logger, message, ex);
+                    visualizer.closeWindow();
+                    showError(message + " " + ex.getMessage());
+                } catch (ArithmeticException ex) {
+                    if (ex.getMessage().contains("zero")) {
+                        String message = "Operation with zero. Please increase the precision and try again.";
+                        error(logger, message, ex);
+                        visualizer.closeWindow();
+                        showError(message + " " + ex.getMessage());
+                    } else {
+                        String message = "Arithmetic exception.";
+                        error(logger, message, ex);
+                        visualizer.closeWindow();
+                        showError(message + " " + ex.getMessage());
+                    }
+                } catch (Exception ex) {
+                    String message = "Unexpected exception.";
+                    error(logger, message, ex);
+                    visualizer.closeWindow();
+                    showError(message + " " + ex.getMessage());
+                } finally {
+                    onVisualizationWindowClosed();
+                }
+            }).start();
+            gui.getStartButton().setEnabled(false);
+            gui.getRunningComponents().forEach(c -> c.setEnabled(false));
+            gui.getPlayingComponents().forEach(c -> c.setEnabled(false));
+            gui.getSavingToFileComponents().forEach(c -> c.setEnabled(false));
+            gui.getRunningRadioButton().setEnabled(false);
+            gui.getPlayRadioButton().setEnabled(false);
+            gui.getStopButton().setEnabled(true);
+            gui.getPauseButton().setEnabled(true);
+        }
+    }
+
+    public void onVisualizationWindowClosed() {
+        C.setPaused(false);
+        if (gui.getRunningRadioButton().isSelected()) {
+            gui.getStartButton().setEnabled(true);
+        }
+        if (gui.getRunningRadioButton().isSelected()) {
+            gui.getRunningComponents().forEach(c -> c.setEnabled(true));
+            gui.getSavingToFileComponents().forEach(c -> c.setEnabled(gui.getSaveToFileCheckBox().isSelected()));
+        } else {
+            gui.getPlayingComponents().forEach(c -> c.setEnabled(true));
+        }
+        gui.getRunningRadioButton().setEnabled(true);
+        gui.getPlayRadioButton().setEnabled(true);
+        gui.getStopButton().setEnabled(false);
+        gui.getPauseButton().setEnabled(false);
+    }
 
     public Simulation getSimulation() {
         return simulation;
@@ -27,6 +239,19 @@ public enum Controller {
 
     public void setSimulation(Simulation simulation) {
         this.simulation = simulation;
+    }
+
+    public MainForm getMainForm() {
+        return gui;
+    }
+
+    public void setMainForm(MainForm mainForm) {
+        this.gui = mainForm;
+    }
+
+    public void switchPause() {
+        paused = !paused;
+        setPause(paused);
     }
 
     public Visualizer getVisualizer() {
@@ -49,8 +274,290 @@ public enum Controller {
         return hasToStop;
     }
 
+    public void setRunning(boolean running) {
+        this.running = running;
+    }
+
+    public void setPaused(boolean paused) {
+        this.paused = paused;
+    }
+
     public void setHasToStop(boolean hasToStop) {
         this.hasToStop = hasToStop;
+    }
+
+    public boolean isRunning() {
+        return running;
+    }
+
+    public boolean isPaused() {
+        return paused;
+    }
+
+    public void switchTrail() {
+        setShowTrail(!isShowTrail());
+    }
+
+    public void setPause(boolean paused) {
+        gui.getPauseButton().setText(paused ? "Unpause" : "Pause");
+    }
+
+    public void enableRunning(boolean enable) {
+        gui.getRunningComponents().forEach(c -> c.setEnabled(enable));
+        gui.getPlayingComponents().forEach(c -> c.setEnabled(!enable));
+        gui.getSavingToFileComponents().forEach(c -> c.setEnabled(enable && gui.getSaveToFileCheckBox().isSelected()));
+    }
+
+    public void refreshProperties(SimulationProperties prop) {
+        gui.getNumberOfObjectsTextField().setText(String.valueOf(prop.getNumberOfObjects()));
+        gui.getNumberOfIterationsTextField().setText(String.valueOf(prop.getNumberOfIterations()));
+        gui.getSecondsPerIterationTextField().setText(String.valueOf(prop.getSecondsPerIteration()));
+        gui.getNumberTypeComboBox().setSelectedItem(prop.getNumberType());
+        gui.getInteractingLawComboBox().setSelectedItem(prop.getInteractingLaw());
+        gui.getSaveToFileCheckBox().setSelected(prop.isSaveToFile());
+        gui.getOutputFileTextField().setText(prop.getOutputFile());
+        gui.getPrecisionTextField().setText(String.valueOf(prop.getPrecision()));
+        gui.getScaleTextField().setText(String.valueOf(prop.getScale()));
+        gui.getRealTimeVisualizationCheckBox().setSelected(prop.isRealTimeVisualization());
+        gui.getBounceFromScreenWallsCheckBox().setSelected(prop.isBounceFromWalls());
+        gui.getPlayingSpeedTextField().setText(String.valueOf(prop.getPlayingSpeed()));
+
+        ((InitialObjectsTableModelAndListener) gui.getInitialObjectsTable().getModel()).setRowCount(0);
+        for (SimulationObject initialObject : prop.getInitialObjects()) {
+            ((InitialObjectsTableModelAndListener) gui.getInitialObjectsTable().getModel()).addRow(initialObject);
+        }
+    }
+
+    private void showError(Component parent, String message, Exception exception) {
+        showError(parent, message + " " + exception.getMessage());
+    }
+
+    private void showError(Component parent, String message) {
+        JOptionPane.showMessageDialog(parent, message, "Error", ERROR_MESSAGE);
+    }
+
+    private void showError(String message, Exception exception) {
+        showError(gui.getMainPanel(), message, exception);
+    }
+
+    private void showError(String message) {
+        showError(gui.getMainPanel(), message);
+    }
+
+    private void showWarn(Component parent, String message) {
+        JOptionPane.showMessageDialog(parent, message, "Warning", WARNING_MESSAGE);
+    }
+
+    public void appendMessage(String message) {
+        gui.getConsoleTextArea().append(message + "\n");
+        gui.getConsoleTextArea().setCaretPosition(gui.getConsoleTextArea().getDocument().getLength());
+    }
+
+    public int getFontSize() {
+        if (!isNullOrBlank(gui.getFontSize().getText().replace("-", ""))) {
+            return Integer.parseInt(gui.getFontSize().getText());
+        } else {
+            return 48;
+        }
+    }
+
+    public boolean isShowIds() {
+        return gui.getShowObjectIDsCheckBox().isSelected();
+    }
+
+    public boolean isShowTrail() {
+        return gui.getShowTrailCheckBox().isSelected();
+    }
+
+    public void setShowTrail(boolean selected) {
+        gui.getShowTrailCheckBox().setSelected(selected);
+    }
+
+    public int getTrailSize() {
+        if (!isNullOrBlank(gui.getTrailSizeTextField().getText().replace("-", ""))) {
+            return Integer.parseInt(gui.getTrailSizeTextField().getText());
+        } else {
+            return 500;
+        }
+    }
+
+    public boolean getShowTimeAndIteration() {
+        return gui.getShowTimeAndIterationCheckBox().isSelected();
+    }
+
+    public int getSaveEveryNthIteration() {
+        return Integer.parseInt(gui.getSaveEveryNthIterationTextField().getText());
+    }
+
+    public void browsePlayingFileButtonEvent() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileFilter(new FileNameExtensionFilter("GZipped JSON file", "gz"));
+        int option = fileChooser.showOpenDialog(gui.getMainPanel());
+        if (option == JFileChooser.APPROVE_OPTION) {
+            playFile = fileChooser.getSelectedFile();
+            gui.getPlayFileLabel().setText(playFile.getAbsolutePath());
+            simulation = createSimulation(loadPropertiesForPlaying(playFile.getAbsolutePath()));
+            refreshProperties(simulation.getProperties());
+        }
+    }
+
+    public void generateObjectButtonEvent() {
+        createNumberFactory(
+                NumberFactory.NumberType.valueOf(gui.getNumberTypeComboBox().getSelectedItem().toString()),
+                Integer.parseInt(gui.getPrecisionTextField().getText()), Integer.parseInt(gui.getScaleTextField().getText()));
+        SimulationProperties prop = new SimulationProperties();
+        if (!isNullOrBlank(gui.getNumberOfObjectsTextField().getText())) {
+            prop.setNumberOfObjects(Integer.parseInt(gui.getNumberOfObjectsTextField().getText()));
+        }
+
+        if (!isNullOrBlank(gui.getNumberOfIterationsTextField().getText())) {
+            prop.setNumberOfIterations(Integer.parseInt(gui.getNumberOfIterationsTextField().getText()));
+        }
+
+        if (!isNullOrBlank(gui.getSecondsPerIterationTextField().getText())) {
+            prop.setSecondsPerIteration(New.num(gui.getSecondsPerIterationTextField().getText()));
+        }
+        prop.setRealTimeVisualization(gui.getRealTimeVisualizationCheckBox().isSelected());
+        prop.setSaveToFile(gui.getSaveToFileCheckBox().isSelected());
+        prop.setNumberType(NumberFactory.NumberType.valueOf(gui.getNumberTypeComboBox().getSelectedItem().toString()));
+        prop.setInteractingLaw(ForceCalculator.InteractingLaw.valueOf(gui.getInteractingLawComboBox().getSelectedItem().toString()));
+        prop.setScale(Integer.parseInt(gui.getScaleTextField().getText()));
+        prop.setPrecision(Integer.parseInt(gui.getPrecisionTextField().getText()));
+
+        simulation = createSimulation(prop);
+        simulationGenerator = createSimulationGenerator(prop);
+
+        new Thread(() -> {
+            try {
+                simulationGenerator.generateObjects(simulation);
+                refreshProperties(prop);
+            } catch (Exception ex) {
+                String message = "Error during object generation.";
+                error(logger, message, ex);
+                showError(message + " " + ex.getMessage());
+            }
+        }).start();
+    }
+
+    public void saveToFileCheckBoxEvent() {
+        gui.getSavingToFileComponents().forEach(c -> c.setEnabled(gui.getSaveToFileCheckBox().isSelected()));
+        simulation.getProperties().setSaveToFile(gui.getSaveToFileCheckBox().isSelected());
+    }
+
+    public void pauseButtonEvent() {
+        if (simulation != null) {
+            switchPause();
+        }
+    }
+
+    public void stopButtonEvent() {
+        if (C.getSimulation() != null) {
+            C.setPaused(false);
+            if (C.isRunning()) {
+                C.setHasToStop(true);
+            }
+        }
+    }
+
+    public void outputFileTextFieldEvent() {
+        if (!isNullOrBlank(gui.getOutputFileTextField().getText())) {
+            simulation.getProperties().setOutputFile(gui.getOutputFileTextField().getText());
+        }
+    }
+
+    public void playingSpeedTextFieldEvent() {
+        if (!isNullOrBlank(gui.getPlayingSpeedTextField().getText().replace("-", ""))) {
+            simulation.getProperties().setPlayingSpeed(Integer.parseInt(gui.getPlayingSpeedTextField().getText()));
+        }
+    }
+
+    public void scaleTextFieldEvent() {
+        if (!isNullOrBlank(gui.getScaleTextField().getText())) {
+            simulation.getProperties().setScale(Integer.parseInt(gui.getScaleTextField().getText()));
+        }
+    }
+
+    public void precisionTextFieldEvent() {
+        if (!isNullOrBlank(gui.getPrecisionTextField().getText())) {
+            simulation.getProperties().setPrecision(Integer.parseInt(gui.getPrecisionTextField().getText()));
+        }
+    }
+
+    public void numberTypeComboBoxEvent(ActionEvent actionEvent) {
+        if (actionEvent.getModifiers() != 0) {
+            simulation.getProperties().setNumberType(NumberFactory.NumberType.valueOf(String.valueOf(gui.getNumberTypeComboBox().getSelectedItem())));
+//                    createNumberFactory(C.prop.getNumberType(), C.prop.getPrecision(), C.prop.getScale());
+//                    C.prop.setSecondsPerIteration(New.num(f.getSecondsPerIterationTextField().getText()));
+//                    ((InitialObjectsTableModelAndListener) f.getInitialObjectsTable().getModel()).refreshInitialObjects();
+            showWarn(gui.getMainPanel(), "You have to save properties, number type change to take effect.");
+        }
+    }
+
+    public void savePropertiesButtonEvent() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setSelectedFile(new File(gui.getInputFilePathLabel().getText()));
+        int userSelection = fileChooser.showSaveDialog(gui.getMainPanel());
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToSave = fileChooser.getSelectedFile();
+            readerWriter.writeProperties(simulation.getProperties(), fileToSave.getAbsolutePath());
+
+            /* Reopen just saved file */
+            gui.getInputFilePathLabel().setText(fileToSave.getAbsolutePath());
+            simulation = createSimulation(loadProperties(fileToSave.getAbsolutePath()));
+            refreshProperties(simulation.getProperties());
+        }
+    }
+
+    public void browseButtonEvent() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileFilter(new FileNameExtensionFilter("JSON file", "json"));
+        int option = fileChooser.showOpenDialog(gui.getMainPanel());
+        if (option == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            gui.getInputFilePathLabel().setText(file.getAbsolutePath());
+            simulation = createSimulation(loadProperties(file.getAbsolutePath()));
+            refreshProperties(simulation.getProperties());
+        }
+    }
+
+    public void secondsPerIterationTextFieldEvent() {
+        if (!isNullOrBlank(gui.getSecondsPerIterationTextField().getText())) {
+            simulation.getProperties().setSecondsPerIteration(New.num(gui.getSecondsPerIterationTextField().getText()));
+        }
+    }
+
+    public void numberOfIterationsTextFieldEvent() {
+        if (!isNullOrBlank(gui.getNumberOfIterationsTextField().getText())) {
+            simulation.getProperties().setNumberOfIterations(Integer.parseInt(gui.getNumberOfIterationsTextField().getText()));
+        }
+    }
+
+    public void numberOfObjectsTextFieldEvent() {
+        if (!isNullOrBlank(gui.getNumberOfObjectsTextField().getText())) {
+            simulation.getProperties().setNumberOfObjects(Integer.parseInt(gui.getNumberOfObjectsTextField().getText()));
+        }
+    }
+
+    public void showTrailCheckBoxEvent() {
+        gui.getTrailSizeTextField().setEnabled(gui.getShowTrailCheckBox().isSelected());
+        gui.getTrailSizeTextLabel().setEnabled(gui.getShowTrailCheckBox().isSelected());
+    }
+
+    public void showObjectIDsCheckBoxEvent() {
+        gui.getFontSize().setEnabled(gui.getShowObjectIDsCheckBox().isSelected());
+        gui.getFontSizeLabel().setEnabled(gui.getShowObjectIDsCheckBox().isSelected());
+    }
+
+    public void bounceFromScreenWallsCheckBoxEvent() {
+        simulation.getProperties().setBounceFromWalls(gui.getBounceFromScreenWallsCheckBox().isSelected());
+    }
+
+    public void realTimeVisualizationCheckBoxEvent() {
+        simulation.getProperties().setRealTimeVisualization(gui.getRealTimeVisualizationCheckBox().isSelected());
+    }
+
+    public void interactingLawComboBoxEvent() {
+        simulation.getProperties().setInteractingLaw(ForceCalculator.InteractingLaw.valueOf(String.valueOf(gui.getInteractingLawComboBox().getSelectedItem())));
     }
 
     public String getEndText() {
@@ -59,5 +566,9 @@ public enum Controller {
 
     public void setEndText(String endText) {
         this.endText = endText;
+    }
+
+    public Image getIcon() {
+        return gui.getIcon();
     }
 }

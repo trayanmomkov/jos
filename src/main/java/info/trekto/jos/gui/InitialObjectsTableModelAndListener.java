@@ -8,20 +8,15 @@ import info.trekto.jos.core.numbers.New;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 import static info.trekto.jos.core.Controller.C;
 
 public class InitialObjectsTableModelAndListener extends DefaultTableModel implements TableModelListener {
-    Map<String, Integer> columnNameIndexMap;
-    MainForm mainForm;
+    private final Map<String, Integer> columnNameIndexMap;
 
-    public InitialObjectsTableModelAndListener(MainForm mainForm) {
+    public InitialObjectsTableModelAndListener() {
         super();
-        this.mainForm = mainForm;
 
         columnNameIndexMap = new HashMap<>();
 
@@ -67,7 +62,7 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
     }
 
     public void refreshInitialObjects() {
-        C.getSimulation().getProperties().setInitialObjects(new ArrayList<>());
+        List<SimulationObject> objects = new ArrayList<>();
         for (Object vector : dataVector) {
             Vector v = (Vector) vector;
             SimulationObject o = new SimulationObjectImpl();
@@ -84,7 +79,8 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
                     New.num(String.valueOf(v.get(i++)))));
             o.setColor(Integer.parseInt(String.valueOf(v.get(i++)), 16));
 
-            C.getSimulation().getProperties().getInitialObjects().add(o);
+            objects.add(o);
         }
+        C.getSimulation().getProperties().setInitialObjects(objects);
     }
 }

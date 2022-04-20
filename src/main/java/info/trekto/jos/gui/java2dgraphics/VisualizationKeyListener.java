@@ -68,7 +68,7 @@ public class VisualizationKeyListener implements KeyListener {
                 break;
 
             case KeyEvent.VK_T:
-                C.gui.setShowTrail(!C.gui.isShowTrail());
+                C.switchTrail();
                 break;
 
             default:

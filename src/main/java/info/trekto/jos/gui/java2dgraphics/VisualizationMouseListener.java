@@ -27,7 +27,7 @@ public class VisualizationMouseListener implements MouseListener {
 
     @Override
     public void mousePressed(MouseEvent mouseEvent) {
-        C.getSimulation().switchPause();
+        C.switchPause();
     }
 
     @Override

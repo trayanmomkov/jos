@@ -1,5 +1,6 @@
 package info.trekto.jos.numbers;
 
+import info.trekto.jos.core.impl.SimulationForkJoinImpl;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.numbers.New;
 import info.trekto.jos.core.numbers.Number;
@@ -50,6 +51,7 @@ public class ArithmeticCorrectnessTest {
         int scale = 16;
 
         MathContext mathContext = new MathContext(precision, roundingMode);
+        C.setSimulation(new SimulationForkJoinImpl());
         C.getSimulation().setProperties(new SimulationProperties());
         C.getSimulation().getProperties().setScale(scale);
         NumberFactoryProxy.setFactory(new BigDecimalNumberFactory(mathContext, scale));

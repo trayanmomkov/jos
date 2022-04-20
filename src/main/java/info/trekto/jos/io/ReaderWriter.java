@@ -13,7 +13,7 @@ public interface ReaderWriter {
 
     void writeProperties(SimulationProperties properties, String outputFilePath);
 
-    void appendObjectsToFile(List<SimulationObject> objects);
+    void appendObjectsToFile(List<SimulationObject> objects, SimulationProperties properties, long currentIterationNumber);
 
     void endFile();
 

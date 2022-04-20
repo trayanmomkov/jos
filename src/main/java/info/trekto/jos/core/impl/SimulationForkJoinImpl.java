@@ -6,17 +6,15 @@ import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.formulas.ForceCalculator;
 import info.trekto.jos.core.formulas.NewtonGravity;
 import info.trekto.jos.core.model.ImmutableSimulationObject;
-import info.trekto.jos.io.JsonReaderWriter;
 import info.trekto.jos.core.model.SimulationObject;
-import info.trekto.jos.core.numbers.Number;
 import info.trekto.jos.core.model.impl.SimulationObjectImpl;
-import info.trekto.jos.util.Utils;
+import info.trekto.jos.core.numbers.Number;
 import info.trekto.jos.gui.java2dgraphics.VisualizerImpl;
+import info.trekto.jos.util.Utils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -42,9 +40,6 @@ public class SimulationForkJoinImpl implements Simulation {
     private SimulationLogic simulationLogic;
     private SimulationProperties properties;
     private ForceCalculator forceCalculator;
-    public boolean running = false;
-    public boolean paused = false;
-
     private long iterationCounter;
 
     private List<SimulationObject> objects;
@@ -101,44 +96,7 @@ public class SimulationForkJoinImpl implements Simulation {
         }
 
         if (properties.isSaveToFile() && saveCurrentIterationToFile) {
-            C.getReaderWriter().appendObjectsToFile(objects);
-        }
-    }
-
-    @Override
-    public void init(String inputFile) {
-        C.setReaderWriter(new JsonReaderWriter());
-        try {
-            properties = C.getReaderWriter().readProperties(inputFile);
-        } catch (FileNotFoundException e) {
-            error(logger, "Cannot read properties file.", e);
-        }
-    }
-
-    @Override
-    public void setPaused(boolean paused) {
-        this.paused = paused;
-    }
-
-    @Override
-    public boolean isPaused() {
-        return paused;
-    }
-
-    @Override
-    public void init(SimulationProperties prop) {
-        C.setReaderWriter(new JsonReaderWriter());
-        properties = prop;
-        C.setSimulation(this);
-    }
-
-    public void initForPlaying(String inputFile) throws IOException {
-        C.setReaderWriter(new JsonReaderWriter());
-        try {
-            properties = C.getReaderWriter().readPropertiesForPlaying(inputFile);
-            properties.setRealTimeVisualization(true);
-        } catch (FileNotFoundException e) {
-            error(logger, "Cannot read properties file.", e);
+            C.getReaderWriter().appendObjectsToFile(objects, properties, iterationCounter);
         }
     }
 
@@ -146,13 +104,12 @@ public class SimulationForkJoinImpl implements Simulation {
         try {
             // Only reset reader pointer. Do not change properties! We want to have the latest changes from the GUI.
             C.getReaderWriter().readPropertiesForPlaying(inputFile);
-            C.setSimulation(this);
         } catch (IOException e) {
             error(logger, "Cannot reset input file for playing.", e);
         }
         C.setVisualizer(new VisualizerImpl(properties));
         long previousTime = System.nanoTime();
-        running = true;
+        C.setRunning(true);
         C.setEndText("END.");
         try {
             while (C.getReaderWriter().hasMoreIterations()) {
@@ -160,7 +117,7 @@ public class SimulationForkJoinImpl implements Simulation {
                     doStop();
                     break;
                 }
-                while (paused) {
+                while (C.isPaused()) {
                     Thread.sleep(PAUSE_SLEEP_MILLISECONDS);
                 }
                 Iteration iteration = C.getReaderWriter().readNextIteration();
@@ -186,7 +143,7 @@ public class SimulationForkJoinImpl implements Simulation {
         } catch (InterruptedException e) {
             error(logger, "Thread interrupted.", e);
         } finally {
-            running = false;
+            C.setRunning(false);
         }
     }
 
@@ -214,7 +171,7 @@ public class SimulationForkJoinImpl implements Simulation {
         long previousTime = startTime;
         long endTime;
 
-        running = true;
+        C.setRunning(true);
         C.setHasToStop(false);
         try {
             for (long i = 0; properties.isInfiniteSimulation() || i < properties.getNumberOfIterations(); i++) {
@@ -223,7 +180,7 @@ public class SimulationForkJoinImpl implements Simulation {
                         doStop();
                         break;
                     }
-                    while (paused) {
+                    while (C.isPaused()) {
                         Thread.sleep(PAUSE_SLEEP_MILLISECONDS);
                     }
 
@@ -238,7 +195,7 @@ public class SimulationForkJoinImpl implements Simulation {
                         C.getVisualizer().visualize(objects);
                     }
 
-                    doIteration(i % C.gui.getSaveEveryNthIteration() == 0);
+                    doIteration(i % C.getSaveEveryNthIteration() == 0);
                 } catch (InterruptedException e) {
                     error(logger, "Concurrency failure. One of the threads interrupted in cycle " + i, e);
                 }
@@ -249,7 +206,7 @@ public class SimulationForkJoinImpl implements Simulation {
             }
             endTime = System.nanoTime();
         } finally {
-            running = false;
+            C.setRunning(false);
             if (properties.isSaveToFile()) {
                 C.getReaderWriter().endFile();
             }
@@ -316,13 +273,8 @@ public class SimulationForkJoinImpl implements Simulation {
     }
 
     @Override
-    public boolean isRunning() {
-        return running;
-    }
-    
-    @Override
     public void switchPause() {
-        C.gui.switchPause();
+        C.switchPause();
     }
 
     @Override

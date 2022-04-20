@@ -66,7 +66,7 @@ public class VisualizationPanel extends JPanel {
             for (ShapeWithColorAndText shape : shapes) {
                 g.setColor(shape.getColor());
                 if (shape.getText() != null) {
-                    g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, C.gui.getFontSize()));
+                    g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, C.getFontSize()));
                     ((Graphics2D) g).drawString(shape.getText(),
                                                 Math.round(shape.getShape().getBounds2D().getX()),
                                                 Math.round(shape.getShape().getBounds2D().getY()));
