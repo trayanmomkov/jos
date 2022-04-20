@@ -15,7 +15,6 @@ import java.util.List;
 
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.numbers.New.*;
-import static info.trekto.jos.core.numbers.New.RATIO_FOUR_THREE;
 
 /**
  * @author Trayan Momkov
@@ -29,7 +28,7 @@ public class SimulationLogicImpl implements SimulationLogic {
     }
 
     @Override
-    public void calculateNewValues(Simulation simulation, int fromIndex, int toIndex) {
+    public void calculateNewValues(int fromIndex, int toIndex) {
         Iterator<SimulationObject> newObjectsIterator = simulation.getAuxiliaryObjects().subList(fromIndex, toIndex).iterator();
 
         /* We should not change oldObject. We can change only newObject. */

@@ -19,7 +19,9 @@ import org.slf4j.LoggerFactory;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.formulas.ScientificConstants.NANOSECONDS_IN_ONE_MILLISECOND;
@@ -48,6 +50,32 @@ public class SimulationForkJoinImpl implements Simulation {
     private List<SimulationObject> objects;
     private List<SimulationObject> auxiliaryObjects;
 
+    public boolean collisionExists(List<SimulationObject> objects) {
+        for (SimulationObject object : objects) {
+            for (SimulationObject object1 : objects) {
+                if (object == object1) {
+                    continue;
+                }
+                // distance between centres
+                Number distance = simulationLogic.calculateDistance(object, object1);
+
+                if (distance.compareTo(object.getRadius().add(object1.getRadius())) < 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean duplicateIdExists(List<SimulationObject> objects) {
+        Set<String> ids = new HashSet<>();
+        for (SimulationObject object : objects) {
+            if (!ids.add(object.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     private void doIteration(boolean saveCurrentIterationToFile) throws InterruptedException {
         auxiliaryObjects = deepCopy(objects);

@@ -9,7 +9,7 @@ import info.trekto.jos.core.numbers.Number;
  * 2016-Mar-6
  */
 public interface SimulationLogic {
-    void calculateNewValues(Simulation simulation, int fromIndex, int toIndex);
+    void calculateNewValues(int fromIndex, int toIndex);
 
     void processCollisions(Simulation simulation);
 
