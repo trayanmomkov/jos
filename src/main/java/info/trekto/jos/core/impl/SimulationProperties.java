@@ -1,13 +1,13 @@
 package info.trekto.jos.core.impl;
 
-import info.trekto.jos.core.formulas.ForceCalculator.InteractingLaw;
+import info.trekto.jos.core.ForceCalculator.InteractingLaw;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.numbers.Number;
 import info.trekto.jos.core.numbers.NumberFactory.NumberType;
 
 import java.util.List;
 
-import static info.trekto.jos.core.formulas.ForceCalculator.InteractingLaw.NEWTON_LAW_OF_GRAVITATION;
+import static info.trekto.jos.core.ForceCalculator.InteractingLaw.NEWTON_LAW_OF_GRAVITATION;
 
 /**
  * @author Trayan Momkov

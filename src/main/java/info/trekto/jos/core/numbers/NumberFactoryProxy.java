@@ -1,6 +1,5 @@
 package info.trekto.jos.core.numbers;
 
-import info.trekto.jos.core.formulas.ScientificConstants;
 import info.trekto.jos.core.numbers.impl.*;
 
 import java.math.BigDecimal;
@@ -38,7 +37,6 @@ public class NumberFactoryProxy {
     public static void setFactory(NumberFactory factory) {
         NumberFactoryProxy.factory = factory;
         calculateConstants();
-        ScientificConstants.setConstants();
     }
 
     public static Number createNumber(BigDecimal val) {

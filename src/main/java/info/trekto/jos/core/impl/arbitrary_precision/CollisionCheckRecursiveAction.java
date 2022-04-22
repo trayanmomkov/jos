@@ -1,4 +1,4 @@
-package info.trekto.jos.core.impl;
+package info.trekto.jos.core.impl.arbitrary_precision;
 
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.model.SimulationObject;
@@ -11,15 +11,15 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 
-import static info.trekto.jos.core.impl.SimulationRecursiveAction.THRESHOLD;
+import static info.trekto.jos.core.impl.arbitrary_precision.SimulationRecursiveAction.THRESHOLD;
 
-public class CollisionCheck extends RecursiveAction {
+class CollisionCheckRecursiveAction extends RecursiveAction {
     private final int fromIndex;
     private final int toIndex;
     private final Simulation simulation;
     private static ConcurrentMap<SimulationObject, Boolean> collisions;
 
-    public CollisionCheck(int fromIndex, int toIndex, Simulation simulation) {
+    public CollisionCheckRecursiveAction(int fromIndex, int toIndex, Simulation simulation) {
         this.fromIndex = fromIndex;
         this.toIndex = toIndex;
         this.simulation = simulation;
@@ -34,7 +34,7 @@ public class CollisionCheck extends RecursiveAction {
     }
 
     @Override
-    protected void compute() {
+    public void compute() {
         if (toIndex - fromIndex <= THRESHOLD) {
             outerloop:
             for (SimulationObject object : simulation.getAuxiliaryObjects().subList(fromIndex, toIndex)) {
@@ -54,8 +54,8 @@ public class CollisionCheck extends RecursiveAction {
         } else {
             List<RecursiveAction> subtasks = new ArrayList<>();
             int middle = fromIndex + ((toIndex - fromIndex) / 2);
-            subtasks.add(new CollisionCheck(fromIndex, middle, simulation));
-            subtasks.add(new CollisionCheck(middle, toIndex, simulation));
+            subtasks.add(new CollisionCheckRecursiveAction(fromIndex, middle, simulation));
+            subtasks.add(new CollisionCheckRecursiveAction(middle, toIndex, simulation));
             ForkJoinTask.invokeAll(subtasks);
         }
     }

@@ -1,8 +1,7 @@
-package info.trekto.jos.core.impl;
+package info.trekto.jos.core.impl.arbitrary_precision;
 
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.SimulationLogic;
-import info.trekto.jos.core.formulas.ScientificConstants;
 import info.trekto.jos.core.model.ImmutableSimulationObject;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.model.impl.TripleNumber;
@@ -20,10 +19,10 @@ import static info.trekto.jos.core.numbers.New.*;
  * @author Trayan Momkov
  * 2016-Mar-6
  */
-public class SimulationLogicImpl implements SimulationLogic {
+public class SimulationLogicAP implements SimulationLogic {
     private final Simulation simulation;
 
-    public SimulationLogicImpl(Simulation simulation) {
+    public SimulationLogicAP(Simulation simulation) {
         this.simulation = simulation;
     }
 
@@ -222,12 +221,12 @@ public class SimulationLogicImpl implements SimulationLogic {
     @Override
     public Number calculateVolumeFromRadius(Number radius) {
         // V = 4/3 * pi * r^3
-        return RATIO_FOUR_THREE.multiply(ScientificConstants.PI).multiply(radius.pow(3));
+        return RATIO_FOUR_THREE.multiply(simulation.getScientificConstants().getPi()).multiply(radius.pow(3));
     }
 
     public Number calculateRadiusFromVolume(Number volume) {
         // V = 4/3 * pi * r^3
-        return IGNORED.cbrt(volume.divide(RATIO_FOUR_THREE.multiply(ScientificConstants.PI)));
+        return IGNORED.cbrt(volume.divide(RATIO_FOUR_THREE.multiply(simulation.getScientificConstants().getPi())));
     }
 
     public TripleNumber calculateAcceleration(ImmutableSimulationObject object, TripleNumber acceleration, TripleNumber force) {

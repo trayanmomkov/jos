@@ -1,15 +1,16 @@
-package info.trekto.jos.core.impl;
+package info.trekto.jos.core.impl.arbitrary_precision;
 
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.SimulationLogic;
 import info.trekto.jos.core.exceptions.SimulationException;
-import info.trekto.jos.core.formulas.ForceCalculator;
-import info.trekto.jos.core.formulas.NewtonGravity;
+import info.trekto.jos.core.ForceCalculator;
+import info.trekto.jos.core.ScientificConstants;
+import info.trekto.jos.core.impl.Iteration;
+import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.model.ImmutableSimulationObject;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.model.impl.SimulationObjectImpl;
 import info.trekto.jos.core.numbers.Number;
-import info.trekto.jos.gui.java2dgraphics.VisualizerImpl;
 import info.trekto.jos.util.Utils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
@@ -22,8 +23,8 @@ import java.util.List;
 import java.util.Set;
 
 import static info.trekto.jos.core.Controller.C;
-import static info.trekto.jos.core.formulas.ScientificConstants.NANOSECONDS_IN_ONE_MILLISECOND;
-import static info.trekto.jos.core.formulas.ScientificConstants.NANOSECONDS_IN_ONE_SECOND;
+import static info.trekto.jos.core.ScientificConstants.NANOSECONDS_IN_ONE_MILLISECOND;
+import static info.trekto.jos.core.ScientificConstants.NANOSECONDS_IN_ONE_SECOND;
 import static info.trekto.jos.util.Utils.*;
 
 /**
@@ -32,14 +33,15 @@ import static info.trekto.jos.util.Utils.*;
  * @author Trayan Momkov
  * 2017-May-18
  */
-public class SimulationForkJoinImpl implements Simulation {
-    private static final Logger logger = LoggerFactory.getLogger(SimulationForkJoinImpl.class);
+public class SimulationAP implements Simulation {
+    private static final Logger logger = LoggerFactory.getLogger(SimulationAP.class);
     public static final int PAUSE_SLEEP_MILLISECONDS = 100;
     public static final int SHOW_REMAINING_INTERVAL_SECONDS = 2;
 
     private SimulationLogic simulationLogic;
     private SimulationProperties properties;
     private ForceCalculator forceCalculator;
+    private ScientificConstants scientificConstants;
     private long iterationCounter;
 
     private List<SimulationObject> objects;
@@ -79,7 +81,7 @@ public class SimulationForkJoinImpl implements Simulation {
         new SimulationRecursiveAction(0, objects.size()).compute();
 
         /* Collision and merging */
-        CollisionCheck collisionCheck = new CollisionCheck(0, auxiliaryObjects.size(), this);
+        CollisionCheckRecursiveAction collisionCheck = new CollisionCheckRecursiveAction(0, auxiliaryObjects.size(), this);
         collisionCheck.prepare();
         collisionCheck.compute();
 
@@ -107,7 +109,7 @@ public class SimulationForkJoinImpl implements Simulation {
         } catch (IOException e) {
             error(logger, "Cannot reset input file for playing.", e);
         }
-        C.setVisualizer(new VisualizerImpl(properties));
+        C.setVisualizer(C.createVisualizer(properties));
         long previousTime = System.nanoTime();
         C.setRunning(true);
         C.setEndText("END.");
@@ -161,8 +163,6 @@ public class SimulationForkJoinImpl implements Simulation {
     @Override
     public void startSimulation() throws SimulationException {
         init();
-
-        info(logger, "Done.\n");
         Utils.printConfiguration(properties);
 
         info(logger, "Start simulation...");
@@ -224,13 +224,13 @@ public class SimulationForkJoinImpl implements Simulation {
 
         switch (properties.getInteractingLaw()) {
             case NEWTON_LAW_OF_GRAVITATION:
-                forceCalculator = new NewtonGravity();
+                forceCalculator = new NewtonGravityAP();
                 break;
             case COULOMB_LAW_ELECTRICALLY:
                 throw new NotImplementedException("COULOMB_LAW_ELECTRICALLY is not implemented");
                 // break;
             default:
-                forceCalculator = new NewtonGravity();
+                forceCalculator = new NewtonGravityAP();
                 break;
         }
 
@@ -300,5 +300,25 @@ public class SimulationForkJoinImpl implements Simulation {
     @Override
     public Number calculateDistance(ImmutableSimulationObject object, ImmutableSimulationObject object1) {
         return simulationLogic.calculateDistance(object, object1);
+    }
+
+    @Override
+    public ScientificConstants getScientificConstants() {
+        return scientificConstants;
+    }
+
+    @Override
+    public void setScientificConstants(ScientificConstants scientificConstants) {
+        this.scientificConstants = scientificConstants;
+    }
+
+    @Override
+    public SimulationObject createNewSimulationObject() {
+        return new SimulationObjectImpl();
+    }
+
+    @Override
+    public SimulationObject createNewSimulationObject(SimulationObject o) {
+        return new SimulationObjectImpl(o);
     }
 }

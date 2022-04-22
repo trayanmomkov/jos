@@ -1,4 +1,4 @@
-package info.trekto.jos.core.formulas;
+package info.trekto.jos.core;
 
 import info.trekto.jos.core.model.ImmutableSimulationObject;
 import info.trekto.jos.core.model.impl.TripleNumber;

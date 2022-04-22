@@ -1,6 +1,6 @@
 package info.trekto.jos.gui;
 
-import info.trekto.jos.core.formulas.ForceCalculator;
+import info.trekto.jos.core.ForceCalculator;
 import info.trekto.jos.core.numbers.NumberFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

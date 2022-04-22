@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.numbers.New.ZERO;
 import static info.trekto.jos.util.Utils.info;
 
@@ -47,7 +48,7 @@ public class SimulationGeneratorImpl implements SimulationGenerator {
         for (int i = 0; i < horizontalZones; i++) {
             for (int j = 0; j < verticalZones; j++) {
                 double radius = random.nextDouble() * areaSide / 10.0;
-                SimulationObject o = new SimulationObjectImpl();
+                SimulationObject o = C.getSimulation().createNewSimulationObject();
 
                 o.setX(New.num(i * areaSide + radius * 1.1 + (random.nextDouble() * (areaSide - 2 * radius * 1.1)) - width / 2.0));
                 o.setY(New.num(j * areaSide + radius * 1.1 + (random.nextDouble() * (areaSide - 2 * radius * 1.1)) - height / 2.0));

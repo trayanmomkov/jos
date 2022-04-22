@@ -1,4 +1,4 @@
-package info.trekto.jos.core.impl;
+package info.trekto.jos.core.impl.arbitrary_precision;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ import static info.trekto.jos.core.Controller.C;
  * @author Trayan Momkov
  * 2017-Aug-5 21:22:53
  */
-public class SimulationRecursiveAction extends RecursiveAction {
+class SimulationRecursiveAction extends RecursiveAction {
 
     public static final int THRESHOLD = 4;
     private final int fromIndex;
@@ -23,7 +23,7 @@ public class SimulationRecursiveAction extends RecursiveAction {
     }
 
     @Override
-    protected void compute() {
+    public void compute() {
         if (toIndex - fromIndex <= THRESHOLD) {
             C.getSimulation().getSimulationLogic().calculateNewValues(fromIndex, toIndex);
         } else {

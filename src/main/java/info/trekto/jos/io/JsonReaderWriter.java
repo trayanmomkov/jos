@@ -1,7 +1,7 @@
 package info.trekto.jos.io;
 
 import com.google.gson.*;
-import info.trekto.jos.core.formulas.ForceCalculator;
+import info.trekto.jos.core.ForceCalculator;
 import info.trekto.jos.core.impl.Iteration;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.model.SimulationObject;

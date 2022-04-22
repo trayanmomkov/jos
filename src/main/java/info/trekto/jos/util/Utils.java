@@ -2,7 +2,6 @@ package info.trekto.jos.util;
 
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.model.SimulationObject;
-import info.trekto.jos.core.model.impl.SimulationObjectImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static info.trekto.jos.core.Controller.C;
-import static info.trekto.jos.core.formulas.ScientificConstants.*;
+import static info.trekto.jos.core.ScientificConstants.*;
 
 /**
  * @author Trayan Momkov
@@ -30,7 +29,7 @@ public class Utils {
     public static List<SimulationObject> deepCopy(List<SimulationObject> src) {
         ArrayList<SimulationObject> dst = new ArrayList<>();
         for (SimulationObject element : src) {
-            dst.add(new SimulationObjectImpl(element));
+            dst.add(C.getSimulation().createNewSimulationObject(element));
         }
         return dst;
     }

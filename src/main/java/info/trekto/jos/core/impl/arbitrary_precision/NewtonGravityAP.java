@@ -1,20 +1,21 @@
-package info.trekto.jos.core.formulas;
+package info.trekto.jos.core.impl.arbitrary_precision;
 
+import info.trekto.jos.core.ForceCalculator;
 import info.trekto.jos.core.model.ImmutableSimulationObject;
 import info.trekto.jos.core.model.impl.TripleNumber;
 import info.trekto.jos.core.numbers.Number;
 
-import static info.trekto.jos.core.formulas.ScientificConstants.GRAVITY;
+import static info.trekto.jos.core.Controller.C;
 
 /**
  * @author Trayan Momkov
  * 3 Mar 2016
  */
-public class NewtonGravity implements ForceCalculator {
+public class NewtonGravityAP implements ForceCalculator {
     @Override
     public Number calculateForce(final ImmutableSimulationObject object1, final ImmutableSimulationObject object2, final Number distance) {
         //        (GRAVITY * object1.mass() * object2.mass()) / (distance * distance);
-        return GRAVITY.multiply(object1.getMass()).multiply(object2.getMass())
+        return C.getSimulation().getScientificConstants().getGravity().multiply(object1.getMass()).multiply(object2.getMass())
                 .divide(distance.multiply(distance));
     }
 

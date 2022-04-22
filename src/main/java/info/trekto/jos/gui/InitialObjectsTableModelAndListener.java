@@ -1,7 +1,6 @@
 package info.trekto.jos.gui;
 
 import info.trekto.jos.core.model.SimulationObject;
-import info.trekto.jos.core.model.impl.SimulationObjectImpl;
 import info.trekto.jos.core.model.impl.TripleNumber;
 import info.trekto.jos.core.numbers.New;
 
@@ -65,7 +64,7 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
         List<SimulationObject> objects = new ArrayList<>();
         for (Object vector : dataVector) {
             Vector v = (Vector) vector;
-            SimulationObject o = new SimulationObjectImpl();
+            SimulationObject o = C.getSimulation().createNewSimulationObject();
             int i = 0;
             o.setId(String.valueOf(v.get(i++)));
             o.setMass(New.num(String.valueOf(v.get(i++))));

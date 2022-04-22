@@ -1,10 +1,10 @@
 package info.trekto.jos.core;
 
 import info.trekto.jos.core.exceptions.SimulationException;
-import info.trekto.jos.core.formulas.ForceCalculator;
-import info.trekto.jos.core.impl.SimulationForkJoinImpl;
+import info.trekto.jos.core.impl.arbitrary_precision.ScientificConstantsAP;
+import info.trekto.jos.core.impl.arbitrary_precision.SimulationAP;
 import info.trekto.jos.core.impl.SimulationGeneratorImpl;
-import info.trekto.jos.core.impl.SimulationLogicImpl;
+import info.trekto.jos.core.impl.arbitrary_precision.SimulationLogicAP;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.numbers.New;
@@ -100,12 +100,13 @@ public enum Controller {
     }
 
     private Simulation createSimulation(SimulationProperties properties) {
-        Simulation simulation = new SimulationForkJoinImpl();
-        simulation.setSimulationLogic(new SimulationLogicImpl(simulation));
+        Simulation simulation = new SimulationAP();
+        simulation.setSimulationLogic(new SimulationLogicAP(simulation));
         simulation.setProperties(properties);
         if (properties.isSaveToFile()) {
             readerWriter = new JsonReaderWriter();
         }
+        simulation.setScientificConstants(new ScientificConstantsAP());
         return simulation;
     }
 
@@ -570,5 +571,9 @@ public enum Controller {
 
     public Image getIcon() {
         return gui.getIcon();
+    }
+
+    public Visualizer createVisualizer(SimulationProperties properties) {
+        return new VisualizerImpl(properties);
     }
 }
