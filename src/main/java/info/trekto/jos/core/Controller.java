@@ -80,6 +80,10 @@ public enum Controller {
         }
 
         mainForm.setAboutMessage("JOS\n\nv. " + applicationProperties.getProperty("version") + "\narbitrary precision\n\nAuthor: Trayan Momkov\n2022");
+        mainForm.setNumberTypeMessage("DOUBLE - Double precision. Fast. (Uses GPU if possible)\n"
+                                              + "FLOAT - Single precision. Fastest. (Uses GPU if possible)\n"
+                                              + "APFLOAT - Arbitrary precision. Fast.\n"
+                                              + "BIG_DECIMAL - Arbitrary precision. Slow.");
         mainForm.init();
         C.setMainForm(mainForm);
 
