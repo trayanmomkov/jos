@@ -1,11 +1,11 @@
 package info.trekto.jos.core;
 
 import info.trekto.jos.core.exceptions.SimulationException;
+import info.trekto.jos.core.impl.SimulationGeneratorImpl;
+import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.impl.arbitrary_precision.ScientificConstantsAP;
 import info.trekto.jos.core.impl.arbitrary_precision.SimulationAP;
-import info.trekto.jos.core.impl.SimulationGeneratorImpl;
 import info.trekto.jos.core.impl.arbitrary_precision.SimulationLogicAP;
-import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.numbers.New;
 import info.trekto.jos.core.numbers.NumberFactory;
@@ -34,6 +34,7 @@ import java.util.Properties;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumberFactory;
 import static info.trekto.jos.util.Utils.error;
 import static info.trekto.jos.util.Utils.isNullOrBlank;
+import static java.awt.Color.PINK;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
@@ -58,6 +59,7 @@ public enum Controller {
     private boolean hasToStop;
     private String endText;
     private File playFile;
+    private Color defaultButtonColor;
 
     public static void main(String[] args) {
         Properties applicationProperties = new Properties();
@@ -114,7 +116,7 @@ public enum Controller {
         readerWriter = new JsonReaderWriter();
         SimulationProperties properties = null;
         try {
-            properties = readerWriter.readProperties(inputFile);
+            properties = readerWriter.readPropertiesAndCreateNumberFactory(inputFile);
         } catch (FileNotFoundException e) {
             error(logger, "Cannot read properties file.", e);
         }
@@ -171,6 +173,7 @@ public enum Controller {
     public void start() {
         paused = false;
         if (simulation != null && simulation.getProperties() != null && simulation.getProperties().getInitialObjects() != null) {
+            fetchPropertiesNotRelatedToNumberFactory(simulation.getProperties());
             new Thread(() -> {
                 try {
                     if (simulation.getProperties().isRealTimeVisualization()) {
@@ -215,6 +218,48 @@ public enum Controller {
             gui.getStopButton().setEnabled(true);
             gui.getPauseButton().setEnabled(true);
         }
+    }
+
+    private SimulationProperties fetchPropertiesFromGuiAndCreateNumberFactory() {
+        SimulationProperties properties = new SimulationProperties();
+
+        if (!isNullOrBlank(gui.getScaleTextField().getText())) {
+            properties.setScale(Integer.parseInt(gui.getScaleTextField().getText()));
+        }
+        
+        if (!isNullOrBlank(gui.getPrecisionTextField().getText())) {
+            properties.setPrecision(Integer.parseInt(gui.getPrecisionTextField().getText()));
+        }
+        
+        properties.setNumberType(NumberFactory.NumberType.valueOf(String.valueOf(gui.getNumberTypeComboBox().getSelectedItem())));
+        
+        createNumberFactory(properties.getNumberType(), properties.getPrecision(), properties.getScale());
+
+        if (!isNullOrBlank(gui.getNumberOfObjectsTextField().getText())) {
+            properties.setNumberOfObjects(Integer.parseInt(gui.getNumberOfObjectsTextField().getText()));
+        }
+        
+        fetchPropertiesNotRelatedToNumberFactory(properties);
+        return properties;
+    }
+    
+    private void fetchPropertiesNotRelatedToNumberFactory(SimulationProperties properties) {
+        if (!isNullOrBlank(gui.getSecondsPerIterationTextField().getText())) {
+            properties.setSecondsPerIteration(New.num(gui.getSecondsPerIterationTextField().getText()));
+        }
+
+        properties.setSaveToFile(gui.getSaveToFileCheckBox().isSelected());
+        if (!isNullOrBlank(gui.getOutputFileTextField().getText())) {
+            properties.setOutputFile(gui.getOutputFileTextField().getText());
+        }
+        
+        if (!isNullOrBlank(gui.getNumberOfIterationsTextField().getText())) {
+            properties.setNumberOfIterations(Integer.parseInt(gui.getNumberOfIterationsTextField().getText()));
+        }
+        
+        properties.setBounceFromWalls(gui.getBounceFromScreenWallsCheckBox().isSelected());
+        properties.setRealTimeVisualization(gui.getRealTimeVisualizationCheckBox().isSelected());
+        properties.setInteractingLaw(ForceCalculator.InteractingLaw.valueOf(String.valueOf(gui.getInteractingLawComboBox().getSelectedItem())));
     }
 
     public void onVisualizationWindowClosed() {
@@ -403,35 +448,15 @@ public enum Controller {
     }
 
     public void generateObjectButtonEvent() {
-        createNumberFactory(
-                NumberFactory.NumberType.valueOf(gui.getNumberTypeComboBox().getSelectedItem().toString()),
-                Integer.parseInt(gui.getPrecisionTextField().getText()), Integer.parseInt(gui.getScaleTextField().getText()));
-        SimulationProperties prop = new SimulationProperties();
-        if (!isNullOrBlank(gui.getNumberOfObjectsTextField().getText())) {
-            prop.setNumberOfObjects(Integer.parseInt(gui.getNumberOfObjectsTextField().getText()));
-        }
-
-        if (!isNullOrBlank(gui.getNumberOfIterationsTextField().getText())) {
-            prop.setNumberOfIterations(Integer.parseInt(gui.getNumberOfIterationsTextField().getText()));
-        }
-
-        if (!isNullOrBlank(gui.getSecondsPerIterationTextField().getText())) {
-            prop.setSecondsPerIteration(New.num(gui.getSecondsPerIterationTextField().getText()));
-        }
-        prop.setRealTimeVisualization(gui.getRealTimeVisualizationCheckBox().isSelected());
-        prop.setSaveToFile(gui.getSaveToFileCheckBox().isSelected());
-        prop.setNumberType(NumberFactory.NumberType.valueOf(gui.getNumberTypeComboBox().getSelectedItem().toString()));
-        prop.setInteractingLaw(ForceCalculator.InteractingLaw.valueOf(gui.getInteractingLawComboBox().getSelectedItem().toString()));
-        prop.setScale(Integer.parseInt(gui.getScaleTextField().getText()));
-        prop.setPrecision(Integer.parseInt(gui.getPrecisionTextField().getText()));
-
-        simulation = createSimulation(prop);
-        simulationGenerator = createSimulationGenerator(prop);
+        SimulationProperties properties = fetchPropertiesFromGuiAndCreateNumberFactory();
+        simulation = createSimulation(properties);
+        simulationGenerator = createSimulationGenerator(properties);
 
         new Thread(() -> {
             try {
                 simulationGenerator.generateObjects(simulation);
-                refreshProperties(prop);
+                refreshProperties(simulation.getProperties());
+                unHighlightGenerateObjectButton();
             } catch (Exception ex) {
                 String message = "Error during object generation.";
                 error(logger, message, ex);
@@ -442,7 +467,6 @@ public enum Controller {
 
     public void saveToFileCheckBoxEvent() {
         gui.getSavingToFileComponents().forEach(c -> c.setEnabled(gui.getSaveToFileCheckBox().isSelected()));
-        simulation.getProperties().setSaveToFile(gui.getSaveToFileCheckBox().isSelected());
     }
 
     public void pauseButtonEvent() {
@@ -461,9 +485,6 @@ public enum Controller {
     }
 
     public void outputFileTextFieldEvent() {
-        if (!isNullOrBlank(gui.getOutputFileTextField().getText())) {
-            simulation.getProperties().setOutputFile(gui.getOutputFileTextField().getText());
-        }
     }
 
     public void playingSpeedTextFieldEvent() {
@@ -472,25 +493,32 @@ public enum Controller {
         }
     }
 
+    private void highlightGenerateObjectsButton() {
+        if (defaultButtonColor == null) {
+            defaultButtonColor = gui.getGenerateObjectsButton().getBackground();
+        }
+        gui.getGenerateObjectsButton().setBackground(PINK);
+    }
+
+    private void unHighlightGenerateObjectButton() {
+        gui.getGenerateObjectsButton().setBackground(defaultButtonColor != null ? defaultButtonColor : new Color(238, 238, 238));
+    }
+
     public void scaleTextFieldEvent() {
         if (!isNullOrBlank(gui.getScaleTextField().getText())) {
-            simulation.getProperties().setScale(Integer.parseInt(gui.getScaleTextField().getText()));
+            highlightGenerateObjectsButton();
         }
     }
 
     public void precisionTextFieldEvent() {
         if (!isNullOrBlank(gui.getPrecisionTextField().getText())) {
-            simulation.getProperties().setPrecision(Integer.parseInt(gui.getPrecisionTextField().getText()));
+            highlightGenerateObjectsButton();
         }
     }
 
     public void numberTypeComboBoxEvent(ActionEvent actionEvent) {
         if (actionEvent.getModifiers() != 0) {
-            simulation.getProperties().setNumberType(NumberFactory.NumberType.valueOf(String.valueOf(gui.getNumberTypeComboBox().getSelectedItem())));
-//                    createNumberFactory(C.prop.getNumberType(), C.prop.getPrecision(), C.prop.getScale());
-//                    C.prop.setSecondsPerIteration(New.num(f.getSecondsPerIterationTextField().getText()));
-//                    ((InitialObjectsTableModelAndListener) f.getInitialObjectsTable().getModel()).refreshInitialObjects();
-            showWarn(gui.getMainPanel(), "You have to save properties, number type change to take effect.");
+            highlightGenerateObjectsButton();
         }
     }
 
@@ -500,7 +528,8 @@ public enum Controller {
         int userSelection = fileChooser.showSaveDialog(gui.getMainPanel());
         if (userSelection == JFileChooser.APPROVE_OPTION) {
             File fileToSave = fileChooser.getSelectedFile();
-            readerWriter.writeProperties(simulation.getProperties(), fileToSave.getAbsolutePath());
+            SimulationProperties properties = fetchPropertiesFromGuiAndCreateNumberFactory();
+            readerWriter.writeProperties(properties, fileToSave.getAbsolutePath());
 
             /* Reopen just saved file */
             gui.getInputFilePathLabel().setText(fileToSave.getAbsolutePath());
@@ -518,24 +547,19 @@ public enum Controller {
             gui.getInputFilePathLabel().setText(file.getAbsolutePath());
             simulation = createSimulation(loadProperties(file.getAbsolutePath()));
             refreshProperties(simulation.getProperties());
+            unHighlightGenerateObjectButton();
         }
     }
 
     public void secondsPerIterationTextFieldEvent() {
-        if (!isNullOrBlank(gui.getSecondsPerIterationTextField().getText())) {
-            simulation.getProperties().setSecondsPerIteration(New.num(gui.getSecondsPerIterationTextField().getText()));
-        }
     }
 
     public void numberOfIterationsTextFieldEvent() {
-        if (!isNullOrBlank(gui.getNumberOfIterationsTextField().getText())) {
-            simulation.getProperties().setNumberOfIterations(Integer.parseInt(gui.getNumberOfIterationsTextField().getText()));
-        }
     }
 
     public void numberOfObjectsTextFieldEvent() {
         if (!isNullOrBlank(gui.getNumberOfObjectsTextField().getText())) {
-            simulation.getProperties().setNumberOfObjects(Integer.parseInt(gui.getNumberOfObjectsTextField().getText()));
+            highlightGenerateObjectsButton();
         }
     }
 
@@ -550,15 +574,12 @@ public enum Controller {
     }
 
     public void bounceFromScreenWallsCheckBoxEvent() {
-        simulation.getProperties().setBounceFromWalls(gui.getBounceFromScreenWallsCheckBox().isSelected());
     }
 
     public void realTimeVisualizationCheckBoxEvent() {
-        simulation.getProperties().setRealTimeVisualization(gui.getRealTimeVisualizationCheckBox().isSelected());
     }
 
     public void interactingLawComboBoxEvent() {
-        simulation.getProperties().setInteractingLaw(ForceCalculator.InteractingLaw.valueOf(String.valueOf(gui.getInteractingLawComboBox().getSelectedItem())));
     }
 
     public String getEndText() {

@@ -100,18 +100,18 @@ public class JsonReaderWriter implements ReaderWriter {
     }
 
     @Override
-    public SimulationProperties readProperties(String inputFilePath) throws FileNotFoundException {
+    public SimulationProperties readPropertiesAndCreateNumberFactory(String inputFilePath) throws FileNotFoundException {
         SimulationProperties properties = new SimulationProperties();
         try {
             JsonObject json = JsonParser.parseReader(new FileReader(inputFilePath)).getAsJsonObject().get("properties").getAsJsonObject();
-            readProperties(json, properties);
+            readPropertiesAndCreateNumberFactory(json, properties);
         } catch (ClassCastException | IllegalStateException ex) {
             error(logger, "Cannot parse properties file: '" + inputFilePath + "'", ex);
         }
         return properties;
     }
 
-    private void readProperties(JsonObject json, SimulationProperties properties) {
+    private void readPropertiesAndCreateNumberFactory(JsonObject json, SimulationProperties properties) {
         properties.setNumberType(NumberFactory.NumberType.valueOf(json.get("numberType").getAsString()));
         properties.setPrecision(json.get("precision").getAsInt());
         properties.setScale(json.get("scale").getAsInt());
@@ -165,7 +165,7 @@ public class JsonReaderWriter implements ReaderWriter {
             parser.nextToken(); // Start root
             parser.nextToken(); // Field properties
             parser.nextToken(); // Start object
-            readProperties(JsonParser.parseString(parser.readValueAsTree().toString()).getAsJsonObject(), prop);
+            readPropertiesAndCreateNumberFactory(JsonParser.parseString(parser.readValueAsTree().toString()).getAsJsonObject(), prop);
             parser.nextToken(); // Field "simulation"
             parser.nextToken(); // Start array
         } catch (ClassCastException | IllegalStateException ex) {

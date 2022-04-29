@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface ReaderWriter {
-    SimulationProperties readProperties(String inputFilePath) throws FileNotFoundException;
+    SimulationProperties readPropertiesAndCreateNumberFactory(String inputFilePath) throws FileNotFoundException;
 
     void writeProperties(SimulationProperties properties, String outputFilePath);
 

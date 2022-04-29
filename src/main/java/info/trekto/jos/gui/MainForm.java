@@ -83,6 +83,8 @@ public class MainForm {
     private List<Component> savingToFileComponents;
 
     public void init() {
+        scaleTextField.addActionListener(actionEvent -> C.scaleTextFieldEvent());
+        precisionTextField.addActionListener(actionEvent -> C.precisionTextFieldEvent());
         initialObjectsTable.setModel(new InitialObjectsTableModelAndListener());
         browseButton.addActionListener(actionEvent -> C.browseButtonEvent());
         savePropertiesButton.addActionListener(actionEvent -> C.savePropertiesButtonEvent());
@@ -162,6 +164,7 @@ public class MainForm {
         aboutLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         playingSpeedLabel.setToolTipText(PLAYING_SPEED_TIP);
         playingSpeedTextField.setToolTipText(PLAYING_SPEED_TIP);
+        
     }
 
     /////////////////////////////////////////
