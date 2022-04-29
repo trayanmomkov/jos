@@ -195,7 +195,7 @@ public class SimulationAP implements Simulation {
                         C.getVisualizer().visualize(objects);
                     }
 
-                    doIteration(i % C.getSaveEveryNthIteration() == 0);
+                    doIteration(i % properties.getSaveEveryNthIteration() == 0);
                 } catch (InterruptedException e) {
                     error(logger, "Concurrency failure. One of the threads interrupted in cycle " + i, e);
                 }

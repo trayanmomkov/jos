@@ -123,6 +123,8 @@ public enum Controller {
             properties = readerWriter.readPropertiesAndCreateNumberFactory(inputFile);
         } catch (FileNotFoundException e) {
             error(logger, "Cannot read properties file.", e);
+        } catch (NumberFormatException e) {
+            error(logger, "Not a valid number.", e);
         }
         return properties;
     }
@@ -261,6 +263,10 @@ public enum Controller {
             properties.setNumberOfIterations(Integer.parseInt(gui.getNumberOfIterationsTextField().getText()));
         }
         
+        if (!isNullOrBlank(gui.getSaveEveryNthIterationTextField().getText())) {
+            properties.setSaveEveryNthIteration(Integer.parseInt(gui.getSaveEveryNthIterationTextField().getText()));
+        }
+        
         properties.setBounceFromWalls(gui.getBounceFromScreenWallsCheckBox().isSelected());
         properties.setRealTimeVisualization(gui.getRealTimeVisualizationCheckBox().isSelected());
         properties.setInteractingLaw(ForceCalculator.InteractingLaw.valueOf(String.valueOf(gui.getInteractingLawComboBox().getSelectedItem())));
@@ -365,6 +371,7 @@ public enum Controller {
         gui.getNumberTypeComboBox().setSelectedItem(prop.getNumberType());
         gui.getInteractingLawComboBox().setSelectedItem(prop.getInteractingLaw());
         gui.getSaveToFileCheckBox().setSelected(prop.isSaveToFile());
+        gui.getSaveEveryNthIterationTextField().setText(String.valueOf(prop.getSaveEveryNthIteration()));
         gui.getOutputFileTextField().setText(prop.getOutputFile());
         gui.getPrecisionTextField().setText(String.valueOf(prop.getPrecision()));
         gui.getScaleTextField().setText(String.valueOf(prop.getScale()));
@@ -433,10 +440,6 @@ public enum Controller {
 
     public boolean getShowTimeAndIteration() {
         return gui.getShowTimeAndIterationCheckBox().isSelected();
-    }
-
-    public int getSaveEveryNthIteration() {
-        return Integer.parseInt(gui.getSaveEveryNthIterationTextField().getText());
     }
 
     public void browsePlayingFileButtonEvent() {
@@ -552,6 +555,7 @@ public enum Controller {
             simulation = createSimulation(loadProperties(file.getAbsolutePath()));
             refreshProperties(simulation.getProperties());
             unHighlightGenerateObjectButton();
+            saveToFileCheckBoxEvent();
         }
     }
 

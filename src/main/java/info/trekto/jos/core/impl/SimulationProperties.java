@@ -23,6 +23,7 @@ public class SimulationProperties {
     private boolean realTimeVisualization = false;
     private int playingSpeed = 0;
     private boolean bounceFromWalls;
+    private int saveEveryNthIteration = 1;
 
     /* Java {@link ArrayList} is limited to Integer.MAX_VALUE */
     private int numberOfObjects;
@@ -144,5 +145,13 @@ public class SimulationProperties {
 
     public void setBounceFromWalls(boolean bounceFromWalls) {
         this.bounceFromWalls = bounceFromWalls;
+    }
+
+    public int getSaveEveryNthIteration() {
+        return saveEveryNthIteration;
+    }
+
+    public void setSaveEveryNthIteration(int saveEveryNthIteration) {
+        this.saveEveryNthIteration = saveEveryNthIteration;
     }
 }

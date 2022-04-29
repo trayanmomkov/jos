@@ -69,6 +69,7 @@ public class JsonReaderWriter implements ReaderWriter {
         json.addProperty("numberOfObjects", properties.getNumberOfObjects());
         json.addProperty("outputFile", properties.getOutputFile());
         json.addProperty("saveToFile", properties.isSaveToFile());
+        json.addProperty("saveEveryNthIteration", properties.getSaveEveryNthIteration());
         json.addProperty("numberType", properties.getNumberType().name());
         json.addProperty("interactingLaw", properties.getInteractingLaw().name());
         json.addProperty("precision", properties.getPrecision());
@@ -123,6 +124,11 @@ public class JsonReaderWriter implements ReaderWriter {
         properties.setNumberOfObjects(json.get("numberOfObjects").getAsInt());
         properties.setOutputFile(json.get("outputFile").getAsString());
         properties.setSaveToFile(json.get("saveToFile").getAsBoolean());
+        if(json.get("saveEveryNthIteration") != null) {
+            properties.setSaveEveryNthIteration(json.get("saveEveryNthIteration").getAsInt());
+        } else {
+            properties.setSaveEveryNthIteration(1);
+        }
         properties.setInteractingLaw(ForceCalculator.InteractingLaw.valueOf(json.get("interactingLaw").getAsString()));
         properties.setRealTimeVisualization(json.get("realTimeVisualization").getAsBoolean());
         properties.setPlayingSpeed(json.get("playingSpeed").getAsInt());
@@ -236,7 +242,7 @@ public class JsonReaderWriter implements ReaderWriter {
 
         gson.toJson(cycleJson, writer);
         boolean lastIterationToSave = currentIterationNumber >= properties.getNumberOfIterations()
-                || currentIterationNumber + C.getSaveEveryNthIteration() > properties.getNumberOfIterations();
+                || currentIterationNumber + properties.getSaveEveryNthIteration() > properties.getNumberOfIterations();
         if (!C.hasToStop() && (properties.isInfiniteSimulation() || !lastIterationToSave)) {
             try {
                 writer.write(",\n");
