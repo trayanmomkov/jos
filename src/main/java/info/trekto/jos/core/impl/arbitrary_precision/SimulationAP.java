@@ -37,13 +37,17 @@ public class SimulationAP implements Simulation {
     public static final int PAUSE_SLEEP_MILLISECONDS = 100;
     public static final int SHOW_REMAINING_INTERVAL_SECONDS = 2;
 
-    private SimulationLogic simulationLogic;
+    private final SimulationLogic simulationLogic;
     private SimulationProperties properties;
     private ForceCalculator forceCalculator;
     private long iterationCounter;
 
     private List<SimulationObject> objects;
     private List<SimulationObject> auxiliaryObjects;
+    
+    public SimulationAP() {
+        simulationLogic = new SimulationLogicAP(this);
+    }
 
     public boolean collisionExists(List<SimulationObject> objects) {
         for (SimulationObject object : objects) {
@@ -291,11 +295,6 @@ public class SimulationAP implements Simulation {
     @Override
     public SimulationLogic getSimulationLogic() {
         return simulationLogic;
-    }
-
-    @Override
-    public void setSimulationLogic(SimulationLogic simulationLogic) {
-        this.simulationLogic = simulationLogic;
     }
 
     @Override

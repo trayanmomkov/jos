@@ -30,8 +30,6 @@ public interface Simulation {
 
     SimulationLogic getSimulationLogic();
 
-    void setSimulationLogic(SimulationLogic simulationLogic);
-
     SimulationProperties getProperties();
 
     void setProperties(SimulationProperties properties);
