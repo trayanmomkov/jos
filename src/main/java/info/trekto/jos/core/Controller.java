@@ -141,9 +141,8 @@ public enum Controller {
         return properties;
     }
 
-    private SimulationGenerator createSimulationGenerator(SimulationProperties prop) {
-        SimulationGenerator simulationGenerator = new SimulationGeneratorImpl();
-        return simulationGenerator;
+    private SimulationGenerator createSimulationGenerator() {
+        return new SimulationGeneratorImpl();
     }
 
     public void append(String message) {
@@ -455,9 +454,8 @@ public enum Controller {
     }
 
     public void generateObjectButtonEvent() {
-        SimulationProperties properties = fetchPropertiesFromGuiAndCreateNumberFactory();
-        simulation = createSimulation(properties);
-        simulationGenerator = createSimulationGenerator(properties);
+        simulation = createSimulation(fetchPropertiesFromGuiAndCreateNumberFactory());
+        simulationGenerator = createSimulationGenerator();
 
         new Thread(() -> {
             try {
