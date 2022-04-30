@@ -4,7 +4,6 @@ import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.SimulationLogic;
 import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.ForceCalculator;
-import info.trekto.jos.core.ScientificConstants;
 import info.trekto.jos.core.impl.Iteration;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.model.ImmutableSimulationObject;
@@ -23,8 +22,8 @@ import java.util.List;
 import java.util.Set;
 
 import static info.trekto.jos.core.Controller.C;
-import static info.trekto.jos.core.ScientificConstants.NANOSECONDS_IN_ONE_MILLISECOND;
-import static info.trekto.jos.core.ScientificConstants.NANOSECONDS_IN_ONE_SECOND;
+import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_MILLISECOND;
+import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_SECOND;
 import static info.trekto.jos.util.Utils.*;
 
 /**
@@ -41,7 +40,6 @@ public class SimulationAP implements Simulation {
     private SimulationLogic simulationLogic;
     private SimulationProperties properties;
     private ForceCalculator forceCalculator;
-    private ScientificConstants scientificConstants;
     private long iterationCounter;
 
     private List<SimulationObject> objects;
@@ -300,16 +298,6 @@ public class SimulationAP implements Simulation {
     @Override
     public Number calculateDistance(ImmutableSimulationObject object, ImmutableSimulationObject object1) {
         return simulationLogic.calculateDistance(object, object1);
-    }
-
-    @Override
-    public ScientificConstants getScientificConstants() {
-        return scientificConstants;
-    }
-
-    @Override
-    public void setScientificConstants(ScientificConstants scientificConstants) {
-        this.scientificConstants = scientificConstants;
     }
 
     @Override

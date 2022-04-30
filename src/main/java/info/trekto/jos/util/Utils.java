@@ -11,13 +11,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static info.trekto.jos.core.Controller.C;
-import static info.trekto.jos.core.ScientificConstants.*;
 
 /**
  * @author Trayan Momkov
  * 2016-Mar-6
  */
 public class Utils {
+    public static final long NANOSECONDS_IN_ONE_SECOND = 1000 * 1000 * 1000;
+    public static final long MILLISECONDS_IN_ONE_SECOND = 1000;
+    public static final long MILLI_IN_MINUTE = 60 * MILLISECONDS_IN_ONE_SECOND;
+    public static final long MILLI_IN_HOUR = 60 * 60 * MILLISECONDS_IN_ONE_SECOND;
+    public static final long MILLI_IN_DAY = 24 * 60 * 60 * MILLISECONDS_IN_ONE_SECOND;
+    public static final long NANOSECONDS_IN_ONE_MILLISECOND = 1000 * 1000;
+
     public static final int CORES = Runtime.getRuntime().availableProcessors();
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Utils.class);
     private static final int LAST_N_INTERVALS = 3;

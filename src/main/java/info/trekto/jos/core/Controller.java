@@ -3,7 +3,6 @@ package info.trekto.jos.core;
 import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.impl.SimulationGeneratorImpl;
 import info.trekto.jos.core.impl.SimulationProperties;
-import info.trekto.jos.core.impl.arbitrary_precision.ScientificConstantsAP;
 import info.trekto.jos.core.impl.arbitrary_precision.SimulationAP;
 import info.trekto.jos.core.impl.arbitrary_precision.SimulationLogicAP;
 import info.trekto.jos.core.model.SimulationObject;
@@ -112,7 +111,6 @@ public enum Controller {
         if (properties.isSaveToFile()) {
             readerWriter = new JsonReaderWriter();
         }
-        simulation.setScientificConstants(new ScientificConstantsAP());
         return simulation;
     }
 

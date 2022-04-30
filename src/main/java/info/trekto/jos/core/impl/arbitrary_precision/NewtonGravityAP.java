@@ -3,6 +3,7 @@ package info.trekto.jos.core.impl.arbitrary_precision;
 import info.trekto.jos.core.ForceCalculator;
 import info.trekto.jos.core.model.ImmutableSimulationObject;
 import info.trekto.jos.core.model.impl.TripleNumber;
+import info.trekto.jos.core.numbers.New;
 import info.trekto.jos.core.numbers.Number;
 
 import static info.trekto.jos.core.Controller.C;
@@ -12,11 +13,16 @@ import static info.trekto.jos.core.Controller.C;
  * 3 Mar 2016
  */
 public class NewtonGravityAP implements ForceCalculator {
+    private final Number gravity;
+    
+    public NewtonGravityAP() {
+        gravity = New.num("0.00000000006674"); // 6.674×10^−11 N⋅m2/kg2
+    }
+
     @Override
     public Number calculateForce(final ImmutableSimulationObject object1, final ImmutableSimulationObject object2, final Number distance) {
         //        (GRAVITY * object1.mass() * object2.mass()) / (distance * distance);
-        return C.getSimulation().getScientificConstants().getGravity().multiply(object1.getMass()).multiply(object2.getMass())
-                .divide(distance.multiply(distance));
+        return gravity.multiply(object1.getMass()).multiply(object2.getMass()).divide(distance.multiply(distance));
     }
 
     @Override
