@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -294,10 +295,6 @@ public enum Controller {
         this.simulation = simulation;
     }
 
-    public MainForm getMainForm() {
-        return gui;
-    }
-
     public void setMainForm(MainForm mainForm) {
         this.gui = mainForm;
     }
@@ -396,6 +393,30 @@ public enum Controller {
 
     private void showError(String message) {
         showError(gui.getMainPanel(), message);
+    }
+
+    public void showHtmlError(String message, Exception exception) {
+        showHtmlError(message + "<p>" + exception.getMessage() + "</p>");
+    }
+
+    public void showHtmlError(String message) {
+        JEditorPane ep = new JEditorPane();
+        ep.setContentType("text/html");
+        ep.setText(message);
+
+        ep.setEditable(false);  //so it s not editable
+        ep.setOpaque(false);    //so we don't see white background
+
+        ep.addHyperlinkListener(event -> {
+            if (HyperlinkEvent.EventType.ACTIVATED.equals(event.getEventType())) {
+                try {
+                    Desktop.getDesktop().browse(event.getURL().toURI());
+                } catch (Exception ignored) {
+                }
+            }
+        });
+
+        JOptionPane.showMessageDialog(gui.getMainPanel(), ep, "Error", ERROR_MESSAGE);
     }
 
     private void showWarn(Component parent, String message) {

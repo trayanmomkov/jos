@@ -39,6 +39,18 @@ public class Utils {
         }
         return dst;
     }
+    
+    public static void deepCopy(double[] src, double[] dst) {
+        System.arraycopy(src, 0, dst, 0, src.length);
+    }
+
+    public static void deepCopy(int[] src, int[] dst) {
+        System.arraycopy(src, 0, dst, 0, src.length);
+    }
+
+    public static void deepCopy(boolean[] src, boolean[] dst) {
+        System.arraycopy(src, 0, dst, 0, src.length);
+    }
 
     public static void printConfiguration(SimulationProperties properties) {
         if (!properties.isSaveToFile()) {

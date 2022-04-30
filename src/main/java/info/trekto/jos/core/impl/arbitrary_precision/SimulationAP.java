@@ -109,6 +109,7 @@ public class SimulationAP implements Simulation {
         }
         C.setVisualizer(C.createVisualizer(properties));
         long previousTime = System.nanoTime();
+        long previousVisualizationTime = previousTime;
         C.setRunning(true);
         C.setEndText("END.");
         try {
@@ -125,16 +126,20 @@ public class SimulationAP implements Simulation {
                     break;
                 }
 
+                if (System.nanoTime() - previousTime >= NANOSECONDS_IN_ONE_SECOND * SHOW_REMAINING_INTERVAL_SECONDS) {
+                    previousTime = System.nanoTime();
+                    info(logger, "Cycle: " + iteration.getCycle() + ", number of objects: " + iteration.getNumberOfObjects());
+                }
+
                 if (properties.getPlayingSpeed() < 0) {
                     /* Slow down */
                     Thread.sleep(-properties.getPlayingSpeed());
-                } else if ((System.nanoTime() - previousTime) / NANOSECONDS_IN_ONE_MILLISECOND < properties.getPlayingSpeed()) {
-                    /* Speed up by not visualizing current iteration */
-                    continue;
+                    C.getVisualizer().visualize(iteration);
+                    previousVisualizationTime = System.nanoTime();
+                } else if ((System.nanoTime() - previousVisualizationTime) / NANOSECONDS_IN_ONE_MILLISECOND >= properties.getPlayingSpeed()) {
+                    C.getVisualizer().visualize(iteration);
+                    previousVisualizationTime = System.nanoTime();
                 }
-                C.getVisualizer().visualize(iteration);
-                previousTime = System.nanoTime();
-                info(logger, "Cycle: " + iteration.getCycle() + ", number of objects: " + iteration.getNumberOfObjects());
             }
             info(logger, "End.");
             C.getVisualizer().end();
@@ -161,12 +166,12 @@ public class SimulationAP implements Simulation {
     @Override
     public void startSimulation() throws SimulationException {
         init();
-        Utils.printConfiguration(properties);
 
         info(logger, "Start simulation...");
         C.setEndText("END.");
         long startTime = System.nanoTime();
         long previousTime = startTime;
+        long previousVisualizationTime = startTime;
         long endTime;
 
         C.setRunning(true);
@@ -189,8 +194,16 @@ public class SimulationAP implements Simulation {
                         previousTime = System.nanoTime();
                     }
 
-                    if (properties.isRealTimeVisualization() && System.nanoTime() - previousTime >= properties.getPlayingSpeed()) {
-                        C.getVisualizer().visualize(objects);
+                    if (properties.isRealTimeVisualization()) {
+                        if (properties.getPlayingSpeed() < 0) {
+                            /* Slow down */
+                            Thread.sleep(-properties.getPlayingSpeed());
+                            C.getVisualizer().visualize(objects);
+                            previousVisualizationTime = System.nanoTime();
+                        } else if ((System.nanoTime() - previousVisualizationTime) / NANOSECONDS_IN_ONE_MILLISECOND >= properties.getPlayingSpeed()) {
+                            C.getVisualizer().visualize(objects);
+                            previousVisualizationTime = System.nanoTime();
+                        }
                     }
 
                     doIteration(i % properties.getSaveEveryNthIteration() == 0);
