@@ -19,11 +19,9 @@ import java.awt.geom.Rectangle2D;
 import java.util.List;
 import java.util.Queue;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.Controller.PROGRAM_NAME;
-import static info.trekto.jos.core.numbers.New.TWO;
 import static info.trekto.jos.util.Utils.secondsToHumanReadable;
 import static java.awt.Color.BLUE;
 import static java.awt.Color.RED;
@@ -97,46 +95,66 @@ public class VisualizerImpl implements Visualizer {
         visualizationPanel.draw(latestShapes);
     }
 
+    @Override
+    public void visualize(long currentIterationNumber, int numberOfObjects, String[] ids, boolean[] deleted,
+                          double[] positionX, double[] positionY, double[] radiuses, int[] colors) {
+        latestShapes = createShapes(currentIterationNumber, numberOfObjects, ids, deleted, positionX, positionY, radiuses, colors);
+        visualizationPanel.draw(latestShapes);
+    }
+
     private List<ShapeWithColorAndText> createShapes(Iteration iteration) {
-        List<SimulationObject> objects = iteration.getObjects();
+        String[] ids = iteration.getObjects().stream().map(ImmutableSimulationObject::getId).toArray(String[]::new);
+        double[] positionX = iteration.getObjects().stream().mapToDouble(e -> e.getX().doubleValue()).toArray();
+        double[] positionY = iteration.getObjects().stream().mapToDouble(e -> e.getY().doubleValue()).toArray();
+        double[] radiuses = iteration.getObjects().stream().mapToDouble(e -> e.getRadius().doubleValue()).toArray();
+        int[] colors = iteration.getObjects().stream().mapToInt(ImmutableSimulationObject::getColor).toArray();
+
+        return createShapes(iteration.getCycle(), iteration.getNumberOfObjects(), ids, new boolean[iteration.getNumberOfObjects()],
+                            positionX, positionY, radiuses, colors);
+    }
+
+    private List<ShapeWithColorAndText> createShapes(long currentIterationNumber, int numberOfObjects, String[] ids, boolean[] deleted,
+                                                     double[] positionX, double[] positionY, double[] radiuses, int[] colors) {
         List<ShapeWithColorAndText> shapes = new ArrayList<>();
-        if (C.isShowTrail()) {
-            if (C.isShowTrail() && trails.isEmpty()) {
-                for (SimulationObject object : objects) {
-                    trails.put(object.getId(), new ArrayDeque<>());
-                }
-            } else {
-                Set<String> ids = objects.stream().map(ImmutableSimulationObject::getId).collect(Collectors.toSet());
-                trails.entrySet().removeIf(e -> !ids.contains(e.getKey()));
+        if (C.isShowTrail() && trails.isEmpty()) {
+            for (String id : ids) {
+                trails.put(id, new ArrayDeque<>());
             }
         }
-        for (SimulationObject object : objects) {
+
+        for (int i = 0; i < deleted.length; i++) {
+            if (deleted[i]) {
+                if (C.isShowTrail()) {
+                    trails.put(ids[i], null);   // For garbage collection.
+                }
+                continue;
+            }
             Ellipse2D ellipse = new Ellipse2D.Double();
-            Number radius = object.getRadius();
-            double x = object.getX().subtract(radius).doubleValue();
-            double y = object.getY().subtract(radius).doubleValue();
-            double w = radius.multiply(TWO).doubleValue();
+            double radius = radiuses[i];
+            double x = positionX[i] - radiuses[i];
+            double y = positionY[i] - radiuses[i];
+            double w = radius * 2;
             double h = w;
             ellipse.setFrame(convertCoordinatesForDisplayX(x), convertCoordinatesForDisplayY(y), w, h);
 
-            Color color = new Color(object.getColor());
+            Color color = new Color(colors[i]);
 
             shapes.add(new ShapeWithColorAndText(ellipse, color));
             if (C.isShowIds()) {
                 ShapeWithColorAndText text = new ShapeWithColorAndText(ellipse, RED);
-                text.setText(object.getId());
+                text.setText(ids[i]);
                 shapes.add(text);
             }
 
             if (C.isShowTrail()) {
-                Queue<ShapeWithColorAndText> trail = trails.get(object.getId());
+                Queue<ShapeWithColorAndText> trail = trails.get(ids[i]);
                 if (trail.size() >= 5) {
                     shapes.addAll(trail);
                 }
                 Ellipse2D trailEllipse = new Ellipse2D.Double();
                 double trailEllipseRadius = TRAIL_SIZE / 2.0;
-                double trailEllipseX = convertCoordinatesForDisplayX(x + radius.doubleValue() - trailEllipseRadius / 2);
-                double trailEllipseY = convertCoordinatesForDisplayY(y + radius.doubleValue() - trailEllipseRadius / 2);
+                double trailEllipseX = convertCoordinatesForDisplayX(x + radius - trailEllipseRadius / 2);
+                double trailEllipseY = convertCoordinatesForDisplayY(y + radius - trailEllipseRadius / 2);
                 trailEllipse.setFrame(trailEllipseX, trailEllipseY, trailEllipseRadius * TRAIL_SIZE, trailEllipseRadius * TRAIL_SIZE);
                 ShapeWithColorAndText newTrailElement = new ShapeWithColorAndText(trailEllipse, color);
                 if (trail.size() >= C.getTrailSize()) {
@@ -145,9 +163,9 @@ public class VisualizerImpl implements Visualizer {
                 trail.offer(newTrailElement);
             }
         }
-
+        
         if (C.getShowTimeAndIteration()) {
-            shapes.addAll(createInfo(iteration.getCycle(), properties.getSecondsPerIteration(), iteration.getNumberOfObjects()));
+            shapes.addAll(createInfo(currentIterationNumber, properties.getSecondsPerIteration(), numberOfObjects));
         }
         return shapes;
     }

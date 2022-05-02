@@ -1,9 +1,8 @@
 package info.trekto.jos.core.impl;
 
 import info.trekto.jos.core.Simulation;
-import info.trekto.jos.core.SimulationGenerator;
+import info.trekto.jos.core.impl.arbitrary_precision.SimulationAP;
 import info.trekto.jos.core.model.SimulationObject;
-import info.trekto.jos.core.model.impl.SimulationObjectImpl;
 import info.trekto.jos.core.model.impl.TripleNumber;
 import info.trekto.jos.core.numbers.New;
 import org.slf4j.Logger;
@@ -21,10 +20,9 @@ import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.numbers.New.ZERO;
 import static info.trekto.jos.util.Utils.info;
 
-public class SimulationGeneratorImpl implements SimulationGenerator {
+public class SimulationGeneratorImpl {
     private static final Logger logger = LoggerFactory.getLogger(SimulationGeneratorImpl.class);
 
-    @Override
     public void generateObjects(Simulation simulation) {
         String filename = System.getProperty("user.home") + File.separator
                 + new SimpleDateFormat("yyyy-MMM-dd_HH-mm-ss").format(new Date()) + ".json.gz";
@@ -58,7 +56,7 @@ public class SimulationGeneratorImpl implements SimulationGenerator {
                 o.setColor(Color.BLUE.getRGB());
 
                 // density = mass / volume
-                o.setMass(simulation.getSimulationLogic().calculateVolumeFromRadius(o.getRadius()).multiply(New.num(100_000_000_000L)));
+                o.setMass(((SimulationAP)simulation).getSimulationLogic().calculateVolumeFromRadius(o.getRadius()).multiply(New.num(100_000_000_000L)));
                 o.setId(String.valueOf(generatedObjects));
 
                 objects.add(o);

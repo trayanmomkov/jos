@@ -4,6 +4,7 @@ import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.impl.SimulationGeneratorImpl;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.impl.arbitrary_precision.SimulationAP;
+import info.trekto.jos.core.impl.double_precision.SimulationDouble;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.numbers.New;
 import info.trekto.jos.core.numbers.NumberFactory;
@@ -51,7 +52,7 @@ public enum Controller {
     private MainForm gui;
     private Visualizer visualizer;
     private ReaderWriter readerWriter;
-    private SimulationGenerator simulationGenerator;
+    private SimulationGeneratorImpl simulationGenerator;
 
     private boolean running = false;
     private boolean paused = false;
@@ -105,8 +106,16 @@ public enum Controller {
     }
 
     private Simulation createSimulation(SimulationProperties properties) {
-        Simulation simulation = new SimulationAP();
-        simulation.setProperties(properties);
+        Simulation simulation;
+        switch (properties.getNumberType()) {
+            case DOUBLE:
+                simulation = new SimulationDouble(properties);
+                break;
+            case FLOAT:
+            default:
+                simulation = new SimulationAP(properties);
+        }
+
         if (properties.isSaveToFile()) {
             readerWriter = new JsonReaderWriter();
         }
@@ -138,7 +147,7 @@ public enum Controller {
         return properties;
     }
 
-    private SimulationGenerator createSimulationGenerator() {
+    private SimulationGeneratorImpl createSimulationGenerator() {
         return new SimulationGeneratorImpl();
     }
 

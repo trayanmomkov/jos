@@ -28,8 +28,6 @@ public interface Simulation {
 
     void switchPause();
 
-    SimulationLogic getSimulationLogic();
-
     SimulationProperties getProperties();
 
     void setProperties(SimulationProperties properties);

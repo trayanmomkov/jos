@@ -1,9 +1,8 @@
 package info.trekto.jos.core.impl.arbitrary_precision;
 
-import info.trekto.jos.core.Simulation;
-import info.trekto.jos.core.SimulationLogic;
-import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.ForceCalculator;
+import info.trekto.jos.core.Simulation;
+import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.impl.Iteration;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.model.ImmutableSimulationObject;
@@ -22,8 +21,6 @@ import java.util.List;
 import java.util.Set;
 
 import static info.trekto.jos.core.Controller.C;
-import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_MILLISECOND;
-import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_SECOND;
 import static info.trekto.jos.util.Utils.*;
 
 /**
@@ -37,16 +34,17 @@ public class SimulationAP implements Simulation {
     public static final int PAUSE_SLEEP_MILLISECONDS = 100;
     public static final int SHOW_REMAINING_INTERVAL_SECONDS = 2;
 
-    private final SimulationLogic simulationLogic;
-    private SimulationProperties properties;
+    private final SimulationLogicAP simulationLogic;
+    protected SimulationProperties properties;
     private ForceCalculator forceCalculator;
-    private long iterationCounter;
+    protected long iterationCounter;
 
     private List<SimulationObject> objects;
     private List<SimulationObject> auxiliaryObjects;
     
-    public SimulationAP() {
+    public SimulationAP(SimulationProperties properties) {
         simulationLogic = new SimulationLogicAP(this);
+        this.properties = properties;
     }
 
     public boolean collisionExists(List<SimulationObject> objects) {
@@ -156,7 +154,7 @@ public class SimulationAP implements Simulation {
         }
     }
 
-    private void doStop() {
+    protected void doStop() {
         C.setHasToStop(false);
         if (properties.isSaveToFile()) {
             C.getReaderWriter().endFile();
@@ -292,8 +290,7 @@ public class SimulationAP implements Simulation {
         C.switchPause();
     }
 
-    @Override
-    public SimulationLogic getSimulationLogic() {
+    public SimulationLogicAP getSimulationLogic() {
         return simulationLogic;
     }
 

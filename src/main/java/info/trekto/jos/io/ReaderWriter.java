@@ -14,6 +14,10 @@ public interface ReaderWriter {
     void writeProperties(SimulationProperties properties, String outputFilePath);
 
     void appendObjectsToFile(List<SimulationObject> objects, SimulationProperties properties, long currentIterationNumber);
+    
+    void appendObjectsToFile(SimulationProperties properties, long currentIterationNumber, double[] positionX, double[] positionY,
+                                    double[] positionZ, double[] speedX, double[] speedY, double[] speedZ, double[] mass, double[] radius,
+                                    String[] id, int[] color, boolean[] deleted);
 
     void endFile();
 

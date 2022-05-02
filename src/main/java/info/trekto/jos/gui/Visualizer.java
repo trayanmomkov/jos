@@ -25,6 +25,9 @@ public interface Visualizer {
 
     void translateDown();
 
+    void visualize(long currentIterationNumber, int numberOfObjects, String[] ids, boolean[] deleted,
+                   double[] positionX, double[] positionY, double[] radiuses, int[] colors);
+
     void end();
 
     void visualize(List<SimulationObject> objects);

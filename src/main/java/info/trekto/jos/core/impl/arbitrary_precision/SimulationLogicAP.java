@@ -1,7 +1,6 @@
 package info.trekto.jos.core.impl.arbitrary_precision;
 
 import info.trekto.jos.core.Simulation;
-import info.trekto.jos.core.SimulationLogic;
 import info.trekto.jos.core.model.ImmutableSimulationObject;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.model.impl.TripleNumber;
@@ -20,7 +19,7 @@ import static info.trekto.jos.core.numbers.New.*;
  * @author Trayan Momkov
  * 2016-Mar-6
  */
-public class SimulationLogicAP implements SimulationLogic {
+public class SimulationLogicAP {
     private final Simulation simulation;
     private final Number pi;
 
@@ -29,7 +28,6 @@ public class SimulationLogicAP implements SimulationLogic {
         this.simulation = simulation;
     }
 
-    @Override
     public void calculateNewValues(int fromIndex, int toIndex) {
         Iterator<SimulationObject> newObjectsIterator = simulation.getAuxiliaryObjects().subList(fromIndex, toIndex).iterator();
 
@@ -64,7 +62,6 @@ public class SimulationLogicAP implements SimulationLogic {
         }
     }
 
-    @Override
     public void processCollisions(Simulation simulation) {
         List<SimulationObject> forRemoval = new ArrayList<>();
         for (SimulationObject newObject : simulation.getAuxiliaryObjects()) {
@@ -213,7 +210,6 @@ public class SimulationLogicAP implements SimulationLogic {
         return new TripleNumber(speedX, speedY, speedZ);
     }
 
-    @Override
     public Number calculateDistance(ImmutableSimulationObject object1, ImmutableSimulationObject object2) {
         Number x = object2.getX().subtract(object1.getX());
         Number y = object2.getY().subtract(object1.getY());
@@ -221,7 +217,6 @@ public class SimulationLogicAP implements SimulationLogic {
         return (x.multiply(x).add(y.multiply(y)).add(z.multiply(z))).sqrt();
     }
 
-    @Override
     public Number calculateVolumeFromRadius(Number radius) {
         // V = 4/3 * pi * r^3
         return RATIO_FOUR_THREE.multiply(pi).multiply(radius.pow(3));
