@@ -35,4 +35,9 @@ public class FloatNumberFactory implements NumberFactory {
     public Number createNumber(long val) {
         return new FloatNumberImpl(val);
     }
+
+    @Override
+    public Number createPi() {
+        return new FloatNumberImpl((float)Math.PI);
+    }
 }

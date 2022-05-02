@@ -29,15 +29,15 @@ public class NumberFactoryProxy {
     private static NumberFactory factory;
 
     private static void calculateConstants() {
-        ZERO = New.num("0");
-        ONE = New.num("1");
-        TWO = New.num("2");
-        THREE = New.num("3");
-        FOUR = New.num("4");
+        ZERO = createNumber("0");
+        ONE = createNumber("1");
+        TWO = createNumber("2");
+        THREE = createNumber("3");
+        FOUR = createNumber("4");
         RATIO_FOUR_THREE = FOUR.divide(THREE);
-        BILLION = New.num("1000000000");
-        IGNORED = New.num("0");
-        PI = New.num("3.1415926535897932384626433832795028841971693993751058209749445923078164062862");
+        BILLION = createNumber("1000000000");
+        IGNORED = createNumber("0");
+        PI = factory.createPi();
     }
 
     public static NumberFactory getFactory() {

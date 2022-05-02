@@ -84,7 +84,7 @@ public enum Controller {
         mainForm.setNumberTypeMessage("DOUBLE - Double precision. Fast. (Uses GPU if possible)\n"
                                               + "FLOAT - Single precision. Fastest. (Uses GPU if possible)\n"
                                               + "APFLOAT - Arbitrary precision. Fast.\n"
-                                              + "BIG_DECIMAL - Arbitrary precision. Slow.");
+                                              + "BIG_DECIMAL - Arbitrary precision. Slow. Pi up to 10k digits.");
         mainForm.init();
         C.setMainForm(mainForm);
 

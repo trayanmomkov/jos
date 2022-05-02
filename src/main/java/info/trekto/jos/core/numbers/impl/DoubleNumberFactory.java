@@ -30,4 +30,9 @@ public class DoubleNumberFactory implements NumberFactory {
     public Number createNumber(long val) {
         return new DoubleNumberImpl(val);
     }
+
+    @Override
+    public Number createPi() {
+        return new DoubleNumberImpl(Math.PI);
+    }
 }

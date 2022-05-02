@@ -16,6 +16,8 @@ public interface NumberFactory {
     Number createNumber(int val);
 
     Number createNumber(long val);
+    
+    Number createPi();
 
     enum NumberType {
         DOUBLE, FLOAT, APFLOAT, BIG_DECIMAL

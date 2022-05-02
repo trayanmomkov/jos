@@ -2,6 +2,7 @@ package info.trekto.jos.core.numbers.impl;
 
 import info.trekto.jos.core.numbers.Number;
 import info.trekto.jos.core.numbers.NumberFactory;
+import org.apfloat.ApfloatMath;
 
 import java.math.BigDecimal;
 
@@ -41,5 +42,10 @@ public class ApfloatNumberFactory implements NumberFactory {
     @Override
     public Number createNumber(long val) {
         return new ApfloatNumberImpl(val, precision);
+    }
+
+    @Override
+    public Number createPi() {
+        return new ApfloatNumberImpl(ApfloatMath.pi(precision));
     }
 }
