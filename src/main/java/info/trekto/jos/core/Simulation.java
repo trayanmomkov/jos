@@ -26,15 +26,9 @@ public interface Simulation {
 
     void playSimulation(String absolutePath);
 
-    void switchPause();
-
     SimulationProperties getProperties();
 
     void setProperties(SimulationProperties properties);
 
     Number calculateDistance(ImmutableSimulationObject object, ImmutableSimulationObject object1);
-
-    SimulationObject createNewSimulationObject();
-
-    SimulationObject createNewSimulationObject(SimulationObject o);
 }

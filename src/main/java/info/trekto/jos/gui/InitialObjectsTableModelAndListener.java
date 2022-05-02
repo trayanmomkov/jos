@@ -3,6 +3,7 @@ package info.trekto.jos.gui;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.model.impl.TripleNumber;
 import info.trekto.jos.core.numbers.New;
+import info.trekto.jos.core.numbers.Number;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -13,6 +14,7 @@ import static info.trekto.jos.core.Controller.C;
 
 public class InitialObjectsTableModelAndListener extends DefaultTableModel implements TableModelListener {
     private final Map<String, Integer> columnNameIndexMap;
+    private List<SimulationObject> initialObjects;
 
     public InitialObjectsTableModelAndListener() {
         super();
@@ -61,25 +63,44 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
     }
 
     public void refreshInitialObjects() {
-        List<SimulationObject> objects = new ArrayList<>();
+        initialObjects = new ArrayList<>();
         for (Object vector : dataVector) {
             Vector v = (Vector) vector;
-            SimulationObject o = C.getSimulation().createNewSimulationObject();
+            SimulationObject o = C.createNewSimulationObject();
             int i = 0;
             o.setId(String.valueOf(v.get(i++)));
-            o.setMass(New.num(String.valueOf(v.get(i++))));
-            o.setX(New.num(String.valueOf(v.get(i++))));
-            o.setY(New.num(String.valueOf(v.get(i++))));
-            o.setZ(New.num(String.valueOf(v.get(i++))));
-            o.setRadius(New.num(String.valueOf(v.get(i++))));
+            o.setMass(getNumber(v.get(i++)));
+            o.setX(getNumber(v.get(i++)));
+            o.setY(getNumber(v.get(i++)));
+            o.setZ(getNumber(v.get(i++)));
+            o.setRadius(getNumber(v.get(i++)));
             o.setSpeed(new TripleNumber(
-                    New.num(String.valueOf(v.get(i++))),
-                    New.num(String.valueOf(v.get(i++))),
-                    New.num(String.valueOf(v.get(i++)))));
+                    getNumber(v.get(i++)),
+                    getNumber(v.get(i++)),
+                    getNumber(v.get(i++))));
             o.setColor(Integer.parseInt(String.valueOf(v.get(i++)), 16));
 
-            objects.add(o);
+            initialObjects.add(o);
         }
-        C.getSimulation().getProperties().setInitialObjects(objects);
+    }
+
+    private Number getNumber(Object value) {
+        if (value instanceof Number) {
+            return (Number) value;
+        } else {
+            return New.num(String.valueOf(value));
+        }
+    }
+
+    public List<SimulationObject> getInitialObjects() {
+        return initialObjects;
+    }
+
+    public void setInitialObjects(List<SimulationObject> initialObjects) {
+        this.initialObjects = initialObjects;
+        setRowCount(0);
+        for (SimulationObject initialObject : initialObjects) {
+            addRow(initialObject);
+        }
     }
 }

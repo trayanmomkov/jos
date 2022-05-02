@@ -285,11 +285,6 @@ public class SimulationAP implements Simulation {
         return forceCalculator;
     }
 
-    @Override
-    public void switchPause() {
-        C.switchPause();
-    }
-
     public SimulationLogicAP getSimulationLogic() {
         return simulationLogic;
     }
@@ -307,15 +302,5 @@ public class SimulationAP implements Simulation {
     @Override
     public Number calculateDistance(ImmutableSimulationObject object, ImmutableSimulationObject object1) {
         return simulationLogic.calculateDistance(object, object1);
-    }
-
-    @Override
-    public SimulationObject createNewSimulationObject() {
-        return new SimulationObjectImpl();
-    }
-
-    @Override
-    public SimulationObject createNewSimulationObject(SimulationObject o) {
-        return new SimulationObjectImpl(o);
     }
 }

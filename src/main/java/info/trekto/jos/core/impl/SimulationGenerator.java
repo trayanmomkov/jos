@@ -17,16 +17,17 @@ import java.util.List;
 import java.util.Random;
 
 import static info.trekto.jos.core.Controller.C;
-import static info.trekto.jos.core.numbers.New.ZERO;
+import static info.trekto.jos.core.impl.arbitrary_precision.SimulationLogicAP.calculateVolumeFromRadius;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
 import static info.trekto.jos.util.Utils.info;
 
 public class SimulationGenerator {
     private static final Logger logger = LoggerFactory.getLogger(SimulationGenerator.class);
 
-    public void generateObjects(Simulation simulation) {
+    public static void generateObjects(SimulationProperties properties) {
         String filename = System.getProperty("user.home") + File.separator
                 + new SimpleDateFormat("yyyy-MMM-dd_HH-mm-ss").format(new Date()) + ".json.gz";
-        simulation.getProperties().setOutputFile(filename);
+        properties.setOutputFile(filename);
 
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         int width = gd.getDisplayMode().getWidth();
@@ -34,7 +35,7 @@ public class SimulationGenerator {
 
         List<SimulationObject> objects = new ArrayList<>();
         Random random = new Random(System.currentTimeMillis());
-        int n = simulation.getProperties().getNumberOfObjects();
+        int n = properties.getNumberOfObjects();
         double areaForObject = width * height / (double) n;
         double areaSide = Math.sqrt(areaForObject);
         int generatedObjects = 0;
@@ -46,7 +47,7 @@ public class SimulationGenerator {
         for (int i = 0; i < horizontalZones; i++) {
             for (int j = 0; j < verticalZones; j++) {
                 double radius = random.nextDouble() * areaSide / 10.0;
-                SimulationObject o = C.getSimulation().createNewSimulationObject();
+                SimulationObject o = C.createNewSimulationObject();
 
                 o.setX(New.num(i * areaSide + radius * 1.1 + (random.nextDouble() * (areaSide - 2 * radius * 1.1)) - width / 2.0));
                 o.setY(New.num(j * areaSide + radius * 1.1 + (random.nextDouble() * (areaSide - 2 * radius * 1.1)) - height / 2.0));
@@ -56,7 +57,7 @@ public class SimulationGenerator {
                 o.setColor(Color.BLUE.getRGB());
 
                 // density = mass / volume
-                o.setMass(((SimulationAP) simulation).getSimulationLogic().calculateVolumeFromRadius(o.getRadius()).multiply(New.num(100_000_000_000L)));
+                o.setMass(calculateVolumeFromRadius(o.getRadius()).multiply(New.num(100_000_000_000L)));
                 o.setId(String.valueOf(generatedObjects));
 
                 objects.add(o);
@@ -67,6 +68,6 @@ public class SimulationGenerator {
                 }
             }
         }
-        simulation.getProperties().setInitialObjects(objects);
+        properties.setInitialObjects(objects);
     }
 }

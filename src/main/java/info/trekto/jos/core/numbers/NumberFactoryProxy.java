@@ -13,6 +13,15 @@ import java.math.MathContext;
  */
 public class NumberFactoryProxy {
 
+    public static Number ZERO;
+    public static Number ONE;
+    public static Number TWO;
+    public static Number THREE;
+    public static Number FOUR;
+    public static Number RATIO_FOUR_THREE;
+    public static Number BILLION;
+    public static Number IGNORED;
+    public static Number PI;
     /**
      * Here you can change number factory implementation and respectively type of every number in the program.
      */
@@ -20,14 +29,15 @@ public class NumberFactoryProxy {
     private static NumberFactory factory;
 
     private static void calculateConstants() {
-        New.ZERO = NumberFactoryProxy.createNumber("0");
-        New.ONE = NumberFactoryProxy.createNumber("1");
-        New.TWO = NumberFactoryProxy.createNumber("2");
-        New.THREE = NumberFactoryProxy.createNumber("3");
-        New.FOUR = NumberFactoryProxy.createNumber("4");
-        New.RATIO_FOUR_THREE = New.FOUR.divide(New.THREE);
-        New.BILLION = NumberFactoryProxy.createNumber("1000000000");
-        New.IGNORED = NumberFactoryProxy.createNumber("0");
+        ZERO = New.num("0");
+        ONE = New.num("1");
+        TWO = New.num("2");
+        THREE = New.num("3");
+        FOUR = New.num("4");
+        RATIO_FOUR_THREE = FOUR.divide(THREE);
+        BILLION = New.num("1000000000");
+        IGNORED = New.num("0");
+        PI = New.num("3.1415926535897932384626433832795028841971693993751058209749445923078164062862");
     }
 
     public static NumberFactory getFactory() {

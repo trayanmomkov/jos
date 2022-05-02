@@ -6,6 +6,7 @@ import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.impl.arbitrary_precision.SimulationAP;
 import info.trekto.jos.core.impl.double_precision.SimulationDouble;
 import info.trekto.jos.core.model.SimulationObject;
+import info.trekto.jos.core.model.impl.SimulationObjectImpl;
 import info.trekto.jos.core.numbers.New;
 import info.trekto.jos.core.numbers.NumberFactory;
 import info.trekto.jos.gui.InitialObjectsTableModelAndListener;
@@ -147,10 +148,6 @@ public enum Controller {
         return properties;
     }
 
-    private SimulationGenerator createSimulationGenerator() {
-        return new SimulationGenerator();
-    }
-
     public void append(String message) {
         if (gui != null) {
             appendMessage(Utils.df.format(new Date()) + " " + message);
@@ -158,6 +155,7 @@ public enum Controller {
     }
 
     public void play() {
+        simulation = createSimulation(fetchPropertiesFromGuiAndCreateNumberFactory());
         paused = false;
         new Thread(() -> {
             try {
@@ -182,9 +180,9 @@ public enum Controller {
     }
 
     public void start() {
+        simulation = createSimulation(fetchPropertiesFromGuiAndCreateNumberFactory());
         paused = false;
         if (simulation != null && simulation.getProperties() != null && simulation.getProperties().getInitialObjects() != null) {
-            fetchPropertiesNotRelatedToNumberFactory(simulation.getProperties());
             new Thread(() -> {
                 try {
                     if (simulation.getProperties().isRealTimeVisualization()) {
@@ -246,15 +244,17 @@ public enum Controller {
 
         createNumberFactory(properties.getNumberType(), properties.getPrecision(), properties.getScale());
 
-        if (!isNullOrBlank(gui.getNumberOfObjectsTextField().getText())) {
-            properties.setNumberOfObjects(Integer.parseInt(gui.getNumberOfObjectsTextField().getText()));
-        }
-
         fetchPropertiesNotRelatedToNumberFactory(properties);
         return properties;
     }
 
     private void fetchPropertiesNotRelatedToNumberFactory(SimulationProperties properties) {
+        if (!isNullOrBlank(gui.getNumberOfObjectsTextField().getText())) {
+            properties.setNumberOfObjects(Integer.parseInt(gui.getNumberOfObjectsTextField().getText()));
+        }
+        
+        properties.setInitialObjects(((InitialObjectsTableModelAndListener) gui.getInitialObjectsTable().getModel()).getInitialObjects());
+        
         if (!isNullOrBlank(gui.getSecondsPerIterationTextField().getText())) {
             properties.setSecondsPerIteration(New.num(gui.getSecondsPerIterationTextField().getText()));
         }
@@ -266,6 +266,10 @@ public enum Controller {
 
         if (!isNullOrBlank(gui.getNumberOfIterationsTextField().getText())) {
             properties.setNumberOfIterations(Integer.parseInt(gui.getNumberOfIterationsTextField().getText()));
+        }
+        
+        if (!isNullOrBlank(gui.getPlayingSpeedTextField().getText().replace("-", ""))) {
+            properties.setPlayingSpeed(Integer.parseInt(gui.getPlayingSpeedTextField().getText()));
         }
 
         if (!isNullOrBlank(gui.getSaveEveryNthIterationTextField().getText())) {
@@ -380,10 +384,7 @@ public enum Controller {
         gui.getBounceFromScreenWallsCheckBox().setSelected(prop.isBounceFromWalls());
         gui.getPlayingSpeedTextField().setText(String.valueOf(prop.getPlayingSpeed()));
 
-        ((InitialObjectsTableModelAndListener) gui.getInitialObjectsTable().getModel()).setRowCount(0);
-        for (SimulationObject initialObject : prop.getInitialObjects()) {
-            ((InitialObjectsTableModelAndListener) gui.getInitialObjectsTable().getModel()).addRow(initialObject);
-        }
+        ((InitialObjectsTableModelAndListener) gui.getInitialObjectsTable().getModel()).setInitialObjects(prop.getInitialObjects());
     }
 
     private void showError(Component parent, String message, Exception exception) {
@@ -474,19 +475,17 @@ public enum Controller {
         if (option == JFileChooser.APPROVE_OPTION) {
             playFile = fileChooser.getSelectedFile();
             gui.getPlayFileLabel().setText(playFile.getAbsolutePath());
-            simulation = createSimulation(loadPropertiesForPlaying(playFile.getAbsolutePath()));
-            refreshProperties(simulation.getProperties());
+            refreshProperties(loadPropertiesForPlaying(playFile.getAbsolutePath()));
         }
     }
 
     public void generateObjectButtonEvent() {
-        simulation = createSimulation(fetchPropertiesFromGuiAndCreateNumberFactory());
-        simulationGenerator = createSimulationGenerator();
+        SimulationProperties properties = fetchPropertiesFromGuiAndCreateNumberFactory();
 
         new Thread(() -> {
             try {
-                simulationGenerator.generateObjects(simulation);
-                refreshProperties(simulation.getProperties());
+                SimulationGenerator.generateObjects(properties);
+                refreshProperties(properties);
                 unHighlightGenerateObjectButton();
             } catch (Exception ex) {
                 String message = "Error during object generation.";
@@ -519,9 +518,6 @@ public enum Controller {
     }
 
     public void playingSpeedTextFieldEvent() {
-        if (!isNullOrBlank(gui.getPlayingSpeedTextField().getText().replace("-", ""))) {
-            simulation.getProperties().setPlayingSpeed(Integer.parseInt(gui.getPlayingSpeedTextField().getText()));
-        }
     }
 
     private void highlightGenerateObjectsButton() {
@@ -562,10 +558,12 @@ public enum Controller {
             SimulationProperties properties = fetchPropertiesFromGuiAndCreateNumberFactory();
             readerWriter.writeProperties(properties, fileToSave.getAbsolutePath());
 
-            /* Reopen just saved file */
+            /* Reopen just saved file.
+             * This ensures the simulation is the same as opened from the file,
+             * and can help us to detect a bug (when after saving the properties suddenly changes). */
             gui.getInputFilePathLabel().setText(fileToSave.getAbsolutePath());
-            simulation = createSimulation(loadProperties(fileToSave.getAbsolutePath()));
-            refreshProperties(simulation.getProperties());
+            properties = loadProperties(fileToSave.getAbsolutePath());
+            refreshProperties(properties);
         }
     }
 
@@ -576,8 +574,7 @@ public enum Controller {
         if (option == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             gui.getInputFilePathLabel().setText(file.getAbsolutePath());
-            simulation = createSimulation(loadProperties(file.getAbsolutePath()));
-            refreshProperties(simulation.getProperties());
+            refreshProperties(loadProperties(file.getAbsolutePath()));
             unHighlightGenerateObjectButton();
             saveToFileCheckBoxEvent();
         }
@@ -628,5 +625,13 @@ public enum Controller {
 
     public Visualizer createVisualizer(SimulationProperties properties) {
         return new VisualizerImpl(properties);
+    }
+
+    public SimulationObject createNewSimulationObject(SimulationObject o) {
+        return new SimulationObjectImpl(o);
+    }
+
+    public SimulationObject createNewSimulationObject() {
+        return new SimulationObjectImpl();
     }
 }

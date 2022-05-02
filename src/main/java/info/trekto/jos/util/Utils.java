@@ -35,7 +35,7 @@ public class Utils {
     public static List<SimulationObject> deepCopy(List<SimulationObject> src) {
         ArrayList<SimulationObject> dst = new ArrayList<>();
         for (SimulationObject element : src) {
-            dst.add(C.getSimulation().createNewSimulationObject(element));
+            dst.add(C.createNewSimulationObject(element));
         }
         return dst;
     }

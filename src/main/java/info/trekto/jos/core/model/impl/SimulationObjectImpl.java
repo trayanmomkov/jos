@@ -1,9 +1,9 @@
 package info.trekto.jos.core.model.impl;
 
 import info.trekto.jos.core.model.SimulationObject;
-import info.trekto.jos.core.numbers.New;
 import info.trekto.jos.core.numbers.Number;
 
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
 import static java.awt.Color.BLUE;
 
 /**
@@ -25,9 +25,9 @@ public class SimulationObjectImpl implements SimulationObject {
     String id;
 
     public SimulationObjectImpl() {
-        this.x = New.ZERO;
-        this.y = New.ZERO;
-        this.z = New.ZERO;
+        this.x = ZERO;
+        this.y = ZERO;
+        this.z = ZERO;
         color = BLUE.getRGB();
     }
 

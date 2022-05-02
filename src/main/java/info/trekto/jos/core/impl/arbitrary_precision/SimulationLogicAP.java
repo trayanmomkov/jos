@@ -4,7 +4,6 @@ import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.model.ImmutableSimulationObject;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.model.impl.TripleNumber;
-import info.trekto.jos.core.numbers.New;
 import info.trekto.jos.core.numbers.Number;
 
 import java.awt.*;
@@ -13,7 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static info.trekto.jos.core.Controller.C;
-import static info.trekto.jos.core.numbers.New.*;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.*;
 
 /**
  * @author Trayan Momkov
@@ -21,10 +20,8 @@ import static info.trekto.jos.core.numbers.New.*;
  */
 public class SimulationLogicAP {
     private final Simulation simulation;
-    private final Number pi;
 
     public SimulationLogicAP(Simulation simulation) {
-        pi = New.num("3.1415926535897932384626433832795028841971693993751058209749445923078164062862");
         this.simulation = simulation;
     }
 
@@ -217,14 +214,14 @@ public class SimulationLogicAP {
         return (x.multiply(x).add(y.multiply(y)).add(z.multiply(z))).sqrt();
     }
 
-    public Number calculateVolumeFromRadius(Number radius) {
+    public static Number calculateVolumeFromRadius(Number radius) {
         // V = 4/3 * pi * r^3
-        return RATIO_FOUR_THREE.multiply(pi).multiply(radius.pow(3));
+        return RATIO_FOUR_THREE.multiply(PI).multiply(radius.pow(3));
     }
 
-    public Number calculateRadiusFromVolume(Number volume) {
+    public static Number calculateRadiusFromVolume(Number volume) {
         // V = 4/3 * pi * r^3
-        return IGNORED.cbrt(volume.divide(RATIO_FOUR_THREE.multiply(pi)));
+        return IGNORED.cbrt(volume.divide(RATIO_FOUR_THREE.multiply(PI)));
     }
 
     public TripleNumber calculateAcceleration(ImmutableSimulationObject object, TripleNumber acceleration, TripleNumber force) {
