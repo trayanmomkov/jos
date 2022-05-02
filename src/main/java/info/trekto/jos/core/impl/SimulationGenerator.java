@@ -20,8 +20,8 @@ import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.numbers.New.ZERO;
 import static info.trekto.jos.util.Utils.info;
 
-public class SimulationGeneratorImpl {
-    private static final Logger logger = LoggerFactory.getLogger(SimulationGeneratorImpl.class);
+public class SimulationGenerator {
+    private static final Logger logger = LoggerFactory.getLogger(SimulationGenerator.class);
 
     public void generateObjects(Simulation simulation) {
         String filename = System.getProperty("user.home") + File.separator
@@ -56,7 +56,7 @@ public class SimulationGeneratorImpl {
                 o.setColor(Color.BLUE.getRGB());
 
                 // density = mass / volume
-                o.setMass(((SimulationAP)simulation).getSimulationLogic().calculateVolumeFromRadius(o.getRadius()).multiply(New.num(100_000_000_000L)));
+                o.setMass(((SimulationAP) simulation).getSimulationLogic().calculateVolumeFromRadius(o.getRadius()).multiply(New.num(100_000_000_000L)));
                 o.setId(String.valueOf(generatedObjects));
 
                 objects.add(o);

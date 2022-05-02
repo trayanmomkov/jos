@@ -145,7 +145,7 @@ public class JsonReaderWriter implements ReaderWriter {
         properties.setNumberOfObjects(json.get("numberOfObjects").getAsInt());
         properties.setOutputFile(json.get("outputFile").getAsString());
         properties.setSaveToFile(json.get("saveToFile").getAsBoolean());
-        if(json.get("saveEveryNthIteration") != null) {
+        if (json.get("saveEveryNthIteration") != null) {
             properties.setSaveEveryNthIteration(json.get("saveEveryNthIteration").getAsInt());
         } else {
             properties.setSaveEveryNthIteration(1);
@@ -272,7 +272,7 @@ public class JsonReaderWriter implements ReaderWriter {
             }
         }
     }
-    
+
     @Override
     public void appendObjectsToFile(SimulationProperties properties, long currentIterationNumber, double[] positionX, double[] positionY,
                                     double[] positionZ, double[] speedX, double[] speedY, double[] speedZ, double[] mass, double[] radius,

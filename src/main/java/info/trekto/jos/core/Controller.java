@@ -1,7 +1,7 @@
 package info.trekto.jos.core;
 
 import info.trekto.jos.core.exceptions.SimulationException;
-import info.trekto.jos.core.impl.SimulationGeneratorImpl;
+import info.trekto.jos.core.impl.SimulationGenerator;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.impl.arbitrary_precision.SimulationAP;
 import info.trekto.jos.core.impl.double_precision.SimulationDouble;
@@ -52,7 +52,7 @@ public enum Controller {
     private MainForm gui;
     private Visualizer visualizer;
     private ReaderWriter readerWriter;
-    private SimulationGeneratorImpl simulationGenerator;
+    private SimulationGenerator simulationGenerator;
 
     private boolean running = false;
     private boolean paused = false;
@@ -147,8 +147,8 @@ public enum Controller {
         return properties;
     }
 
-    private SimulationGeneratorImpl createSimulationGenerator() {
-        return new SimulationGeneratorImpl();
+    private SimulationGenerator createSimulationGenerator() {
+        return new SimulationGenerator();
     }
 
     public void append(String message) {
@@ -237,23 +237,23 @@ public enum Controller {
         if (!isNullOrBlank(gui.getScaleTextField().getText())) {
             properties.setScale(Integer.parseInt(gui.getScaleTextField().getText()));
         }
-        
+
         if (!isNullOrBlank(gui.getPrecisionTextField().getText())) {
             properties.setPrecision(Integer.parseInt(gui.getPrecisionTextField().getText()));
         }
-        
+
         properties.setNumberType(NumberFactory.NumberType.valueOf(String.valueOf(gui.getNumberTypeComboBox().getSelectedItem())));
-        
+
         createNumberFactory(properties.getNumberType(), properties.getPrecision(), properties.getScale());
 
         if (!isNullOrBlank(gui.getNumberOfObjectsTextField().getText())) {
             properties.setNumberOfObjects(Integer.parseInt(gui.getNumberOfObjectsTextField().getText()));
         }
-        
+
         fetchPropertiesNotRelatedToNumberFactory(properties);
         return properties;
     }
-    
+
     private void fetchPropertiesNotRelatedToNumberFactory(SimulationProperties properties) {
         if (!isNullOrBlank(gui.getSecondsPerIterationTextField().getText())) {
             properties.setSecondsPerIteration(New.num(gui.getSecondsPerIterationTextField().getText()));
@@ -263,15 +263,15 @@ public enum Controller {
         if (!isNullOrBlank(gui.getOutputFileTextField().getText())) {
             properties.setOutputFile(gui.getOutputFileTextField().getText());
         }
-        
+
         if (!isNullOrBlank(gui.getNumberOfIterationsTextField().getText())) {
             properties.setNumberOfIterations(Integer.parseInt(gui.getNumberOfIterationsTextField().getText()));
         }
-        
+
         if (!isNullOrBlank(gui.getSaveEveryNthIterationTextField().getText())) {
             properties.setSaveEveryNthIteration(Integer.parseInt(gui.getSaveEveryNthIterationTextField().getText()));
         }
-        
+
         properties.setBounceFromWalls(gui.getBounceFromScreenWallsCheckBox().isSelected());
         properties.setRealTimeVisualization(gui.getRealTimeVisualizationCheckBox().isSelected());
         properties.setInteractingLaw(ForceCalculator.InteractingLaw.valueOf(String.valueOf(gui.getInteractingLawComboBox().getSelectedItem())));

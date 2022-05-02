@@ -41,7 +41,7 @@ public class SimulationAP implements Simulation {
 
     private List<SimulationObject> objects;
     private List<SimulationObject> auxiliaryObjects;
-    
+
     public SimulationAP(SimulationProperties properties) {
         simulationLogic = new SimulationLogicAP(this);
         this.properties = properties;

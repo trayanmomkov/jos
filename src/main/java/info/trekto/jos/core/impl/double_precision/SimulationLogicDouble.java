@@ -183,7 +183,7 @@ public class SimulationLogicDouble extends Kernel {
         double bigDensity = mass[bigger] / bigVolume;
         double newMass = mass[bigger] + mass[smaller];
 
-        /* Volume and density are two sides of one coin. We should decide what we want one of them to be, 
+        /* Volume and density are two sides of one coin. We should decide what we want one of them to be,
          * and calculate the other. Here we want the new object to have an average density of the two collided. */
         double newDensity = (smallDensity * mass[smaller] + bigDensity * mass[bigger]) / newMass;
         double newVolume = newMass / newDensity;
@@ -220,7 +220,7 @@ public class SimulationLogicDouble extends Kernel {
     public static double calculateForce(final double object1Mass, final double object2Mass, final double distance) {
         return GRAVITY * object1Mass * object2Mass / (distance * distance);
     }
-    
+
     public static double calculateVolumeFromRadius(double radius) {
         // V = 4/3 * pi * r^3
         if (radius == 0) {
@@ -228,7 +228,7 @@ public class SimulationLogicDouble extends Kernel {
         }
         return RATIO_FOUR_THREE * PI * Math.pow(radius, 3);
     }
-    
+
     public static double calculateRadiusFromVolume(double volume) {
         // V = 4/3 * pi * r^3
         if (volume == 0) {

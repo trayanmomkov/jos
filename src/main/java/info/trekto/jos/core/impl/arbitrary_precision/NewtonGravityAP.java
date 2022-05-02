@@ -6,15 +6,13 @@ import info.trekto.jos.core.model.impl.TripleNumber;
 import info.trekto.jos.core.numbers.New;
 import info.trekto.jos.core.numbers.Number;
 
-import static info.trekto.jos.core.Controller.C;
-
 /**
  * @author Trayan Momkov
  * 3 Mar 2016
  */
 public class NewtonGravityAP implements ForceCalculator {
     private final Number gravity;
-    
+
     public NewtonGravityAP() {
         gravity = New.num("0.00000000006674"); // 6.674×10^−11 N⋅m2/kg2
     }

@@ -35,6 +35,6 @@ public interface Simulation {
     Number calculateDistance(ImmutableSimulationObject object, ImmutableSimulationObject object1);
 
     SimulationObject createNewSimulationObject();
-    
+
     SimulationObject createNewSimulationObject(SimulationObject o);
 }

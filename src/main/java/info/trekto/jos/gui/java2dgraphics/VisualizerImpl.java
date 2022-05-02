@@ -163,7 +163,7 @@ public class VisualizerImpl implements Visualizer {
                 trail.offer(newTrailElement);
             }
         }
-        
+
         if (C.getShowTimeAndIteration()) {
             shapes.addAll(createInfo(currentIterationNumber, properties.getSecondsPerIteration(), numberOfObjects));
         }

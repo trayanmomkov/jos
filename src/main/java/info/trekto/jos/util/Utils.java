@@ -39,7 +39,7 @@ public class Utils {
         }
         return dst;
     }
-    
+
     public static void deepCopy(double[] src, double[] dst) {
         System.arraycopy(src, 0, dst, 0, src.length);
     }

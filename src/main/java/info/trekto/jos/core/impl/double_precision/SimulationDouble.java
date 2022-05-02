@@ -245,7 +245,7 @@ public class SimulationDouble extends SimulationAP implements Simulation {
             C.showHtmlError(htmlMessage, ex);
         }
     }
-    
+
     public boolean collisionExists(double[] positionX, double[] positionY, double[] radius) {
         for (int i = 0; i < positionX.length; i++) {
             for (int j = 0; j < positionX.length; j++) {
@@ -257,7 +257,7 @@ public class SimulationDouble extends SimulationAP implements Simulation {
 
                 if (distance < radius[i] + radius[j]) {
                     info(logger, String.format("Collision between object A(x:%f, y:%f, r:%f) and B(x:%f, y:%f, r:%f)",
-                                              positionX[i], positionY[i], radius[i], positionX[j], positionY[j], radius[j]));
+                                               positionX[i], positionY[i], radius[i], positionX[j], positionY[j], radius[j]));
                     return true;
                 }
             }
