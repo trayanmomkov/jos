@@ -171,9 +171,6 @@ public class MainForm {
         aboutLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         numberTypeLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         playingSpeedLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        playingSpeedLabel.setToolTipText(PLAYING_SPEED_TIP);
-        playingSpeedTextField.setToolTipText(PLAYING_SPEED_TIP);
-
     }
 
     /////////////////////////////////////////

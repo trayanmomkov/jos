@@ -48,15 +48,18 @@ public class SimulationAP implements Simulation {
     }
 
     public boolean collisionExists(List<SimulationObject> objects) {
-        for (SimulationObject object : objects) {
-            for (SimulationObject object1 : objects) {
-                if (object == object1) {
+        for (SimulationObject o : objects) {
+            for (SimulationObject o1 : objects) {
+                if (o == o1) {
                     continue;
                 }
                 // distance between centres
-                Number distance = simulationLogic.calculateDistance(object, object1);
+                Number distance = simulationLogic.calculateDistance(o, o1);
 
-                if (distance.compareTo(object.getRadius().add(object1.getRadius())) < 0) {
+                if (distance.compareTo(o.getRadius().add(o1.getRadius())) < 0) {
+                    info(logger, String.format("Collision between object A(x:%f, y:%f, r:%f) and B(x:%f, y:%f, r:%f)",
+                                               o.getX().doubleValue(), o.getY().doubleValue(), o.getRadius().doubleValue(),
+                                               o1.getX().doubleValue(), o1.getY().doubleValue(), o1.getRadius().doubleValue()));
                     return true;
                 }
             }

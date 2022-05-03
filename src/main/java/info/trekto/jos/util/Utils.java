@@ -79,7 +79,7 @@ public class Utils {
         info(logger, "Number of objects: " + properties.getNumberOfObjects());
         info(logger, "Number of iterations: " + properties.getNumberOfIterations());
         info(logger, "'Number' implementation: " + properties.getNumberType());
-        info(logger, "Simulation implementation: " + C.getSimulation().getClass().getSimpleName());
+        info(logger, "'Simulation' implementation: " + C.getSimulation().getClass().getSimpleName());
     }
 
     public static void showRemainingTime(long i, long startTime, long numberOfIterations, int numberOfObjects) {

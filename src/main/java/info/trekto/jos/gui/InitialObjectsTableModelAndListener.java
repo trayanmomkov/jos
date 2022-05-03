@@ -30,7 +30,7 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
         addCol("radius", i++);
         addCol("speedX", i++);
         addCol("speedY", i++);
-        addCol("speedX", i++);
+        addCol("speedZ", i++);
         addCol("color", i++);
 
         addTableModelListener(this);

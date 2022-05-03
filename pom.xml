@@ -3,9 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>info.trekto</groupId>
     <artifactId>jos</artifactId>
-    <version>1.2.0-CPU</version>
+    <version>2.0.0</version>
+    <packaging>jar</packaging>
 
     <build>
+        <finalName>jos</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -28,7 +30,7 @@
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
-                    <finalName>jos-cpu</finalName>
+                    <finalName>jos</finalName>
                     <outputDirectory>./</outputDirectory>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>

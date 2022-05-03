@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Properties;
 
+import static info.trekto.jos.core.GpuChecker.checkGpu;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumberFactory;
 import static info.trekto.jos.util.Utils.error;
 import static info.trekto.jos.util.Utils.isNullOrBlank;
@@ -80,7 +81,7 @@ public enum Controller {
             applicationProperties.setProperty("version", "Unknown");
         }
 
-        mainForm.setAboutMessage("JOS\n\nv. " + applicationProperties.getProperty("version") + "\narbitrary precision\n\nAuthor: Trayan Momkov\n2022");
+        mainForm.setAboutMessage("JOS - v. " + applicationProperties.getProperty("version") + "\n\nAuthor: Trayan Momkov\n2022");
         mainForm.setNumberTypeMessage("DOUBLE - Double precision. Fast. (Uses GPU if possible)\n"
                                               + "FLOAT - Single precision. Fastest. (Uses GPU if possible)\n"
                                               + "APFLOAT - Arbitrary precision. Fast.\n"
@@ -104,6 +105,7 @@ public enum Controller {
         jFrame.pack();
         jFrame.setLocationRelativeTo(null); // Center of the screen
         jFrame.setVisible(true);
+        checkGpu();
     }
 
     private Simulation createSimulation(SimulationProperties properties) {

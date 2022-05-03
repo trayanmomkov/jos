@@ -1,10 +1,9 @@
 package info.trekto.jos.core.impl;
 
-import info.trekto.jos.core.Simulation;
-import info.trekto.jos.core.impl.arbitrary_precision.SimulationAP;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.model.impl.TripleNumber;
 import info.trekto.jos.core.numbers.New;
+import info.trekto.jos.core.numbers.Number;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +17,7 @@ import java.util.Random;
 
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.impl.arbitrary_precision.SimulationLogicAP.calculateVolumeFromRadius;
-import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.*;
 import static info.trekto.jos.util.Utils.info;
 
 public class SimulationGenerator {
@@ -69,5 +68,45 @@ public class SimulationGenerator {
             }
         }
         properties.setInitialObjects(objects);
+    }
+
+    public static List<SimulationObject> generateComplexObject(Number x, Number y, Number radius, Number mass, String id, Number rotationDirection,
+                                                               Number speedX, Number speedY, Color color) {
+        final Number DEG_TO_RAD = PI.divide(New.num("180"));
+        List<SimulationObject> objectParticles = new ArrayList<>();
+        Number object_number_factor = New.num("0.4");    // bigger = less objects
+        Number object_radial_density = New.num("4");    // bigger = less objects
+        int exponential_speed_factor = 1;   // smaller = lower speed (including negative values) 
+        int exponential_mass_change_in_depth = 2;
+        Number particleRadius = ONE;
+
+        // Circles
+        Number centerObjectRadius = New.num("10");
+//        double minRadius = particleRadius * 2 + 1;
+        Number minRadius = centerObjectRadius.multiply(TWO);
+        for (Number r = radius; r.compareTo(minRadius) >= 0; r = r.subtract(particleRadius.multiply(object_radial_density))) {
+            Number particlesInCurrentCircle = r.divide(object_number_factor);   // TODO Probably should be rounded to integer
+            Number step = New.num("360").divide(particlesInCurrentCircle);
+
+            // Objects in the current circle
+            for (int i = 0; New.num(i).compareTo(r.divide(object_number_factor)) < 0; i++) {
+                Number radians = New.num(i).multiply(step).multiply(DEG_TO_RAD); //convert degrees into radians
+
+                SimulationObject o = C.createNewSimulationObject();
+                o.setX(IGNORED.cos(radians).multiply(r).add(x));
+                o.setY(IGNORED.sin(radians).multiply(r).add(y));
+                o.setSpeed(new TripleNumber(IGNORED.cos(radians.subtract(New.num("300"))).multiply(r.pow(exponential_speed_factor))
+                                                    .multiply(PI).multiply(rotationDirection).add(speedX),
+                                            IGNORED.sin(radians.subtract(New.num("300"))).multiply(r.pow(exponential_speed_factor))
+                                                    .multiply(PI).multiply(rotationDirection).add(speedY),
+                                            ZERO));
+                o.setMass(mass.multiply(r.pow(exponential_mass_change_in_depth))); 
+                o.setRadius(particleRadius);
+                o.setId(id + r + i);
+                o.setColor(color.getRGB());
+                objectParticles.add(o);
+            }
+        }
+        return objectParticles;
     }
 }
