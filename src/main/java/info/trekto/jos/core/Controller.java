@@ -5,6 +5,7 @@ import info.trekto.jos.core.impl.SimulationGenerator;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.impl.arbitrary_precision.SimulationAP;
 import info.trekto.jos.core.impl.double_precision.SimulationDouble;
+import info.trekto.jos.core.impl.single_precision.SimulationFloat;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.model.impl.SimulationObjectImpl;
 import info.trekto.jos.core.numbers.New;
@@ -115,6 +116,8 @@ public enum Controller {
                 simulation = new SimulationDouble(properties);
                 break;
             case FLOAT:
+                simulation = new SimulationFloat(properties);
+                break;
             default:
                 simulation = new SimulationAP(properties);
         }

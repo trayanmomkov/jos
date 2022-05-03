@@ -19,6 +19,10 @@ public interface ReaderWriter {
                              double[] positionZ, double[] speedX, double[] speedY, double[] speedZ, double[] mass, double[] radius,
                              String[] id, int[] color, boolean[] deleted);
 
+    void appendObjectsToFile(SimulationProperties properties, long currentIterationNumber, float[] positionX, float[] positionY,
+                             float[] positionZ, float[] speedX, float[] speedY, float[] speedZ, float[] mass, float[] radius,
+                             String[] id, int[] color, boolean[] deleted);
+
     void endFile();
 
     SimulationProperties readPropertiesForPlaying(String inputFile) throws IOException;

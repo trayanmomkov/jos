@@ -100,8 +100,8 @@ public class JsonReaderWriter implements ReaderWriter {
         return gson.toJsonTree(simulationObjectMap).getAsJsonObject();
     }
 
-    private JsonObject mapSimulationObjectToJson(Gson gson, double positionX, double positionY, double positionZ, double speedX, double speedY,
-                                                 double speedZ, double mass, double radius, String id, int color) {
+    private JsonObject mapSimulationObjectToJson(Gson gson, Object positionX, Object positionY, Object positionZ, Object speedX, Object speedY,
+                                                     Object speedZ, Object mass, Object radius, String id, int color) {
         Map<String, Object> simulationObjectMap = new HashMap<>();
         simulationObjectMap.put("id", id);
 
@@ -238,56 +238,10 @@ public class JsonReaderWriter implements ReaderWriter {
     }
 
     @Override
-    public void appendObjectsToFile(List<SimulationObject> simulationObjects, SimulationProperties properties, long currentIterationNumber) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        if (writer == null) {
-            initWriter(properties.getOutputFile());
-            try {
-                writer.write("{\n  \"properties\":\n");
-                gson.toJson(mapPropertiesAndInitialObjects(properties, gson), writer);
-                writer.write(",\n  \"simulation\": [\n");
-            } catch (IOException e) {
-                error(logger, "Cannot write 'simulation' element to output JSON file.", e);
-            }
-        }
-
-        JsonArray objectsAsJsonArray = new JsonArray();
-        for (SimulationObject simulationObject : simulationObjects) {
-            objectsAsJsonArray.add(mapSimulationObjectToJson(gson, simulationObject));
-        }
-
-        JsonObject cycleJson = new JsonObject();
-        cycleJson.addProperty("cycle", currentIterationNumber);
-        cycleJson.addProperty("numberOfObjects", simulationObjects.size());
-        cycleJson.add("objects", objectsAsJsonArray);
-
-        gson.toJson(cycleJson, writer);
-        boolean lastIterationToSave = currentIterationNumber >= properties.getNumberOfIterations()
-                || currentIterationNumber + properties.getSaveEveryNthIteration() > properties.getNumberOfIterations();
-        if (!C.hasToStop() && (properties.isInfiniteSimulation() || !lastIterationToSave)) {
-            try {
-                writer.write(",\n");
-            } catch (IOException e) {
-                error(logger, "Cannot write comma after writing cycle in the output file.", e);
-            }
-        }
-    }
-
-    @Override
-    public void appendObjectsToFile(SimulationProperties properties, long currentIterationNumber, double[] positionX, double[] positionY,
-                                    double[] positionZ, double[] speedX, double[] speedY, double[] speedZ, double[] mass, double[] radius,
-                                    String[] id, int[] color, boolean[] deleted) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        if (writer == null) {
-            initWriter(properties.getOutputFile());
-            try {
-                writer.write("{\n  \"properties\":\n");
-                gson.toJson(mapPropertiesAndInitialObjects(properties, gson), writer);
-                writer.write(",\n  \"simulation\": [\n");
-            } catch (IOException e) {
-                error(logger, "Cannot write 'simulation' element to output JSON file.", e);
-            }
-        }
+    public void appendObjectsToFile(SimulationProperties properties, long currentIterationNumber, float[] positionX, float[] positionY,
+                                    float[] positionZ, float[] speedX, float[] speedY, float[] speedZ, float[] mass, float[] radius, String[] id,
+                                    int[] color, boolean[] deleted) {
+        Gson gson = createGsonAndWriteFileHead(properties);
 
         JsonArray objectsAsJsonArray = new JsonArray();
         for (int i = 0; i < positionX.length; i++) {
@@ -297,6 +251,39 @@ public class JsonReaderWriter implements ReaderWriter {
             }
         }
 
+        writeFileTail(currentIterationNumber, objectsAsJsonArray, gson, properties);
+    }
+
+    @Override
+    public void appendObjectsToFile(SimulationProperties properties, long currentIterationNumber, double[] positionX, double[] positionY,
+                                    double[] positionZ, double[] speedX, double[] speedY, double[] speedZ, double[] mass, double[] radius,
+                                    String[] id, int[] color, boolean[] deleted) {
+        Gson gson = createGsonAndWriteFileHead(properties);
+
+        JsonArray objectsAsJsonArray = new JsonArray();
+        for (int i = 0; i < positionX.length; i++) {
+            if (!deleted[i]) {
+                objectsAsJsonArray.add(mapSimulationObjectToJson(gson, positionX[i], positionY[i], positionZ[i], speedX[i], speedY[i], speedZ[i],
+                                                                 mass[i], radius[i], id[i], color[i]));
+            }
+        }
+
+        writeFileTail(currentIterationNumber, objectsAsJsonArray, gson, properties);
+    }
+
+    @Override
+    public void appendObjectsToFile(List<SimulationObject> simulationObjects, SimulationProperties properties, long currentIterationNumber) {
+        Gson gson = createGsonAndWriteFileHead(properties);
+
+        JsonArray objectsAsJsonArray = new JsonArray();
+        for (SimulationObject simulationObject : simulationObjects) {
+            objectsAsJsonArray.add(mapSimulationObjectToJson(gson, simulationObject));
+        }
+
+        writeFileTail(currentIterationNumber, objectsAsJsonArray, gson, properties);
+    }
+
+    private void writeFileTail(long currentIterationNumber, JsonArray objectsAsJsonArray, Gson gson, SimulationProperties properties) {
         JsonObject cycleJson = new JsonObject();
         cycleJson.addProperty("cycle", currentIterationNumber);
         cycleJson.addProperty("numberOfObjects", objectsAsJsonArray.size());
@@ -312,6 +299,21 @@ public class JsonReaderWriter implements ReaderWriter {
                 error(logger, "Cannot write comma after writing cycle in the output file.", e);
             }
         }
+    }
+
+    private Gson createGsonAndWriteFileHead(SimulationProperties properties) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        if (writer == null) {
+            initWriter(properties.getOutputFile());
+            try {
+                writer.write("{\n  \"properties\":\n");
+                gson.toJson(mapPropertiesAndInitialObjects(properties, gson), writer);
+                writer.write(",\n  \"simulation\": [\n");
+            } catch (IOException e) {
+                error(logger, "Cannot write 'simulation' element to output JSON file.", e);
+            }
+        }
+        return gson;
     }
 
     @Override

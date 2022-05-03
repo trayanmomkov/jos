@@ -44,6 +44,10 @@ public class Utils {
         System.arraycopy(src, 0, dst, 0, src.length);
     }
 
+    public static void deepCopy(float[] src, float[] dst) {
+        System.arraycopy(src, 0, dst, 0, src.length);
+    }
+
     public static void deepCopy(int[] src, int[] dst) {
         System.arraycopy(src, 0, dst, 0, src.length);
     }
