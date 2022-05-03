@@ -5,7 +5,7 @@ import com.aparapi.Kernel;
 public class SimulationLogicFloat extends Kernel {
     private static final float TWO = 2.0f;
     private static final float RATIO_FOUR_THREE = 4 / 3.0f;
-    private static final float GRAVITY = 0.00000000006674f; // 6.674×10^−11 N⋅m2/kg2
+    private static final float GRAVITY = 0.000000000066743f; // 6.6743×10^−11 N⋅m2/kg2
     private static final float PI = (float)Math.PI;
 
     public final float[] positionX;

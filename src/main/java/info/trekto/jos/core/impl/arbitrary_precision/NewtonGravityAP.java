@@ -14,7 +14,7 @@ public class NewtonGravityAP implements ForceCalculator {
     private final Number gravity;
 
     public NewtonGravityAP() {
-        gravity = New.num("0.00000000006674"); // 6.674×10^−11 N⋅m2/kg2
+        gravity = New.num("0.000000000066743"); // 6.6743×10^−11 N⋅m2/kg2
     }
 
     @Override

@@ -5,7 +5,7 @@ import com.aparapi.Kernel;
 public class SimulationLogicDouble extends Kernel {
     private static final double TWO = 2.0;
     private static final double RATIO_FOUR_THREE = 4 / 3.0;
-    private static final double GRAVITY = 0.00000000006674; // 6.674×10^−11 N⋅m2/kg2
+    private static final double GRAVITY = 0.000000000066743; // 6.6743×10^−11 N⋅m2/kg2
     private static final double PI = Math.PI;
 
     public final double[] positionX;
