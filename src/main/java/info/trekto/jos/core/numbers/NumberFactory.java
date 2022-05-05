@@ -7,6 +7,8 @@ import java.math.BigDecimal;
  * 7 Dec 2015
  */
 public interface NumberFactory {
+    int DEFAULT_PRECISION = 16;
+
     Number createNumber(BigDecimal val);
 
     Number createNumber(String val);

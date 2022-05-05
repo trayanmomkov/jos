@@ -2,6 +2,7 @@ package info.trekto.jos.util;
 
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.model.SimulationObject;
+import info.trekto.jos.core.numbers.NumberFactory.NumberType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static info.trekto.jos.core.Controller.C;
+import static info.trekto.jos.core.numbers.NumberFactory.DEFAULT_PRECISION;
+import static info.trekto.jos.core.numbers.NumberFactory.NumberType.DOUBLE;
+import static java.lang.Double.parseDouble;
 
 /**
  * @author Trayan Momkov
@@ -23,6 +27,14 @@ public class Utils {
     public static final long MILLI_IN_HOUR = 60 * 60 * MILLISECONDS_IN_ONE_SECOND;
     public static final long MILLI_IN_DAY = 24 * 60 * 60 * MILLISECONDS_IN_ONE_SECOND;
     public static final long NANOSECONDS_IN_ONE_MILLISECOND = 1000 * 1000;
+    
+    private static final int ONE_DOUBLE_OBJECT_SIZE_BYTES = 299;
+    private static final int ONE_FLOAT_OBJECT_SIZE_BYTES = 247;
+    private static final int ONE_AP_OBJECT_SIZE_WITHOUT_REAL_NUMBERS_BYTES = 188;
+    private static final double COMPRESSION_RATIO = 7;
+    private static final double BYTES_IN_MIB = 1024 * 1024;
+    private static final double REAL_NUMBERS_IN_ONE_OBJECT = 6;    // Z-coordinates is excluded. With it, number will be 8.
+    public static final String NA = "---";
 
     public static final int CORES = Runtime.getRuntime().availableProcessors();
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Utils.class);
@@ -141,6 +153,87 @@ public class Utils {
                 + (hours > 0 ? hours + " h. " : "")
                 + (minutes > 0 ? minutes + " m. " : "")
                 + seconds + "." + milliseconds + " s.";
+    }
+
+    public static String calculateAverageFileSize(String numberOfObjectsString, String numberOfIterationsString, String numberTypeString,
+                                                  String saveEveryNthIterationString, String precisionString) {
+        int numberOfObjects;
+        long numberOfIterations = 0;
+        NumberType numberType = DOUBLE;
+        int saveEveryNthIteration = 1;
+        int precision = DEFAULT_PRECISION;
+        
+        if (isNumeric(numberOfObjectsString)) {
+            numberOfObjects = (int)Math.round(parseDouble(numberOfObjectsString));
+        } else {
+            return NA;
+        }
+        
+        if (isNumeric(numberOfIterationsString)) {
+            numberOfIterations = (int)Math.round(parseDouble(numberOfIterationsString));
+        }
+        
+        try {
+            numberType = NumberType.valueOf(numberTypeString);
+        } catch (IllegalArgumentException ignored) {}
+        
+        if (isNumeric(saveEveryNthIterationString)) {
+            saveEveryNthIteration = (int)Math.round(parseDouble(saveEveryNthIterationString));
+        }
+        
+        if (isNumeric(precisionString)) {
+            precision = (int)Math.round(parseDouble(precisionString));
+        }
+                                                  
+        double bytesPerObject = 0;
+        
+        switch (numberType) {
+            case FLOAT:
+                bytesPerObject = ONE_FLOAT_OBJECT_SIZE_BYTES;
+                break;
+            case DOUBLE:
+                bytesPerObject = ONE_DOUBLE_OBJECT_SIZE_BYTES;
+                break;
+            case APFLOAT:
+            case BIG_DECIMAL:
+                bytesPerObject = ONE_AP_OBJECT_SIZE_WITHOUT_REAL_NUMBERS_BYTES + REAL_NUMBERS_IN_ONE_OBJECT * (precision + 1);  // 1 for the dot (.)
+                break;
+        }
+        
+        int cycleHeadBytes = 63;
+        double bytesPerCycle = cycleHeadBytes + numberOfObjects * bytesPerObject;
+        double bytesPer1000Iterations = 1000 / (double)saveEveryNthIteration * bytesPerCycle;
+
+        double headBytes = 473 + bytesPerCycle;
+        double tailBytes = 14;
+        double totalBytes = headBytes;
+        
+        if (numberOfIterations < 1) {
+            totalBytes += bytesPer1000Iterations;
+        } else {
+            totalBytes += bytesPer1000Iterations * (numberOfIterations / 1000.0);
+        }
+        
+        totalBytes += tailBytes;
+        
+        double totalBytesCompressed = totalBytes / COMPRESSION_RATIO;
+        String totalMiB = String.valueOf(round(totalBytes / BYTES_IN_MIB, 1));
+        String totalMiBCompressed = String.valueOf(round(totalBytesCompressed / BYTES_IN_MIB, 1));
+        return "~ " + totalMiBCompressed + " MiB (" + totalMiB + " uncompressed)" + (numberOfIterations < 1 ? " per 1000 iterations" : "");
+    }
+
+    public static boolean isNumeric(String str) {
+        try {
+            parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public static double round(double value, int precision) {
+        int scale = (int) Math.pow(10, precision);
+        return (double) Math.round(value * scale) / scale;
     }
 
     public static boolean isNullOrBlank(String s) {

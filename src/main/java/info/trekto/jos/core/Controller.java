@@ -35,8 +35,7 @@ import java.util.Properties;
 
 import static info.trekto.jos.core.GpuChecker.checkGpu;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumberFactory;
-import static info.trekto.jos.util.Utils.error;
-import static info.trekto.jos.util.Utils.isNullOrBlank;
+import static info.trekto.jos.util.Utils.*;
 import static java.awt.Color.PINK;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.WARNING_MESSAGE;
@@ -107,6 +106,7 @@ public enum Controller {
         jFrame.setLocationRelativeTo(null); // Center of the screen
         jFrame.setVisible(true);
         checkGpu();
+        C.calculateAverageSize();
     }
 
     private Simulation createSimulation(SimulationProperties properties) {
@@ -257,9 +257,9 @@ public enum Controller {
         if (!isNullOrBlank(gui.getNumberOfObjectsTextField().getText())) {
             properties.setNumberOfObjects(Integer.parseInt(gui.getNumberOfObjectsTextField().getText()));
         }
-        
+
         properties.setInitialObjects(((InitialObjectsTableModelAndListener) gui.getInitialObjectsTable().getModel()).getInitialObjects());
-        
+
         if (!isNullOrBlank(gui.getSecondsPerIterationTextField().getText())) {
             properties.setSecondsPerIteration(New.num(gui.getSecondsPerIterationTextField().getText()));
         }
@@ -272,7 +272,7 @@ public enum Controller {
         if (!isNullOrBlank(gui.getNumberOfIterationsTextField().getText())) {
             properties.setNumberOfIterations(Integer.parseInt(gui.getNumberOfIterationsTextField().getText()));
         }
-        
+
         if (!isNullOrBlank(gui.getPlayingSpeedTextField().getText().replace("-", ""))) {
             properties.setPlayingSpeed(Integer.parseInt(gui.getPlayingSpeedTextField().getText()));
         }
@@ -545,12 +545,14 @@ public enum Controller {
     public void precisionTextFieldEvent() {
         if (!isNullOrBlank(gui.getPrecisionTextField().getText())) {
             highlightGenerateObjectsButton();
+            calculateAverageSize();
         }
     }
 
     public void numberTypeComboBoxEvent(ActionEvent actionEvent) {
         if (actionEvent.getModifiers() != 0) {
             highlightGenerateObjectsButton();
+            calculateAverageSize();
         }
     }
 
@@ -589,11 +591,13 @@ public enum Controller {
     }
 
     public void numberOfIterationsTextFieldEvent() {
+        calculateAverageSize();
     }
 
     public void numberOfObjectsTextFieldEvent() {
         if (!isNullOrBlank(gui.getNumberOfObjectsTextField().getText())) {
             highlightGenerateObjectsButton();
+            calculateAverageSize();
         }
     }
 
@@ -638,5 +642,20 @@ public enum Controller {
 
     public SimulationObject createNewSimulationObject() {
         return new SimulationObjectImpl();
+    }
+
+    public void saveEveryNthIterationTextFieldEvent() {
+        if (!isNullOrBlank(gui.getSaveEveryNthIterationTextField().getText())) {
+            calculateAverageSize();
+        }
+    }
+
+    private void calculateAverageSize() {
+        gui.getAvgFileSize().setText(calculateAverageFileSize(
+                gui.getNumberOfObjectsTextField().getText(),
+                gui.getNumberOfIterationsTextField().getText(),
+                String.valueOf(gui.getNumberTypeComboBox().getSelectedItem()),
+                gui.getSaveEveryNthIterationTextField().getText(),
+                gui.getPrecisionTextField().getText()));
     }
 }

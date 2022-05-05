@@ -22,10 +22,7 @@ public class NumberFactoryProxy {
     public static Number BILLION;
     public static Number IGNORED;
     public static Number PI;
-    /**
-     * Here you can change number factory implementation and respectively type of every number in the program.
-     */
-    // private static NumberFactory factory = new BigDecimalNumberFactory();
+
     private static NumberFactory factory;
 
     private static void calculateConstants() {
