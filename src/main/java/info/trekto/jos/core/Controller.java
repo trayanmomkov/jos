@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.Properties;
 
 import static info.trekto.jos.core.GpuChecker.checkGpu;
+import static info.trekto.jos.core.numbers.NumberFactory.NumberType.ARBITRARY_PRECISION;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumberFactory;
 import static info.trekto.jos.util.Utils.*;
 import static java.awt.Color.PINK;
@@ -106,6 +107,7 @@ public enum Controller {
         jFrame.setVisible(true);
         checkGpu();
         C.calculateAverageSize();
+        C.setPrecisionFieldVisibility();
     }
 
     private Simulation createSimulation(SimulationProperties properties) {
@@ -240,7 +242,7 @@ public enum Controller {
             properties.setPrecision(Integer.parseInt(gui.getPrecisionTextField().getText()));
         }
 
-        properties.setNumberType(NumberFactory.NumberType.valueOf(String.valueOf(gui.getNumberTypeComboBox().getSelectedItem())));
+        properties.setNumberType(getSelectedNumberType());
 
         createNumberFactory(properties.getNumberType(), properties.getPrecision());
 
@@ -386,6 +388,7 @@ public enum Controller {
         ((InitialObjectsTableModelAndListener) gui.getInitialObjectsTable().getModel()).setInitialObjects(prop.getInitialObjects());
         
         calculateAverageSize();
+        setPrecisionFieldVisibility();
     }
 
     private void showError(Component parent, String message, Exception exception) {
@@ -541,6 +544,7 @@ public enum Controller {
 
     public void numberTypeComboBoxEvent(ActionEvent actionEvent) {
         if (actionEvent.getModifiers() != 0) {
+            setPrecisionFieldVisibility();
             highlightGenerateObjectsButton();
             calculateAverageSize();
         }
@@ -647,5 +651,19 @@ public enum Controller {
                 String.valueOf(gui.getNumberTypeComboBox().getSelectedItem()),
                 gui.getSaveEveryNthIterationTextField().getText(),
                 gui.getPrecisionTextField().getText()));
+    }
+    
+    private NumberFactory.NumberType getSelectedNumberType() {
+        return NumberFactory.NumberType.valueOf(String.valueOf(gui.getNumberTypeComboBox().getSelectedItem()));
+    }
+
+    private void setPrecisionFieldVisibility() {
+        if (getSelectedNumberType() == ARBITRARY_PRECISION) {
+            gui.getPrecisionLabel().setEnabled(gui.getRunningRadioButton().isSelected());
+            gui.getPrecisionTextField().setEnabled(gui.getRunningRadioButton().isSelected());
+        } else {
+            gui.getPrecisionLabel().setEnabled(false);
+            gui.getPrecisionTextField().setEnabled(false);
+        }
     }
 }
