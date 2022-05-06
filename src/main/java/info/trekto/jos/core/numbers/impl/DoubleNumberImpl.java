@@ -87,7 +87,7 @@ public class DoubleNumberImpl implements Number {
     }
 
     /**
-     * Returns the maximum of this {@code BigDecimal} and {@code val}.
+     * Returns the maximum of this number and {@code val}.
      */
     public Number max(Number val) {
         return (compareTo(val) >= 0 ? this : val);
@@ -107,10 +107,6 @@ public class DoubleNumberImpl implements Number {
 
     public double doubleValue() {
         return value;
-    }
-
-    public BigDecimal bigDecimalValue() {
-        return new BigDecimal(value);
     }
 
     @Override

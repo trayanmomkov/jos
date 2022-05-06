@@ -24,6 +24,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import static info.trekto.jos.core.Controller.C;
+import static info.trekto.jos.core.numbers.NumberFactory.NumberType.ARBITRARY_PRECISION;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumberFactory;
 import static info.trekto.jos.util.Utils.error;
 import static info.trekto.jos.util.Utils.info;
@@ -73,7 +74,6 @@ public class JsonReaderWriter implements ReaderWriter {
         json.addProperty("numberType", properties.getNumberType().name());
         json.addProperty("interactingLaw", properties.getInteractingLaw().name());
         json.addProperty("precision", properties.getPrecision());
-        json.addProperty("scale", properties.getScale());
         json.addProperty("realTimeVisualization", properties.isRealTimeVisualization());
         json.addProperty("playingSpeed", properties.getPlayingSpeed());
         json.addProperty("bounceFromWalls", properties.isBounceFromWalls());
@@ -134,11 +134,13 @@ public class JsonReaderWriter implements ReaderWriter {
     }
 
     private void readPropertiesAndCreateNumberFactory(JsonObject json, SimulationProperties properties) {
-        properties.setNumberType(NumberFactory.NumberType.valueOf(json.get("numberType").getAsString()));
+        String numberType = json.get("numberType").getAsString().equals("APFLOAT") ?
+                ARBITRARY_PRECISION.name()
+                : json.get("numberType").getAsString();
+        properties.setNumberType(NumberFactory.NumberType.valueOf(numberType));
         properties.setPrecision(json.get("precision").getAsInt());
-        properties.setScale(json.get("scale").getAsInt());
 
-        createNumberFactory(properties.getNumberType(), properties.getPrecision(), properties.getScale());
+        createNumberFactory(properties.getNumberType(), properties.getPrecision());
 
         properties.setNumberOfIterations(json.get("numberOfIterations").getAsLong());
         properties.setSecondsPerIteration(New.num(json.get("secondsPerIteration").getAsString()));

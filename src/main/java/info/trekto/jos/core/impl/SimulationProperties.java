@@ -3,6 +3,7 @@ package info.trekto.jos.core.impl;
 import info.trekto.jos.core.ForceCalculator.InteractingLaw;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.numbers.Number;
+import info.trekto.jos.core.numbers.NumberFactory;
 import info.trekto.jos.core.numbers.NumberFactory.NumberType;
 
 import java.util.List;
@@ -28,11 +29,7 @@ public class SimulationProperties {
     /* Java {@link ArrayList} is limited to Integer.MAX_VALUE */
     private int numberOfObjects;
 
-    /* BigDecimal precision */
-    private int precision = 16;
-
-    /* BigDecimal scale */
-    private int scale = 16;
+    private int precision = NumberFactory.DEFAULT_PRECISION;
 
     private List<SimulationObject> initialObjects;
 
@@ -129,14 +126,6 @@ public class SimulationProperties {
 
     public void setPrecision(int precision) {
         this.precision = precision;
-    }
-
-    public int getScale() {
-        return scale;
-    }
-
-    public void setScale(int scale) {
-        this.scale = scale;
     }
 
     public boolean isBounceFromWalls() {

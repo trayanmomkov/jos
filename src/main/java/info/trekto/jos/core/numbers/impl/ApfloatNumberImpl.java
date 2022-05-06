@@ -55,13 +55,11 @@ public class ApfloatNumberImpl implements Number {
     @Override
     public Number multiply(Number multiplicand) {
         return newNumber(value.multiply(((ApfloatNumberImpl) multiplicand).value));
-        // return new NumberBigDecimalImpl((value.multiply(((NumberBigDecimalImpl) multiplicand).value)));
     }
 
     @Override
     public Number divide(Number divisor) {
         return newNumber(value.divide(((ApfloatNumberImpl) divisor).value));
-        // return new NumberBigDecimalImpl((value.divide(((NumberBigDecimalImpl) divisor).value)));
     }
 
     @Override
@@ -133,11 +131,6 @@ public class ApfloatNumberImpl implements Number {
     @Override
     public double doubleValue() {
         return value.doubleValue();
-    }
-
-    @Override
-    public BigDecimal bigDecimalValue() {
-        return BigDecimal.valueOf(value.doubleValue()).setScale((int) value.precision(), BigDecimalNumberImpl.roundingMode);
     }
 
     @Override

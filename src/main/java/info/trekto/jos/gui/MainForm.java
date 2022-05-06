@@ -35,7 +35,6 @@ public class MainForm {
     private JCheckBox bounceFromScreenWallsCheckBox;
     private JTextField numberOfObjectsTextField;
     private JTextField precisionTextField;
-    private JTextField scaleTextField;
     private JTable initialObjectsTable;
     private JTextArea consoleTextArea;
     private JButton startButton;
@@ -54,7 +53,6 @@ public class MainForm {
     private JLabel interactingLawLabel;
     private JLabel outputFileLabel;
     private JLabel precisionLabel;
-    private JLabel scaleLabel;
     private JLabel numberOfIterationsLabel;
     private JLabel playFromLabel;
     private JLabel playingSpeedLabel;
@@ -85,7 +83,6 @@ public class MainForm {
     private List<Component> savingToFileComponents;
 
     public void init() {
-        scaleTextField.addActionListener(actionEvent -> C.scaleTextFieldEvent());
         precisionTextField.addActionListener(actionEvent -> C.precisionTextFieldEvent());
         initialObjectsTable.setModel(new InitialObjectsTableModelAndListener());
         browseButton.addActionListener(actionEvent -> C.browseButtonEvent());
@@ -109,7 +106,6 @@ public class MainForm {
         numberTypeComboBox.addActionListener(C::numberTypeComboBoxEvent);
         interactingLawComboBox.addActionListener(actionEvent -> C.interactingLawComboBoxEvent());
         precisionTextField.getDocument().addUndoableEditListener(actionEvent -> C.precisionTextFieldEvent());
-        scaleTextField.getDocument().addUndoableEditListener(actionEvent -> C.scaleTextFieldEvent());
         realTimeVisualizationCheckBox.addActionListener(actionEvent -> C.realTimeVisualizationCheckBoxEvent());
         bounceFromScreenWallsCheckBox.addActionListener(actionEvent -> C.bounceFromScreenWallsCheckBoxEvent());
         playingSpeedTextField.getDocument().addUndoableEditListener(actionEvent -> C.playingSpeedTextFieldEvent());
@@ -131,7 +127,7 @@ public class MainForm {
                 startButton, savePropertiesButton, inputFilePathLabel, simulationPropertiesPanel, numberOfObjectsLabel,
                 secondsPerIterationLabel, numberTypeLabel, interactingLawLabel, outputFileLabel, precisionLabel,
                 initialObjectsTable, initialObjectsPanel, generateObjectsButton, numberTypeComboBox, precisionTextField,
-                precisionTextField, scaleLabel, scaleTextField);
+                precisionTextField);
 
         playingComponents = Arrays.asList(playFileLabel, playFromLabel, browsePlayingFileButton, playButton);
 
@@ -235,10 +231,6 @@ public class MainForm {
         return precisionTextField;
     }
 
-    public JTextField getScaleTextField() {
-        return scaleTextField;
-    }
-
     public JTable getInitialObjectsTable() {
         return initialObjectsTable;
     }
@@ -309,10 +301,6 @@ public class MainForm {
 
     public JLabel getPrecisionLabel() {
         return precisionLabel;
-    }
-
-    public JLabel getScaleLabel() {
-        return scaleLabel;
     }
 
     public JLabel getNumberOfIterationsLabel() {
@@ -580,7 +568,7 @@ public class MainForm {
         realTimeVisualizationCheckBox.setText("Real time visualization");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 1;
         gbc.gridwidth = 2;
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
@@ -593,7 +581,7 @@ public class MainForm {
         bounceFromScreenWallsCheckBox.setText("Bounce from screen walls");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = 2;
         gbc.gridwidth = 2;
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
@@ -620,33 +608,11 @@ public class MainForm {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel2.add(precisionTextField, gbc);
-        scaleLabel = new JLabel();
-        scaleLabel.setEnabled(true);
-        scaleLabel.setText("Scale");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.weighty = 1.0;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(0, 2, 0, 0);
-        panel2.add(scaleLabel, gbc);
-        scaleTextField = new JTextField();
-        scaleTextField.setEnabled(true);
-        scaleTextField.setText("16");
-        scaleTextField.setToolTipText("Scale is used by BigDecimal. ApFloat uses precision only.");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel2.add(scaleTextField, gbc);
         generateObjectsButton = new JButton();
         generateObjectsButton.setText("Generate objects");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
-        gbc.gridy = 4;
+        gbc.gridy = 3;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.EAST;
@@ -656,7 +622,7 @@ public class MainForm {
         aboutLabel.setText("About");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy = 3;
         gbc.anchor = GridBagConstraints.EAST;
         panel2.add(aboutLabel, gbc);
         saveToFileCheckBox = new JCheckBox();

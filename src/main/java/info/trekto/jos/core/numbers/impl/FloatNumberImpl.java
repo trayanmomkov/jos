@@ -100,7 +100,7 @@ public class FloatNumberImpl implements Number {
     }
 
     /**
-     * Returns the maximum of this {@code BigDecimal} and {@code val}.
+     * Returns the maximum of this number and {@code val}.
      */
     @Override
     public Number max(Number val) {
@@ -128,11 +128,6 @@ public class FloatNumberImpl implements Number {
     }
 
     @Override
-    public BigDecimal bigDecimalValue() {
-        return new BigDecimal(value);
-    }
-
-    @Override
     public String toString() {
         return ((Float) value).toString();
     }
@@ -143,7 +138,6 @@ public class FloatNumberImpl implements Number {
     }
 
     public Number atan2(Number n1, Number n2) {
-        // TODO Use ApFloat for trigonometry
         return New.num(Math.atan2(n1.floatValue(), n2.floatValue()));
     }
 

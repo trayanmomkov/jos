@@ -91,7 +91,6 @@ public class Utils {
 
         info(logger, "Number of cores: " + CORES);
         info(logger, "Precision: " + properties.getPrecision());
-        info(logger, "Scale: " + properties.getScale());
         info(logger, "Number of objects: " + properties.getNumberOfObjects());
         info(logger, "Number of iterations: " + properties.getNumberOfIterations());
         info(logger, "'Number' implementation: " + properties.getNumberType());
@@ -194,8 +193,7 @@ public class Utils {
             case DOUBLE:
                 bytesPerObject = ONE_DOUBLE_OBJECT_SIZE_BYTES;
                 break;
-            case APFLOAT:
-            case BIG_DECIMAL:
+            case ARBITRARY_PRECISION:
                 bytesPerObject = ONE_AP_OBJECT_SIZE_WITHOUT_REAL_NUMBERS_BYTES + REAL_NUMBERS_IN_ONE_OBJECT * (precision + 1);  // 1 for the dot (.)
                 break;
         }

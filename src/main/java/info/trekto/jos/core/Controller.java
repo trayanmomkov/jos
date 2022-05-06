@@ -84,8 +84,7 @@ public enum Controller {
         mainForm.setAboutMessage("JOS - v. " + applicationProperties.getProperty("version") + "\n\nAuthor: Trayan Momkov\n2022");
         mainForm.setNumberTypeMessage("DOUBLE - Double precision. Fast. (Uses GPU if possible)\n"
                                               + "FLOAT - Single precision. Fastest. (Uses GPU if possible)\n"
-                                              + "APFLOAT - Arbitrary precision. Fast.\n"
-                                              + "BIG_DECIMAL - Arbitrary precision. Slow. Pi up to 10k digits.");
+                                              + "ARBITRARY_PRECISION - Arbitrary precision. Fast.");
         mainForm.init();
         C.setMainForm(mainForm);
 
@@ -237,17 +236,13 @@ public enum Controller {
     private SimulationProperties fetchPropertiesFromGuiAndCreateNumberFactory() {
         SimulationProperties properties = new SimulationProperties();
 
-        if (!isNullOrBlank(gui.getScaleTextField().getText())) {
-            properties.setScale(Integer.parseInt(gui.getScaleTextField().getText()));
-        }
-
         if (!isNullOrBlank(gui.getPrecisionTextField().getText())) {
             properties.setPrecision(Integer.parseInt(gui.getPrecisionTextField().getText()));
         }
 
         properties.setNumberType(NumberFactory.NumberType.valueOf(String.valueOf(gui.getNumberTypeComboBox().getSelectedItem())));
 
-        createNumberFactory(properties.getNumberType(), properties.getPrecision(), properties.getScale());
+        createNumberFactory(properties.getNumberType(), properties.getPrecision());
 
         fetchPropertiesNotRelatedToNumberFactory(properties);
         return properties;
@@ -384,12 +379,13 @@ public enum Controller {
         gui.getSaveEveryNthIterationTextField().setText(String.valueOf(prop.getSaveEveryNthIteration()));
         gui.getOutputFileTextField().setText(prop.getOutputFile());
         gui.getPrecisionTextField().setText(String.valueOf(prop.getPrecision()));
-        gui.getScaleTextField().setText(String.valueOf(prop.getScale()));
         gui.getRealTimeVisualizationCheckBox().setSelected(prop.isRealTimeVisualization());
         gui.getBounceFromScreenWallsCheckBox().setSelected(prop.isBounceFromWalls());
         gui.getPlayingSpeedTextField().setText(String.valueOf(prop.getPlayingSpeed()));
 
         ((InitialObjectsTableModelAndListener) gui.getInitialObjectsTable().getModel()).setInitialObjects(prop.getInitialObjects());
+        
+        calculateAverageSize();
     }
 
     private void showError(Component parent, String message, Exception exception) {
@@ -534,12 +530,6 @@ public enum Controller {
 
     private void unHighlightGenerateObjectButton() {
         gui.getGenerateObjectsButton().setBackground(defaultButtonColor != null ? defaultButtonColor : new Color(238, 238, 238));
-    }
-
-    public void scaleTextFieldEvent() {
-        if (!isNullOrBlank(gui.getScaleTextField().getText())) {
-            highlightGenerateObjectsButton();
-        }
     }
 
     public void precisionTextFieldEvent() {

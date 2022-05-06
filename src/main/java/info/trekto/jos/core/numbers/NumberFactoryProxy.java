@@ -3,7 +3,6 @@ package info.trekto.jos.core.numbers;
 import info.trekto.jos.core.numbers.impl.*;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 
 /**
  * In this class you can change the number factory and respectively type of every number in the program.
@@ -66,7 +65,7 @@ public class NumberFactoryProxy {
         return factory.createNumber(val);
     }
 
-    public static void createNumberFactory(NumberFactory.NumberType numberType, int precision, int scale) {
+    public static void createNumberFactory(NumberFactory.NumberType numberType, int precision) {
         switch (numberType) {
             case FLOAT:
                 setFactory(new FloatNumberFactory());
@@ -74,10 +73,7 @@ public class NumberFactoryProxy {
             case DOUBLE:
                 setFactory(new DoubleNumberFactory());
                 break;
-            case BIG_DECIMAL:
-                setFactory(new BigDecimalNumberFactory(new MathContext(precision, BigDecimalNumberImpl.roundingMode), scale));
-                break;
-            case APFLOAT:
+            case ARBITRARY_PRECISION:
                 setFactory(new ApfloatNumberFactory(precision));
                 break;
             default:
