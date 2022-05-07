@@ -134,7 +134,8 @@ public class JsonReaderWriter implements ReaderWriter {
     }
 
     private void readPropertiesAndCreateNumberFactory(JsonObject json, SimulationProperties properties) {
-        String numberType = json.get("numberType").getAsString().equals("APFLOAT") ?
+        String numberTypeFromFile = json.get("numberType").getAsString();
+        String numberType = numberTypeFromFile.equals("APFLOAT") || numberTypeFromFile.equals("BIG_DECIMAL") ?
                 ARBITRARY_PRECISION.name()
                 : json.get("numberType").getAsString();
         properties.setNumberType(NumberFactory.NumberType.valueOf(numberType));

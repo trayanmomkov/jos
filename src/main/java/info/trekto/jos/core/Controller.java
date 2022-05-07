@@ -30,11 +30,15 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.AbstractMap;
 import java.util.Date;
 import java.util.Properties;
 
+import static info.trekto.jos.core.ExecutionMode.CPU;
+import static info.trekto.jos.core.ExecutionMode.GPU;
 import static info.trekto.jos.core.GpuChecker.checkGpu;
 import static info.trekto.jos.core.numbers.NumberFactory.NumberType.ARBITRARY_PRECISION;
+import static info.trekto.jos.core.numbers.NumberFactory.NumberType.FLOAT;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumberFactory;
 import static info.trekto.jos.util.Utils.*;
 import static java.awt.Color.PINK;
@@ -111,22 +115,28 @@ public enum Controller {
     }
 
     private Simulation createSimulation(SimulationProperties properties) {
-        Simulation simulation;
-        switch (properties.getNumberType()) {
-            case DOUBLE:
-                simulation = new SimulationDouble(properties);
-                break;
-            case FLOAT:
-                simulation = new SimulationFloat(properties);
-                break;
-            default:
-                simulation = new SimulationAP(properties);
-        }
-
         if (properties.isSaveToFile()) {
             readerWriter = new JsonReaderWriter();
         }
-        return simulation;
+        
+        ExecutionMode executionMode = getSelectedExecutionMode();
+        NumberFactory.NumberType numberType = properties.getNumberType();
+
+        if (numberType == ARBITRARY_PRECISION || executionMode == CPU) {
+            return new SimulationAP(properties);
+        } else if (executionMode == GPU) {
+            if (numberType == FLOAT) {
+                return new SimulationFloat(properties);
+            } else {
+                return new SimulationDouble(properties);
+            }
+        } else {    // AUTO - Not implemented
+            if (numberType == FLOAT) {
+                return new SimulationFloat(properties);
+            } else {
+                return new SimulationDouble(properties);
+            }
+        }
     }
 
     public SimulationProperties loadProperties(String inputFile) {
@@ -135,9 +145,11 @@ public enum Controller {
         try {
             properties = readerWriter.readPropertiesAndCreateNumberFactory(inputFile);
         } catch (FileNotFoundException e) {
-            error(logger, "Cannot read properties file.", e);
+            error(logger, "Cannot open properties file.", e);
         } catch (NumberFormatException e) {
             error(logger, "Not a valid number.", e);
+        } catch (Exception e) {
+            error(logger, "Problem while reading properties file.", e);
         }
         return properties;
     }
@@ -389,6 +401,7 @@ public enum Controller {
         
         calculateAverageSize();
         setPrecisionFieldVisibility();
+        setExecutionModeFieldVisibilityAndValue();
     }
 
     private void showError(Component parent, String message, Exception exception) {
@@ -545,6 +558,7 @@ public enum Controller {
     public void numberTypeComboBoxEvent(ActionEvent actionEvent) {
         if (actionEvent.getModifiers() != 0) {
             setPrecisionFieldVisibility();
+            setExecutionModeFieldVisibilityAndValue();
             highlightGenerateObjectsButton();
             calculateAverageSize();
         }
@@ -665,5 +679,21 @@ public enum Controller {
             gui.getPrecisionLabel().setEnabled(false);
             gui.getPrecisionTextField().setEnabled(false);
         }
+    }
+
+    private void setExecutionModeFieldVisibilityAndValue() {
+        final int CPU_ITEM_INDEX = 2;
+        if (getSelectedNumberType() == ARBITRARY_PRECISION) {
+            gui.getExecutionModeLabel().setEnabled(false);
+            gui.getExecutionModeComboBox().setEnabled(false);
+            gui.getExecutionModeComboBox().setSelectedIndex(CPU_ITEM_INDEX);
+        } else {
+            gui.getExecutionModeLabel().setEnabled(gui.getRunningRadioButton().isSelected());
+            gui.getExecutionModeComboBox().setEnabled(gui.getRunningRadioButton().isSelected());
+        }
+    }
+    
+    private ExecutionMode getSelectedExecutionMode() {
+        return ((AbstractMap.SimpleEntry<ExecutionMode, String>) gui.getExecutionModeComboBox().getSelectedItem()).getKey();
     }
 }
