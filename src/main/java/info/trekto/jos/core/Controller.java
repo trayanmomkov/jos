@@ -112,6 +112,7 @@ public enum Controller {
         checkGpu();
         C.calculateAverageSize();
         C.setPrecisionFieldVisibility();
+        C.setExecutionModeFieldVisibilityAndValue();
     }
 
     private Simulation createSimulation(SimulationProperties properties) {
@@ -122,7 +123,7 @@ public enum Controller {
         ExecutionMode executionMode = getSelectedExecutionMode();
         NumberFactory.NumberType numberType = properties.getNumberType();
 
-        if (numberType == ARBITRARY_PRECISION || executionMode == CPU) {
+        if (numberType == ARBITRARY_PRECISION || executionMode == CPU || !GpuChecker.gpuAvailable) {
             return new SimulationAP(properties);
         } else if (executionMode == GPU) {
             if (numberType == FLOAT) {
@@ -303,6 +304,8 @@ public enum Controller {
         if (gui.getRunningRadioButton().isSelected()) {
             gui.getRunningComponents().forEach(c -> c.setEnabled(true));
             gui.getSavingToFileComponents().forEach(c -> c.setEnabled(gui.getSaveToFileCheckBox().isSelected()));
+            setPrecisionFieldVisibility();
+            setExecutionModeFieldVisibilityAndValue();
         } else {
             gui.getPlayingComponents().forEach(c -> c.setEnabled(true));
         }
@@ -381,6 +384,8 @@ public enum Controller {
         gui.getRunningComponents().forEach(c -> c.setEnabled(enable));
         gui.getPlayingComponents().forEach(c -> c.setEnabled(!enable));
         gui.getSavingToFileComponents().forEach(c -> c.setEnabled(enable && gui.getSaveToFileCheckBox().isSelected()));
+        setPrecisionFieldVisibility();
+        setExecutionModeFieldVisibilityAndValue();
     }
 
     public void refreshProperties(SimulationProperties prop) {
@@ -683,7 +688,13 @@ public enum Controller {
 
     private void setExecutionModeFieldVisibilityAndValue() {
         final int CPU_ITEM_INDEX = 2;
-        if (getSelectedNumberType() == ARBITRARY_PRECISION) {
+        if (GpuChecker.gpuAvailable) {
+            gui.getExecutionModeComboBox().setToolTipText(null);
+        } else {
+            gui.getExecutionModeComboBox().setToolTipText("GPU is not compatible/available. Try to restart the application.");
+        }
+
+        if (getSelectedNumberType() == ARBITRARY_PRECISION || !GpuChecker.gpuAvailable) {
             gui.getExecutionModeLabel().setEnabled(false);
             gui.getExecutionModeComboBox().setEnabled(false);
             gui.getExecutionModeComboBox().setSelectedIndex(CPU_ITEM_INDEX);
