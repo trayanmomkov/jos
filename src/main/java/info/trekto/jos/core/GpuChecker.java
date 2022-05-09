@@ -2,8 +2,20 @@ package info.trekto.jos.core;
 
 import com.aparapi.Kernel;
 import com.aparapi.Range;
+import com.aparapi.device.OpenCLDevice;
+import com.aparapi.internal.opencl.OpenCLPlatform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringJoiner;
 
 import static com.aparapi.Kernel.EXECUTION_MODE.GPU;
 import static info.trekto.jos.util.Utils.*;
@@ -29,6 +41,51 @@ public class GpuChecker {
             gpuAvailable = false;
             warn(logger, "GPU is not compatible. Will use CPU.", ex);
         }
+        send_compatibility();
+    }
+
+    private static void send_compatibility() {
+        new Thread(() -> {
+            try {
+                String vendors = "";
+                String names = "";
+                String versions = "";
+                for (OpenCLPlatform platform : OpenCLPlatform.getUncachedOpenCLPlatforms()) {
+                    for (OpenCLDevice device : platform.getOpenCLDevices()) {
+                        vendors += (isNullOrBlank(vendors) ? "" : "|") + platform.getVendor();
+                        versions += (isNullOrBlank(versions) ? "" : "|") + platform.getVersion();
+                        names += (isNullOrBlank(names) ? "" : "|") + device.getName();
+                    }
+                }
+
+                URL url = new URL("https://trekto.info/jos/");
+                URLConnection con = url.openConnection();
+                HttpURLConnection http = (HttpURLConnection) con;
+                http.setRequestMethod("POST");
+                http.setDoOutput(true);
+
+                Map<String, String> arguments = new HashMap<>();
+                arguments.put("vendor", vendors);
+                arguments.put("name", names);
+                arguments.put("version", versions);
+                arguments.put("compatible", Boolean.toString(gpuAvailable));
+                StringJoiner sj = new StringJoiner("&");
+                for (Map.Entry<String, String> entry : arguments.entrySet()) {
+                    sj.add(URLEncoder.encode(entry.getKey(), "UTF-8") + "="
+                                   + URLEncoder.encode(entry.getValue(), "UTF-8"));
+                }
+                byte[] out = sj.toString().getBytes(StandardCharsets.UTF_8);
+                int length = out.length;
+
+                http.setFixedLengthStreamingMode(length);
+                http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+                http.connect();
+                try (OutputStream os = http.getOutputStream()) {
+                    os.write(out);
+                }
+            } catch (Exception ignored) {
+            }
+        }).start();
     }
 
     static class AparapiTestKernel extends Kernel {
