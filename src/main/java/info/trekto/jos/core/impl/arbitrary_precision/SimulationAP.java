@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Set;
 
 import static info.trekto.jos.core.Controller.C;
-import static info.trekto.jos.core.impl.arbitrary_precision.SimulationRecursiveAction.THRESHOLD;
+import static info.trekto.jos.core.impl.arbitrary_precision.SimulationRecursiveAction.threshold;
 import static info.trekto.jos.util.Utils.*;
 
 /**
@@ -82,9 +82,9 @@ public class SimulationAP implements Simulation {
         auxiliaryObjects = deepCopy(objects);
 
         /* Distribute simulation objects per threads and start execution */
-        THRESHOLD = objects.size() / CORES;
-        if (THRESHOLD < 20) {
-            THRESHOLD = 20;
+        threshold = objects.size() / CORES;
+        if (threshold < 20) {
+            threshold = 20;
         }
         new SimulationRecursiveAction(0, objects.size()).compute();
 
@@ -238,10 +238,6 @@ public class SimulationAP implements Simulation {
 
     private void init() throws SimulationException {
         logger.info("Initialize simulation...");
-
-        /* This is need because we don't know the type of secondsPerItaration field before number
-         * factory is set */
-        properties.setSecondsPerIteration(properties.getSecondsPerIteration());
 
         switch (properties.getInteractingLaw()) {
             case NEWTON_LAW_OF_GRAVITATION:

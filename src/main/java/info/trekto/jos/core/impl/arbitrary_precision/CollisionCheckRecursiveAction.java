@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 
-import static info.trekto.jos.core.impl.arbitrary_precision.SimulationRecursiveAction.THRESHOLD;
+import static info.trekto.jos.core.impl.arbitrary_precision.SimulationRecursiveAction.threshold;
 
 class CollisionCheckRecursiveAction extends RecursiveAction {
     private final int fromIndex;
@@ -35,7 +35,7 @@ class CollisionCheckRecursiveAction extends RecursiveAction {
 
     @Override
     public void compute() {
-        if (toIndex - fromIndex <= THRESHOLD) {
+        if (toIndex - fromIndex <= threshold) {
             outerloop:
             for (SimulationObject object : simulation.getAuxiliaryObjects().subList(fromIndex, toIndex)) {
                 for (SimulationObject object1 : simulation.getAuxiliaryObjects()) {

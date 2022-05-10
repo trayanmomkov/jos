@@ -13,7 +13,7 @@ import static info.trekto.jos.core.Controller.C;
  */
 class SimulationRecursiveAction extends RecursiveAction {
 
-    public static int THRESHOLD = 20;
+    public static int threshold = 20;
     private final int fromIndex;
     private final int toIndex;
 
@@ -24,7 +24,7 @@ class SimulationRecursiveAction extends RecursiveAction {
 
     @Override
     public void compute() {
-        if (toIndex - fromIndex <= THRESHOLD) {
+        if (toIndex - fromIndex <= threshold) {
             ((SimulationAP) C.getSimulation()).getSimulationLogic().calculateNewValues(fromIndex, toIndex);
         } else {
             List<RecursiveAction> subtasks = new ArrayList<>();
