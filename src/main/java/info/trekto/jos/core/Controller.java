@@ -196,7 +196,7 @@ public enum Controller {
     public void start() {
         simulation = createSimulation(fetchPropertiesFromGuiAndCreateNumberFactory());
         paused = false;
-        if (simulation != null && simulation.getProperties() != null && simulation.getProperties().getInitialObjects() != null) {
+        if (simulation.getProperties() != null && simulation.getProperties().getInitialObjects() != null) {
             new Thread(() -> {
                 try {
                     if (simulation.getProperties().isRealTimeVisualization()) {

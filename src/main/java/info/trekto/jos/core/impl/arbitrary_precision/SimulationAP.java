@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 
 import static info.trekto.jos.core.Controller.C;
+import static info.trekto.jos.core.impl.arbitrary_precision.SimulationRecursiveAction.THRESHOLD;
 import static info.trekto.jos.util.Utils.*;
 
 /**
@@ -81,6 +82,10 @@ public class SimulationAP implements Simulation {
         auxiliaryObjects = deepCopy(objects);
 
         /* Distribute simulation objects per threads and start execution */
+        THRESHOLD = objects.size() / CORES;
+        if (THRESHOLD < 20) {
+            THRESHOLD = 20;
+        }
         new SimulationRecursiveAction(0, objects.size()).compute();
 
         /* Collision and merging */

@@ -13,7 +13,7 @@ import static info.trekto.jos.core.Controller.C;
  */
 class SimulationRecursiveAction extends RecursiveAction {
 
-    public static final int THRESHOLD = 4;
+    public static int THRESHOLD = 20;
     private final int fromIndex;
     private final int toIndex;
 

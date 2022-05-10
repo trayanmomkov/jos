@@ -39,7 +39,7 @@ public class GpuChecker {
             }
         } catch (Exception ex) {
             gpuAvailable = false;
-            warn(logger, "GPU is not compatible. Will use CPU.", ex);
+            warn(logger, "GPU is not compatible. Will use CPU. Try to restart your machine for GPU.", ex);
         }
         send_compatibility();
     }
