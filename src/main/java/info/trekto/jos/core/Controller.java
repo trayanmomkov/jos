@@ -113,13 +113,10 @@ public enum Controller {
         C.calculateAverageSize();
         C.setPrecisionFieldVisibility();
         C.setExecutionModeFieldVisibilityAndValue();
+        C.setReaderWriter(new JsonReaderWriter());
     }
 
     private Simulation createSimulation(SimulationProperties properties) {
-        if (properties.isSaveToFile()) {
-            readerWriter = new JsonReaderWriter();
-        }
-        
         ExecutionMode executionMode = getSelectedExecutionMode();
         NumberFactory.NumberType numberType = properties.getNumberType();
 
@@ -141,7 +138,6 @@ public enum Controller {
     }
 
     public SimulationProperties loadProperties(String inputFile) {
-        readerWriter = new JsonReaderWriter();
         SimulationProperties properties = null;
         try {
             properties = readerWriter.readPropertiesAndCreateNumberFactory(inputFile);
@@ -156,7 +152,6 @@ public enum Controller {
     }
 
     public SimulationProperties loadPropertiesForPlaying(String inputFile) {
-        readerWriter = new JsonReaderWriter();
         SimulationProperties properties = null;
         try {
             properties = readerWriter.readPropertiesForPlaying(inputFile);
@@ -206,9 +201,6 @@ public enum Controller {
                 try {
                     if (simulation.getProperties().isRealTimeVisualization()) {
                         visualizer = new VisualizerImpl(simulation.getProperties());
-                    }
-                    if (readerWriter == null && simulation.getProperties().isSaveToFile()) {
-                        readerWriter = new JsonReaderWriter();
                     }
                     simulation.startSimulation();
                 } catch (SimulationException ex) {
