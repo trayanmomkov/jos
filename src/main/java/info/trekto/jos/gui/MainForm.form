@@ -2,7 +2,7 @@
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="info.trekto.jos.gui.MainForm">
   <grid id="27dc6" binding="mainPanel" layout-manager="GridBagLayout">
     <constraints>
-      <xy x="20" y="20" width="1129" height="1097"/>
+      <xy x="20" y="20" width="1464" height="1097"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -19,10 +19,12 @@
         <children>
           <grid id="d8db8" layout-manager="GridBagLayout">
             <constraints>
-              <grid row="1" column="0" row-span="1" col-span="4" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <grid row="1" column="0" row-span="1" col-span="5" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
               <gridbag weightx="1.0" weighty="1.0"/>
             </constraints>
-            <properties/>
+            <properties>
+              <visible value="true"/>
+            </properties>
             <border type="none"/>
             <children>
               <component id="ed0dd" class="javax.swing.JLabel" binding="numberOfIterationsLabel">
@@ -36,12 +38,13 @@
               </component>
               <component id="493d8" class="javax.swing.JTextField" binding="numberOfIterationsTextField">
                 <constraints>
-                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="-1"/>
                   </grid>
                   <gridbag weightx="1.0" weighty="1.0"/>
                 </constraints>
                 <properties>
+                  <columns value="8"/>
                   <text value="0"/>
                 </properties>
               </component>
@@ -56,12 +59,13 @@
               </component>
               <component id="477f7" class="javax.swing.JTextField" binding="secondsPerIterationTextField">
                 <constraints>
-                  <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                  <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="-1"/>
                   </grid>
                   <gridbag weightx="1.0" weighty="1.0"/>
                 </constraints>
                 <properties>
+                  <columns value="8"/>
                   <text value="0.01"/>
                 </properties>
               </component>
@@ -85,18 +89,19 @@
               </component>
               <component id="28ceb" class="javax.swing.JTextField" binding="numberOfObjectsTextField">
                 <constraints>
-                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="-1"/>
                   </grid>
                   <gridbag weightx="1.0" weighty="1.0"/>
                 </constraints>
                 <properties>
+                  <columns value="8"/>
                   <text value="20"/>
                 </properties>
               </component>
               <component id="56cd7" class="javax.swing.JComboBox" binding="interactingLawComboBox">
                 <constraints>
-                  <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                   <gridbag weightx="0.0" weighty="0.0"/>
                 </constraints>
                 <properties>
@@ -118,7 +123,7 @@
           </grid>
           <grid id="787a2" layout-manager="GridBagLayout">
             <constraints>
-              <grid row="1" column="4" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <grid row="1" column="5" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
               <gridbag weightx="1.0" weighty="1.0"/>
             </constraints>
             <properties/>
@@ -258,7 +263,7 @@
           </grid>
           <component id="478cb" class="javax.swing.JCheckBox" binding="saveToFileCheckBox" default-binding="true">
             <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="2" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
               <gridbag weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
@@ -266,47 +271,10 @@
               <text value="Save to file"/>
             </properties>
           </component>
-          <grid id="47677" binding="browsePropertiesPanel" layout-manager="GridBagLayout">
-            <constraints>
-              <grid row="0" column="0" row-span="1" col-span="4" vsize-policy="3" hsize-policy="3" anchor="8" fill="2" indent="0" use-parent-layout="false"/>
-              <gridbag weightx="1.0" weighty="1.0"/>
-            </constraints>
-            <properties/>
-            <border type="none"/>
-            <children>
-              <component id="6d2f9" class="javax.swing.JButton" binding="browseButton" default-binding="true">
-                <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
-                  <gridbag top="0" left="2" bottom="0" right="0" weightx="0.0" weighty="1.0"/>
-                </constraints>
-                <properties>
-                  <text value="Browse"/>
-                </properties>
-              </component>
-              <component id="7cb7e" class="javax.swing.JButton" binding="savePropertiesButton" default-binding="true">
-                <constraints>
-                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
-                  <gridbag top="0" left="2" bottom="0" right="0" weightx="0.0" weighty="1.0"/>
-                </constraints>
-                <properties>
-                  <text value="Save properties"/>
-                </properties>
-              </component>
-              <component id="d4290" class="javax.swing.JLabel" binding="inputFilePathLabel">
-                <constraints>
-                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                  <gridbag top="0" left="2" bottom="0" right="0" weightx="0.0" weighty="1.0"/>
-                </constraints>
-                <properties>
-                  <text value=""/>
-                </properties>
-              </component>
-            </children>
-          </grid>
           <component id="5b640" class="javax.swing.JLabel" binding="outputFileLabel">
             <constraints>
-              <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-              <gridbag weightx="0.0" weighty="0.0"/>
+              <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag top="0" left="8" bottom="0" right="0" weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
               <enabled value="false"/>
@@ -314,28 +282,56 @@
               <text value="Output file"/>
             </properties>
           </component>
-          <component id="2f42d" class="javax.swing.JTextField" binding="outputFileTextField">
-            <constraints>
-              <grid row="2" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-              <gridbag weightx="0.0" weighty="0.0"/>
-            </constraints>
-            <properties>
-              <enabled value="false"/>
-            </properties>
-          </component>
           <component id="839df" class="javax.swing.JLabel" binding="saveEveryNthIterationLabel1">
             <constraints>
               <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-              <gridbag top="0" left="2" bottom="0" right="1" weightx="0.0" weighty="0.0"/>
+              <gridbag top="0" left="2" bottom="0" right="2" weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
               <enabled value="false"/>
               <text value="Save every"/>
             </properties>
           </component>
+          <component id="6d2f9" class="javax.swing.JButton" binding="browseButton" default-binding="true">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="1" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="1.0"/>
+            </constraints>
+            <properties>
+              <horizontalAlignment value="0"/>
+              <text value="Browse"/>
+            </properties>
+          </component>
+          <component id="d4290" class="javax.swing.JLabel" binding="inputFilePathLabel">
+            <constraints>
+              <grid row="0" column="4" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <gridbag top="0" left="8" bottom="0" right="0" weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <text value=""/>
+            </properties>
+          </component>
+          <component id="7cb7e" class="javax.swing.JButton" binding="savePropertiesButton" default-binding="true">
+            <constraints>
+              <grid row="0" column="2" row-span="1" col-span="2" vsize-policy="1" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag top="0" left="2" bottom="0" right="0" weightx="0.0" weighty="1.0"/>
+            </constraints>
+            <properties>
+              <text value="Save properties"/>
+            </properties>
+          </component>
+          <component id="2f42d" class="javax.swing.JTextField" binding="outputFileTextField">
+            <constraints>
+              <grid row="2" column="3" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+              <gridbag top="0" left="0" bottom="0" right="2" weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <enabled value="false"/>
+            </properties>
+          </component>
           <component id="ceafd" class="javax.swing.JTextField" binding="saveEveryNthIterationTextField">
             <constraints>
-              <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+              <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="0" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
               </grid>
               <gridbag weightx="0.0" weighty="0.0"/>
@@ -358,7 +354,7 @@
           </component>
           <component id="43a17" class="javax.swing.JLabel" binding="avgFileSize">
             <constraints>
-              <grid row="3" column="3" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="3" column="3" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
               <gridbag top="0" left="10" bottom="0" right="0" weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>

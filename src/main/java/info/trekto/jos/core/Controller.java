@@ -567,7 +567,9 @@ public enum Controller {
         if (defaultButtonColor == null) {
             defaultButtonColor = gui.getGenerateObjectsButton().getBackground();
         }
-        gui.getGenerateObjectsButton().setBackground(PINK);
+        if (gui.getRunningRadioButton().isSelected()) {
+            gui.getGenerateObjectsButton().setBackground(PINK);
+        }
     }
 
     private void unHighlightGenerateObjectButton() {
