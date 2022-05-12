@@ -140,7 +140,7 @@ public enum Controller {
             return new SimulationAP(properties);
         } else if (executionMode == GPU) {
             if (numberType == FLOAT) {
-                return new SimulationFloat(properties);
+                return new SimulationFloat(properties, null);
             } else {
                 return new SimulationDouble(properties, null);
             }
@@ -149,7 +149,7 @@ public enum Controller {
                 return new SimulationAP(properties);
             }
             if (numberType == FLOAT) {
-                return new SimulationFloat(properties);
+                return new SimulationFloat(properties, new SimulationAP(properties));
             } else {
                 return new SimulationDouble(properties, new SimulationAP(properties));
             }

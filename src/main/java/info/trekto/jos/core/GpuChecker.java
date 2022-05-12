@@ -118,7 +118,6 @@ public class GpuChecker {
     public static int findCpuThreshold(SimulationProperties properties) throws SimulationException, InterruptedException {
         long startTime = System.nanoTime();
         SimulationProperties testProperties = new SimulationProperties(properties);
-        testProperties.setPrecision(testProperties.getNumberType() == DOUBLE ? 16 : 8);
         createNumberFactory(testProperties.getNumberType(), testProperties.getPrecision());
 
         /* In May 2022 it looks like most video cards have 2048 or fewer shaders/cores */
