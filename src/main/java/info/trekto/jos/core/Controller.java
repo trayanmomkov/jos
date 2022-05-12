@@ -34,16 +34,15 @@ import java.util.AbstractMap;
 import java.util.Date;
 import java.util.Properties;
 
-import static info.trekto.jos.core.ExecutionMode.CPU;
-import static info.trekto.jos.core.ExecutionMode.GPU;
+import static info.trekto.jos.core.ExecutionMode.*;
 import static info.trekto.jos.core.GpuChecker.checkGpu;
+import static info.trekto.jos.core.GpuChecker.findCpuThreshold;
 import static info.trekto.jos.core.numbers.NumberFactory.NumberType.ARBITRARY_PRECISION;
 import static info.trekto.jos.core.numbers.NumberFactory.NumberType.FLOAT;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumberFactory;
 import static info.trekto.jos.util.Utils.*;
 import static java.awt.Color.PINK;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.WARNING_MESSAGE;
+import static javax.swing.JOptionPane.*;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 /**
@@ -52,6 +51,8 @@ import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 public enum Controller {
     C;
 
+    public static final int CPU_DEFAULT_THRESHOLD = 384;
+    private static int cpuThreshold;
     private static final Logger logger = LoggerFactory.getLogger(Controller.class);
     public static final String PROGRAM_NAME = "JOS - arbitrary precision version";
 
@@ -67,6 +68,7 @@ public enum Controller {
     private String endText;
     private File playFile;
     private Color defaultButtonColor;
+    private boolean hasToStopCpuGpuMeasuring = false;
 
     public static void main(String[] args) {
         Properties applicationProperties = new Properties();
@@ -90,10 +92,13 @@ public enum Controller {
         mainForm.setNumberTypeMessage("DOUBLE - Double precision. Fast. (Uses GPU if possible)\n"
                                               + "FLOAT - Single precision. Fastest. (Uses GPU if possible)\n"
                                               + "ARBITRARY_PRECISION - Arbitrary precision. Fast.");
+
+        mainForm.setCpuGpuThresholdMessage("If the objects are fewer than this threshold\n"
+                                                   + "the execution will continue on the CPU.");
         mainForm.init();
         C.setMainForm(mainForm);
 
-        C.appendMessage("Controls:");
+        C.appendMessage("Controls (Not fully implemented!):");
         C.appendMessage("\tExit: Esc");
         C.appendMessage("\tZoom in: +");
         C.appendMessage("\tZoom out: -");
@@ -109,11 +114,22 @@ public enum Controller {
         jFrame.pack();
         jFrame.setLocationRelativeTo(null); // Center of the screen
         jFrame.setVisible(true);
+        
         checkGpu();
+        
         C.calculateAverageSize();
         C.setPrecisionFieldVisibility();
         C.setExecutionModeFieldVisibilityAndValue();
+        C.setCpuGpuThresholdVisibility();
         C.setReaderWriter(new JsonReaderWriter());
+    }
+
+    public static int getCpuThreshold() {
+        return cpuThreshold;
+    }
+
+    public static void setCpuThreshold(int cpuThreshold) {
+        Controller.cpuThreshold = cpuThreshold;
     }
 
     private Simulation createSimulation(SimulationProperties properties) {
@@ -126,13 +142,16 @@ public enum Controller {
             if (numberType == FLOAT) {
                 return new SimulationFloat(properties);
             } else {
-                return new SimulationDouble(properties);
+                return new SimulationDouble(properties, null);
             }
-        } else {    // AUTO - Not implemented
+        } else {
+            if (properties.getNumberOfObjects() <= cpuThreshold) {
+                return new SimulationAP(properties);
+            }
             if (numberType == FLOAT) {
                 return new SimulationFloat(properties);
             } else {
-                return new SimulationDouble(properties);
+                return new SimulationDouble(properties, new SimulationAP(properties));
             }
         }
     }
@@ -241,6 +260,13 @@ public enum Controller {
     }
 
     private SimulationProperties fetchPropertiesFromGuiAndCreateNumberFactory() {
+        if (isNullOrBlank(gui.getCpuGpuThresholdField().getText()) || !isNumeric(gui.getCpuGpuThresholdField().getText())) {
+            cpuThreshold = CPU_DEFAULT_THRESHOLD;
+            gui.getCpuGpuThresholdField().setText(String.valueOf(cpuThreshold));
+        } else {
+            cpuThreshold = Integer.parseInt(gui.getCpuGpuThresholdField().getText());
+        }
+
         SimulationProperties properties = new SimulationProperties();
 
         if (!isNullOrBlank(gui.getPrecisionTextField().getText())) {
@@ -298,6 +324,7 @@ public enum Controller {
             gui.getSavingToFileComponents().forEach(c -> c.setEnabled(gui.getSaveToFileCheckBox().isSelected()));
             setPrecisionFieldVisibility();
             setExecutionModeFieldVisibilityAndValue();
+            setCpuGpuThresholdVisibility();
         } else {
             gui.getPlayingComponents().forEach(c -> c.setEnabled(true));
         }
@@ -378,6 +405,7 @@ public enum Controller {
         gui.getSavingToFileComponents().forEach(c -> c.setEnabled(enable && gui.getSaveToFileCheckBox().isSelected()));
         setPrecisionFieldVisibility();
         setExecutionModeFieldVisibilityAndValue();
+        setCpuGpuThresholdVisibility();
     }
 
     public void refreshProperties(SimulationProperties prop) {
@@ -399,6 +427,7 @@ public enum Controller {
         calculateAverageSize();
         setPrecisionFieldVisibility();
         setExecutionModeFieldVisibilityAndValue();
+        setCpuGpuThresholdVisibility();
     }
 
     private void showError(Component parent, String message, Exception exception) {
@@ -498,7 +527,7 @@ public enum Controller {
 
         new Thread(() -> {
             try {
-                SimulationGenerator.generateObjects(properties);
+                SimulationGenerator.generateObjects(properties, true);
                 refreshProperties(properties);
                 unHighlightGenerateObjectButton();
             } catch (Exception ex) {
@@ -556,6 +585,7 @@ public enum Controller {
         if (actionEvent.getModifiers() != 0) {
             setPrecisionFieldVisibility();
             setExecutionModeFieldVisibilityAndValue();
+            setCpuGpuThresholdVisibility();
             highlightGenerateObjectsButton();
             calculateAverageSize();
         }
@@ -678,6 +708,23 @@ public enum Controller {
         }
     }
 
+    private void setCpuGpuThresholdVisibility() {
+        if (getSelectedExecutionMode() == AUTO) {
+            gui.getCpuGpuThresholdLabel().setEnabled(gui.getRunningRadioButton().isSelected());
+            gui.getCpuGpuThresholdField().setEnabled(gui.getRunningRadioButton().isSelected());
+            gui.getCpuGpuThresholdLabel2().setEnabled(gui.getRunningRadioButton().isSelected());
+            gui.getDetectCpuGpuThresholdButton().setEnabled(gui.getRunningRadioButton().isSelected());
+            if (isNullOrBlank(gui.getCpuGpuThresholdField().getText())) {
+                gui.getCpuGpuThresholdField().setText(String.valueOf(CPU_DEFAULT_THRESHOLD));
+            }
+        } else {
+            gui.getCpuGpuThresholdLabel().setEnabled(false);
+            gui.getCpuGpuThresholdField().setEnabled(false);
+            gui.getCpuGpuThresholdLabel2().setEnabled(false);
+            gui.getDetectCpuGpuThresholdButton().setEnabled(false);
+        }
+    }
+
     private void setExecutionModeFieldVisibilityAndValue() {
         final int CPU_ITEM_INDEX = 2;
         if (GpuChecker.gpuAvailable) {
@@ -698,5 +745,45 @@ public enum Controller {
     
     private ExecutionMode getSelectedExecutionMode() {
         return ((AbstractMap.SimpleEntry<ExecutionMode, String>) gui.getExecutionModeComboBox().getSelectedItem()).getKey();
+    }
+
+    public void detectCpuGpuThresholdButtonEvent() {
+        SimulationProperties properties = fetchPropertiesFromGuiAndCreateNumberFactory();
+        gui.getStartButton().setEnabled(false);
+        gui.getRunningComponents().forEach(c -> c.setEnabled(false));
+        gui.getPlayingComponents().forEach(c -> c.setEnabled(false));
+        gui.getSavingToFileComponents().forEach(c -> c.setEnabled(false));
+        gui.getRunningRadioButton().setEnabled(false);
+        gui.getPlayRadioButton().setEnabled(false);
+        
+        String message = "Trying to detect CPU/GPU threshold.\nPlease wait...";
+        JButton stopButton = new JButton("Stop");
+        stopButton.addActionListener(e -> hasToStopCpuGpuMeasuring = true);
+        JOptionPane messagePane = new JOptionPane(message, INFORMATION_MESSAGE, YES_OPTION, null, new Object[]{stopButton});
+        final JDialog dialog = messagePane.createDialog(gui.getMainPanel(), "Measuring");
+
+        new Thread(() -> {
+            try {
+                hasToStopCpuGpuMeasuring = false;
+                int threshold = findCpuThreshold(properties);
+                gui.getCpuGpuThresholdField().setText(String.valueOf(threshold));
+                info(logger, "CPU/GPU threshold: " + threshold);
+            } catch (Exception e) {
+                warn(logger, "Cannot find CPU/GPU threshold. Will use default value: " + CPU_DEFAULT_THRESHOLD, e);
+            } finally {
+                dialog.dispose();
+                onVisualizationWindowClosed();
+            }
+        }).start();
+        
+        dialog.setVisible(true);
+    }
+
+    public void executionModeComboBoxEvent() {
+        setCpuGpuThresholdVisibility();
+    }
+
+    public boolean isHasToStopCpuGpuMeasuring() {
+        return hasToStopCpuGpuMeasuring;
     }
 }

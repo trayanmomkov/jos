@@ -53,7 +53,7 @@ public class SimulationFloat extends SimulationAP implements Simulation {
         collisionCheckKernel.setExecutionMode(GPU);
     }
 
-    private void doIteration(boolean saveCurrentIterationToFile) {
+    public void doIteration(boolean saveCurrentIterationToFile) {
         deepCopy(simulationLogic.positionX, simulationLogic.readOnlyPositionX);
         deepCopy(simulationLogic.positionY, simulationLogic.readOnlyPositionY);
         deepCopy(simulationLogic.speedX, simulationLogic.readOnlySpeedX);
@@ -189,7 +189,7 @@ public class SimulationFloat extends SimulationAP implements Simulation {
         info(logger, "End of simulation. Time: " + nanoToHumanReadable(endTime - startTime));
     }
 
-    private void init() throws SimulationException {
+    public void init() throws SimulationException {
         initArrays(properties.getInitialObjects());
         if (duplicateIdExists(simulationLogic.id)) {
             throw new SimulationException("Objects with duplicate IDs exist!");
@@ -200,7 +200,7 @@ public class SimulationFloat extends SimulationAP implements Simulation {
         }
 
         info(logger, "Done.\n");
-        Utils.printConfiguration(properties);
+        Utils.printConfiguration(this);
     }
 
     private boolean duplicateIdExists(String[] id) {

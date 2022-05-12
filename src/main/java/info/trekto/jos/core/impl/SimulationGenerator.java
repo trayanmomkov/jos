@@ -23,7 +23,7 @@ import static info.trekto.jos.util.Utils.info;
 public class SimulationGenerator {
     private static final Logger logger = LoggerFactory.getLogger(SimulationGenerator.class);
 
-    public static void generateObjects(SimulationProperties properties) {
+    public static void generateObjects(SimulationProperties properties, boolean printInfo) {
         String filename = System.getProperty("user.home") + File.separator
                 + new SimpleDateFormat("yyyy-MMM-dd_HH-mm-ss").format(new Date()) + ".json.gz";
         properties.setOutputFile(filename);
@@ -61,7 +61,9 @@ public class SimulationGenerator {
 
                 objects.add(o);
                 generatedObjects++;
-                info(logger, generatedObjects + " objects generated.");
+                if (printInfo) {
+                    info(logger, generatedObjects + " objects generated.");
+                }
                 if (generatedObjects == n) {
                     break outerloop;
                 }

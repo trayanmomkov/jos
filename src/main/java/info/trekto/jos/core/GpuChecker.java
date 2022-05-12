@@ -4,6 +4,12 @@ import com.aparapi.Kernel;
 import com.aparapi.Range;
 import com.aparapi.device.OpenCLDevice;
 import com.aparapi.internal.opencl.OpenCLPlatform;
+import info.trekto.jos.core.exceptions.SimulationException;
+import info.trekto.jos.core.impl.SimulationGenerator;
+import info.trekto.jos.core.impl.SimulationProperties;
+import info.trekto.jos.core.impl.arbitrary_precision.SimulationAP;
+import info.trekto.jos.core.impl.double_precision.SimulationDouble;
+import info.trekto.jos.core.numbers.New;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +24,9 @@ import java.util.Map;
 import java.util.StringJoiner;
 
 import static com.aparapi.Kernel.EXECUTION_MODE.GPU;
+import static info.trekto.jos.core.Controller.C;
+import static info.trekto.jos.core.numbers.NumberFactory.NumberType.DOUBLE;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumberFactory;
 import static info.trekto.jos.util.Utils.*;
 
 public class GpuChecker {
@@ -104,5 +113,68 @@ public class GpuChecker {
                 a = (a + array[i] + a * array[i] - j) / array[j];
             }
         }
+    }
+
+    public static int findCpuThreshold(SimulationProperties properties) throws SimulationException, InterruptedException {
+        long startTime = System.nanoTime();
+        SimulationProperties testProperties = new SimulationProperties(properties);
+        testProperties.setPrecision(testProperties.getNumberType() == DOUBLE ? 16 : 8);
+        createNumberFactory(testProperties.getNumberType(), testProperties.getPrecision());
+
+        /* In May 2022 it looks like most video cards have 2048 or fewer shaders/cores */
+        int top = Math.min(2048, testProperties.getNumberOfObjects());
+        int bottom = 64;
+        int factor = 204800;
+        int numberOfObjects = bottom;
+        while (top - 32 > bottom) {
+            testProperties.setNumberOfObjects(numberOfObjects);
+            testProperties.setSecondsPerIteration(New.num("0.0000001"));
+            SimulationGenerator.generateObjects(testProperties, false);
+
+            long numberOfIterations = factor / ((long)numberOfObjects * numberOfObjects / 4);
+            if (numberOfIterations < 25) {
+                numberOfIterations = 25;
+            }
+            info(logger, "Range: " + bottom + " - " + top + " Objects: " + numberOfObjects + " Iterations: " + numberOfIterations);
+            double cpuTime = measureIteration(new SimulationAP(testProperties), numberOfIterations);
+            if (C.isHasToStopCpuGpuMeasuring()) {
+                return (top + bottom) / 2;
+            }
+            double gpuTime;
+            if (testProperties.getNumberType() == DOUBLE) {
+                gpuTime = measureIteration(new SimulationDouble(testProperties, null), numberOfIterations);
+            } else {
+                gpuTime = measureIteration(new SimulationDouble(testProperties, null), numberOfIterations);
+            }
+            if (C.isHasToStopCpuGpuMeasuring()) {
+                return (top + bottom) / 2;
+            }
+
+            if (cpuTime < gpuTime) {
+                bottom = numberOfObjects;
+                numberOfObjects = bottom + (top - bottom) / 2;
+                info(logger, "CPU < GPU\n");
+            } else {
+                top = numberOfObjects;
+                numberOfObjects = top - (top - bottom) / 2;
+                info(logger, "CPU > GPU\n");
+            }
+        }
+        info(logger, "Measuring time total: " + nanoToHumanReadable(System.nanoTime() - startTime));
+        return (top + bottom) / 2;
+    }
+
+    private static double measureIteration(SimulationAP simulation, long numberOfIterations) throws SimulationException, InterruptedException {
+        simulation.init(false);
+
+        long startTime = System.nanoTime();
+        for (long i = 0; i < numberOfIterations; i++) {
+            if (C.isHasToStopCpuGpuMeasuring()) {
+                return 0;
+            }
+            simulation.doIteration(false, i + 1);
+        }
+
+        return (System.nanoTime() - startTime) / (double)numberOfIterations;
     }
 }

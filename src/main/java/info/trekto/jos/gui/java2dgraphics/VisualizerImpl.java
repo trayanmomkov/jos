@@ -89,8 +89,8 @@ public class VisualizerImpl implements Visualizer {
     }
 
     @Override
-    public void visualize(List<SimulationObject> objects) {
-        Iteration iteration = new Iteration(C.getSimulation().getCurrentIterationNumber(), C.getSimulation().getObjects().size(), objects);
+    public void visualize(List<SimulationObject> objects, long currentIterationNumber) {
+        Iteration iteration = new Iteration(currentIterationNumber, objects.size(), objects);
         latestShapes = createShapes(iteration);
         visualizationPanel.draw(latestShapes);
     }

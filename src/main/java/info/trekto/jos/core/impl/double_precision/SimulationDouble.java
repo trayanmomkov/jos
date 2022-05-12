@@ -6,14 +6,14 @@ import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.impl.arbitrary_precision.SimulationAP;
 import info.trekto.jos.core.model.SimulationObject;
+import info.trekto.jos.core.model.impl.SimulationObjectImpl;
+import info.trekto.jos.core.model.impl.TripleNumber;
+import info.trekto.jos.core.numbers.New;
 import info.trekto.jos.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.aparapi.Kernel.EXECUTION_MODE.GPU;
 import static info.trekto.jos.core.Controller.C;
@@ -33,8 +33,10 @@ public class SimulationDouble extends SimulationAP implements Simulation {
     private final CollisionCheckDouble collisionCheckKernel;
     private final Range collisionCheckRange;
     private final double[] zeroArray;
+    private final SimulationAP cpuSimulation;
+    private boolean executingOnCpu;
 
-    public SimulationDouble(SimulationProperties properties) {
+    public SimulationDouble(SimulationProperties properties, SimulationAP cpuSimulation) {
         super(properties);
         final int n = properties.getNumberOfObjects();
         simulationLogic = new SimulationLogicDouble(n, properties.getSecondsPerIteration().doubleValue());
@@ -50,9 +52,10 @@ public class SimulationDouble extends SimulationAP implements Simulation {
                 simulationLogic.deleted);
         collisionCheckRange = Range.create(n);
         collisionCheckKernel.setExecutionMode(GPU);
+        this.cpuSimulation = cpuSimulation;
     }
 
-    private void doIteration(boolean saveCurrentIterationToFile) {
+    public void doIteration(boolean saveCurrentIterationToFile, long iterationCounter) {
         deepCopy(simulationLogic.positionX, simulationLogic.readOnlyPositionX);
         deepCopy(simulationLogic.positionY, simulationLogic.readOnlyPositionY);
         deepCopy(simulationLogic.speedX, simulationLogic.readOnlySpeedX);
@@ -65,11 +68,8 @@ public class SimulationDouble extends SimulationAP implements Simulation {
         /* Execute in parallel on GPU if available */
         simulationLogic.execute(simulationLogicRange);
         if (iterationCounter == 1) {
-            String message = "Simulation logic execution mode = " + simulationLogic.getExecutionMode();
-            if (GPU.equals(simulationLogic.getExecutionMode())) {
-                info(logger, message);
-            } else {
-                warn(logger, message);
+            if (!GPU.equals(simulationLogic.getExecutionMode())) {
+                warn(logger, "Simulation logic execution mode = " + simulationLogic.getExecutionMode());
             }
         }
 
@@ -79,11 +79,8 @@ public class SimulationDouble extends SimulationAP implements Simulation {
         /* Execute in parallel on GPU if available */
         collisionCheckKernel.execute(collisionCheckRange);
         if (iterationCounter == 1) {
-            String message = "Collision detection execution mode = " + simulationLogic.getExecutionMode();
-            if (GPU.equals(collisionCheckKernel.getExecutionMode())) {
-                info(logger, message);
-            } else {
-                warn(logger, message);
+            if (!GPU.equals(collisionCheckKernel.getExecutionMode())) {
+                warn(logger, "Collision detection execution mode = " + simulationLogic.getExecutionMode());
             }
         }
 
@@ -140,7 +137,12 @@ public class SimulationDouble extends SimulationAP implements Simulation {
                     }
 
                     iterationCounter = i + 1;
-                    int numberOfObjects = countObjects();
+                    int numberOfObjects = executingOnCpu ? cpuSimulation.getObjects().size() : countObjects();
+
+                    if (cpuSimulation != null && !executingOnCpu && numberOfObjects <= C.getCpuThreshold()) {
+                        cpuSimulation.initSwitchingFromGpu(convertToSimulationObjects());
+                        executingOnCpu = true;
+                    }
 
                     if (System.nanoTime() - previousTime >= NANOSECONDS_IN_ONE_SECOND * SHOW_REMAINING_INTERVAL_SECONDS) {
                         showRemainingTime(i, startTime, properties.getNumberOfIterations(), numberOfObjects);
@@ -159,13 +161,21 @@ public class SimulationDouble extends SimulationAP implements Simulation {
                     }
 
                     if (visualize) {
-                        SimulationLogicDouble sl = simulationLogic;
-                        C.getVisualizer().visualize(iterationCounter, numberOfObjects, sl.id, sl.deleted, sl.positionX, sl.positionY, sl.radius,
-                                                    sl.color);
+                        if (executingOnCpu) {
+                            C.getVisualizer().visualize(cpuSimulation.getObjects(), iterationCounter);
+                        } else {
+                            SimulationLogicDouble sl = simulationLogic;
+                            C.getVisualizer().visualize(iterationCounter, numberOfObjects, sl.id, sl.deleted, sl.positionX, sl.positionY, sl.radius,
+                                                        sl.color);
+                        }
                         previousVisualizationTime = System.nanoTime();
                     }
 
-                    doIteration(i % properties.getSaveEveryNthIteration() == 0);
+                    if (executingOnCpu) {
+                        cpuSimulation.doIteration(i % properties.getSaveEveryNthIteration() == 0, iterationCounter);
+                    } else {
+                        doIteration(i % properties.getSaveEveryNthIteration() == 0, iterationCounter);
+                    }
                 } catch (InterruptedException e) {
                     error(logger, "Concurrency failure. One of the threads interrupted in cycle " + i, e);
                 }
@@ -185,7 +195,36 @@ public class SimulationDouble extends SimulationAP implements Simulation {
         info(logger, "End of simulation. Time: " + nanoToHumanReadable(endTime - startTime));
     }
 
-    private void init() throws SimulationException {
+    private List<SimulationObject> convertToSimulationObjects() {
+        List<SimulationObject> objects = new ArrayList<>();
+        SimulationLogicDouble sl = simulationLogic;
+
+        for (int i = 0; i < sl.positionX.length; i++) {
+            if (!sl.deleted[i]) {
+                SimulationObject simo = new SimulationObjectImpl();
+                simo.setId(sl.id[i]);
+
+                simo.setX(New.num(sl.positionX[i]));
+                simo.setY(New.num(sl.positionY[i]));
+                simo.setZ(New.num(0));
+
+                simo.setMass(New.num(sl.mass[i]));
+
+                simo.setSpeed(new TripleNumber(New.num(sl.speedX[i]),
+                                               New.num(sl.speedY[i]),
+                                               New.num(0)));
+
+                simo.setRadius(New.num(sl.radius[i]));
+                simo.setColor(sl.color[i]);
+
+                objects.add(simo);
+            }
+        }
+
+        return objects;
+    }
+
+    public void init() throws SimulationException {
         initArrays(properties.getInitialObjects());
         if (duplicateIdExists(simulationLogic.id)) {
             throw new SimulationException("Objects with duplicate IDs exist!");
@@ -195,8 +234,10 @@ public class SimulationDouble extends SimulationAP implements Simulation {
             throw new SimulationException("Initial collision exists!");
         }
 
+        executingOnCpu = false;
+
         info(logger, "Done.\n");
-        Utils.printConfiguration(properties);
+        Utils.printConfiguration(this);
     }
 
     private boolean duplicateIdExists(String[] id) {

@@ -78,7 +78,7 @@ public class SimulationAP implements Simulation {
         return false;
     }
 
-    private void doIteration(boolean saveCurrentIterationToFile) throws InterruptedException {
+    public void doIteration(boolean saveCurrentIterationToFile, long iterationCounter) throws InterruptedException {
         auxiliaryObjects = deepCopy(objects);
 
         /* Distribute simulation objects per threads and start execution */
@@ -86,7 +86,7 @@ public class SimulationAP implements Simulation {
         if (threshold < 20) {
             threshold = 20;
         }
-        new SimulationRecursiveAction(0, objects.size()).compute();
+        new SimulationRecursiveAction(0, objects.size(), this).compute();
 
         /* Collision and merging */
         CollisionCheckRecursiveAction collisionCheck = new CollisionCheckRecursiveAction(0, auxiliaryObjects.size(), this);
@@ -175,7 +175,7 @@ public class SimulationAP implements Simulation {
 
     @Override
     public void startSimulation() throws SimulationException {
-        init();
+        init(true);
 
         info(logger, "Start simulation...");
         C.setEndText("END.");
@@ -208,15 +208,15 @@ public class SimulationAP implements Simulation {
                         if (properties.getPlayingSpeed() < 0) {
                             /* Slow down */
                             Thread.sleep(-properties.getPlayingSpeed());
-                            C.getVisualizer().visualize(objects);
+                            C.getVisualizer().visualize(objects, iterationCounter);
                             previousVisualizationTime = System.nanoTime();
                         } else if ((System.nanoTime() - previousVisualizationTime) / NANOSECONDS_IN_ONE_MILLISECOND >= properties.getPlayingSpeed()) {
-                            C.getVisualizer().visualize(objects);
+                            C.getVisualizer().visualize(objects, iterationCounter);
                             previousVisualizationTime = System.nanoTime();
                         }
                     }
 
-                    doIteration(i % properties.getSaveEveryNthIteration() == 0);
+                    doIteration(i % properties.getSaveEveryNthIteration() == 0, iterationCounter);
                 } catch (InterruptedException e) {
                     error(logger, "Concurrency failure. One of the threads interrupted in cycle " + i, e);
                 }
@@ -236,8 +236,10 @@ public class SimulationAP implements Simulation {
         info(logger, "End of simulation. Time: " + nanoToHumanReadable(endTime - startTime));
     }
 
-    private void init() throws SimulationException {
-        logger.info("Initialize simulation...");
+    public void init(boolean printInfo) throws SimulationException {
+        if (printInfo) {
+            logger.info("Initialize simulation...");
+        }
 
         switch (properties.getInteractingLaw()) {
             case NEWTON_LAW_OF_GRAVITATION:
@@ -264,9 +266,31 @@ public class SimulationAP implements Simulation {
         if (collisionExists(objects)) {
             throw new SimulationException("Initial collision exists!");
         }
+        if (printInfo) {
+            logger.info("Done.\n");
+            Utils.printConfiguration(this);
+        }
+    }
+
+    public void initSwitchingFromGpu(List<SimulationObject> currentObjects) {
+        logger.info("Switching to CPU - Initialize simulation...");
+
+        switch (properties.getInteractingLaw()) {
+            case NEWTON_LAW_OF_GRAVITATION:
+                forceCalculator = new NewtonGravityAP();
+                break;
+            case COULOMB_LAW_ELECTRICALLY:
+                throw new NotImplementedException("COULOMB_LAW_ELECTRICALLY is not implemented");
+                // break;
+            default:
+                forceCalculator = new NewtonGravityAP();
+                break;
+        }
+
+        objects = currentObjects;
         logger.info("Done.\n");
 
-        Utils.printConfiguration(properties);
+        Utils.printConfiguration(this);
     }
 
     @Override

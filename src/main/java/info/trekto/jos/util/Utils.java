@@ -1,5 +1,6 @@
 package info.trekto.jos.util;
 
+import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.numbers.NumberFactory.NumberType;
@@ -68,7 +69,8 @@ public class Utils {
         System.arraycopy(src, 0, dst, 0, src.length);
     }
 
-    public static void printConfiguration(SimulationProperties properties) {
+    public static void printConfiguration(Simulation simulation) {
+        SimulationProperties properties = simulation.getProperties();
         if (!properties.isSaveToFile()) {
             warn(logger, "NOT SAVING TO FILE!");
         }
@@ -94,7 +96,7 @@ public class Utils {
         info(logger, "Number of objects: " + properties.getNumberOfObjects());
         info(logger, "Number of iterations: " + properties.getNumberOfIterations());
         info(logger, "'Number' implementation: " + properties.getNumberType());
-        info(logger, "'Simulation' implementation: " + C.getSimulation().getClass().getSimpleName());
+        info(logger, "'Simulation' implementation: " + simulation.getClass().getSimpleName());
     }
 
     public static void showRemainingTime(long i, long startTime, long numberOfIterations, int numberOfObjects) {

@@ -36,6 +36,22 @@ public class SimulationProperties {
     public SimulationProperties() {
     }
 
+    public SimulationProperties(SimulationProperties properties) {
+        this.numberOfIterations = properties.numberOfIterations;
+        this.secondsPerIteration = properties.secondsPerIteration;
+        this.outputFile = properties.outputFile;
+        this.saveToFile = properties.saveToFile;
+        this.numberType = properties.numberType;
+        this.interactingLaw = properties.interactingLaw;
+        this.realTimeVisualization = properties.realTimeVisualization;
+        this.playingSpeed = properties.playingSpeed;
+        this.bounceFromWalls = properties.bounceFromWalls;
+        this.saveEveryNthIteration = properties.saveEveryNthIteration;
+        this.numberOfObjects = properties.numberOfObjects;
+        this.precision = properties.precision;
+        this.initialObjects = properties.initialObjects;
+    }
+
     public boolean isInfiniteSimulation() {
         return numberOfIterations == 0;
     }

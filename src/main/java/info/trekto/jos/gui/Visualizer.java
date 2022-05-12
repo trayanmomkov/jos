@@ -30,7 +30,7 @@ public interface Visualizer {
 
     void end();
 
-    void visualize(List<SimulationObject> objects);
+    void visualize(List<SimulationObject> objects, long currentIterationNumber);
 
     void visualize(Iteration iteration);
 
