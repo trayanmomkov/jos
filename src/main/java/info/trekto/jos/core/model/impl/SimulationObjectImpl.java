@@ -1,5 +1,6 @@
 package info.trekto.jos.core.model.impl;
 
+import info.trekto.jos.core.model.ImmutableSimulationObject;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.numbers.Number;
 
@@ -31,7 +32,7 @@ public class SimulationObjectImpl implements SimulationObject {
         color = BLUE.getRGB();
     }
 
-    public SimulationObjectImpl(SimulationObject simulationObject) {
+    public SimulationObjectImpl(ImmutableSimulationObject simulationObject) {
         this.color = simulationObject.getColor();
         this.id = simulationObject.getId();
         this.mass = simulationObject.getMass();
@@ -120,5 +121,15 @@ public class SimulationObjectImpl implements SimulationObject {
     @Override
     public void setId(String id) {
         this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "id='" + id + '\'' +
+                ", x=" + x +
+                ", y=" + y +
+                ", speed=" + speed +
+                '}';
     }
 }

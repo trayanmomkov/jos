@@ -183,4 +183,19 @@ public class ApfloatNumberImpl implements Number {
     public Number cbrt(Number n) {
         return new ApfloatNumberImpl(ApfloatMath.cbrt(((ApfloatNumberImpl) n).value));
     }
+
+    @Override
+    public Object getInternalValue() {
+        return value;
+    }
+
+    /**
+     * Returns the Apfloat value of the given Number.
+     */
+    public static Apfloat ap(Number n) {
+        if (!(n.getInternalValue() instanceof Apfloat)) {
+            throw new RuntimeException("Not an Apfloat number: " + n.getInternalValue().getClass().getSimpleName());
+        }
+        return (Apfloat)n.getInternalValue();
+    }
 }

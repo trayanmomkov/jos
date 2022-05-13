@@ -4,6 +4,7 @@ import info.trekto.jos.core.numbers.New;
 import info.trekto.jos.core.numbers.Number;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
  * Double implementation.
@@ -154,5 +155,27 @@ public class FloatNumberImpl implements Number {
     @Override
     public Number cbrt(Number n) {
         return New.num(Math.cbrt(n.floatValue()));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof FloatNumberImpl)) {
+            return false;
+        }
+        FloatNumberImpl that = (FloatNumberImpl) o;
+        return Float.compare(that.value, value) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
+    }
+
+    @Override
+    public Object getInternalValue() {
+        return value;
     }
 }

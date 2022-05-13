@@ -12,7 +12,9 @@ import java.math.BigDecimal;
  */
 public class NumberFactoryProxy {
 
+    public static Number MINUS_ONE;
     public static Number ZERO;
+    public static Number HALF;
     public static Number ONE;
     public static Number TWO;
     public static Number THREE;
@@ -25,7 +27,9 @@ public class NumberFactoryProxy {
     private static NumberFactory factory;
 
     private static void calculateConstants() {
+        MINUS_ONE = createNumber("-1");
         ZERO = createNumber("0");
+        HALF = createNumber("0.5");
         ONE = createNumber("1");
         TWO = createNumber("2");
         THREE = createNumber("3");

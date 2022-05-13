@@ -166,4 +166,6 @@ public interface Number {
     Number sin(Number n);
 
     Number cbrt(Number n);
+    
+    Object getInternalValue();
 }

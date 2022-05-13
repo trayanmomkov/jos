@@ -3,6 +3,8 @@ package info.trekto.jos.core.model.impl;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.numbers.Number;
 
+import java.util.Objects;
+
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
 
 /**
@@ -14,6 +16,7 @@ import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
  * 3 Mar 2016
  */
 public class TripleNumber {
+    public static final TripleNumber TRIPLE_ZERO = new TripleNumber();
 
     private final Number x;
     private final Number y;
@@ -41,5 +44,31 @@ public class TripleNumber {
 
     public Number getZ() {
         return z;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof TripleNumber)) {
+            return false;
+        }
+        TripleNumber that = (TripleNumber) o;
+        return Objects.equals(x, that.x) && Objects.equals(y, that.y) && Objects.equals(z, that.z);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y, z);
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "x=" + x +
+                ", y=" + y +
+                ", z=" + z +
+                '}';
     }
 }

@@ -3,6 +3,7 @@ package info.trekto.jos.core.numbers.impl;
 import info.trekto.jos.core.numbers.Number;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
  * Double implementation.
@@ -136,5 +137,27 @@ public class DoubleNumberImpl implements Number {
     @Override
     public Number cbrt(Number n) {
         return new DoubleNumberImpl(Math.cbrt(n.doubleValue()));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof DoubleNumberImpl)) {
+            return false;
+        }
+        DoubleNumberImpl that = (DoubleNumberImpl) o;
+        return Double.compare(that.value, value) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
+    }
+
+    @Override
+    public Object getInternalValue() {
+        return value;
     }
 }

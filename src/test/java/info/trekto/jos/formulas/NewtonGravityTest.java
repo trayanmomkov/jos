@@ -6,11 +6,9 @@ public class NewtonGravityTest {
 
     @Test
     public void calculateForceShouldCalculateCorrectly() {
-        // TODO
     }
 
     @Test
     public void calculateForceAsVectorShouldCalculateCorrectly() {
-        // TODO
     }
 }

@@ -6,7 +6,6 @@ public class SimulationForkJoinImplTest {
 
     @Test
     public void collisionExistsShouldDetectCollisions() {
-        // TODO
     }
 
 }
