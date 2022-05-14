@@ -12,6 +12,8 @@ public class SimulationLogicDouble extends Kernel {
     public final double[] positionY;
     public final double[] speedX;
     public final double[] speedY;
+    public final double[] accelerationX;
+    public final double[] accelerationY;
     public final double[] mass;
     public final double[] radius;
     public final String[] id;
@@ -22,6 +24,8 @@ public class SimulationLogicDouble extends Kernel {
     public final double[] readOnlyPositionY;
     public final double[] readOnlySpeedX;
     public final double[] readOnlySpeedY;
+    public final double[] readOnlyAccelerationX;
+    public final double[] readOnlyAccelerationY;
     public final double[] readOnlyMass;
     public final double[] readOnlyRadius;
     public final int[] readOnlyColor;
@@ -37,6 +41,8 @@ public class SimulationLogicDouble extends Kernel {
         positionY = new double[n];
         speedX = new double[n];
         speedY = new double[n];
+        accelerationX = new double[n];
+        accelerationY = new double[n];
         mass = new double[n];
         radius = new double[n];
         id = new String[n];
@@ -47,6 +53,8 @@ public class SimulationLogicDouble extends Kernel {
         readOnlyPositionY = new double[n];
         readOnlySpeedX = new double[n];
         readOnlySpeedY = new double[n];
+        readOnlyAccelerationX = new double[n];
+        readOnlyAccelerationY = new double[n];
         readOnlyMass = new double[n];
         readOnlyRadius = new double[n];
         readOnlyColor = new int[n];

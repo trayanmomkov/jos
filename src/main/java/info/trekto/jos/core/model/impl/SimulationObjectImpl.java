@@ -17,6 +17,7 @@ public class SimulationObjectImpl implements SimulationObject {
     private Number y;
     private Number z;
     private TripleNumber speed;
+    private TripleNumber acceleration;
     private Number radius;
     private int color;
     private Number mass;
@@ -38,6 +39,7 @@ public class SimulationObjectImpl implements SimulationObject {
         this.mass = simulationObject.getMass();
         this.radius = simulationObject.getRadius();
         this.speed = simulationObject.getSpeed();
+        this.acceleration = simulationObject.getAcceleration();
         this.x = simulationObject.getX();
         this.y = simulationObject.getY();
         this.z = simulationObject.getZ();
@@ -79,8 +81,18 @@ public class SimulationObjectImpl implements SimulationObject {
     }
 
     @Override
+    public TripleNumber getAcceleration() {
+        return acceleration;
+    }
+
+    @Override
     public void setSpeed(TripleNumber speed) {
         this.speed = speed;
+    }
+
+    @Override
+    public void setAcceleration(TripleNumber acceleration) {
+        this.acceleration = acceleration;
     }
 
     @Override

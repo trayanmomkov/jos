@@ -102,6 +102,7 @@ public class SimulationGenerator {
                                             IGNORED.sin(radians.subtract(New.num("300"))).multiply(r.pow(exponential_speed_factor))
                                                     .multiply(PI).multiply(rotationDirection).add(speedY),
                                             ZERO));
+                o.setAcceleration(new TripleNumber());
                 o.setMass(mass.multiply(r.pow(exponential_mass_change_in_depth))); 
                 o.setRadius(particleRadius);
                 o.setId(id + r + i);

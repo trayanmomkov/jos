@@ -175,6 +175,8 @@ public class JsonReaderWriter implements ReaderWriter {
             simo.setSpeed(new TripleNumber(New.num(o.get("speedX").getAsString()),
                                            New.num(o.get("speedY").getAsString()),
                                            New.num(o.get("speedZ").getAsString())));
+                                           
+            simo.setAcceleration(new TripleNumber());
 
             simo.setRadius(New.num(o.get("radius").getAsString()));
             simo.setColor(Integer.parseInt(o.get("color").getAsString(), 16));
@@ -230,6 +232,7 @@ public class JsonReaderWriter implements ReaderWriter {
                 o.setSpeed(new TripleNumber(New.num(node.get("speedX").asText()),
                                             New.num(node.get("speedY").asText()),
                                             New.num(node.get("speedZ").asText())));
+                o.setAcceleration(new TripleNumber());
                 o.setMass(New.num(node.get("mass").asText()));
                 o.setRadius(New.num(node.get("radius").asText()));
                 o.setColor(Integer.parseInt(node.get("color").getTextValue(), 16));

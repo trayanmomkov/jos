@@ -16,6 +16,8 @@ public interface ImmutableSimulationObject {
 
     TripleNumber getSpeed();
 
+    TripleNumber getAcceleration();
+
     Number getRadius();
 
     int getColor();

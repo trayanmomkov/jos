@@ -16,6 +16,8 @@ public interface SimulationObject extends ImmutableSimulationObject {
 
     void setSpeed(TripleNumber speed);
 
+    void setAcceleration(TripleNumber acceleration);
+
     void setRadius(Number radius);
 
     void setColor(int color);

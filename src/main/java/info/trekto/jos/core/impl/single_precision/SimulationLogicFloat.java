@@ -12,6 +12,8 @@ public class SimulationLogicFloat extends Kernel {
     public final float[] positionY;
     public final float[] speedX;
     public final float[] speedY;
+    public final float[] accelerationX;
+    public final float[] accelerationY;
     public final float[] mass;
     public final float[] radius;
     public final String[] id;
@@ -22,6 +24,8 @@ public class SimulationLogicFloat extends Kernel {
     public final float[] readOnlyPositionY;
     public final float[] readOnlySpeedX;
     public final float[] readOnlySpeedY;
+    public final float[] readOnlyAccelerationX;
+    public final float[] readOnlyAccelerationY;
     public final float[] readOnlyMass;
     public final float[] readOnlyRadius;
     public final int[] readOnlyColor;
@@ -37,6 +41,8 @@ public class SimulationLogicFloat extends Kernel {
         positionY = new float[n];
         speedX = new float[n];
         speedY = new float[n];
+        accelerationX = new float[n];
+        accelerationY = new float[n];
         mass = new float[n];
         radius = new float[n];
         id = new String[n];
@@ -47,6 +53,8 @@ public class SimulationLogicFloat extends Kernel {
         readOnlyPositionY = new float[n];
         readOnlySpeedX = new float[n];
         readOnlySpeedY = new float[n];
+        readOnlyAccelerationX = new float[n];
+        readOnlyAccelerationY = new float[n];
         readOnlyMass = new float[n];
         readOnlyRadius = new float[n];
         readOnlyColor = new int[n];

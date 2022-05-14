@@ -60,6 +60,8 @@ public class SimulationDouble extends SimulationAP implements Simulation {
         deepCopy(simulationLogic.positionY, simulationLogic.readOnlyPositionY);
         deepCopy(simulationLogic.speedX, simulationLogic.readOnlySpeedX);
         deepCopy(simulationLogic.speedY, simulationLogic.readOnlySpeedY);
+        deepCopy(simulationLogic.accelerationX, simulationLogic.readOnlyAccelerationX);
+        deepCopy(simulationLogic.accelerationY, simulationLogic.readOnlyAccelerationY);
         deepCopy(simulationLogic.mass, simulationLogic.readOnlyMass);
         deepCopy(simulationLogic.radius, simulationLogic.readOnlyRadius);
         deepCopy(simulationLogic.color, simulationLogic.readOnlyColor);
@@ -104,6 +106,8 @@ public class SimulationDouble extends SimulationAP implements Simulation {
             simulationLogic.positionY[i] = o.getY().doubleValue();
             simulationLogic.speedX[i] = o.getSpeed().getX().doubleValue();
             simulationLogic.speedY[i] = o.getSpeed().getY().doubleValue();
+            simulationLogic.accelerationX[i] = o.getAcceleration().getX().doubleValue();
+            simulationLogic.accelerationY[i] = o.getAcceleration().getY().doubleValue();
             simulationLogic.mass[i] = o.getMass().doubleValue();
             simulationLogic.radius[i] = o.getRadius().doubleValue();
             simulationLogic.id[i] = o.getId();
@@ -212,6 +216,10 @@ public class SimulationDouble extends SimulationAP implements Simulation {
 
                 simo.setSpeed(new TripleNumber(New.num(sl.speedX[i]),
                                                New.num(sl.speedY[i]),
+                                               New.num(0)));
+
+                simo.setAcceleration(new TripleNumber(New.num(sl.accelerationX[i]),
+                                               New.num(sl.accelerationY[i]),
                                                New.num(0)));
 
                 simo.setRadius(New.num(sl.radius[i]));
