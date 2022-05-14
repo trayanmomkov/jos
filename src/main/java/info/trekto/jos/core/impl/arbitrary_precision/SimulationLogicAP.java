@@ -32,7 +32,14 @@ public class SimulationLogicAP {
         for (ImmutableSimulationObject oldObject : simulation.getObjects().subList(fromIndex, toIndex)) {
             SimulationObject newObject = newObjectsIterator.next();
 
+            /* Speed is scalar, velocity is vector. Velocity = speed + direction. */
+
+            /* Time T passed */
+
             /* Calculate acceleration */
+            /* For the time T, forces accelerated the objects (changed their velocities).
+             * Forces are calculated having the positions of the objects at the beginning of the period,
+             * and these forces are applied for time T. */
             TripleNumber acceleration = new TripleNumber();
             for (ImmutableSimulationObject tempObject : simulation.getObjects()) {
                 if (tempObject == oldObject) {
@@ -46,16 +53,26 @@ public class SimulationLogicAP {
                 acceleration = calculateAcceleration(oldObject, acceleration, force);
             }
 
+            /* Move objects */
+            /* For the time T, velocity moved the objects (changed their positions).
+             * New objects positions are calculated having the velocity at the beginning of the period,
+             * and these velocities are applied for time T. */
+            moveObject(newObject);
+
             /* Change speed */
-            newObject.setSpeed(calculateSpeed(oldObject, acceleration));
+            /* For the time T, accelerations changed the velocities.
+             * Velocities are calculated having the accelerations of the objects at the beginning of the period,
+             * and these accelerations are applied for time T. */
+            newObject.setSpeed(calculateSpeed(oldObject));
+            
+            /* Change the acceleration */
+            newObject.setAcceleration(acceleration);
 
             /* Bounce from walls */
+            /* Only change the direction of the speed */
             if (simulation.getProperties().isBounceFromWalls()) {
                 bounceFromWalls(newObject);
             }
-
-            /* Move objects */
-            moveObject(oldObject, newObject);
         }
     }
 
@@ -191,18 +208,18 @@ public class SimulationLogicAP {
         }
     }
 
-    private void moveObject(ImmutableSimulationObject oldObject, SimulationObject newObject) {
+    private void moveObject(SimulationObject newObject) {
         // members[i]->x = members[i]->x + members[i]->speed.x * simulationProperties.secondsPerCycle;
         newObject.setX(newObject.getX().add(newObject.getSpeed().getX().multiply(simulation.getProperties().getSecondsPerIteration())));
         newObject.setY(newObject.getY().add(newObject.getSpeed().getY().multiply(simulation.getProperties().getSecondsPerIteration())));
         newObject.setZ(newObject.getZ().add(newObject.getSpeed().getZ().multiply(simulation.getProperties().getSecondsPerIteration())));
     }
 
-    private TripleNumber calculateSpeed(ImmutableSimulationObject object, TripleNumber acceleration) {
+    private TripleNumber calculateSpeed(ImmutableSimulationObject object) {
         // members[i]->speed.x += a.x * simulationProperties.secondsPerCycle;//* t;
-        Number speedX = object.getSpeed().getX().add(acceleration.getX().multiply(simulation.getProperties().getSecondsPerIteration()));
-        Number speedY = object.getSpeed().getY().add(acceleration.getY().multiply(simulation.getProperties().getSecondsPerIteration()));
-        Number speedZ = object.getSpeed().getZ().add(acceleration.getZ().multiply(simulation.getProperties().getSecondsPerIteration()));
+        Number speedX = object.getSpeed().getX().add(object.getAcceleration().getX().multiply(simulation.getProperties().getSecondsPerIteration()));
+        Number speedY = object.getSpeed().getY().add(object.getAcceleration().getY().multiply(simulation.getProperties().getSecondsPerIteration()));
+        Number speedZ = object.getSpeed().getZ().add(object.getAcceleration().getZ().multiply(simulation.getProperties().getSecondsPerIteration()));
 
         return new TripleNumber(speedX, speedY, speedZ);
     }

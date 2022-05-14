@@ -73,9 +73,16 @@ public class SimulationLogicDouble extends Kernel {
      */
     public void calculateNewValues(int i) {
         if (!deleted[i]) {
+            /* Speed is scalar, velocity is vector. Velocity = speed + direction. */
+
+            /* Time T passed */
+
             /* Calculate acceleration */
-            double accelerationX = 0;
-            double accelerationY = 0;
+            /* For the time T, forces accelerated the objects (changed their velocities).
+             * Forces are calculated having the positions of the objects at the beginning of the period,
+             * and these forces are applied for time T. */
+            double newAccelerationX = 0;
+            double newAccelerationY = 0;
             for (int j = 0; j < readOnlyPositionX.length; j++) {
                 if (i != j && !readOnlyDeleted[j]) {
                     /* Calculate force */
@@ -87,18 +94,31 @@ public class SimulationLogicDouble extends Kernel {
 
                     /* Add to current acceleration */
                     // ax = Fx / m
-                    accelerationX = accelerationX + forceX / mass[i];
-                    accelerationY = accelerationY + forceY / mass[i];
+                    newAccelerationX = newAccelerationX + forceX / mass[i];
+                    newAccelerationY = newAccelerationY + forceY / mass[i];
                 }
             }
 
-            /* Change speed */
-            speedX[i] = speedX[i] + accelerationX * secondsPerIteration;
-            speedY[i] = speedY[i] + accelerationY * secondsPerIteration;
-
-            /* Move object */
+            /* Move objects */
+            /* For the time T, velocity moved the objects (changed their positions).
+             * New objects positions are calculated having the velocity at the beginning of the period,
+             * and these velocities are applied for time T. */
             positionX[i] = positionX[i] + speedX[i] * secondsPerIteration;
             positionY[i] = positionY[i] + speedY[i] * secondsPerIteration;
+
+            /* Change speed */
+            /* For the time T, accelerations changed the velocities.
+             * Velocities are calculated having the accelerations of the objects at the beginning of the period,
+             * and these accelerations are applied for time T. */
+            speedX[i] = speedX[i] + accelerationX[i] * secondsPerIteration;
+            speedY[i] = speedY[i] + accelerationY[i] * secondsPerIteration;
+            
+            /* Change the acceleration */
+            accelerationX[i] = newAccelerationX;
+            accelerationY[i] = newAccelerationY;
+            
+            /* Bounce from walls */
+            /* Only change the direction of the speed */
         }
     }
 
