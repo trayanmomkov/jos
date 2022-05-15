@@ -4,6 +4,7 @@ import info.trekto.jos.core.model.ImmutableSimulationObject;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.numbers.Number;
 
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.TRIPLE_ZERO;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
 import static java.awt.Color.BLUE;
 
@@ -30,6 +31,8 @@ public class SimulationObjectImpl implements SimulationObject {
         this.x = ZERO;
         this.y = ZERO;
         this.z = ZERO;
+        this.speed = TRIPLE_ZERO;
+        this.acceleration = TRIPLE_ZERO;
         color = BLUE.getRGB();
     }
 
@@ -143,5 +146,23 @@ public class SimulationObjectImpl implements SimulationObject {
                 ", y=" + y +
                 ", speed=" + speed +
                 '}';
+    }
+
+    /**
+     * Do not change! {@link SimulationObjectImpl} is used as HashMap key.
+     * This method is created only to show that usage of Object's equals is intentional.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+    
+    /**
+     * Do not change! {@link SimulationObjectImpl} is used as HashMap key.
+     * This method is created only to show that usage of Object's hashCode is intentional.
+     */
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }

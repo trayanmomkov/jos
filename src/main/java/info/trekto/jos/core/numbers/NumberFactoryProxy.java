@@ -1,5 +1,6 @@
 package info.trekto.jos.core.numbers;
 
+import info.trekto.jos.core.model.impl.TripleNumber;
 import info.trekto.jos.core.numbers.impl.*;
 
 import java.math.BigDecimal;
@@ -23,6 +24,7 @@ public class NumberFactoryProxy {
     public static Number BILLION;
     public static Number IGNORED;
     public static Number PI;
+    public static TripleNumber TRIPLE_ZERO;
 
     private static NumberFactory factory;
 
@@ -38,6 +40,7 @@ public class NumberFactoryProxy {
         BILLION = createNumber("1000000000");
         IGNORED = createNumber("0");
         PI = factory.createPi();
+        TRIPLE_ZERO = new TripleNumber();
     }
 
     public static NumberFactory getFactory() {
