@@ -230,4 +230,8 @@ public class VisualizerImpl implements Visualizer {
     public VisualizationPanel getVisualizationPanel() {
         return visualizationPanel;
     }
+
+    public Map<String, Queue<ShapeWithColorAndText>> getTrails() {
+        return trails;
+    }
 }

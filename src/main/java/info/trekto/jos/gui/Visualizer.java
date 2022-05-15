@@ -2,9 +2,12 @@ package info.trekto.jos.gui;
 
 import info.trekto.jos.core.impl.Iteration;
 import info.trekto.jos.core.model.SimulationObject;
+import info.trekto.jos.gui.java2dgraphics.ShapeWithColorAndText;
 import info.trekto.jos.gui.java2dgraphics.VisualizationPanel;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 
 /**
  * @author Trayan Momkov
@@ -35,4 +38,6 @@ public interface Visualizer {
     void visualize(Iteration iteration);
 
     VisualizationPanel getVisualizationPanel();
+    
+    Map<String, Queue<ShapeWithColorAndText>> getTrails();
 }

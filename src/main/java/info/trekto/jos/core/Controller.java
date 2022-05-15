@@ -393,6 +393,9 @@ public enum Controller {
 
     public void switchTrail() {
         setShowTrail(!isShowTrail());
+        if (!isShowTrail()) {
+            visualizer.getTrails().clear();
+        }
     }
 
     public void setPause(boolean paused) {
