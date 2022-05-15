@@ -28,28 +28,55 @@ public class SimulationGenerator {
                 + new SimpleDateFormat("yyyy-MMM-dd_HH-mm-ss").format(new Date()) + ".json.gz";
         properties.setOutputFile(filename);
 
-        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        int width = gd.getDisplayMode().getWidth();
-        int height = gd.getDisplayMode().getHeight();
+        Rectangle maxWindowBounds = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+        int buffer = 50;
+        double width = maxWindowBounds.getWidth() - buffer;
+        double height = maxWindowBounds.getHeight() - buffer;
 
-        List<SimulationObject> objects = new ArrayList<>();
+        if (height > width) {
+            // Ignore vertical screens for simplicity.
+            height = width;
+        }
+
+        double screenRatio = width / height;
+        double screenTranslationX = width / 2.0;
+        double screenTranslationY = height / 2.0;
+        double paddingRatio = 1.1;
+
         Random random = new Random(System.currentTimeMillis());
         int n = properties.getNumberOfObjects();
-        double areaForObject = width * height / (double) n;
-        double areaSide = Math.sqrt(areaForObject);
+        double areaForObject = Math.floor(width * height / (double) n);
+        double sideY = Math.floor(Math.sqrt(areaForObject / screenRatio));
+        double sideX = Math.floor(sideY * screenRatio);
+
+        long horizontalZones = 0;
+        long verticalZones;
+        do {
+            if (horizontalZones != 0) {
+                sideX -= 1;
+                if (sideX < sideY) {
+                    sideY = sideX / screenRatio;
+                }
+            }
+            horizontalZones = Math.round(Math.floor(width / sideX));
+            verticalZones = Math.round(Math.floor(height / sideY));
+        } while (!fit(sideX, sideY, horizontalZones, verticalZones, width, height, n));
+
+        List<SimulationObject> objects = new ArrayList<>();
         int generatedObjects = 0;
-
-        long horizontalZones = Math.round(width / areaSide);
-        long verticalZones = Math.round(n / (double) horizontalZones + 0.5);
-
         outerloop:
         for (int i = 0; i < horizontalZones; i++) {
             for (int j = 0; j < verticalZones; j++) {
-                double radius = random.nextDouble() * areaSide / 10.0;
+                double radius = random.nextDouble() * sideY / 10.0;
                 SimulationObject o = C.createNewSimulationObject();
 
-                o.setX(New.num(i * areaSide + radius * 1.1 + (random.nextDouble() * (areaSide - 2 * radius * 1.1)) - width / 2.0));
-                o.setY(New.num(j * areaSide + radius * 1.1 + (random.nextDouble() * (areaSide - 2 * radius * 1.1)) - height / 2.0));
+                double boxContainingCenterWidth = sideX - 2 * radius * paddingRatio;
+                double boxContainingCenterHeight = sideY - 2 * radius * paddingRatio;
+                double centerRelativeToTheBoxX = radius * paddingRatio + random.nextDouble() * boxContainingCenterWidth;
+                double centerRelativeToTheBoxY = radius * paddingRatio + random.nextDouble() * boxContainingCenterHeight;
+
+                o.setX(New.num(i * sideX + centerRelativeToTheBoxX - screenTranslationX));
+                o.setY(New.num(j * sideY + centerRelativeToTheBoxY - screenTranslationY));
                 o.setZ(ZERO);
                 o.setRadius(New.num(radius));
                 o.setSpeed(new TripleNumber(New.num((random.nextDouble() - 0.5) * 10), New.num((random.nextDouble() - 0.5) * 10), ZERO));
@@ -70,6 +97,10 @@ public class SimulationGenerator {
             }
         }
         properties.setInitialObjects(objects);
+    }
+
+    private static boolean fit(double sideX, double sideY, long horizontalZones, long verticalZones, double width, double height, int n) {
+        return sideX * horizontalZones <= width && sideY * verticalZones <= height && horizontalZones * verticalZones >= n;
     }
 
     public static List<SimulationObject> generateComplexObject(Number x, Number y, Number radius, Number mass, String id, Number rotationDirection,
@@ -103,7 +134,7 @@ public class SimulationGenerator {
                                                     .multiply(PI).multiply(rotationDirection).add(speedY),
                                             ZERO));
                 o.setAcceleration(new TripleNumber());
-                o.setMass(mass.multiply(r.pow(exponential_mass_change_in_depth))); 
+                o.setMass(mass.multiply(r.pow(exponential_mass_change_in_depth)));
                 o.setRadius(particleRadius);
                 o.setId(id + r + i);
                 o.setColor(color.getRGB());
