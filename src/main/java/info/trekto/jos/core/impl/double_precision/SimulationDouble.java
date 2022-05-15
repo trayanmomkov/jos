@@ -75,14 +75,14 @@ public class SimulationDouble extends SimulationAP implements Simulation {
             }
         }
 
-        /* Collision and merging */
+        /* Collision */
         collisionCheckKernel.prepare();
-
+        
         /* Execute in parallel on GPU if available */
         collisionCheckKernel.execute(collisionCheckRange);
         if (iterationCounter == 1) {
             if (!GPU.equals(collisionCheckKernel.getExecutionMode())) {
-                warn(logger, "Collision detection execution mode = " + simulationLogic.getExecutionMode());
+                warn(logger, "Collision detection execution mode = " + collisionCheckKernel.getExecutionMode());
             }
         }
 

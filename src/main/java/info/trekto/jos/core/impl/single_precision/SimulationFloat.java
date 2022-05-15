@@ -83,7 +83,7 @@ public class SimulationFloat extends SimulationAP implements Simulation {
         collisionCheckKernel.execute(collisionCheckRange);
         if (iterationCounter == 1) {
             if (!GPU.equals(collisionCheckKernel.getExecutionMode())) {
-                warn(logger, "Collision detection execution mode = " + simulationLogic.getExecutionMode());
+                warn(logger, "Collision detection execution mode = " + collisionCheckKernel.getExecutionMode());
             }
         }
 

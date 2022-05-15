@@ -7,6 +7,7 @@ import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.numbers.Number;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Trayan Momkov
@@ -31,4 +32,8 @@ public interface Simulation {
     void setProperties(SimulationProperties properties);
 
     Number calculateDistance(ImmutableSimulationObject object, ImmutableSimulationObject object1);
+    
+    boolean isCollisionExists();
+    
+    void upCollisionExists();
 }

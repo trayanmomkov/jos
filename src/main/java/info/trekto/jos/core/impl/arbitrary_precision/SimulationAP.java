@@ -42,6 +42,8 @@ public class SimulationAP implements Simulation {
 
     private List<SimulationObject> objects;
     private List<SimulationObject> auxiliaryObjects;
+    
+    private volatile boolean collisionExists;
 
     public SimulationAP(SimulationProperties properties) {
         simulationLogic = new SimulationLogicAP(this);
@@ -90,11 +92,11 @@ public class SimulationAP implements Simulation {
 
         /* Collision and merging */
         CollisionCheckRecursiveAction collisionCheck = new CollisionCheckRecursiveAction(0, auxiliaryObjects.size(), this);
-        collisionCheck.prepare();
+        collisionExists = false;
         collisionCheck.compute();
 
         /* If collision/s exists execute sequentially on a single thread */
-        if (collisionCheck.collisionExists()) {
+        if (collisionExists) {
             simulationLogic.processCollisions(this);
         }
 
@@ -330,5 +332,13 @@ public class SimulationAP implements Simulation {
     @Override
     public Number calculateDistance(ImmutableSimulationObject object, ImmutableSimulationObject object1) {
         return simulationLogic.calculateDistance(object, object1);
+    }
+
+    public boolean isCollisionExists() {
+        return collisionExists;
+    }
+    
+    public void upCollisionExists() {
+        collisionExists = true;
     }
 }

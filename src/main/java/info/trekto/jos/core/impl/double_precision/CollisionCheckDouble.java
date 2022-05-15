@@ -5,7 +5,7 @@ import com.aparapi.Kernel;
 import java.util.Arrays;
 
 public class CollisionCheckDouble extends Kernel {
-    public final boolean[] collisions;
+    public final boolean[] collisionExists;
     public final int n;
 
     public final double[] positionX;
@@ -15,7 +15,7 @@ public class CollisionCheckDouble extends Kernel {
 
     public CollisionCheckDouble(int n, double[] positionX, double[] positionY, double[] radius, boolean[] deleted) {
         this.n = n;
-        collisions = new boolean[n];
+        collisionExists = new boolean[1];
 
         this.positionX = positionX;
         this.positionY = positionY;
@@ -24,16 +24,11 @@ public class CollisionCheckDouble extends Kernel {
     }
 
     public void prepare() {
-        Arrays.fill(collisions, false);
+        collisionExists[0] = false;
     }
 
     public boolean collisionExists() {
-        for (boolean collision : collisions) {
-            if (collision) {
-                return true;
-            }
-        }
-        return false;
+        return collisionExists[0];
     }
 
     /**
@@ -43,19 +38,21 @@ public class CollisionCheckDouble extends Kernel {
      */
     @Override
     public void run() {
+        if (collisionExists[0]) {
+            return;
+        }
         int i = getGlobalId();
         if (!deleted[i]) {
-            boolean collision = false;
             for (int j = 0; j < n; j++) {
-                if (!collision && i != j && !deleted[j]) {
+                if (i != j && !deleted[j]) {
                     // distance between centres
                     double x = positionX[j] - positionX[i];
                     double y = positionY[j] - positionY[i];
                     double distance = Math.sqrt(x * x + y * y);
 
                     if (distance < radius[i] + radius[j]) {
-                        collision = true;
-                        collisions[i] = true;
+                        collisionExists[0] = true;
+                        return;
                     }
                 }
             }

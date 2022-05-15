@@ -6,8 +6,6 @@ import info.trekto.jos.core.numbers.Number;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 
@@ -17,7 +15,6 @@ class CollisionCheckRecursiveAction extends RecursiveAction {
     private final int fromIndex;
     private final int toIndex;
     private final Simulation simulation;
-    private static ConcurrentMap<SimulationObject, Boolean> collisions;
 
     public CollisionCheckRecursiveAction(int fromIndex, int toIndex, Simulation simulation) {
         this.fromIndex = fromIndex;
@@ -25,19 +22,17 @@ class CollisionCheckRecursiveAction extends RecursiveAction {
         this.simulation = simulation;
     }
 
-    public void prepare() {
-        collisions = new ConcurrentHashMap<>();
-    }
-
-    public boolean collisionExists() {
-        return collisions.values().stream().anyMatch(Boolean::booleanValue);
-    }
-
     @Override
     public void compute() {
+        if (simulation.isCollisionExists()) {
+            return;
+        }
         if (toIndex - fromIndex <= threshold) {
             outerloop:
             for (SimulationObject object : simulation.getAuxiliaryObjects().subList(fromIndex, toIndex)) {
+                if (simulation.isCollisionExists()) {
+                    break;
+                }
                 for (SimulationObject object1 : simulation.getAuxiliaryObjects()) {
                     if (object == object1) {
                         continue;
@@ -45,8 +40,8 @@ class CollisionCheckRecursiveAction extends RecursiveAction {
                     // distance between centres
                     Number distance = simulation.calculateDistance(object, object1);
 
-                    if (distance.compareTo(object.getRadius().add(object1.getRadius())) < 0) {
-                        collisions.put(object, true);
+                    if (distance.compareTo(object.getRadius().add(object1.getRadius())) <= 0) {
+                        simulation.upCollisionExists();
                         break outerloop;
                     }
                 }
