@@ -229,11 +229,12 @@ public class JsonReaderWriter implements ReaderWriter {
                 o.setX(New.num(node.get("x").asText()));
                 o.setY(New.num(node.get("y").asText()));
                 o.setZ(New.num(node.get("z").asText()));
+                /* We do not need the following for playing
                 o.setSpeed(new TripleNumber(New.num(node.get("speedX").asText()),
                                             New.num(node.get("speedY").asText()),
                                             New.num(node.get("speedZ").asText())));
                 o.setAcceleration(new TripleNumber());
-                o.setMass(New.num(node.get("mass").asText()));
+                o.setMass(New.num(node.get("mass").asText())); */
                 o.setRadius(New.num(node.get("radius").asText()));
                 o.setColor(Integer.parseInt(node.get("color").getTextValue(), 16));
                 objects.add(o);
