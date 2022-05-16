@@ -532,7 +532,7 @@ public enum Controller {
             try {
                 SimulationGenerator.generateObjects(properties, true);
                 refreshProperties(properties);
-                unHighlightGenerateObjectButton();
+                unHighlightButton(gui.getGenerateObjectsButton());
             } catch (Exception ex) {
                 String message = "Error during object generation.";
                 error(logger, message, ex);
@@ -566,22 +566,22 @@ public enum Controller {
     public void playingSpeedTextFieldEvent() {
     }
 
-    private void highlightGenerateObjectsButton() {
+    private void highlightButton(JButton button) {
         if (defaultButtonColor == null) {
             defaultButtonColor = gui.getGenerateObjectsButton().getBackground();
         }
         if (gui.getRunningRadioButton().isSelected()) {
-            gui.getGenerateObjectsButton().setBackground(PINK);
+            button.setBackground(PINK);
         }
     }
 
-    private void unHighlightGenerateObjectButton() {
-        gui.getGenerateObjectsButton().setBackground(defaultButtonColor != null ? defaultButtonColor : new Color(238, 238, 238));
+    private void unHighlightButton(JButton button) {
+        button.setBackground(defaultButtonColor != null ? defaultButtonColor : new Color(238, 238, 238));
     }
 
     public void precisionTextFieldEvent() {
         if (!isNullOrBlank(gui.getPrecisionTextField().getText())) {
-            highlightGenerateObjectsButton();
+            highlightButton(gui.getGenerateObjectsButton());
             calculateAverageSize();
         }
     }
@@ -591,7 +591,7 @@ public enum Controller {
             setPrecisionFieldVisibility();
             setExecutionModeFieldVisibilityAndValue();
             setCpuGpuThresholdVisibility();
-            highlightGenerateObjectsButton();
+            highlightButton(gui.getGenerateObjectsButton());
             calculateAverageSize();
         }
     }
@@ -622,7 +622,7 @@ public enum Controller {
             File file = fileChooser.getSelectedFile();
             gui.getInputFilePathLabel().setText(file.getAbsolutePath());
             refreshProperties(loadProperties(file.getAbsolutePath()));
-            unHighlightGenerateObjectButton();
+            unHighlightButton(gui.getGenerateObjectsButton());
             saveToFileCheckBoxEvent();
         }
     }
@@ -636,7 +636,8 @@ public enum Controller {
 
     public void numberOfObjectsTextFieldEvent() {
         if (!isNullOrBlank(gui.getNumberOfObjectsTextField().getText())) {
-            highlightGenerateObjectsButton();
+            highlightButton(gui.getGenerateObjectsButton());
+            highlightButton(gui.getDetectCpuGpuThresholdButton());
             calculateAverageSize();
         }
     }
@@ -782,6 +783,7 @@ public enum Controller {
         }).start();
         
         dialog.setVisible(true);
+        unHighlightButton(gui.getDetectCpuGpuThresholdButton());
     }
 
     public void executionModeComboBoxEvent() {
@@ -790,5 +792,9 @@ public enum Controller {
 
     public boolean isHasToStopCpuGpuMeasuring() {
         return hasToStopCpuGpuMeasuring;
+    }
+
+    public void cpuGpuThresholdFieldEvent() {
+        unHighlightButton(gui.getDetectCpuGpuThresholdButton());
     }
 }

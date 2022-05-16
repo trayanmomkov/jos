@@ -130,6 +130,7 @@ public class MainForm {
         bounceFromScreenWallsCheckBox.addActionListener(actionEvent -> C.bounceFromScreenWallsCheckBoxEvent());
         playingSpeedTextField.getDocument().addUndoableEditListener(actionEvent -> C.playingSpeedTextFieldEvent());
         outputFileTextField.getDocument().addUndoableEditListener(actionEvent -> C.outputFileTextFieldEvent());
+        cpuGpuThresholdField.getDocument().addUndoableEditListener(actionEvent -> C.cpuGpuThresholdFieldEvent());
         startButton.addActionListener(actionEvent -> C.start());
         stopButton.addActionListener(actionEvent -> C.stopButtonEvent());
         pauseButton.addActionListener(actionEvent -> C.pauseButtonEvent());
