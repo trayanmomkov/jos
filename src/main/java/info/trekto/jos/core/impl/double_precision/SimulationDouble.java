@@ -39,7 +39,13 @@ public class SimulationDouble extends SimulationAP implements Simulation {
     public SimulationDouble(SimulationProperties properties, SimulationAP cpuSimulation) {
         super(properties);
         final int n = properties.getNumberOfObjects();
-        simulationLogic = new SimulationLogicDouble(n, properties.getSecondsPerIteration().doubleValue());
+        int screenWidth = 0;
+        int screenHeight = 0;
+        if (properties.isBounceFromWalls()) {
+            screenWidth = C.getVisualizer().getVisualizationPanel().getWidth();
+            screenHeight = C.getVisualizer().getVisualizationPanel().getHeight();
+        }
+        simulationLogic = new SimulationLogicDouble(n, properties.getSecondsPerIteration().doubleValue(), screenWidth, screenHeight);
         zeroArray = new double[n];
         simulationLogicRange = Range.create(n);
         simulationLogic.setExecutionMode(GPU);

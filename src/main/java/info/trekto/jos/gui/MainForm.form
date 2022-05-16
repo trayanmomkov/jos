@@ -252,10 +252,11 @@
                   <gridbag top="0" left="7" bottom="0" right="0" weightx="0.0" weighty="1.0"/>
                 </constraints>
                 <properties>
-                  <enabled value="false"/>
+                  <enabled value="true"/>
                   <hideActionText value="true"/>
                   <horizontalAlignment value="10"/>
                   <horizontalTextPosition value="10"/>
+                  <selected value="false"/>
                   <text value="Bounce from screen walls"/>
                 </properties>
               </component>

@@ -213,16 +213,16 @@ public class SimulationLogicAP implements SimulationLogic {
             int width = C.getVisualizer().getVisualizationPanel().getWidth();
             int height = C.getVisualizer().getVisualizationPanel().getHeight();
 
-            if (newObject.getX().add(newObject.getRadius()).doubleValue() > width / 2.0
-                    || newObject.getX().subtract(newObject.getRadius()).doubleValue() < -width / 2.0) {
+            if (newObject.getX().add(newObject.getRadius()).doubleValue() >= width / 2.0
+                    || newObject.getX().subtract(newObject.getRadius()).doubleValue() <= -width / 2.0) {
                 TripleNumber speed = new TripleNumber(newObject.getSpeed().getX().negate(),
                                                       newObject.getSpeed().getY(),
                                                       newObject.getSpeed().getZ());
                 newObject.setSpeed(speed);
             }
 
-            if (newObject.getY().add(newObject.getRadius()).doubleValue() > height / 2.0
-                    || newObject.getY().subtract(newObject.getRadius()).doubleValue() < -height / 2.0) {
+            if (newObject.getY().add(newObject.getRadius()).doubleValue() >= height / 2.0
+                    || newObject.getY().subtract(newObject.getRadius()).doubleValue() <= -height / 2.0) {
                 TripleNumber speed = new TripleNumber(newObject.getSpeed().getX(),
                                                       newObject.getSpeed().getY().negate(),
                                                       newObject.getSpeed().getZ());

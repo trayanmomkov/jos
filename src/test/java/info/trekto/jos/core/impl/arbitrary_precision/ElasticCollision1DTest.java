@@ -57,8 +57,8 @@ public class ElasticCollision1DTest {
     public static Object[][] logicImplementations() {
         return new Object[][]{
                 {new SimulationLogicAP(new SimulationAP(new SimulationProperties())), PRECISION - 2},
-                {new SimulationLogicDouble(2, 1), DOUBLE_PRECISION - 1},
-                {new SimulationLogicFloat(2, 1), SINGLE_PRECISION - 1}
+                {new SimulationLogicDouble(2, 1, 0, 0), DOUBLE_PRECISION - 1},
+                {new SimulationLogicFloat(2, 1, 0, 0), SINGLE_PRECISION - 1}
         };
     }
 

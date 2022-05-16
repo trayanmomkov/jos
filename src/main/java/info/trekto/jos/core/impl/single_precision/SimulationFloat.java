@@ -40,7 +40,13 @@ public class SimulationFloat extends SimulationAP implements Simulation {
     public SimulationFloat(SimulationProperties properties, SimulationAP cpuSimulation) {
         super(properties);
         final int n = properties.getNumberOfObjects();
-        simulationLogic = new SimulationLogicFloat(n, properties.getSecondsPerIteration().floatValue());
+        int screenWidth = 0;
+        int screenHeight = 0;
+        if (properties.isBounceFromWalls()) {
+            screenWidth = C.getVisualizer().getVisualizationPanel().getWidth();
+            screenHeight = C.getVisualizer().getVisualizationPanel().getHeight();
+        }
+        simulationLogic = new SimulationLogicFloat(n, properties.getSecondsPerIteration().floatValue(), screenWidth, screenHeight);
         zeroArray = new float[n];
         simulationLogicRange = Range.create(n);
         simulationLogic.setExecutionMode(GPU);
@@ -76,7 +82,7 @@ public class SimulationFloat extends SimulationAP implements Simulation {
             }
         }
 
-        /* Collision and merging */
+        /* Collision */
         collisionCheckKernel.prepare();
 
         /* Execute in parallel on GPU if available */

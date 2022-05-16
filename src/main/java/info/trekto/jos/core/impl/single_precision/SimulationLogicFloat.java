@@ -43,8 +43,10 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
     public final boolean[] readOnlyDeleted;
 
     private final float secondsPerIteration;
+    private final int screenWidth;
+    private final int screenHeight;
 
-    public SimulationLogicFloat(int numberOfObjects, float secondsPerIteration) {
+    public SimulationLogicFloat(int numberOfObjects, float secondsPerIteration, int screenWidth, int screenHeight) {
         int n = numberOfObjects;
         this.secondsPerIteration = secondsPerIteration;
 
@@ -70,6 +72,9 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
         readOnlyRadius = new float[n];
         readOnlyColor = new int[n];
         readOnlyDeleted = new boolean[n];
+        
+        this.screenWidth = screenWidth;
+        this.screenHeight = screenHeight;
     }
 
     @Override
@@ -129,7 +134,19 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
             accelerationY[i] = newAccelerationY;
             
             /* Bounce from walls */
-            /* Only change the direction of the speed */
+            if (screenWidth != 0 && screenHeight != 0) {
+                bounceFromWalls(i);
+            }
+        }
+    }
+
+    private void bounceFromWalls(int i) {
+        if (positionX[i] + radius[i] >= screenWidth / 2.0 || positionX[i] - radius[i] <= -screenWidth / 2.0) {
+            speedX[i] = -speedX[i];
+        }
+
+        if (positionY[i] + radius[i] >= screenHeight / 2.0 || positionY[i] - radius[i] <= -screenHeight / 2.0) {
+            speedY[i] = -speedY[i];
         }
     }
 

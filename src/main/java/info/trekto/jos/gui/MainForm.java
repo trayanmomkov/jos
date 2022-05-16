@@ -148,7 +148,7 @@ public class MainForm {
                 secondsPerIterationLabel, numberTypeLabel, interactingLawLabel, outputFileLabel, precisionLabel,
                 initialObjectsTable, initialObjectsPanel, generateObjectsButton, numberTypeComboBox, precisionTextField,
                 precisionTextField, executionModeLabel, executionModeComboBox, cpuGpuThresholdLabel, cpuGpuThresholdField,
-                cpuGpuThresholdLabel2, detectCpuGpuThresholdButton);
+                cpuGpuThresholdLabel2, detectCpuGpuThresholdButton, bounceFromScreenWallsCheckBox);
 
         playingComponents = Arrays.asList(playFileLabel, playFromLabel, browsePlayingFileButton, playButton);
 
@@ -730,10 +730,11 @@ public class MainForm {
         gbc.insets = new Insets(0, 5, 0, 5);
         panel2.add(cpuGpuThresholdLabel2, gbc);
         bounceFromScreenWallsCheckBox = new JCheckBox();
-        bounceFromScreenWallsCheckBox.setEnabled(false);
+        bounceFromScreenWallsCheckBox.setEnabled(true);
         bounceFromScreenWallsCheckBox.setHideActionText(true);
         bounceFromScreenWallsCheckBox.setHorizontalAlignment(10);
         bounceFromScreenWallsCheckBox.setHorizontalTextPosition(10);
+        bounceFromScreenWallsCheckBox.setSelected(false);
         bounceFromScreenWallsCheckBox.setText("Bounce from screen walls");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
