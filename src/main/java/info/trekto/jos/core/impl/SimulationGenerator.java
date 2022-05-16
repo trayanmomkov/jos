@@ -41,19 +41,18 @@ public class SimulationGenerator {
         double screenRatio = width / height;
         double screenTranslationX = width / 2.0;
         double screenTranslationY = height / 2.0;
-        double paddingRatio = 1.1;
 
         Random random = new Random(System.currentTimeMillis());
         int n = properties.getNumberOfObjects();
         double areaForObject = Math.floor(width * height / (double) n);
-        double sideY = Math.floor(Math.sqrt(areaForObject / screenRatio));
-        double sideX = Math.floor(sideY * screenRatio);
+        double sideY = Math.sqrt(areaForObject / screenRatio);
+        double sideX = sideY * screenRatio;
 
         long horizontalZones = 0;
         long verticalZones;
         do {
             if (horizontalZones != 0) {
-                sideX -= 1;
+                sideX -= 0.1;
                 if (sideX < sideY) {
                     sideY = sideX / screenRatio;
                 }
@@ -67,13 +66,13 @@ public class SimulationGenerator {
         outerloop:
         for (int i = 0; i < horizontalZones; i++) {
             for (int j = 0; j < verticalZones; j++) {
-                double radius = random.nextDouble() * sideY / 10.0;
+                double radius = random.nextDouble() * sideY / 5.0;
                 SimulationObject o = C.createNewSimulationObject();
 
-                double boxContainingCenterWidth = sideX - 2 * radius * paddingRatio;
-                double boxContainingCenterHeight = sideY - 2 * radius * paddingRatio;
-                double centerRelativeToTheBoxX = radius * paddingRatio + random.nextDouble() * boxContainingCenterWidth;
-                double centerRelativeToTheBoxY = radius * paddingRatio + random.nextDouble() * boxContainingCenterHeight;
+                double boxContainingCenterWidth = sideX - 2 * radius;
+                double boxContainingCenterHeight = sideY - 2 * radius;
+                double centerRelativeToTheBoxX = radius + random.nextDouble() * boxContainingCenterWidth;
+                double centerRelativeToTheBoxY = radius + random.nextDouble() * boxContainingCenterHeight;
 
                 o.setX(New.num(i * sideX + centerRelativeToTheBoxX - screenTranslationX));
                 o.setY(New.num(j * sideY + centerRelativeToTheBoxY - screenTranslationY));
