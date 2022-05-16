@@ -1,8 +1,19 @@
 package info.trekto.jos.core.impl.single_precision;
 
 import com.aparapi.Kernel;
+import info.trekto.jos.core.SimulationLogic;
+import info.trekto.jos.core.model.SimulationObject;
+import info.trekto.jos.core.model.impl.TripleNumber;
+import info.trekto.jos.core.numbers.New;
 
-public class SimulationLogicFloat extends Kernel {
+import java.util.AbstractMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
+
+public class SimulationLogicFloat extends Kernel implements SimulationLogic {
     private static final float TWO = 2.0f;
     private static final float RATIO_FOUR_THREE = 4 / 3.0f;
     private static final float GRAVITY = 0.000000000066743f; // 6.6743×10^−11 N⋅m2/kg2
@@ -123,12 +134,35 @@ public class SimulationLogicFloat extends Kernel {
     }
 
     public void processCollisions() {
+        boolean elasticity = false;
+        Set<Map.Entry<Integer, Integer>> processedElasticCollision = null;
+        if (elasticity) {
+            processedElasticCollision = new HashSet<>();
+        }
         for (int i = 0; i < positionX.length; i++) {
-            if (!deleted[i]) {
+            if (!elasticity && deleted[i]) {
+                continue;
+            }
                 for (int j = 0; j < positionX.length; j++) {
-                    if (i != j && !deleted[j]) {
-                        float distance = calculateDistance(positionX[i], positionY[i], positionX[j], positionY[j]);
+                if (i == j) {
+                    continue;
+                }
+
+                if (elasticity) {
+                    if (processedElasticCollision.contains(new AbstractMap.SimpleEntry<>(i, j))) {
+                        continue;
+                    }
+                } else if (deleted[j]) {
+                    continue;
+                }
+
+                float distance = calculateDistance(positionX[i], positionY[i], positionX[j], positionY[j]);
                         if (distance < radius[i] + radius[j]) {    // if collide
+                    if (elasticity) {
+                        processTwoDimensionalCollision(i, j);
+                        processedElasticCollision.add(new AbstractMap.SimpleEntry<>(i, j));
+                        processedElasticCollision.add(new AbstractMap.SimpleEntry<>(j, i));
+                    } else {
                             /* Objects merging */
                             int bigger;
                             int smaller;
@@ -166,7 +200,6 @@ public class SimulationLogicFloat extends Kernel {
                 }
             }
         }
-    }
 
     /**
      * Because processCollisions() method does not run on GPU
@@ -263,5 +296,67 @@ public class SimulationLogicFloat extends Kernel {
             return Float.MIN_VALUE;
         }
         return (float)Math.cbrt(volume / (RATIO_FOUR_THREE * PI));
+    }
+
+    private void processTwoDimensionalCollision(int o1, int o2) {
+        float v1x = speedX[o1];
+        float v1y = speedY[o1];
+        float v2x = speedX[o2];
+        float v2y = speedY[o2];
+        
+        float o1x = positionX[o1];
+        float o1y = positionY[o1];
+        float o2x = positionX[o2];
+        float o2y = positionY[o2];
+        
+        float o1m = mass[o1];
+        float o2m = mass[o2];
+        
+        // v'1y = v1y - 2*m2/(m1+m2) * dotProduct(o1, o2) / dotProduct(o1y, o1x, o2y, o2x) * (o1y-o2y)
+        // v'2x = v2x - 2*m2/(m1+m2) * dotProduct(o2, o1) / dotProduct(o2x, o2y, o1x, o1y) * (o2x-o1x)
+        // v'2y = v2y - 2*m2/(m1+m2) * dotProduct(o2, o1) / dotProduct(o2y, o2x, o1y, o1x) * (o2y-o1y)
+        // v'1x = v1x - 2*m2/(m1+m2) * dotProduct(o1, o2) / dotProduct(o1x, o1y, o2x, o2y) * (o1x-o2x)
+        speedX[o1] = calculateSpeed(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y, o1m, o2m);
+        speedY[o1] = calculateSpeed(v1y, v1x, v2y, v2x, o1y, o1x, o2y, o2x, o1m, o2m);
+        speedX[o2] = calculateSpeed(v2x, v2y, v1x, v1y, o2x, o2y, o1x, o1y, o2m, o1m);
+        speedY[o2] = calculateSpeed(v2y, v2x, v1y, v1x, o2y, o2x, o1y, o1x, o2m, o1m);
+    }
+
+    private float calculateSpeed(float v1x, float v1y, float v2x, float v2y,
+                                  float o1x, float o1y, float o2x, float o2y, float o1m, float o2m) {
+        // v'1x = v1x - 2*o2m/(o1m+o2m) * dotProduct(o1, o2) / dotProduct(o1x, o1y, o2x, o2y) * (o1x-o2x)
+        return v1x - 2 * o2m / (o1m + o2m)
+                * dotProduct2D(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y)
+                / dotProduct2D(o1x, o1y, o2x, o2y, o1x, o1y, o2x, o2y)
+                * (o1x - o2x);
+    }
+
+    private float dotProduct2D(float ax, float ay, float bx, float by, float cx, float cy, float dx, float dy) {
+        // <a - b, c - d> = (ax - bx) * (cx - dx) + (ay - by) * (cy - dy)
+        return (ax - bx) * (cx - dx) + (ay - by) * (cy - dy);
+    }
+
+    /**
+     * For testing only.
+     */
+    @Override
+    public void processTwoDimensionalCollision(SimulationObject o1, SimulationObject o2) {
+        speedX[0] = o1.getSpeed().getX().floatValue();
+        speedY[0] = o1.getSpeed().getY().floatValue();
+        speedX[1] = o2.getSpeed().getX().floatValue();
+        speedY[1] = o2.getSpeed().getY().floatValue();
+        
+        positionX[0] = o1.getX().floatValue();
+        positionY[0] = o1.getY().floatValue();
+        positionX[1] = o2.getX().floatValue();
+        positionY[1] = o2.getY().floatValue();
+        
+        mass[0] = o1.getMass().floatValue();
+        mass[1] = o2.getMass().floatValue();
+        
+        processTwoDimensionalCollision(0, 1);
+        
+        o1.setSpeed(new TripleNumber(New.num(speedX[0]), New.num(speedY[0]), ZERO));
+        o2.setSpeed(new TripleNumber(New.num(speedX[1]), New.num(speedY[1]), ZERO));
     }
 }

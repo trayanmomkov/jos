@@ -1,15 +1,15 @@
 package info.trekto.jos.core.impl.arbitrary_precision;
 
 import info.trekto.jos.core.Simulation;
+import info.trekto.jos.core.SimulationLogic;
 import info.trekto.jos.core.model.ImmutableSimulationObject;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.model.impl.TripleNumber;
 import info.trekto.jos.core.numbers.Number;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.*;
 
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.*;
@@ -18,7 +18,7 @@ import static info.trekto.jos.core.numbers.NumberFactoryProxy.*;
  * @author Trayan Momkov
  * 2016-Mar-6
  */
-public class SimulationLogicAP {
+public class SimulationLogicAP implements SimulationLogic {
     private final Simulation simulation;
 
     public SimulationLogicAP(Simulation simulation) {
@@ -77,56 +77,79 @@ public class SimulationLogicAP {
     }
 
     public void processCollisions(Simulation simulation) {
-        List<SimulationObject> forRemoval = new ArrayList<>();
+        boolean elasticity = false;
+        List<ImmutableSimulationObject> forRemoval = null;
+        Set<Map.Entry<SimulationObject, SimulationObject>> processedElasticCollision = null;
+        if (elasticity) {
+            processedElasticCollision = new HashSet<>();
+        } else {
+            forRemoval = new ArrayList<>();
+        }
         for (SimulationObject newObject : simulation.getAuxiliaryObjects()) {
-            if (forRemoval.contains(newObject)) {
+            if (!elasticity && forRemoval.contains(newObject)) {
                 continue;
             }
             for (SimulationObject tempObject : simulation.getAuxiliaryObjects()) {
-                if (tempObject == newObject || forRemoval.contains(tempObject)) {
+                if (tempObject == newObject) {
                     continue;
                 }
-                Number distance = calculateDistance(newObject, tempObject);
-                if (distance.compareTo(tempObject.getRadius().add(newObject.getRadius())) < 0) {    // if collide
-                    SimulationObject bigger;
-                    SimulationObject smaller;
-                    if (newObject.getMass().compareTo(tempObject.getMass()) < 0) {
-                        smaller = newObject;
-                        bigger = tempObject;
-                    } else {
-                        smaller = tempObject;
-                        bigger = newObject;
+
+                if (elasticity) {
+                    if (processedElasticCollision.contains(new AbstractMap.SimpleEntry<>(tempObject, newObject))) {
+                        continue;
                     }
-                    forRemoval.add(smaller);
+                } else if (forRemoval.contains(tempObject)) {
+                    continue;
+                }
 
-                    /* Objects merging */
-                    /* Speed */
-                    bigger.setSpeed(calculateSpeedOnMerging(smaller, bigger));
+                Number distance = calculateDistance(newObject, tempObject);
+                if (distance.compareTo(tempObject.getRadius().add(newObject.getRadius())) <= 0) {    // if collide
+                    if (elasticity) {
+                        processTwoDimensionalCollision(newObject, tempObject);
+                        processedElasticCollision.add(new AbstractMap.SimpleEntry<>(tempObject, newObject));
+                        processedElasticCollision.add(new AbstractMap.SimpleEntry<>(newObject, tempObject));
+                    } else {
+                        SimulationObject bigger;
+                        ImmutableSimulationObject smaller;
+                        if (newObject.getMass().compareTo(tempObject.getMass()) < 0) {
+                            smaller = newObject;
+                            bigger = tempObject;
+                        } else {
+                            smaller = tempObject;
+                            bigger = newObject;
+                        }
+                        forRemoval.add(smaller);
 
-                    /* Position */
-                    TripleNumber position = calculatePosition(smaller, bigger);
-                    bigger.setX(position.getX());
-                    bigger.setY(position.getY());
-                    bigger.setZ(position.getZ());
+                        /* Objects merging */
+                        /* Speed */
+                        bigger.setSpeed(calculateSpeedOnMerging(smaller, bigger));
 
-                    /* Color */
-                    bigger.setColor(calculateColor(smaller, bigger));
+                        /* Position */
+                        TripleNumber position = calculatePosition(smaller, bigger);
+                        bigger.setX(position.getX());
+                        bigger.setY(position.getY());
+                        bigger.setZ(position.getZ());
 
+                        /* Color */
+                        bigger.setColor(calculateColor(smaller, bigger));
 
-                    /* Volume (radius) */
-                    bigger.setRadius(calculateRadiusBasedOnNewVolumeAndDensity(smaller, bigger));
+                        /* Volume (radius) */
+                        bigger.setRadius(calculateRadiusBasedOnNewVolumeAndDensity(smaller, bigger));
 
-                    /* Mass */
-                    bigger.setMass(bigger.getMass().add(smaller.getMass()));
+                        /* Mass */
+                        bigger.setMass(bigger.getMass().add(smaller.getMass()));
 
-                    if (newObject == smaller) {
-                        /* If the current object is deleted one, stop processing it further. */
-                        break;
+                        if (newObject == smaller) {
+                            /* If the current object is deleted one, stop processing it further. */
+                            break;
+                        }
                     }
                 }
             }
         }
-        simulation.getAuxiliaryObjects().removeAll(forRemoval);
+        if (!elasticity) {
+            simulation.getAuxiliaryObjects().removeAll(forRemoval);
+        }
     }
 
     private int calculateColor(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
@@ -247,5 +270,49 @@ public class SimulationLogicAP {
         Number newAccelerationY = acceleration.getY().add(force.getY().divide(object.getMass()));
         Number newAccelerationZ = acceleration.getZ().add(force.getZ().divide(object.getMass()));
         return new TripleNumber(newAccelerationX, newAccelerationY, newAccelerationZ);
+    }
+    
+    public void processTwoDimensionalCollision(SimulationObject o1, SimulationObject o2) {
+        Number v1x = o1.getSpeed().getX();
+        Number v1y = o1.getSpeed().getY();
+        Number v2x = o2.getSpeed().getX();
+        Number v2y = o2.getSpeed().getY();
+        
+        Number o1x = o1.getX();
+        Number o1y = o1.getY();
+        Number o2x = o2.getX();
+        Number o2y = o2.getY();
+        
+        Number o1m = o1.getMass();
+        Number o2m = o2.getMass();
+        
+        // v'1y = v1y - 2*m2/(m1+m2) * dotProduct(o1, o2) / dotProduct(o1y, o1x, o2y, o2x) * (o1y-o2y)
+        // v'2x = v2x - 2*m2/(m1+m2) * dotProduct(o2, o1) / dotProduct(o2x, o2y, o1x, o1y) * (o2x-o1x)
+        // v'2y = v2y - 2*m2/(m1+m2) * dotProduct(o2, o1) / dotProduct(o2y, o2x, o1y, o1x) * (o2y-o1y)
+        // v'1x = v1x - 2*m2/(m1+m2) * dotProduct(o1, o2) / dotProduct(o1x, o1y, o2x, o2y) * (o1x-o2x)
+        Number o1NewSpeedX = calculateSpeed(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y, o1m, o2m);
+        Number o1NewSpeedY = calculateSpeed(v1y, v1x, v2y, v2x, o1y, o1x, o2y, o2x, o1m, o2m);
+        Number o2NewSpeedX = calculateSpeed(v2x, v2y, v1x, v1y, o2x, o2y, o1x, o1y, o2m, o1m);
+        Number o2NewSpeedY = calculateSpeed(v2y, v2x, v1y, v1x, o2y, o2x, o1y, o1x, o2m, o1m);
+        
+        o1.setSpeed(new TripleNumber(o1NewSpeedX, o1NewSpeedY, ZERO));
+        o2.setSpeed(new TripleNumber(o2NewSpeedX, o2NewSpeedY, ZERO));
+    }
+
+    private Number calculateSpeed(Number v1x, Number v1y, Number v2x, Number v2y,
+                                  Number o1x, Number o1y, Number o2x, Number o2y, Number o1m, Number o2m) {
+        // v'1x = v1x - 2*o2m/(o1m+o2m) * dotProduct(o1, o2) / dotProduct(o1x, o1y, o2x, o2y) * (o1x-o2x)
+        return v1x.subtract(
+                TWO.multiply(o2m)
+                        .divide(o1m.add(o2m))
+                        .multiply(dotProduct2D(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y))
+                        .divide(dotProduct2D(o1x, o1y, o2x, o2y, o1x, o1y, o2x, o2y))
+                        .multiply(o1x.subtract(o2x))
+        );
+    }
+
+    private Number dotProduct2D(Number ax, Number ay, Number bx, Number by, Number cx, Number cy, Number dx, Number dy) {
+        // <a - b, c - d> = (ax - bx) * (cx - dx) + (ay - by) * (cy - dy)
+        return (ax.subtract(bx)).multiply(cx.subtract(dx)).add(ay.subtract(by).multiply(cy.subtract(dy)));
     }
 }

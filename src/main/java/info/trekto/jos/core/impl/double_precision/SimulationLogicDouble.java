@@ -1,8 +1,19 @@
 package info.trekto.jos.core.impl.double_precision;
 
 import com.aparapi.Kernel;
+import info.trekto.jos.core.SimulationLogic;
+import info.trekto.jos.core.model.SimulationObject;
+import info.trekto.jos.core.model.impl.TripleNumber;
+import info.trekto.jos.core.numbers.New;
 
-public class SimulationLogicDouble extends Kernel {
+import java.util.AbstractMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
+
+public class SimulationLogicDouble extends Kernel implements SimulationLogic {
     private static final double TWO = 2.0;
     private static final double RATIO_FOUR_THREE = 4 / 3.0;
     private static final double GRAVITY = 0.000000000066743; // 6.6743×10^−11 N⋅m2/kg2
@@ -123,44 +134,66 @@ public class SimulationLogicDouble extends Kernel {
     }
 
     public void processCollisions() {
+        boolean elasticity = false;
+        Set<Map.Entry<Integer, Integer>> processedElasticCollision = null;
+        if (elasticity) {
+            processedElasticCollision = new HashSet<>();
+        }
         for (int i = 0; i < positionX.length; i++) {
-            if (!deleted[i]) {
-                for (int j = 0; j < positionX.length; j++) {
-                    if (i != j && !deleted[j]) {
-                        double distance = calculateDistance(positionX[i], positionY[i], positionX[j], positionY[j]);
-                        if (distance < radius[i] + radius[j]) {    // if collide
-                            /* Objects merging */
-                            int bigger;
-                            int smaller;
-                            if (mass[i] < mass[j]) {
-                                bigger = j;
-                                smaller = i;
-                            } else {
-                                bigger = i;
-                                smaller = j;
-                            }
+            if (!elasticity && deleted[i]) {
+                continue;
+            }
+            for (int j = 0; j < positionX.length; j++) {
+                if (i == j) {
+                    continue;
+                }
 
-                            deleted[smaller] = true;
+                if (elasticity) {
+                    if (processedElasticCollision.contains(new AbstractMap.SimpleEntry<>(i, j))) {
+                        continue;
+                    }
+                } else if (deleted[j]) {
+                    continue;
+                }
 
-                            /* Speed */
-                            changeSpeedOnMerging(smaller, bigger);
+                double distance = calculateDistance(positionX[i], positionY[i], positionX[j], positionY[j]);
+                if (distance < radius[i] + radius[j]) {    // if collide
+                    if (elasticity) {
+                        processTwoDimensionalCollision(i, j);
+                        processedElasticCollision.add(new AbstractMap.SimpleEntry<>(i, j));
+                        processedElasticCollision.add(new AbstractMap.SimpleEntry<>(j, i));
+                    } else {
+                        /* Objects merging */
+                        int bigger;
+                        int smaller;
+                        if (mass[i] < mass[j]) {
+                            bigger = j;
+                            smaller = i;
+                        } else {
+                            bigger = i;
+                            smaller = j;
+                        }
 
-                            /* Position */
-                            changePositionOnMerging(smaller, bigger);
+                        deleted[smaller] = true;
 
-                            /* Color */
-                            color[bigger] = calculateColor(smaller, bigger);
+                        /* Speed */
+                        changeSpeedOnMerging(smaller, bigger);
 
-                            /* Volume (radius) */
-                            radius[bigger] = calculateRadiusBasedOnNewVolumeAndDensity(smaller, bigger);
+                        /* Position */
+                        changePositionOnMerging(smaller, bigger);
 
-                            /* Mass */
-                            mass[bigger] = mass[bigger] + mass[smaller];
+                        /* Color */
+                        color[bigger] = calculateColor(smaller, bigger);
 
-                            if (i == smaller) {
-                                /* If the current object is deleted stop processing it further. */
-                                break;
-                            }
+                        /* Volume (radius) */
+                        radius[bigger] = calculateRadiusBasedOnNewVolumeAndDensity(smaller, bigger);
+
+                        /* Mass */
+                        mass[bigger] = mass[bigger] + mass[smaller];
+
+                        if (i == smaller) {
+                            /* If the current object is deleted stop processing it further. */
+                            break;
                         }
                     }
                 }
@@ -263,5 +296,67 @@ public class SimulationLogicDouble extends Kernel {
             return Double.MIN_VALUE;
         }
         return Math.cbrt(volume / (RATIO_FOUR_THREE * PI));
+    }
+    
+    private void processTwoDimensionalCollision(int o1, int o2) {
+        double v1x = speedX[o1];
+        double v1y = speedY[o1];
+        double v2x = speedX[o2];
+        double v2y = speedY[o2];
+        
+        double o1x = positionX[o1];
+        double o1y = positionY[o1];
+        double o2x = positionX[o2];
+        double o2y = positionY[o2];
+        
+        double o1m = mass[o1];
+        double o2m = mass[o2];
+        
+        // v'1y = v1y - 2*m2/(m1+m2) * dotProduct(o1, o2) / dotProduct(o1y, o1x, o2y, o2x) * (o1y-o2y)
+        // v'2x = v2x - 2*m2/(m1+m2) * dotProduct(o2, o1) / dotProduct(o2x, o2y, o1x, o1y) * (o2x-o1x)
+        // v'2y = v2y - 2*m2/(m1+m2) * dotProduct(o2, o1) / dotProduct(o2y, o2x, o1y, o1x) * (o2y-o1y)
+        // v'1x = v1x - 2*m2/(m1+m2) * dotProduct(o1, o2) / dotProduct(o1x, o1y, o2x, o2y) * (o1x-o2x)
+        speedX[o1] = calculateSpeed(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y, o1m, o2m);
+        speedY[o1] = calculateSpeed(v1y, v1x, v2y, v2x, o1y, o1x, o2y, o2x, o1m, o2m);
+        speedX[o2] = calculateSpeed(v2x, v2y, v1x, v1y, o2x, o2y, o1x, o1y, o2m, o1m);
+        speedY[o2] = calculateSpeed(v2y, v2x, v1y, v1x, o2y, o2x, o1y, o1x, o2m, o1m);
+    }
+
+    private double calculateSpeed(double v1x, double v1y, double v2x, double v2y,
+                                  double o1x, double o1y, double o2x, double o2y, double o1m, double o2m) {
+        // v'1x = v1x - 2*o2m/(o1m+o2m) * dotProduct(o1, o2) / dotProduct(o1x, o1y, o2x, o2y) * (o1x-o2x)
+        return v1x - 2 * o2m / (o1m + o2m)
+                * dotProduct2D(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y)
+                / dotProduct2D(o1x, o1y, o2x, o2y, o1x, o1y, o2x, o2y)
+                * (o1x - o2x);
+    }
+
+    private double dotProduct2D(double ax, double ay, double bx, double by, double cx, double cy, double dx, double dy) {
+        // <a - b, c - d> = (ax - bx) * (cx - dx) + (ay - by) * (cy - dy)
+        return (ax - bx) * (cx - dx) + (ay - by) * (cy - dy);
+    }
+
+    /**
+     * For testing only.
+     */
+    @Override
+    public void processTwoDimensionalCollision(SimulationObject o1, SimulationObject o2) {
+        speedX[0] = o1.getSpeed().getX().doubleValue();
+        speedY[0] = o1.getSpeed().getY().doubleValue();
+        speedX[1] = o2.getSpeed().getX().doubleValue();
+        speedY[1] = o2.getSpeed().getY().doubleValue();
+        
+        positionX[0] = o1.getX().doubleValue();
+        positionY[0] = o1.getY().doubleValue();
+        positionX[1] = o2.getX().doubleValue();
+        positionY[1] = o2.getY().doubleValue();
+        
+        mass[0] = o1.getMass().doubleValue();
+        mass[1] = o2.getMass().doubleValue();
+        
+        processTwoDimensionalCollision(0, 1);
+        
+        o1.setSpeed(new TripleNumber(New.num(speedX[0]), New.num(speedY[0]), ZERO));
+        o2.setSpeed(new TripleNumber(New.num(speedX[1]), New.num(speedY[1]), ZERO));
     }
 }

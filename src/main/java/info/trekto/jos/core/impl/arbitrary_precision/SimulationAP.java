@@ -90,7 +90,7 @@ public class SimulationAP implements Simulation {
         }
         new SimulationRecursiveAction(0, objects.size(), this).compute();
 
-        /* Collision and merging */
+        /* Collision */
         CollisionCheckRecursiveAction collisionCheck = new CollisionCheckRecursiveAction(0, auxiliaryObjects.size(), this);
         collisionExists = false;
         collisionCheck.compute();
