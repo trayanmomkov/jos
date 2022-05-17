@@ -65,8 +65,8 @@ public class SimulationFloat extends SimulationAP implements Simulation {
     public void doIteration(boolean saveCurrentIterationToFile, long iterationCounter) {
         deepCopy(simulationLogic.positionX, simulationLogic.readOnlyPositionX);
         deepCopy(simulationLogic.positionY, simulationLogic.readOnlyPositionY);
-        deepCopy(simulationLogic.speedX, simulationLogic.readOnlySpeedX);
-        deepCopy(simulationLogic.speedY, simulationLogic.readOnlySpeedY);
+        deepCopy(simulationLogic.velocityX, simulationLogic.readOnlyVelocityX);
+        deepCopy(simulationLogic.velocityY, simulationLogic.readOnlyVelocityY);
         deepCopy(simulationLogic.accelerationX, simulationLogic.readOnlyAccelerationX);
         deepCopy(simulationLogic.accelerationY, simulationLogic.readOnlyAccelerationY);
         deepCopy(simulationLogic.mass, simulationLogic.readOnlyMass);
@@ -100,7 +100,7 @@ public class SimulationFloat extends SimulationAP implements Simulation {
 
         if (properties.isSaveToFile() && saveCurrentIterationToFile) {
             C.getReaderWriter().appendObjectsToFile(properties, iterationCounter, simulationLogic.positionX, simulationLogic.positionY,
-                                                    zeroArray, simulationLogic.speedX, simulationLogic.speedY, zeroArray, simulationLogic.mass,
+                                                    zeroArray, simulationLogic.velocityX, simulationLogic.velocityY, zeroArray, simulationLogic.mass,
                                                     simulationLogic.radius, simulationLogic.id, simulationLogic.color, simulationLogic.deleted);
         }
     }
@@ -111,8 +111,8 @@ public class SimulationFloat extends SimulationAP implements Simulation {
             SimulationObject o = initialObjects.get(i);
             simulationLogic.positionX[i] = o.getX().floatValue();
             simulationLogic.positionY[i] = o.getY().floatValue();
-            simulationLogic.speedX[i] = o.getSpeed().getX().floatValue();
-            simulationLogic.speedY[i] = o.getSpeed().getY().floatValue();
+            simulationLogic.velocityX[i] = o.getVelocity().getX().floatValue();
+            simulationLogic.velocityY[i] = o.getVelocity().getY().floatValue();
             simulationLogic.accelerationX[i] = o.getAcceleration().getX().floatValue();
             simulationLogic.accelerationY[i] = o.getAcceleration().getY().floatValue();
             simulationLogic.mass[i] = o.getMass().floatValue();
@@ -224,9 +224,9 @@ public class SimulationFloat extends SimulationAP implements Simulation {
 
                 simo.setMass(New.num(sl.mass[i]));
 
-                simo.setSpeed(new TripleNumber(New.num(sl.speedX[i]),
-                                               New.num(sl.speedY[i]),
-                                               New.num(0)));
+                simo.setVelocity(new TripleNumber(New.num(sl.velocityX[i]),
+                                                  New.num(sl.velocityY[i]),
+                                                  New.num(0)));
 
                 simo.setAcceleration(new TripleNumber(New.num(sl.accelerationX[i]),
                                                New.num(sl.accelerationY[i]),

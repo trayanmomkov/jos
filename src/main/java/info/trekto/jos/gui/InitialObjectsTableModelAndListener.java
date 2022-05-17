@@ -28,9 +28,9 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
         addCol("Y", i++);
         addCol("Z", i++);
         addCol("radius", i++);
-        addCol("speedX", i++);
-        addCol("speedY", i++);
-        addCol("speedZ", i++);
+        addCol("velocityX", i++);
+        addCol("velocityY", i++);
+        addCol("velocityZ", i++);
         addCol("color", i++);
 
         addTableModelListener(this);
@@ -49,9 +49,9 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
                 o.getY(),
                 o.getZ(),
                 o.getRadius(),
-                o.getSpeed().getX(),
-                o.getSpeed().getY(),
-                o.getSpeed().getZ(),
+                o.getVelocity().getX(),
+                o.getVelocity().getY(),
+                o.getVelocity().getZ(),
                 String.format("%08X", o.getColor()).substring(2)});
     }
 
@@ -74,7 +74,7 @@ public class InitialObjectsTableModelAndListener extends DefaultTableModel imple
             o.setY(getNumber(v.get(i++)));
             o.setZ(getNumber(v.get(i++)));
             o.setRadius(getNumber(v.get(i++)));
-            o.setSpeed(new TripleNumber(
+            o.setVelocity(new TripleNumber(
                     getNumber(v.get(i++)),
                     getNumber(v.get(i++)),
                     getNumber(v.get(i++))));

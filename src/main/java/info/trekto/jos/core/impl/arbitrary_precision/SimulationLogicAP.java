@@ -59,17 +59,17 @@ public class SimulationLogicAP implements SimulationLogic {
              * and these velocities are applied for time T. */
             moveObject(newObject);
 
-            /* Change speed */
+            /* Change velocity */
             /* For the time T, accelerations changed the velocities.
              * Velocities are calculated having the accelerations of the objects at the beginning of the period,
              * and these accelerations are applied for time T. */
-            newObject.setSpeed(calculateSpeed(oldObject));
+            newObject.setVelocity(calculateVelocity(oldObject));
             
             /* Change the acceleration */
             newObject.setAcceleration(acceleration);
 
             /* Bounce from walls */
-            /* Only change the direction of the speed */
+            /* Only change the direction of the velocity */
             if (simulation.getProperties().isBounceFromWalls()) {
                 bounceFromWalls(newObject);
             }
@@ -121,8 +121,8 @@ public class SimulationLogicAP implements SimulationLogic {
                         forRemoval.add(smaller);
 
                         /* Objects merging */
-                        /* Speed */
-                        bigger.setSpeed(calculateSpeedOnMerging(smaller, bigger));
+                        /* Velocity */
+                        bigger.setVelocity(calculateVelocityOnMerging(smaller, bigger));
 
                         /* Position */
                         TripleNumber position = calculatePosition(smaller, bigger);
@@ -196,11 +196,11 @@ public class SimulationLogicAP implements SimulationLogic {
         return new TripleNumber(x, y, z);
     }
 
-    private static TripleNumber calculateSpeedOnMerging(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
+    private static TripleNumber calculateVelocityOnMerging(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
         TripleNumber totalImpulse = new TripleNumber(
-                smaller.getSpeed().getX().multiply(smaller.getMass()).add(bigger.getSpeed().getX().multiply(bigger.getMass())),
-                smaller.getSpeed().getY().multiply(smaller.getMass()).add(bigger.getSpeed().getY().multiply(bigger.getMass())),
-                smaller.getSpeed().getZ().multiply(smaller.getMass()).add(bigger.getSpeed().getZ().multiply(bigger.getMass())));
+                smaller.getVelocity().getX().multiply(smaller.getMass()).add(bigger.getVelocity().getX().multiply(bigger.getMass())),
+                smaller.getVelocity().getY().multiply(smaller.getMass()).add(bigger.getVelocity().getY().multiply(bigger.getMass())),
+                smaller.getVelocity().getZ().multiply(smaller.getMass()).add(bigger.getVelocity().getZ().multiply(bigger.getMass())));
         Number totalMass = bigger.getMass().add(smaller.getMass());
 
         return new TripleNumber(totalImpulse.getX().divide(totalMass),
@@ -215,36 +215,36 @@ public class SimulationLogicAP implements SimulationLogic {
 
             if (newObject.getX().add(newObject.getRadius()).doubleValue() >= width / 2.0
                     || newObject.getX().subtract(newObject.getRadius()).doubleValue() <= -width / 2.0) {
-                TripleNumber speed = new TripleNumber(newObject.getSpeed().getX().negate(),
-                                                      newObject.getSpeed().getY(),
-                                                      newObject.getSpeed().getZ());
-                newObject.setSpeed(speed);
+                TripleNumber velocity = new TripleNumber(newObject.getVelocity().getX().negate(),
+                                                      newObject.getVelocity().getY(),
+                                                      newObject.getVelocity().getZ());
+                newObject.setVelocity(velocity);
             }
 
             if (newObject.getY().add(newObject.getRadius()).doubleValue() >= height / 2.0
                     || newObject.getY().subtract(newObject.getRadius()).doubleValue() <= -height / 2.0) {
-                TripleNumber speed = new TripleNumber(newObject.getSpeed().getX(),
-                                                      newObject.getSpeed().getY().negate(),
-                                                      newObject.getSpeed().getZ());
-                newObject.setSpeed(speed);
+                TripleNumber velocity = new TripleNumber(newObject.getVelocity().getX(),
+                                                      newObject.getVelocity().getY().negate(),
+                                                      newObject.getVelocity().getZ());
+                newObject.setVelocity(velocity);
             }
         }
     }
 
     private void moveObject(SimulationObject newObject) {
         // members[i]->x = members[i]->x + members[i]->speed.x * simulationProperties.secondsPerCycle;
-        newObject.setX(newObject.getX().add(newObject.getSpeed().getX().multiply(simulation.getProperties().getSecondsPerIteration())));
-        newObject.setY(newObject.getY().add(newObject.getSpeed().getY().multiply(simulation.getProperties().getSecondsPerIteration())));
-        newObject.setZ(newObject.getZ().add(newObject.getSpeed().getZ().multiply(simulation.getProperties().getSecondsPerIteration())));
+        newObject.setX(newObject.getX().add(newObject.getVelocity().getX().multiply(simulation.getProperties().getSecondsPerIteration())));
+        newObject.setY(newObject.getY().add(newObject.getVelocity().getY().multiply(simulation.getProperties().getSecondsPerIteration())));
+        newObject.setZ(newObject.getZ().add(newObject.getVelocity().getZ().multiply(simulation.getProperties().getSecondsPerIteration())));
     }
 
-    private TripleNumber calculateSpeed(ImmutableSimulationObject object) {
+    private TripleNumber calculateVelocity(ImmutableSimulationObject object) {
         // members[i]->speed.x += a.x * simulationProperties.secondsPerCycle;//* t;
-        Number speedX = object.getSpeed().getX().add(object.getAcceleration().getX().multiply(simulation.getProperties().getSecondsPerIteration()));
-        Number speedY = object.getSpeed().getY().add(object.getAcceleration().getY().multiply(simulation.getProperties().getSecondsPerIteration()));
-        Number speedZ = object.getSpeed().getZ().add(object.getAcceleration().getZ().multiply(simulation.getProperties().getSecondsPerIteration()));
+        Number velX = object.getVelocity().getX().add(object.getAcceleration().getX().multiply(simulation.getProperties().getSecondsPerIteration()));
+        Number velY = object.getVelocity().getY().add(object.getAcceleration().getY().multiply(simulation.getProperties().getSecondsPerIteration()));
+        Number velZ = object.getVelocity().getZ().add(object.getAcceleration().getZ().multiply(simulation.getProperties().getSecondsPerIteration()));
 
-        return new TripleNumber(speedX, speedY, speedZ);
+        return new TripleNumber(velX, velY, velZ);
     }
 
     public Number calculateDistance(ImmutableSimulationObject object1, ImmutableSimulationObject object2) {
@@ -273,10 +273,10 @@ public class SimulationLogicAP implements SimulationLogic {
     }
     
     public void processTwoDimensionalCollision(SimulationObject o1, SimulationObject o2) {
-        Number v1x = o1.getSpeed().getX();
-        Number v1y = o1.getSpeed().getY();
-        Number v2x = o2.getSpeed().getX();
-        Number v2y = o2.getSpeed().getY();
+        Number v1x = o1.getVelocity().getX();
+        Number v1y = o1.getVelocity().getY();
+        Number v2x = o2.getVelocity().getX();
+        Number v2y = o2.getVelocity().getY();
         
         Number o1x = o1.getX();
         Number o1y = o1.getY();
@@ -290,17 +290,17 @@ public class SimulationLogicAP implements SimulationLogic {
         // v'2x = v2x - 2*m2/(m1+m2) * dotProduct(o2, o1) / dotProduct(o2x, o2y, o1x, o1y) * (o2x-o1x)
         // v'2y = v2y - 2*m2/(m1+m2) * dotProduct(o2, o1) / dotProduct(o2y, o2x, o1y, o1x) * (o2y-o1y)
         // v'1x = v1x - 2*m2/(m1+m2) * dotProduct(o1, o2) / dotProduct(o1x, o1y, o2x, o2y) * (o1x-o2x)
-        Number o1NewSpeedX = calculateSpeed(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y, o1m, o2m);
-        Number o1NewSpeedY = calculateSpeed(v1y, v1x, v2y, v2x, o1y, o1x, o2y, o2x, o1m, o2m);
-        Number o2NewSpeedX = calculateSpeed(v2x, v2y, v1x, v1y, o2x, o2y, o1x, o1y, o2m, o1m);
-        Number o2NewSpeedY = calculateSpeed(v2y, v2x, v1y, v1x, o2y, o2x, o1y, o1x, o2m, o1m);
+        Number o1NewVelocityX = calculateVelocity(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y, o1m, o2m);
+        Number o1NewVelocityY = calculateVelocity(v1y, v1x, v2y, v2x, o1y, o1x, o2y, o2x, o1m, o2m);
+        Number o2NewVelocityX = calculateVelocity(v2x, v2y, v1x, v1y, o2x, o2y, o1x, o1y, o2m, o1m);
+        Number o2NewVelocityY = calculateVelocity(v2y, v2x, v1y, v1x, o2y, o2x, o1y, o1x, o2m, o1m);
         
-        o1.setSpeed(new TripleNumber(o1NewSpeedX, o1NewSpeedY, ZERO));
-        o2.setSpeed(new TripleNumber(o2NewSpeedX, o2NewSpeedY, ZERO));
+        o1.setVelocity(new TripleNumber(o1NewVelocityX, o1NewVelocityY, ZERO));
+        o2.setVelocity(new TripleNumber(o2NewVelocityX, o2NewVelocityY, ZERO));
     }
 
-    private Number calculateSpeed(Number v1x, Number v1y, Number v2x, Number v2y,
-                                  Number o1x, Number o1y, Number o2x, Number o2y, Number o1m, Number o2m) {
+    private Number calculateVelocity(Number v1x, Number v1y, Number v2x, Number v2y,
+                                     Number o1x, Number o1y, Number o2x, Number o2y, Number o1m, Number o2m) {
         // v'1x = v1x - 2*o2m/(o1m+o2m) * dotProduct(o1, o2) / dotProduct(o1x, o1y, o2x, o2y) * (o1x-o2x)
         return v1x.subtract(
                 TWO.multiply(o2m)

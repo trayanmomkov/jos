@@ -90,9 +90,9 @@ public class JsonReaderWriter implements ReaderWriter {
 
         simulationObjectMap.put("mass", simulationObject.getMass().toString());
 
-        simulationObjectMap.put("speedX", simulationObject.getSpeed().getX().toString());
-        simulationObjectMap.put("speedY", simulationObject.getSpeed().getY().toString());
-        simulationObjectMap.put("speedZ", simulationObject.getSpeed().getZ().toString());
+        simulationObjectMap.put("velocityX", simulationObject.getVelocity().getX().toString());
+        simulationObjectMap.put("velocityY", simulationObject.getVelocity().getY().toString());
+        simulationObjectMap.put("velocityZ", simulationObject.getVelocity().getZ().toString());
 
         simulationObjectMap.put("radius", simulationObject.getRadius().toString());
 
@@ -100,8 +100,8 @@ public class JsonReaderWriter implements ReaderWriter {
         return gson.toJsonTree(simulationObjectMap).getAsJsonObject();
     }
 
-    private JsonObject mapSimulationObjectToJson(Gson gson, Object positionX, Object positionY, Object positionZ, Object speedX, Object speedY,
-                                                     Object speedZ, Object mass, Object radius, String id, int color) {
+    private JsonObject mapSimulationObjectToJson(Gson gson, Object positionX, Object positionY, Object positionZ, Object velocityX, Object velocityY,
+                                                     Object velocityZ, Object mass, Object radius, String id, int color) {
         Map<String, Object> simulationObjectMap = new HashMap<>();
         simulationObjectMap.put("id", id);
 
@@ -111,9 +111,9 @@ public class JsonReaderWriter implements ReaderWriter {
 
         simulationObjectMap.put("mass", mass);
 
-        simulationObjectMap.put("speedX", speedX);
-        simulationObjectMap.put("speedY", speedY);
-        simulationObjectMap.put("speedZ", speedZ);
+        simulationObjectMap.put("velocityX", velocityX);
+        simulationObjectMap.put("velocityY", velocityY);
+        simulationObjectMap.put("velocityZ", velocityZ);
 
         simulationObjectMap.put("radius", radius);
 
@@ -172,9 +172,9 @@ public class JsonReaderWriter implements ReaderWriter {
 
             simo.setMass(New.num(o.get("mass").getAsString()));
 
-            simo.setSpeed(new TripleNumber(New.num(o.get("speedX").getAsString()),
-                                           New.num(o.get("speedY").getAsString()),
-                                           New.num(o.get("speedZ").getAsString())));
+            simo.setVelocity(new TripleNumber(New.num((o.get("velocityX") != null ? o.get("velocityX"): o.get("speedX")).getAsString()),
+                                              New.num((o.get("velocityY") != null ? o.get("velocityY"): o.get("speedY")).getAsString()),
+                                              New.num((o.get("velocityZ") != null ? o.get("velocityZ"): o.get("speedZ")).getAsString())));
                                            
             simo.setAcceleration(new TripleNumber());
 
@@ -229,10 +229,10 @@ public class JsonReaderWriter implements ReaderWriter {
                 o.setX(New.num(node.get("x").asText()));
                 o.setY(New.num(node.get("y").asText()));
                 o.setZ(New.num(node.get("z").asText()));
-                /* We do not need the following for playing
-                o.setSpeed(new TripleNumber(New.num(node.get("speedX").asText()),
-                                            New.num(node.get("speedY").asText()),
-                                            New.num(node.get("speedZ").asText())));
+                /* We do not need velocity, acceleration and mass for playing
+                o.setVelocity(new TripleNumber(New.num(node.get("velocityX").asText()),
+                                            New.num(node.get("velocityY").asText()),
+                                            New.num(node.get("velocityZ").asText())));
                 o.setAcceleration(new TripleNumber());
                 o.setMass(New.num(node.get("mass").asText())); */
                 o.setRadius(New.num(node.get("radius").asText()));
@@ -246,15 +246,15 @@ public class JsonReaderWriter implements ReaderWriter {
 
     @Override
     public void appendObjectsToFile(SimulationProperties properties, long currentIterationNumber, float[] positionX, float[] positionY,
-                                    float[] positionZ, float[] speedX, float[] speedY, float[] speedZ, float[] mass, float[] radius, String[] id,
-                                    int[] color, boolean[] deleted) {
+                                    float[] positionZ, float[] velocityX, float[] velocityY, float[] velocityZ, float[] mass, float[] radius,
+                                    String[] id, int[] color, boolean[] deleted) {
         Gson gson = createGsonAndWriteFileHead(properties);
 
         JsonArray objectsAsJsonArray = new JsonArray();
         for (int i = 0; i < positionX.length; i++) {
             if (!deleted[i]) {
-                objectsAsJsonArray.add(mapSimulationObjectToJson(gson, positionX[i], positionY[i], positionZ[i], speedX[i], speedY[i], speedZ[i],
-                                                                 mass[i], radius[i], id[i], color[i]));
+                objectsAsJsonArray.add(mapSimulationObjectToJson(gson, positionX[i], positionY[i], positionZ[i], velocityX[i], velocityY[i],
+                                                                 velocityZ[i], mass[i], radius[i], id[i], color[i]));
             }
         }
 
@@ -263,15 +263,15 @@ public class JsonReaderWriter implements ReaderWriter {
 
     @Override
     public void appendObjectsToFile(SimulationProperties properties, long currentIterationNumber, double[] positionX, double[] positionY,
-                                    double[] positionZ, double[] speedX, double[] speedY, double[] speedZ, double[] mass, double[] radius,
+                                    double[] positionZ, double[] velocityX, double[] velocityY, double[] velocityZ, double[] mass, double[] radius,
                                     String[] id, int[] color, boolean[] deleted) {
         Gson gson = createGsonAndWriteFileHead(properties);
 
         JsonArray objectsAsJsonArray = new JsonArray();
         for (int i = 0; i < positionX.length; i++) {
             if (!deleted[i]) {
-                objectsAsJsonArray.add(mapSimulationObjectToJson(gson, positionX[i], positionY[i], positionZ[i], speedX[i], speedY[i], speedZ[i],
-                                                                 mass[i], radius[i], id[i], color[i]));
+                objectsAsJsonArray.add(mapSimulationObjectToJson(gson, positionX[i], positionY[i], positionZ[i], velocityX[i], velocityY[i],
+                                                                 velocityZ[i], mass[i], radius[i], id[i], color[i]));
             }
         }
 

@@ -21,8 +21,8 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
 
     public final float[] positionX;
     public final float[] positionY;
-    public final float[] speedX;
-    public final float[] speedY;
+    public final float[] velocityX;
+    public final float[] velocityY;
     public final float[] accelerationX;
     public final float[] accelerationY;
     public final float[] mass;
@@ -33,8 +33,8 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
 
     public final float[] readOnlyPositionX;
     public final float[] readOnlyPositionY;
-    public final float[] readOnlySpeedX;
-    public final float[] readOnlySpeedY;
+    public final float[] readOnlyVelocityX;
+    public final float[] readOnlyVelocityY;
     public final float[] readOnlyAccelerationX;
     public final float[] readOnlyAccelerationY;
     public final float[] readOnlyMass;
@@ -52,8 +52,8 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
 
         positionX = new float[n];
         positionY = new float[n];
-        speedX = new float[n];
-        speedY = new float[n];
+        velocityX = new float[n];
+        velocityY = new float[n];
         accelerationX = new float[n];
         accelerationY = new float[n];
         mass = new float[n];
@@ -64,8 +64,8 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
 
         readOnlyPositionX = new float[n];
         readOnlyPositionY = new float[n];
-        readOnlySpeedX = new float[n];
-        readOnlySpeedY = new float[n];
+        readOnlyVelocityX = new float[n];
+        readOnlyVelocityY = new float[n];
         readOnlyAccelerationX = new float[n];
         readOnlyAccelerationY = new float[n];
         readOnlyMass = new float[n];
@@ -119,15 +119,15 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
             /* For the time T, velocity moved the objects (changed their positions).
              * New objects positions are calculated having the velocity at the beginning of the period,
              * and these velocities are applied for time T. */
-            positionX[i] = positionX[i] + speedX[i] * secondsPerIteration;
-            positionY[i] = positionY[i] + speedY[i] * secondsPerIteration;
+            positionX[i] = positionX[i] + velocityX[i] * secondsPerIteration;
+            positionY[i] = positionY[i] + velocityY[i] * secondsPerIteration;
 
-            /* Change speed */
+            /* Change velocity */
             /* For the time T, accelerations changed the velocities.
              * Velocities are calculated having the accelerations of the objects at the beginning of the period,
              * and these accelerations are applied for time T. */
-            speedX[i] = speedX[i] + accelerationX[i] * secondsPerIteration;
-            speedY[i] = speedY[i] + accelerationY[i] * secondsPerIteration;
+            velocityX[i] = velocityX[i] + accelerationX[i] * secondsPerIteration;
+            velocityY[i] = velocityY[i] + accelerationY[i] * secondsPerIteration;
             
             /* Change the acceleration */
             accelerationX[i] = newAccelerationX;
@@ -142,11 +142,11 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
 
     private void bounceFromWalls(int i) {
         if (positionX[i] + radius[i] >= screenWidth / 2.0 || positionX[i] - radius[i] <= -screenWidth / 2.0) {
-            speedX[i] = -speedX[i];
+            velocityX[i] = -velocityX[i];
         }
 
         if (positionY[i] + radius[i] >= screenHeight / 2.0 || positionY[i] - radius[i] <= -screenHeight / 2.0) {
-            speedY[i] = -speedY[i];
+            velocityY[i] = -velocityY[i];
         }
     }
 
@@ -193,8 +193,8 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
 
                             deleted[smaller] = true;
 
-                            /* Speed */
-                            changeSpeedOnMerging(smaller, bigger);
+                            /* Velocity */
+                            changeVelocityOnMerging(smaller, bigger);
 
                             /* Position */
                             changePositionOnMerging(smaller, bigger);
@@ -279,14 +279,14 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
         positionY[bigger] = positionY[bigger] - distanceY * massRatio / TWO;
     }
 
-    private void changeSpeedOnMerging(int smaller, int bigger) {
-        /* We want to get already updated speed for the current one (bigger), thus we use speedX and not readOnlySpeedX */
-        float totalImpulseX = speedX[smaller] * mass[smaller] + speedX[bigger] * mass[bigger];
-        float totalImpulseY = speedY[smaller] * mass[smaller] + speedY[bigger] * mass[bigger];
+    private void changeVelocityOnMerging(int smaller, int bigger) {
+        /* We want to get already updated velocity for the current one (bigger), thus we use velocityX and not readOnlyVelocityX */
+        float totalImpulseX = velocityX[smaller] * mass[smaller] + velocityX[bigger] * mass[bigger];
+        float totalImpulseY = velocityY[smaller] * mass[smaller] + velocityY[bigger] * mass[bigger];
         float totalMass = mass[bigger] + mass[smaller];
 
-        speedX[bigger] = totalImpulseX / totalMass;
-        speedY[bigger] = totalImpulseY / totalMass;
+        velocityX[bigger] = totalImpulseX / totalMass;
+        velocityY[bigger] = totalImpulseY / totalMass;
     }
 
     public static float calculateDistance(float object1X, float object1Y, float object2X, float object2Y) {
@@ -316,10 +316,10 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
     }
 
     private void processTwoDimensionalCollision(int o1, int o2) {
-        float v1x = speedX[o1];
-        float v1y = speedY[o1];
-        float v2x = speedX[o2];
-        float v2y = speedY[o2];
+        float v1x = velocityX[o1];
+        float v1y = velocityY[o1];
+        float v2x = velocityX[o2];
+        float v2y = velocityY[o2];
         
         float o1x = positionX[o1];
         float o1y = positionY[o1];
@@ -333,14 +333,14 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
         // v'2x = v2x - 2*m2/(m1+m2) * dotProduct(o2, o1) / dotProduct(o2x, o2y, o1x, o1y) * (o2x-o1x)
         // v'2y = v2y - 2*m2/(m1+m2) * dotProduct(o2, o1) / dotProduct(o2y, o2x, o1y, o1x) * (o2y-o1y)
         // v'1x = v1x - 2*m2/(m1+m2) * dotProduct(o1, o2) / dotProduct(o1x, o1y, o2x, o2y) * (o1x-o2x)
-        speedX[o1] = calculateSpeed(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y, o1m, o2m);
-        speedY[o1] = calculateSpeed(v1y, v1x, v2y, v2x, o1y, o1x, o2y, o2x, o1m, o2m);
-        speedX[o2] = calculateSpeed(v2x, v2y, v1x, v1y, o2x, o2y, o1x, o1y, o2m, o1m);
-        speedY[o2] = calculateSpeed(v2y, v2x, v1y, v1x, o2y, o2x, o1y, o1x, o2m, o1m);
+        velocityX[o1] = calculateVelocity(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y, o1m, o2m);
+        velocityY[o1] = calculateVelocity(v1y, v1x, v2y, v2x, o1y, o1x, o2y, o2x, o1m, o2m);
+        velocityX[o2] = calculateVelocity(v2x, v2y, v1x, v1y, o2x, o2y, o1x, o1y, o2m, o1m);
+        velocityY[o2] = calculateVelocity(v2y, v2x, v1y, v1x, o2y, o2x, o1y, o1x, o2m, o1m);
     }
 
-    private float calculateSpeed(float v1x, float v1y, float v2x, float v2y,
-                                  float o1x, float o1y, float o2x, float o2y, float o1m, float o2m) {
+    private float calculateVelocity(float v1x, float v1y, float v2x, float v2y,
+                                    float o1x, float o1y, float o2x, float o2y, float o1m, float o2m) {
         // v'1x = v1x - 2*o2m/(o1m+o2m) * dotProduct(o1, o2) / dotProduct(o1x, o1y, o2x, o2y) * (o1x-o2x)
         return v1x - 2 * o2m / (o1m + o2m)
                 * dotProduct2D(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y)
@@ -358,10 +358,10 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
      */
     @Override
     public void processTwoDimensionalCollision(SimulationObject o1, SimulationObject o2) {
-        speedX[0] = o1.getSpeed().getX().floatValue();
-        speedY[0] = o1.getSpeed().getY().floatValue();
-        speedX[1] = o2.getSpeed().getX().floatValue();
-        speedY[1] = o2.getSpeed().getY().floatValue();
+        velocityX[0] = o1.getVelocity().getX().floatValue();
+        velocityY[0] = o1.getVelocity().getY().floatValue();
+        velocityX[1] = o2.getVelocity().getX().floatValue();
+        velocityY[1] = o2.getVelocity().getY().floatValue();
         
         positionX[0] = o1.getX().floatValue();
         positionY[0] = o1.getY().floatValue();
@@ -373,7 +373,7 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
         
         processTwoDimensionalCollision(0, 1);
         
-        o1.setSpeed(new TripleNumber(New.num(speedX[0]), New.num(speedY[0]), ZERO));
-        o2.setSpeed(new TripleNumber(New.num(speedX[1]), New.num(speedY[1]), ZERO));
+        o1.setVelocity(new TripleNumber(New.num(velocityX[0]), New.num(velocityY[0]), ZERO));
+        o2.setVelocity(new TripleNumber(New.num(velocityX[1]), New.num(velocityY[1]), ZERO));
     }
 }

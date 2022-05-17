@@ -14,7 +14,7 @@ public interface ImmutableSimulationObject {
 
     Number getZ();
 
-    TripleNumber getSpeed();
+    TripleNumber getVelocity();
 
     TripleNumber getAcceleration();
 

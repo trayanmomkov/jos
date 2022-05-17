@@ -17,7 +17,7 @@ public class SimulationLogicImplTest {
     }
 
     @Test
-    public void calculateSpeedOnMergingShouldWorkCorrectly() {
+    public void calculateVelocityOnMergingShouldWorkCorrectly() {
     }
 
     @Test
@@ -29,7 +29,7 @@ public class SimulationLogicImplTest {
     }
 
     @Test
-    public void calculateSpeedShouldWorkCorrectly() {
+    public void calculateVelocityShouldWorkCorrectly() {
     }
 
 }

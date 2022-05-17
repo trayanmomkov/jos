@@ -21,8 +21,8 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
 
     public final double[] positionX;
     public final double[] positionY;
-    public final double[] speedX;
-    public final double[] speedY;
+    public final double[] velocityX;
+    public final double[] velocityY;
     public final double[] accelerationX;
     public final double[] accelerationY;
     public final double[] mass;
@@ -33,8 +33,8 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
 
     public final double[] readOnlyPositionX;
     public final double[] readOnlyPositionY;
-    public final double[] readOnlySpeedX;
-    public final double[] readOnlySpeedY;
+    public final double[] readOnlyVelocityX;
+    public final double[] readOnlyVelocityY;
     public final double[] readOnlyAccelerationX;
     public final double[] readOnlyAccelerationY;
     public final double[] readOnlyMass;
@@ -52,8 +52,8 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
 
         positionX = new double[n];
         positionY = new double[n];
-        speedX = new double[n];
-        speedY = new double[n];
+        velocityX = new double[n];
+        velocityY = new double[n];
         accelerationX = new double[n];
         accelerationY = new double[n];
         mass = new double[n];
@@ -64,8 +64,8 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
 
         readOnlyPositionX = new double[n];
         readOnlyPositionY = new double[n];
-        readOnlySpeedX = new double[n];
-        readOnlySpeedY = new double[n];
+        readOnlyVelocityX = new double[n];
+        readOnlyVelocityY = new double[n];
         readOnlyAccelerationX = new double[n];
         readOnlyAccelerationY = new double[n];
         readOnlyMass = new double[n];
@@ -119,15 +119,15 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
             /* For the time T, velocity moved the objects (changed their positions).
              * New objects positions are calculated having the velocity at the beginning of the period,
              * and these velocities are applied for time T. */
-            positionX[i] = positionX[i] + speedX[i] * secondsPerIteration;
-            positionY[i] = positionY[i] + speedY[i] * secondsPerIteration;
+            positionX[i] = positionX[i] + velocityX[i] * secondsPerIteration;
+            positionY[i] = positionY[i] + velocityY[i] * secondsPerIteration;
 
-            /* Change speed */
+            /* Change velocity */
             /* For the time T, accelerations changed the velocities.
              * Velocities are calculated having the accelerations of the objects at the beginning of the period,
              * and these accelerations are applied for time T. */
-            speedX[i] = speedX[i] + accelerationX[i] * secondsPerIteration;
-            speedY[i] = speedY[i] + accelerationY[i] * secondsPerIteration;
+            velocityX[i] = velocityX[i] + accelerationX[i] * secondsPerIteration;
+            velocityY[i] = velocityY[i] + accelerationY[i] * secondsPerIteration;
             
             /* Change the acceleration */
             accelerationX[i] = newAccelerationX;
@@ -142,11 +142,11 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
 
     private void bounceFromWalls(int i) {
         if (positionX[i] + radius[i] >= screenWidth / 2.0 || positionX[i] - radius[i] <= -screenWidth / 2.0) {
-            speedX[i] = -speedX[i];
+            velocityX[i] = -velocityX[i];
         }
 
         if (positionY[i] + radius[i] >= screenHeight / 2.0 || positionY[i] - radius[i] <= -screenHeight / 2.0) {
-            speedY[i] = -speedY[i];
+            velocityY[i] = -velocityY[i];
         }
     }
 
@@ -193,8 +193,8 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
 
                         deleted[smaller] = true;
 
-                        /* Speed */
-                        changeSpeedOnMerging(smaller, bigger);
+                        /* Velocity */
+                        changeVelocityOnMerging(smaller, bigger);
 
                         /* Position */
                         changePositionOnMerging(smaller, bigger);
@@ -279,14 +279,14 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
         positionY[bigger] = positionY[bigger] - distanceY * massRatio / TWO;
     }
 
-    private void changeSpeedOnMerging(int smaller, int bigger) {
-        /* We want to get already updated speed for the current one (bigger), thus we use speedX and not readOnlySpeedX */
-        double totalImpulseX = speedX[smaller] * mass[smaller] + speedX[bigger] * mass[bigger];
-        double totalImpulseY = speedY[smaller] * mass[smaller] + speedY[bigger] * mass[bigger];
+    private void changeVelocityOnMerging(int smaller, int bigger) {
+        /* We want to get already updated velocity for the current one (bigger), thus we use velocityX and not readOnlyVelocityX */
+        double totalImpulseX = velocityX[smaller] * mass[smaller] + velocityX[bigger] * mass[bigger];
+        double totalImpulseY = velocityY[smaller] * mass[smaller] + velocityY[bigger] * mass[bigger];
         double totalMass = mass[bigger] + mass[smaller];
 
-        speedX[bigger] = totalImpulseX / totalMass;
-        speedY[bigger] = totalImpulseY / totalMass;
+        velocityX[bigger] = totalImpulseX / totalMass;
+        velocityY[bigger] = totalImpulseY / totalMass;
     }
 
     public static double calculateDistance(double object1X, double object1Y, double object2X, double object2Y) {
@@ -316,10 +316,10 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
     }
     
     private void processTwoDimensionalCollision(int o1, int o2) {
-        double v1x = speedX[o1];
-        double v1y = speedY[o1];
-        double v2x = speedX[o2];
-        double v2y = speedY[o2];
+        double v1x = velocityX[o1];
+        double v1y = velocityY[o1];
+        double v2x = velocityX[o2];
+        double v2y = velocityY[o2];
         
         double o1x = positionX[o1];
         double o1y = positionY[o1];
@@ -333,14 +333,14 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
         // v'2x = v2x - 2*m2/(m1+m2) * dotProduct(o2, o1) / dotProduct(o2x, o2y, o1x, o1y) * (o2x-o1x)
         // v'2y = v2y - 2*m2/(m1+m2) * dotProduct(o2, o1) / dotProduct(o2y, o2x, o1y, o1x) * (o2y-o1y)
         // v'1x = v1x - 2*m2/(m1+m2) * dotProduct(o1, o2) / dotProduct(o1x, o1y, o2x, o2y) * (o1x-o2x)
-        speedX[o1] = calculateSpeed(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y, o1m, o2m);
-        speedY[o1] = calculateSpeed(v1y, v1x, v2y, v2x, o1y, o1x, o2y, o2x, o1m, o2m);
-        speedX[o2] = calculateSpeed(v2x, v2y, v1x, v1y, o2x, o2y, o1x, o1y, o2m, o1m);
-        speedY[o2] = calculateSpeed(v2y, v2x, v1y, v1x, o2y, o2x, o1y, o1x, o2m, o1m);
+        velocityX[o1] = calculateVelocity(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y, o1m, o2m);
+        velocityY[o1] = calculateVelocity(v1y, v1x, v2y, v2x, o1y, o1x, o2y, o2x, o1m, o2m);
+        velocityX[o2] = calculateVelocity(v2x, v2y, v1x, v1y, o2x, o2y, o1x, o1y, o2m, o1m);
+        velocityY[o2] = calculateVelocity(v2y, v2x, v1y, v1x, o2y, o2x, o1y, o1x, o2m, o1m);
     }
 
-    private double calculateSpeed(double v1x, double v1y, double v2x, double v2y,
-                                  double o1x, double o1y, double o2x, double o2y, double o1m, double o2m) {
+    private double calculateVelocity(double v1x, double v1y, double v2x, double v2y,
+                                     double o1x, double o1y, double o2x, double o2y, double o1m, double o2m) {
         // v'1x = v1x - 2*o2m/(o1m+o2m) * dotProduct(o1, o2) / dotProduct(o1x, o1y, o2x, o2y) * (o1x-o2x)
         return v1x - 2 * o2m / (o1m + o2m)
                 * dotProduct2D(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y)
@@ -358,10 +358,10 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
      */
     @Override
     public void processTwoDimensionalCollision(SimulationObject o1, SimulationObject o2) {
-        speedX[0] = o1.getSpeed().getX().doubleValue();
-        speedY[0] = o1.getSpeed().getY().doubleValue();
-        speedX[1] = o2.getSpeed().getX().doubleValue();
-        speedY[1] = o2.getSpeed().getY().doubleValue();
+        velocityX[0] = o1.getVelocity().getX().doubleValue();
+        velocityY[0] = o1.getVelocity().getY().doubleValue();
+        velocityX[1] = o2.getVelocity().getX().doubleValue();
+        velocityY[1] = o2.getVelocity().getY().doubleValue();
         
         positionX[0] = o1.getX().doubleValue();
         positionY[0] = o1.getY().doubleValue();
@@ -373,7 +373,7 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
         
         processTwoDimensionalCollision(0, 1);
         
-        o1.setSpeed(new TripleNumber(New.num(speedX[0]), New.num(speedY[0]), ZERO));
-        o2.setSpeed(new TripleNumber(New.num(speedX[1]), New.num(speedY[1]), ZERO));
+        o1.setVelocity(new TripleNumber(New.num(velocityX[0]), New.num(velocityY[0]), ZERO));
+        o2.setVelocity(new TripleNumber(New.num(velocityX[1]), New.num(velocityY[1]), ZERO));
     }
 }

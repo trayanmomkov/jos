@@ -9,7 +9,7 @@ import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
 
 /**
  * Container for three objects of type {@link Number}. Used for representing a point in three-dimensional space.
- * This point itself may represent a speed of {@link SimulationObject}.
+ * This point itself may represent a velocity of {@link SimulationObject}.
  * Immutable.
  *
  * @author Trayan Momkov

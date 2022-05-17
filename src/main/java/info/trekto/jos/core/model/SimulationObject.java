@@ -14,7 +14,7 @@ public interface SimulationObject extends ImmutableSimulationObject {
 
     void setZ(Number z);
 
-    void setSpeed(TripleNumber speed);
+    void setVelocity(TripleNumber velocity);
 
     void setAcceleration(TripleNumber acceleration);
 

@@ -17,7 +17,7 @@ public class SimulationObjectImpl implements SimulationObject {
     private Number x;
     private Number y;
     private Number z;
-    private TripleNumber speed;
+    private TripleNumber velocity;
     private TripleNumber acceleration;
     private Number radius;
     private int color;
@@ -31,7 +31,7 @@ public class SimulationObjectImpl implements SimulationObject {
         this.x = ZERO;
         this.y = ZERO;
         this.z = ZERO;
-        this.speed = TRIPLE_ZERO;
+        this.velocity = TRIPLE_ZERO;
         this.acceleration = TRIPLE_ZERO;
         color = BLUE.getRGB();
     }
@@ -41,7 +41,7 @@ public class SimulationObjectImpl implements SimulationObject {
         this.id = simulationObject.getId();
         this.mass = simulationObject.getMass();
         this.radius = simulationObject.getRadius();
-        this.speed = simulationObject.getSpeed();
+        this.velocity = simulationObject.getVelocity();
         this.acceleration = simulationObject.getAcceleration();
         this.x = simulationObject.getX();
         this.y = simulationObject.getY();
@@ -79,8 +79,8 @@ public class SimulationObjectImpl implements SimulationObject {
     }
 
     @Override
-    public TripleNumber getSpeed() {
-        return speed;
+    public TripleNumber getVelocity() {
+        return velocity;
     }
 
     @Override
@@ -89,8 +89,8 @@ public class SimulationObjectImpl implements SimulationObject {
     }
 
     @Override
-    public void setSpeed(TripleNumber speed) {
-        this.speed = speed;
+    public void setVelocity(TripleNumber velocity) {
+        this.velocity = velocity;
     }
 
     @Override
@@ -144,7 +144,7 @@ public class SimulationObjectImpl implements SimulationObject {
                 "id='" + id + '\'' +
                 ", x=" + x +
                 ", y=" + y +
-                ", speed=" + speed +
+                ", velocity=" + velocity +
                 '}';
     }
 
