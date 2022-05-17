@@ -13,6 +13,8 @@ import static java.awt.Color.BLUE;
  * 3 Mar 2016
  */
 public class SimulationObjectImpl implements SimulationObject {
+    public static final int DEFAULT_COLOR = BLUE.getRGB();
+    public static final int DEFAULT_COLOR_SIMPLIFIED = BLUE.getBlue();
 
     private Number x;
     private Number y;
@@ -33,7 +35,7 @@ public class SimulationObjectImpl implements SimulationObject {
         this.z = ZERO;
         this.velocity = TRIPLE_ZERO;
         this.acceleration = TRIPLE_ZERO;
-        color = BLUE.getRGB();
+        color = DEFAULT_COLOR;
     }
 
     public SimulationObjectImpl(ImmutableSimulationObject simulationObject) {

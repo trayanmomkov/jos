@@ -8,6 +8,7 @@ import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.model.impl.SimulationObjectImpl;
 import info.trekto.jos.core.model.impl.TripleNumber;
 import info.trekto.jos.core.numbers.New;
+import info.trekto.jos.core.numbers.Number;
 import info.trekto.jos.core.numbers.NumberFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonToken;
@@ -24,7 +25,10 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import static info.trekto.jos.core.Controller.C;
+import static info.trekto.jos.core.model.impl.SimulationObjectImpl.DEFAULT_COLOR;
+import static info.trekto.jos.core.model.impl.SimulationObjectImpl.DEFAULT_COLOR_SIMPLIFIED;
 import static info.trekto.jos.core.numbers.NumberFactory.NumberType.ARBITRARY_PRECISION;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumberFactory;
 import static info.trekto.jos.util.Utils.error;
 import static info.trekto.jos.util.Utils.info;
@@ -90,7 +94,9 @@ public class JsonReaderWriter implements ReaderWriter {
 
         simulationObjectMap.put("x", simulationObject.getX().toString());
         simulationObjectMap.put("y", simulationObject.getY().toString());
-        simulationObjectMap.put("z", simulationObject.getZ().toString());
+        if (simulationObject.getZ().compareTo(ZERO) != 0) {
+            simulationObjectMap.put("z", simulationObject.getZ().toString());
+        }
 
         if (saveMass) {
             simulationObjectMap.put("mass", simulationObject.getMass().toString());
@@ -99,18 +105,24 @@ public class JsonReaderWriter implements ReaderWriter {
         if (saveVelocity) {
             simulationObjectMap.put("velocityX", simulationObject.getVelocity().getX().toString());
             simulationObjectMap.put("velocityY", simulationObject.getVelocity().getY().toString());
-            simulationObjectMap.put("velocityZ", simulationObject.getVelocity().getZ().toString());
+            if (simulationObject.getVelocity().getZ().compareTo(ZERO) != 0) {
+                simulationObjectMap.put("velocityZ", simulationObject.getVelocity().getZ().toString());
+            }
         }
 
         if (saveAcceleration) {
             simulationObjectMap.put("accelerationX", simulationObject.getAcceleration().getX().toString());
             simulationObjectMap.put("accelerationY", simulationObject.getAcceleration().getY().toString());
-            simulationObjectMap.put("accelerationZ", simulationObject.getAcceleration().getZ().toString());
+            if (simulationObject.getAcceleration().getZ().compareTo(ZERO) != 0) {
+                simulationObjectMap.put("accelerationZ", simulationObject.getAcceleration().getZ().toString());
+            }
         }
 
         simulationObjectMap.put("radius", simulationObject.getRadius().toString());
 
-        simulationObjectMap.put("color", String.format("%08X", simulationObject.getColor()).substring(2));
+        if (simulationObject.getColor() != DEFAULT_COLOR && simulationObject.getColor() != DEFAULT_COLOR_SIMPLIFIED) {
+            simulationObjectMap.put("color", String.format("%08X", simulationObject.getColor()).substring(2));
+        }
         return gson.toJsonTree(simulationObjectMap).getAsJsonObject();
     }
 
@@ -123,7 +135,9 @@ public class JsonReaderWriter implements ReaderWriter {
 
         simulationObjectMap.put("x", positionX);
         simulationObjectMap.put("y", positionY);
-        simulationObjectMap.put("z", positionZ);
+        if (positionZ != null) {
+            simulationObjectMap.put("z", positionZ);
+        }
 
         if (saveMass) {
             simulationObjectMap.put("mass", mass);
@@ -132,18 +146,24 @@ public class JsonReaderWriter implements ReaderWriter {
         if (saveVelocity) {
             simulationObjectMap.put("velocityX", velocityX);
             simulationObjectMap.put("velocityY", velocityY);
-            simulationObjectMap.put("velocityZ", velocityZ);
+            if (velocityZ != null) {
+                simulationObjectMap.put("velocityZ", velocityZ);
+            }
         }
         
         if (saveAcceleration) {
             simulationObjectMap.put("accelerationX", accelerationX);
             simulationObjectMap.put("accelerationY", accelerationY);
-            simulationObjectMap.put("accelerationZ", accelerationZ);
+            if (accelerationZ != null) {
+                simulationObjectMap.put("accelerationZ", accelerationZ);
+            }
         }
 
         simulationObjectMap.put("radius", radius);
 
-        simulationObjectMap.put("color", String.format("%08X", color).substring(2));
+        if (color != DEFAULT_COLOR && color != DEFAULT_COLOR_SIMPLIFIED) {
+            simulationObjectMap.put("color", String.format("%08X", color).substring(2));
+        }
         return gson.toJsonTree(simulationObjectMap).getAsJsonObject();
     }
 
@@ -197,18 +217,28 @@ public class JsonReaderWriter implements ReaderWriter {
 
             simo.setX(New.num(o.get("x").getAsString()));
             simo.setY(New.num(o.get("y").getAsString()));
-            simo.setZ(New.num(o.get("z").getAsString()));
+            simo.setZ(o.get("z") != null ? New.num(o.get("z").getAsString()) : ZERO);
 
             simo.setMass(New.num(o.get("mass").getAsString()));
 
+            Number velocityZ = ZERO;
+            if (o.get("velocityZ") != null) {
+                velocityZ = New.num(o.get("velocityZ").getAsString());
+            } else if (o.get("speedZ") != null) {
+                velocityZ = New.num(o.get("speedZ").getAsString());
+            }
+
             simo.setVelocity(new TripleNumber(New.num((o.get("velocityX") != null ? o.get("velocityX"): o.get("speedX")).getAsString()),
                                               New.num((o.get("velocityY") != null ? o.get("velocityY"): o.get("speedY")).getAsString()),
-                                              New.num((o.get("velocityZ") != null ? o.get("velocityZ"): o.get("speedZ")).getAsString())));
+                                              velocityZ));
                                            
             simo.setAcceleration(new TripleNumber());
 
             simo.setRadius(New.num(o.get("radius").getAsString()));
-            simo.setColor(Integer.parseInt(o.get("color").getAsString(), 16));
+            
+            if (o.get("color") != null) {
+                simo.setColor(Integer.parseInt(o.get("color").getAsString(), 16));
+            }
 
             initialObjects.add(simo);
         }
@@ -257,9 +287,11 @@ public class JsonReaderWriter implements ReaderWriter {
                 o.setId(node.get("id").getTextValue());
                 o.setX(New.num(node.get("x").asText()));
                 o.setY(New.num(node.get("y").asText()));
-                o.setZ(New.num(node.get("z").asText()));
+                o.setZ(node.get("z") != null ? New.num(node.get("z").asText()) : ZERO);
                 o.setRadius(New.num(node.get("radius").asText()));
-                o.setColor(Integer.parseInt(node.get("color").getTextValue(), 16));
+                if (node.get("color") != null) {
+                    o.setColor(Integer.parseInt(node.get("color").getTextValue(), 16));
+                }
                 objects.add(o);
             }
         }
@@ -277,14 +309,23 @@ public class JsonReaderWriter implements ReaderWriter {
         JsonArray objectsAsJsonArray = new JsonArray();
         for (int i = 0; i < positionX.length; i++) {
             if (!deleted[i]) {
-                objectsAsJsonArray.add(mapSimulationObjectToJson(gson, positionX[i], positionY[i], positionZ[i], velocityX[i], velocityY[i],
-                                                                 velocityZ[i], mass[i], radius[i], id[i], color[i], accelerationX[i],
-                                                                 accelerationY[i], accelerationZ[i], properties.isSaveMass(),
-                                                                 properties.isSaveVelocity(), properties.isSaveAcceleration()));
+                objectsAsJsonArray.add(mapSimulationObjectToJson(gson, positionX[i], positionY[i], zeroToNull(positionZ[i]), velocityX[i],
+                                                                 velocityY[i], zeroToNull(velocityZ[i]), mass[i], radius[i], id[i], color[i],
+                                                                 accelerationX[i], accelerationY[i], zeroToNull(accelerationZ[i]),
+                                                                  properties.isSaveMass(), properties.isSaveVelocity(),
+                                                                  properties.isSaveAcceleration()));
             }
         }
 
         writeFileTail(currentIterationNumber, objectsAsJsonArray, gson, properties);
+    }
+
+    private Object zeroToNull(float v) {
+        return v == 0 ? null : v;
+    }
+
+    private Object zeroToNull(double v) {
+        return v == 0 ? null : v;
     }
 
     @Override
@@ -297,10 +338,11 @@ public class JsonReaderWriter implements ReaderWriter {
         JsonArray objectsAsJsonArray = new JsonArray();
         for (int i = 0; i < positionX.length; i++) {
             if (!deleted[i]) {
-                objectsAsJsonArray.add(mapSimulationObjectToJson(gson, positionX[i], positionY[i], positionZ[i], velocityX[i], velocityY[i],
-                                                                 velocityZ[i], mass[i], radius[i], id[i], color[i], accelerationX[i],
-                                                                 accelerationY[i], accelerationZ[i], properties.isSaveMass(),
-                                                                 properties.isSaveVelocity(), properties.isSaveAcceleration()));
+                objectsAsJsonArray.add(mapSimulationObjectToJson(gson, positionX[i], positionY[i], zeroToNull(positionZ[i]), velocityX[i],
+                                                                 velocityY[i], zeroToNull(velocityZ[i]), mass[i], radius[i], id[i], color[i],
+                                                                 accelerationX[i], accelerationY[i], zeroToNull(accelerationZ[i]),
+                                                                 properties.isSaveMass(), properties.isSaveVelocity(),
+                                                                 properties.isSaveAcceleration()));
             }
         }
 
