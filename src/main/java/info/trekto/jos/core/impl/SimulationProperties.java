@@ -25,6 +25,9 @@ public class SimulationProperties {
     private int playingSpeed = 0;
     private boolean bounceFromWalls;
     private int saveEveryNthIteration = 1;
+    private boolean saveMass = false;
+    private boolean saveVelocity = false;
+    private boolean saveAcceleration = false;
 
     /* Java {@link ArrayList} is limited to Integer.MAX_VALUE */
     private int numberOfObjects;
@@ -50,6 +53,9 @@ public class SimulationProperties {
         this.numberOfObjects = properties.numberOfObjects;
         this.precision = properties.precision;
         this.initialObjects = properties.initialObjects;
+        this.saveMass = properties.saveMass;
+        this.saveVelocity = properties.saveVelocity;
+        this.saveAcceleration = properties.saveAcceleration;
     }
 
     public boolean isInfiniteSimulation() {
@@ -158,5 +164,29 @@ public class SimulationProperties {
 
     public void setSaveEveryNthIteration(int saveEveryNthIteration) {
         this.saveEveryNthIteration = saveEveryNthIteration;
+    }
+
+    public boolean isSaveMass() {
+        return saveMass;
+    }
+
+    public void setSaveMass(boolean saveMass) {
+        this.saveMass = saveMass;
+    }
+
+    public boolean isSaveVelocity() {
+        return saveVelocity;
+    }
+
+    public void setSaveVelocity(boolean saveVelocity) {
+        this.saveVelocity = saveVelocity;
+    }
+
+    public boolean isSaveAcceleration() {
+        return saveAcceleration;
+    }
+
+    public void setSaveAcceleration(boolean saveAcceleration) {
+        this.saveAcceleration = saveAcceleration;
     }
 }

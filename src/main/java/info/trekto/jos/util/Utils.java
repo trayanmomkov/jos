@@ -29,12 +29,11 @@ public class Utils {
     public static final long MILLI_IN_DAY = 24 * 60 * 60 * MILLISECONDS_IN_ONE_SECOND;
     public static final long NANOSECONDS_IN_ONE_MILLISECOND = 1000 * 1000;
     
-    private static final int ONE_DOUBLE_OBJECT_SIZE_BYTES = 299;
-    private static final int ONE_FLOAT_OBJECT_SIZE_BYTES = 247;
+    private static final int ONE_DOUBLE_OBJECT_SIZE_BYTES = 443; // 299
+    private static final int ONE_FLOAT_OBJECT_SIZE_BYTES = 373; // 247
     private static final int ONE_AP_OBJECT_SIZE_WITHOUT_REAL_NUMBERS_BYTES = 188;
     private static final double COMPRESSION_RATIO = 7;
     private static final double BYTES_IN_MIB = 1024 * 1024;
-    private static final double REAL_NUMBERS_IN_ONE_OBJECT = 6;    // Z-coordinates is excluded. With it, number will be 8.
     public static final String NA = "---";
 
     public static final int CORES = Runtime.getRuntime().availableProcessors();
@@ -157,7 +156,8 @@ public class Utils {
     }
 
     public static String calculateAverageFileSize(String numberOfObjectsString, String numberOfIterationsString, String numberTypeString,
-                                                  String saveEveryNthIterationString, String precisionString) {
+                                                  String saveEveryNthIterationString, String precisionString, boolean saveMass,
+                                                  boolean saveVelocity, boolean saveAcceleration) {
         int numberOfObjects;
         long numberOfIterations = 0;
         NumberType numberType = DOUBLE;
@@ -185,18 +185,29 @@ public class Utils {
         if (isNumeric(precisionString)) {
             precision = (int)Math.round(parseDouble(precisionString));
         }
-                                                  
+
+        double massLineBytes;
+        double oneVelocityLineBytes;
+        double oneAccelerationLineBytes;
         double bytesPerObject = 0;
         
         switch (numberType) {
             case FLOAT:
-                bytesPerObject = ONE_FLOAT_OBJECT_SIZE_BYTES;
+                massLineBytes = !saveMass ? 40 : 0;
+                oneVelocityLineBytes = !saveVelocity ? 33 : 0;
+                oneAccelerationLineBytes = !saveAcceleration ? 37 : 0;
+                bytesPerObject = ONE_FLOAT_OBJECT_SIZE_BYTES - massLineBytes - 3 * oneVelocityLineBytes - 3 * oneAccelerationLineBytes;
                 break;
             case DOUBLE:
-                bytesPerObject = ONE_DOUBLE_OBJECT_SIZE_BYTES;
+                massLineBytes = !saveMass ? 31 : 0;
+                oneVelocityLineBytes = !saveVelocity ? 42 : 0;
+                oneAccelerationLineBytes = !saveAcceleration ? 45 : 0;
+                bytesPerObject = ONE_DOUBLE_OBJECT_SIZE_BYTES - massLineBytes - 3 * oneVelocityLineBytes - 3 * oneAccelerationLineBytes;
                 break;
             case ARBITRARY_PRECISION:
-                bytesPerObject = ONE_AP_OBJECT_SIZE_WITHOUT_REAL_NUMBERS_BYTES + REAL_NUMBERS_IN_ONE_OBJECT * (precision + 1);  // 1 for the dot (.)
+                // Z-coordinate is excluded for position, velocity and acceleration
+                double realNumbersInOneObject = 3 + (saveMass ? 1 : 0) + (saveVelocity ? 2 : 0) + (saveAcceleration ? 2 : 0);
+                bytesPerObject = ONE_AP_OBJECT_SIZE_WITHOUT_REAL_NUMBERS_BYTES + realNumbersInOneObject * (precision + 1);  // 1 for the dot (.)
                 break;
         }
         

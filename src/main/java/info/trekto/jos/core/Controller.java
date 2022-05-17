@@ -300,6 +300,10 @@ public enum Controller {
         if (!isNullOrBlank(gui.getNumberOfIterationsTextField().getText())) {
             properties.setNumberOfIterations(Integer.parseInt(gui.getNumberOfIterationsTextField().getText()));
         }
+        
+        properties.setSaveMass(gui.getSaveMassCheckBox().isSelected());
+        properties.setSaveVelocity(gui.getSaveVelocityCheckBox().isSelected());
+        properties.setSaveAcceleration(gui.getSaveAccelerationCheckBox().isSelected());
 
         if (!isNullOrBlank(gui.getPlayingSpeedTextField().getText().replace("-", ""))) {
             properties.setPlayingSpeed(Integer.parseInt(gui.getPlayingSpeedTextField().getText()));
@@ -419,6 +423,9 @@ public enum Controller {
         gui.getInteractingLawComboBox().setSelectedItem(prop.getInteractingLaw());
         gui.getSaveToFileCheckBox().setSelected(prop.isSaveToFile());
         gui.getSaveEveryNthIterationTextField().setText(String.valueOf(prop.getSaveEveryNthIteration()));
+        gui.getSaveMassCheckBox().setSelected(prop.isSaveMass());
+        gui.getSaveVelocityCheckBox().setSelected(prop.isSaveVelocity());
+        gui.getSaveAccelerationCheckBox().setSelected(prop.isSaveAcceleration());
         gui.getOutputFileTextField().setText(prop.getOutputFile());
         gui.getPrecisionTextField().setText(String.valueOf(prop.getPrecision()));
         gui.getRealTimeVisualizationCheckBox().setSelected(prop.isRealTimeVisualization());
@@ -697,7 +704,10 @@ public enum Controller {
                 gui.getNumberOfIterationsTextField().getText(),
                 String.valueOf(gui.getNumberTypeComboBox().getSelectedItem()),
                 gui.getSaveEveryNthIterationTextField().getText(),
-                gui.getPrecisionTextField().getText()));
+                gui.getPrecisionTextField().getText(),
+                gui.getSaveMassCheckBox().isSelected(),
+                gui.getSaveVelocityCheckBox().isSelected(),
+                gui.getSaveAccelerationCheckBox().isSelected()));
     }
     
     private NumberFactory.NumberType getSelectedNumberType() {
@@ -796,5 +806,17 @@ public enum Controller {
 
     public void cpuGpuThresholdFieldEvent() {
         unHighlightButton(gui.getDetectCpuGpuThresholdButton());
+    }
+
+    public void saveMassCheckBoxEvent() {
+        calculateAverageSize();
+    }
+
+    public void saveVelocityCheckBoxEvent() {
+        calculateAverageSize();
+    }
+
+    public void saveAccelerationCheckBoxEvent() {
+        calculateAverageSize();
     }
 }

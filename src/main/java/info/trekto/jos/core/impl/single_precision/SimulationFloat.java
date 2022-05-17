@@ -99,9 +99,10 @@ public class SimulationFloat extends SimulationAP implements Simulation {
         }
 
         if (properties.isSaveToFile() && saveCurrentIterationToFile) {
-            C.getReaderWriter().appendObjectsToFile(properties, iterationCounter, simulationLogic.positionX, simulationLogic.positionY,
-                                                    zeroArray, simulationLogic.velocityX, simulationLogic.velocityY, zeroArray, simulationLogic.mass,
-                                                    simulationLogic.radius, simulationLogic.id, simulationLogic.color, simulationLogic.deleted);
+            SimulationLogicFloat sl = simulationLogic;
+            C.getReaderWriter().appendObjectsToFile(properties, iterationCounter, sl.positionX, sl.positionY, zeroArray, sl.velocityX, sl.velocityY,
+                                                    zeroArray, sl.mass, sl.radius, sl.id, sl.color, sl.deleted, sl.accelerationX, sl.accelerationY,
+                                                    zeroArray);
         }
     }
 

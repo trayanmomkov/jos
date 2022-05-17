@@ -17,11 +17,11 @@ public interface ReaderWriter {
 
     void appendObjectsToFile(SimulationProperties properties, long currentIterationNumber, double[] positionX, double[] positionY,
                              double[] positionZ, double[] velocityX, double[] velocityY, double[] velocityZ, double[] mass, double[] radius,
-                             String[] id, int[] color, boolean[] deleted);
+                             String[] id, int[] color, boolean[] deleted, double[] accelerationX, double[] accelerationY, double[] accelerationZ);
 
     void appendObjectsToFile(SimulationProperties properties, long currentIterationNumber, float[] positionX, float[] positionY,
                              float[] positionZ, float[] velocityX, float[] velocityY, float[] velocityZ, float[] mass, float[] radius,
-                             String[] id, int[] color, boolean[] deleted);
+                             String[] id, int[] color, boolean[] deleted, float[] accelerationX, float[] accelerationY, float[] accelerationZ);
 
     void endFile();
 
