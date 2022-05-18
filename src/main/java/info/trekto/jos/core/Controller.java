@@ -448,7 +448,7 @@ public enum Controller {
         gui.getCorTextField().setText(String.valueOf(prop.getCoefficientOfRestitution()));
 
         ((InitialObjectsTableModelAndListener) gui.getInitialObjectsTable().getModel()).setInitialObjects(prop.getInitialObjects());
-        
+
         calculateAverageSize();
         setPrecisionFieldVisibility();
         setExecutionModeFieldVisibilityAndValue();
@@ -554,7 +554,7 @@ public enum Controller {
             try {
                 SimulationGenerator.generateObjects(properties, true);
                 refreshProperties(properties);
-                unHighlightButton(gui.getGenerateObjectsButton());
+                unHighlightButtons(gui.getGenerateObjectsButton());
             } catch (Exception ex) {
                 String message = "Error during object generation.";
                 error(logger, message, ex);
@@ -597,8 +597,10 @@ public enum Controller {
         }
     }
 
-    private void unHighlightButton(JButton button) {
-        button.setBackground(defaultButtonColor != null ? defaultButtonColor : new Color(238, 238, 238));
+    private void unHighlightButtons(JButton... buttons) {
+        for (JButton button : buttons) {
+            button.setBackground(defaultButtonColor != null ? defaultButtonColor : new Color(238, 238, 238));
+        }
     }
 
     public void precisionTextFieldEvent() {
@@ -629,10 +631,11 @@ public enum Controller {
 
             /* Reopen just saved file.
              * This ensures the simulation is the same as opened from the file,
-             * and can help us to detect a bug (when after saving the properties suddenly changes). */
+             * and can help us to detect a bug (when after saving the properties suddenly change). */
             gui.getInputFilePathLabel().setText(fileToSave.getAbsolutePath());
             properties = loadProperties(fileToSave.getAbsolutePath());
             refreshProperties(properties);
+            unHighlightButtons(gui.getGenerateObjectsButton(), gui.getDetectCpuGpuThresholdButton());
         }
     }
 
@@ -643,8 +646,12 @@ public enum Controller {
         if (option == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             gui.getInputFilePathLabel().setText(file.getAbsolutePath());
+            String numberOfObjectsBefore = gui.getNumberOfObjectsTextField().getText();
             refreshProperties(loadProperties(file.getAbsolutePath()));
-            unHighlightButton(gui.getGenerateObjectsButton());
+            unHighlightButtons(gui.getGenerateObjectsButton());
+            if (gui.getNumberOfObjectsTextField().getText().equals(numberOfObjectsBefore)) {
+                unHighlightButtons(gui.getDetectCpuGpuThresholdButton());
+            }
             saveToFileCheckBoxEvent();
         }
     }
@@ -808,7 +815,7 @@ public enum Controller {
         }).start();
         
         dialog.setVisible(true);
-        unHighlightButton(gui.getDetectCpuGpuThresholdButton());
+        unHighlightButtons(gui.getDetectCpuGpuThresholdButton());
     }
 
     public void executionModeComboBoxEvent() {
@@ -820,7 +827,7 @@ public enum Controller {
     }
 
     public void cpuGpuThresholdFieldEvent() {
-        unHighlightButton(gui.getDetectCpuGpuThresholdButton());
+        unHighlightButtons(gui.getDetectCpuGpuThresholdButton());
     }
 
     public void saveMassCheckBoxEvent() {

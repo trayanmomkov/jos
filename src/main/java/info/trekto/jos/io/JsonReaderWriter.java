@@ -58,8 +58,10 @@ public class JsonReaderWriter implements ReaderWriter {
         JsonObject json = mapPropertiesToJson(properties);
         JsonArray initialObjects = new JsonArray();
 
-        for (SimulationObject simulationObject : properties.getInitialObjects()) {
-            initialObjects.add(mapSimulationObjectToJson(gson, simulationObject, true, true, false));
+        if (properties.getInitialObjects() != null) {
+            for (SimulationObject simulationObject : properties.getInitialObjects()) {
+                initialObjects.add(mapSimulationObjectToJson(gson, simulationObject, true, true, false));
+            }
         }
 
         json.add("initialObjects", initialObjects);
@@ -194,7 +196,7 @@ public class JsonReaderWriter implements ReaderWriter {
         properties.setNumberOfIterations(json.get("numberOfIterations").getAsLong());
         properties.setSecondsPerIteration(New.num(json.get("secondsPerIteration").getAsString()));
         properties.setNumberOfObjects(json.get("numberOfObjects").getAsInt());
-        properties.setOutputFile(json.get("outputFile").getAsString());
+        properties.setOutputFile(json.get("outputFile") != null ? json.get("outputFile").getAsString() : "");
         properties.setSaveToFile(json.get("saveToFile").getAsBoolean());
         if (json.get("saveEveryNthIteration") != null) {
             properties.setSaveEveryNthIteration(json.get("saveEveryNthIteration").getAsInt());
