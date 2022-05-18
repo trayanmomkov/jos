@@ -105,7 +105,7 @@ public class SimulationLogicAP implements SimulationLogic {
                 Number distance = calculateDistance(newObject, tempObject);
                 if (distance.compareTo(tempObject.getRadius().add(newObject.getRadius())) <= 0) {    // if collide
                     if (!mergeOnCollision) {
-                        processTwoDimensionalCollision(newObject, tempObject);
+                        processTwoDimensionalCollision(newObject, tempObject, simulation.getProperties().getCoefficientOfRestitution());
                         processedElasticCollision.add(new AbstractMap.SimpleEntry<>(tempObject, newObject));
                         processedElasticCollision.add(new AbstractMap.SimpleEntry<>(newObject, tempObject));
                     } else {
@@ -272,7 +272,7 @@ public class SimulationLogicAP implements SimulationLogic {
         return new TripleNumber(newAccelerationX, newAccelerationY, newAccelerationZ);
     }
     
-    public void processTwoDimensionalCollision(SimulationObject o1, SimulationObject o2) {
+    public void processTwoDimensionalCollision(SimulationObject o1, SimulationObject o2, Number cor) {
         Number v1x = o1.getVelocity().getX();
         Number v1y = o1.getVelocity().getY();
         Number v2x = o2.getVelocity().getX();
@@ -290,20 +290,20 @@ public class SimulationLogicAP implements SimulationLogic {
         // v'2x = v2x - 2*m2/(m1+m2) * dotProduct(o2, o1) / dotProduct(o2x, o2y, o1x, o1y) * (o2x-o1x)
         // v'2y = v2y - 2*m2/(m1+m2) * dotProduct(o2, o1) / dotProduct(o2y, o2x, o1y, o1x) * (o2y-o1y)
         // v'1x = v1x - 2*m2/(m1+m2) * dotProduct(o1, o2) / dotProduct(o1x, o1y, o2x, o2y) * (o1x-o2x)
-        Number o1NewVelocityX = calculateVelocity(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y, o1m, o2m);
-        Number o1NewVelocityY = calculateVelocity(v1y, v1x, v2y, v2x, o1y, o1x, o2y, o2x, o1m, o2m);
-        Number o2NewVelocityX = calculateVelocity(v2x, v2y, v1x, v1y, o2x, o2y, o1x, o1y, o2m, o1m);
-        Number o2NewVelocityY = calculateVelocity(v2y, v2x, v1y, v1x, o2y, o2x, o1y, o1x, o2m, o1m);
+        Number o1NewVelocityX = calculateVelocity(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y, o1m, o2m, cor);
+        Number o1NewVelocityY = calculateVelocity(v1y, v1x, v2y, v2x, o1y, o1x, o2y, o2x, o1m, o2m, cor);
+        Number o2NewVelocityX = calculateVelocity(v2x, v2y, v1x, v1y, o2x, o2y, o1x, o1y, o2m, o1m, cor);
+        Number o2NewVelocityY = calculateVelocity(v2y, v2x, v1y, v1x, o2y, o2x, o1y, o1x, o2m, o1m, cor);
         
         o1.setVelocity(new TripleNumber(o1NewVelocityX, o1NewVelocityY, ZERO));
         o2.setVelocity(new TripleNumber(o2NewVelocityX, o2NewVelocityY, ZERO));
     }
 
     private Number calculateVelocity(Number v1x, Number v1y, Number v2x, Number v2y,
-                                     Number o1x, Number o1y, Number o2x, Number o2y, Number o1m, Number o2m) {
+                                     Number o1x, Number o1y, Number o2x, Number o2y, Number o1m, Number o2m, Number cor) {
         // v'1x = v1x - 2*o2m/(o1m+o2m) * dotProduct(o1, o2) / dotProduct(o1x, o1y, o2x, o2y) * (o1x-o2x)
         return v1x.subtract(
-                TWO.multiply(o2m)
+                (cor.multiply(o2m).add(o2m))
                         .divide(o1m.add(o2m))
                         .multiply(dotProduct2D(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y))
                         .divide(dotProduct2D(o1x, o1y, o2x, o2y, o1x, o1y, o2x, o2y))

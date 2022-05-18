@@ -46,7 +46,7 @@ public class SimulationDouble extends SimulationAP implements Simulation {
             screenHeight = C.getVisualizer().getVisualizationPanel().getHeight();
         }
         simulationLogic = new SimulationLogicDouble(n, properties.getSecondsPerIteration().doubleValue(), screenWidth, screenHeight,
-                                                    properties.isMergeOnCollision());
+                                                    properties.isMergeOnCollision(), properties.getCoefficientOfRestitution().doubleValue());
         zeroArray = new double[n];
         simulationLogicRange = Range.create(n);
         simulationLogic.setExecutionMode(GPU);

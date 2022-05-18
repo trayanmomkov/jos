@@ -17,7 +17,6 @@ import static info.trekto.jos.core.impl.arbitrary_precision.ElasticCollision1DTe
 import static info.trekto.jos.core.numbers.NumberFactory.NumberType.ARBITRARY_PRECISION;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.*;
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 
 public class ElasticCollision2DTest {
     ImmutableSimulationObject o;
@@ -40,8 +39,10 @@ public class ElasticCollision2DTest {
     public static Object[][] logicImplementations() {
         return new Object[][]{
                 {new SimulationLogicAP(new SimulationAP(new SimulationProperties())), PRECISION - 2},
-                {new SimulationLogicDouble(2, 1, 0, 0, false), DOUBLE_PRECISION - 1},
-                {new SimulationLogicFloat(2, 1, 0, 0, false), SINGLE_PRECISION - 1}
+                {new SimulationLogicDouble(2, 1, 0, 0, false, 1),
+                        DOUBLE_PRECISION - 1},
+                {new SimulationLogicFloat(2, 1, 0, 0, false, 1),
+                        SINGLE_PRECISION - 1}
         };
     }
 
@@ -54,7 +55,7 @@ public class ElasticCollision2DTest {
         TripleNumber o2Velocity = new TripleNumber(ZERO, ONE, ZERO);
         o2.setVelocity(o2Velocity);
 
-        simulationLogic.processTwoDimensionalCollision(o1, o2);
+        simulationLogic.processTwoDimensionalCollision(o1, o2, ONE);
 
         assertEquals(o1.getVelocity(), new TripleNumber(ZERO, ONE, ZERO), error(simulationLogic));
         assertEquals(o2.getVelocity(), new TripleNumber(ONE, ZERO, ZERO), error(simulationLogic));
@@ -69,7 +70,7 @@ public class ElasticCollision2DTest {
         TripleNumber o2Velocity = new TripleNumber(ZERO, ONE.negate(), ZERO);
         o2.setVelocity(o2Velocity);
 
-        simulationLogic.processTwoDimensionalCollision(o1, o2);
+        simulationLogic.processTwoDimensionalCollision(o1, o2, ONE);
 
         assertEquals(o1.getVelocity(), new TripleNumber(ZERO, ONE.negate(), ZERO), error(simulationLogic));
         assertEquals(o2.getVelocity(), new TripleNumber(ONE, ZERO, ZERO), error(simulationLogic));
@@ -86,7 +87,7 @@ public class ElasticCollision2DTest {
         TripleNumber o2Velocity = new TripleNumber(ZERO, ONE, ZERO);
         o2.setVelocity(o2Velocity);
 
-        simulationLogic.processTwoDimensionalCollision(o1, o2);
+        simulationLogic.processTwoDimensionalCollision(o1, o2, ONE);
 
         assertEquals(o1.getVelocity(), new TripleNumber(ZERO, ONE, ZERO), error(simulationLogic));
         assertEquals(o2.getVelocity(), new TripleNumber(ONE.negate(), ZERO, ZERO), error(simulationLogic));
@@ -103,7 +104,7 @@ public class ElasticCollision2DTest {
         TripleNumber o2Velocity = new TripleNumber(ZERO, ONE.negate(), ZERO);
         o2.setVelocity(o2Velocity);
 
-        simulationLogic.processTwoDimensionalCollision(o1, o2);
+        simulationLogic.processTwoDimensionalCollision(o1, o2, ONE);
 
         assertEquals(o1.getVelocity(), new TripleNumber(ZERO, ONE.negate(), ZERO), error(simulationLogic));
         assertEquals(o2.getVelocity(), new TripleNumber(ONE.negate(), ZERO, ZERO), error(simulationLogic));
@@ -118,7 +119,7 @@ public class ElasticCollision2DTest {
         TripleNumber o2Velocity = new TripleNumber(ZERO, TWO, ZERO);
         o2.setVelocity(o2Velocity);
 
-        simulationLogic.processTwoDimensionalCollision(o1, o2);
+        simulationLogic.processTwoDimensionalCollision(o1, o2, ONE);
 
         assertEquals(o1.getVelocity(), new TripleNumber(HALF.negate(), New.num("1.5"), ZERO), error(simulationLogic));
         assertEquals(o2.getVelocity(), new TripleNumber(New.num("1.5"), HALF, ZERO), error(simulationLogic));
@@ -134,7 +135,7 @@ public class ElasticCollision2DTest {
         o2.setVelocity(o2Velocity);
         o2.setMass(TWO);
 
-        simulationLogic.processTwoDimensionalCollision(o1, o2);
+        simulationLogic.processTwoDimensionalCollision(o1, o2, ONE);
 
 //        assertEquals(o1.getVelocity(), new TripleNumber(New.num("-0.87"), New.num("-2.22"), ZERO), error(simulationLogic));
 //        assertEquals(o2.getVelocity(), new TripleNumber(New.num("0.93"), New.num("0.89"), ZERO), error(simulationLogic));
@@ -151,7 +152,7 @@ public class ElasticCollision2DTest {
         o1.setX(New.num("0.2"));
         o2.setVelocity(o2Velocity);
 
-        simulationLogic.processTwoDimensionalCollision(o1, o2);
+        simulationLogic.processTwoDimensionalCollision(o1, o2, ONE);
 
 //        assertEquals(o1.getVelocity(), new TripleNumber(New.num("-0.89"), New.num("-0.46"), ZERO), error(simulationLogic));
 //        assertEquals(o2.getVelocity(), new TripleNumber(New.num("0.89"), New.num("0.46"), ZERO), error(simulationLogic));

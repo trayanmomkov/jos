@@ -316,9 +316,7 @@ public enum Controller {
         
         if (!isNullOrBlank(gui.getCorTextField().getText())) {
             Number cor = New.num(gui.getCorTextField().getText());
-            if (cor.compareTo(ONE) > 0) {
-                cor = ONE;
-            } else if (cor.compareTo(ZERO) < 0) {
+            if (cor.compareTo(ZERO) < 0) {
                 cor = ZERO;
             }
             properties.setCoefficientOfRestitution(cor);

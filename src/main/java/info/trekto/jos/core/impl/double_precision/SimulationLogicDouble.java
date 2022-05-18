@@ -5,6 +5,7 @@ import info.trekto.jos.core.SimulationLogic;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.model.impl.TripleNumber;
 import info.trekto.jos.core.numbers.New;
+import info.trekto.jos.core.numbers.Number;
 
 import java.util.AbstractMap;
 import java.util.HashSet;
@@ -46,8 +47,10 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
     private final int screenWidth;
     private final int screenHeight;
     private final boolean mergeOnCollision;
+    private final double coefficientOfRestitution;
 
-    public SimulationLogicDouble(int numberOfObjects, double secondsPerIteration, int screenWidth, int screenHeight, boolean mergeOnCollision) {
+    public SimulationLogicDouble(int numberOfObjects, double secondsPerIteration, int screenWidth, int screenHeight, boolean mergeOnCollision,
+                                 double coefficientOfRestitution) {
         int n = numberOfObjects;
         this.secondsPerIteration = secondsPerIteration;
 
@@ -77,6 +80,7 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
         this.mergeOnCollision = mergeOnCollision;
+        this.coefficientOfRestitution = coefficientOfRestitution;
     }
 
     @Override
@@ -177,7 +181,7 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
                 double distance = calculateDistance(positionX[i], positionY[i], positionX[j], positionY[j]);
                 if (distance < radius[i] + radius[j]) {    // if collide
                     if (!mergeOnCollision) {
-                        processTwoDimensionalCollision(i, j);
+                        processTwoDimensionalCollision(i, j, coefficientOfRestitution);
                         processedElasticCollision.add(new AbstractMap.SimpleEntry<>(i, j));
                         processedElasticCollision.add(new AbstractMap.SimpleEntry<>(j, i));
                     } else {
@@ -316,7 +320,7 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
         return Math.cbrt(volume / (RATIO_FOUR_THREE * PI));
     }
     
-    private void processTwoDimensionalCollision(int o1, int o2) {
+    private void processTwoDimensionalCollision(int o1, int o2, double cor) {
         double v1x = velocityX[o1];
         double v1y = velocityY[o1];
         double v2x = velocityX[o2];
@@ -334,16 +338,16 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
         // v'2x = v2x - 2*m2/(m1+m2) * dotProduct(o2, o1) / dotProduct(o2x, o2y, o1x, o1y) * (o2x-o1x)
         // v'2y = v2y - 2*m2/(m1+m2) * dotProduct(o2, o1) / dotProduct(o2y, o2x, o1y, o1x) * (o2y-o1y)
         // v'1x = v1x - 2*m2/(m1+m2) * dotProduct(o1, o2) / dotProduct(o1x, o1y, o2x, o2y) * (o1x-o2x)
-        velocityX[o1] = calculateVelocity(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y, o1m, o2m);
-        velocityY[o1] = calculateVelocity(v1y, v1x, v2y, v2x, o1y, o1x, o2y, o2x, o1m, o2m);
-        velocityX[o2] = calculateVelocity(v2x, v2y, v1x, v1y, o2x, o2y, o1x, o1y, o2m, o1m);
-        velocityY[o2] = calculateVelocity(v2y, v2x, v1y, v1x, o2y, o2x, o1y, o1x, o2m, o1m);
+        velocityX[o1] = calculateVelocity(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y, o1m, o2m, cor);
+        velocityY[o1] = calculateVelocity(v1y, v1x, v2y, v2x, o1y, o1x, o2y, o2x, o1m, o2m, cor);
+        velocityX[o2] = calculateVelocity(v2x, v2y, v1x, v1y, o2x, o2y, o1x, o1y, o2m, o1m, cor);
+        velocityY[o2] = calculateVelocity(v2y, v2x, v1y, v1x, o2y, o2x, o1y, o1x, o2m, o1m, cor);
     }
 
     private double calculateVelocity(double v1x, double v1y, double v2x, double v2y,
-                                     double o1x, double o1y, double o2x, double o2y, double o1m, double o2m) {
+                                     double o1x, double o1y, double o2x, double o2y, double o1m, double o2m, double cor) {
         // v'1x = v1x - 2*o2m/(o1m+o2m) * dotProduct(o1, o2) / dotProduct(o1x, o1y, o2x, o2y) * (o1x-o2x)
-        return v1x - 2 * o2m / (o1m + o2m)
+        return v1x - (cor * o2m + o2m) / (o1m + o2m)
                 * dotProduct2D(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y)
                 / dotProduct2D(o1x, o1y, o2x, o2y, o1x, o1y, o2x, o2y)
                 * (o1x - o2x);
@@ -358,7 +362,7 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
      * For testing only.
      */
     @Override
-    public void processTwoDimensionalCollision(SimulationObject o1, SimulationObject o2) {
+    public void processTwoDimensionalCollision(SimulationObject o1, SimulationObject o2, Number cor) {
         velocityX[0] = o1.getVelocity().getX().doubleValue();
         velocityY[0] = o1.getVelocity().getY().doubleValue();
         velocityX[1] = o2.getVelocity().getX().doubleValue();
@@ -372,7 +376,7 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
         mass[0] = o1.getMass().doubleValue();
         mass[1] = o2.getMass().doubleValue();
         
-        processTwoDimensionalCollision(0, 1);
+        processTwoDimensionalCollision(0, 1, cor.doubleValue());
         
         o1.setVelocity(new TripleNumber(New.num(velocityX[0]), New.num(velocityY[0]), ZERO));
         o2.setVelocity(new TripleNumber(New.num(velocityX[1]), New.num(velocityY[1]), ZERO));
