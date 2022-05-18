@@ -84,6 +84,8 @@ public class JsonReaderWriter implements ReaderWriter {
         json.addProperty("realTimeVisualization", properties.isRealTimeVisualization());
         json.addProperty("playingSpeed", properties.getPlayingSpeed());
         json.addProperty("bounceFromWalls", properties.isBounceFromWalls());
+        json.addProperty("mergeOnCollision", properties.isMergeOnCollision());
+        json.addProperty("coefficientOfRestitution", properties.getCoefficientOfRestitution().toString());
         return json;
     }
 
@@ -205,8 +207,15 @@ public class JsonReaderWriter implements ReaderWriter {
         properties.setInteractingLaw(ForceCalculator.InteractingLaw.valueOf(json.get("interactingLaw").getAsString()));
         properties.setRealTimeVisualization(json.get("realTimeVisualization").getAsBoolean());
         properties.setPlayingSpeed(json.get("playingSpeed").getAsInt());
+        
         JsonElement bounceFromWall = json.get("bounceFromWalls");
         properties.setBounceFromWalls(bounceFromWall != null && bounceFromWall.getAsBoolean());
+        
+        JsonElement mergeOnCollision = json.get("mergeOnCollision");
+        properties.setMergeOnCollision(mergeOnCollision == null || mergeOnCollision.getAsBoolean());
+        
+        JsonElement cor = json.get("coefficientOfRestitution");
+        properties.setCoefficientOfRestitution(cor != null ? New.num(cor.getAsString()) : ZERO);
 
         List<SimulationObject> initialObjects = new ArrayList<>();
         for (JsonElement jsonElement : json.get("initialObjects").getAsJsonArray()) {

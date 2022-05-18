@@ -45,8 +45,9 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
     private final double secondsPerIteration;
     private final int screenWidth;
     private final int screenHeight;
+    private final boolean mergeOnCollision;
 
-    public SimulationLogicDouble(int numberOfObjects, double secondsPerIteration, int screenWidth, int screenHeight) {
+    public SimulationLogicDouble(int numberOfObjects, double secondsPerIteration, int screenWidth, int screenHeight, boolean mergeOnCollision) {
         int n = numberOfObjects;
         this.secondsPerIteration = secondsPerIteration;
 
@@ -75,6 +76,7 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
         
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
+        this.mergeOnCollision = mergeOnCollision;
     }
 
     @Override
@@ -151,13 +153,12 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
     }
 
     public void processCollisions() {
-        boolean elasticity = false;
         Set<Map.Entry<Integer, Integer>> processedElasticCollision = null;
-        if (elasticity) {
+        if (!mergeOnCollision) {
             processedElasticCollision = new HashSet<>();
         }
         for (int i = 0; i < positionX.length; i++) {
-            if (!elasticity && deleted[i]) {
+            if (mergeOnCollision && deleted[i]) {
                 continue;
             }
             for (int j = 0; j < positionX.length; j++) {
@@ -165,17 +166,17 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
                     continue;
                 }
 
-                if (elasticity) {
-                    if (processedElasticCollision.contains(new AbstractMap.SimpleEntry<>(i, j))) {
+                if (mergeOnCollision) {
+                    if (deleted[j]) {
                         continue;
                     }
-                } else if (deleted[j]) {
+                } else if (processedElasticCollision.contains(new AbstractMap.SimpleEntry<>(i, j))) {
                     continue;
                 }
 
                 double distance = calculateDistance(positionX[i], positionY[i], positionX[j], positionY[j]);
                 if (distance < radius[i] + radius[j]) {    // if collide
-                    if (elasticity) {
+                    if (!mergeOnCollision) {
                         processTwoDimensionalCollision(i, j);
                         processedElasticCollision.add(new AbstractMap.SimpleEntry<>(i, j));
                         processedElasticCollision.add(new AbstractMap.SimpleEntry<>(j, i));

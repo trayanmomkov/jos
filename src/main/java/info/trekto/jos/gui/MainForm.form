@@ -131,7 +131,7 @@
             <children>
               <component id="e1fe3" class="javax.swing.JButton" binding="generateObjectsButton" default-binding="true">
                 <constraints>
-                  <grid row="5" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="6" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
                   <gridbag weightx="1.0" weighty="1.0"/>
                 </constraints>
                 <properties>
@@ -140,7 +140,7 @@
               </component>
               <component id="ab3b2" class="javax.swing.JLabel" binding="aboutLabel">
                 <constraints>
-                  <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                   <gridbag top="0" left="10" bottom="0" right="0" weightx="0.0" weighty="0.0"/>
                 </constraints>
                 <properties>
@@ -161,7 +161,7 @@
               </component>
               <component id="3d7d9" class="javax.swing.JComboBox" binding="numberTypeComboBox">
                 <constraints>
-                  <grid row="0" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                   <gridbag weightx="0.0" weighty="0.0"/>
                 </constraints>
                 <properties/>
@@ -178,7 +178,7 @@
               </component>
               <component id="4a629" class="javax.swing.JComboBox" binding="executionModeComboBox">
                 <constraints>
-                  <grid row="2" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="2" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                   <gridbag weightx="0.0" weighty="0.0"/>
                 </constraints>
                 <properties/>
@@ -195,7 +195,7 @@
               </component>
               <component id="76a60" class="javax.swing.JTextField" binding="precisionTextField">
                 <constraints>
-                  <grid row="1" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                  <grid row="1" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="-1"/>
                   </grid>
                   <gridbag weightx="1.0" weighty="1.0"/>
@@ -218,7 +218,7 @@
               </component>
               <component id="1ff43" class="javax.swing.JButton" binding="detectCpuGpuThresholdButton">
                 <constraints>
-                  <grid row="3" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="3" column="3" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
                   <gridbag weightx="0.0" weighty="0.0"/>
                 </constraints>
                 <properties>
@@ -246,10 +246,23 @@
                   <text value="objects"/>
                 </properties>
               </component>
+              <component id="41593" class="javax.swing.JTextField" binding="corTextField">
+                <constraints>
+                  <grid row="5" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="-1"/>
+                  </grid>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <columns value="4"/>
+                  <enabled value="false"/>
+                  <text value="0.5"/>
+                </properties>
+              </component>
               <component id="37879" class="javax.swing.JCheckBox" binding="bounceFromScreenWallsCheckBox" default-binding="true">
                 <constraints>
-                  <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                  <gridbag top="0" left="7" bottom="0" right="0" weightx="0.0" weighty="1.0"/>
+                  <grid row="4" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="1.0"/>
                 </constraints>
                 <properties>
                   <enabled value="true"/>
@@ -258,6 +271,28 @@
                   <horizontalTextPosition value="10"/>
                   <selected value="false"/>
                   <text value="Bounce from screen walls"/>
+                </properties>
+              </component>
+              <component id="9bf1e" class="javax.swing.JLabel" binding="corLabel">
+                <constraints>
+                  <grid row="5" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <gridbag top="0" left="7" bottom="0" right="0" weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <enabled value="false"/>
+                  <labelFor value="41593"/>
+                  <text value="Coefficient of restitution"/>
+                </properties>
+              </component>
+              <component id="ded8" class="javax.swing.JCheckBox" binding="mergeObjectsWhenCollideCheckBox" default-binding="true">
+                <constraints>
+                  <grid row="5" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <horizontalTextPosition value="10"/>
+                  <selected value="true"/>
+                  <text value="Merge objects when collide"/>
                 </properties>
               </component>
             </children>
@@ -451,7 +486,7 @@
             <properties>
               <enabled value="true"/>
               <foreground color="-16776961"/>
-              <text value="Playing speed?"/>
+              <text value="Playing speed"/>
             </properties>
           </component>
           <component id="8a44d" class="javax.swing.JTextField" binding="playingSpeedTextField">

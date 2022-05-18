@@ -28,6 +28,8 @@ public class SimulationProperties {
     private boolean saveMass = false;
     private boolean saveVelocity = false;
     private boolean saveAcceleration = false;
+    private boolean mergeOnCollision = true;
+    private Number coefficientOfRestitution;
 
     /* Java {@link ArrayList} is limited to Integer.MAX_VALUE */
     private int numberOfObjects;
@@ -56,6 +58,8 @@ public class SimulationProperties {
         this.saveMass = properties.saveMass;
         this.saveVelocity = properties.saveVelocity;
         this.saveAcceleration = properties.saveAcceleration;
+        this.mergeOnCollision = properties.mergeOnCollision;
+        this.coefficientOfRestitution = properties.coefficientOfRestitution;
     }
 
     public boolean isInfiniteSimulation() {
@@ -188,5 +192,21 @@ public class SimulationProperties {
 
     public void setSaveAcceleration(boolean saveAcceleration) {
         this.saveAcceleration = saveAcceleration;
+    }
+
+    public boolean isMergeOnCollision() {
+        return mergeOnCollision;
+    }
+
+    public void setMergeOnCollision(boolean mergeOnCollision) {
+        this.mergeOnCollision = mergeOnCollision;
+    }
+
+    public Number getCoefficientOfRestitution() {
+        return coefficientOfRestitution;
+    }
+
+    public void setCoefficientOfRestitution(Number coefficientOfRestitution) {
+        this.coefficientOfRestitution = coefficientOfRestitution;
     }
 }

@@ -77,16 +77,16 @@ public class SimulationLogicAP implements SimulationLogic {
     }
 
     public void processCollisions(Simulation simulation) {
-        boolean elasticity = false;
+        boolean mergeOnCollision = simulation.getProperties().isMergeOnCollision();
         List<ImmutableSimulationObject> forRemoval = null;
         Set<Map.Entry<SimulationObject, SimulationObject>> processedElasticCollision = null;
-        if (elasticity) {
-            processedElasticCollision = new HashSet<>();
-        } else {
+        if (mergeOnCollision) {
             forRemoval = new ArrayList<>();
+        } else {
+            processedElasticCollision = new HashSet<>();
         }
         for (SimulationObject newObject : simulation.getAuxiliaryObjects()) {
-            if (!elasticity && forRemoval.contains(newObject)) {
+            if (mergeOnCollision && forRemoval.contains(newObject)) {
                 continue;
             }
             for (SimulationObject tempObject : simulation.getAuxiliaryObjects()) {
@@ -94,17 +94,17 @@ public class SimulationLogicAP implements SimulationLogic {
                     continue;
                 }
 
-                if (elasticity) {
-                    if (processedElasticCollision.contains(new AbstractMap.SimpleEntry<>(tempObject, newObject))) {
+                if (mergeOnCollision) {
+                    if (forRemoval.contains(tempObject)) {
                         continue;
                     }
-                } else if (forRemoval.contains(tempObject)) {
+                } else if (processedElasticCollision.contains(new AbstractMap.SimpleEntry<>(tempObject, newObject))) {
                     continue;
                 }
 
                 Number distance = calculateDistance(newObject, tempObject);
                 if (distance.compareTo(tempObject.getRadius().add(newObject.getRadius())) <= 0) {    // if collide
-                    if (elasticity) {
+                    if (!mergeOnCollision) {
                         processTwoDimensionalCollision(newObject, tempObject);
                         processedElasticCollision.add(new AbstractMap.SimpleEntry<>(tempObject, newObject));
                         processedElasticCollision.add(new AbstractMap.SimpleEntry<>(newObject, tempObject));
@@ -147,7 +147,7 @@ public class SimulationLogicAP implements SimulationLogic {
                 }
             }
         }
-        if (!elasticity) {
+        if (mergeOnCollision) {
             simulation.getAuxiliaryObjects().removeAll(forRemoval);
         }
     }

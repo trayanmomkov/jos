@@ -46,7 +46,8 @@ public class SimulationFloat extends SimulationAP implements Simulation {
             screenWidth = C.getVisualizer().getVisualizationPanel().getWidth();
             screenHeight = C.getVisualizer().getVisualizationPanel().getHeight();
         }
-        simulationLogic = new SimulationLogicFloat(n, properties.getSecondsPerIteration().floatValue(), screenWidth, screenHeight);
+        simulationLogic = new SimulationLogicFloat(n, properties.getSecondsPerIteration().floatValue(), screenWidth, screenHeight,
+                                                   properties.isMergeOnCollision());
         zeroArray = new float[n];
         simulationLogicRange = Range.create(n);
         simulationLogic.setExecutionMode(GPU);

@@ -9,6 +9,7 @@ import info.trekto.jos.core.impl.single_precision.SimulationFloat;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.model.impl.SimulationObjectImpl;
 import info.trekto.jos.core.numbers.New;
+import info.trekto.jos.core.numbers.Number;
 import info.trekto.jos.core.numbers.NumberFactory;
 import info.trekto.jos.gui.InitialObjectsTableModelAndListener;
 import info.trekto.jos.gui.MainForm;
@@ -39,7 +40,7 @@ import static info.trekto.jos.core.GpuChecker.checkGpu;
 import static info.trekto.jos.core.GpuChecker.findCpuThreshold;
 import static info.trekto.jos.core.numbers.NumberFactory.NumberType.ARBITRARY_PRECISION;
 import static info.trekto.jos.core.numbers.NumberFactory.NumberType.FLOAT;
-import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumberFactory;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.*;
 import static info.trekto.jos.util.Utils.*;
 import static java.awt.Color.PINK;
 import static javax.swing.JOptionPane.*;
@@ -312,10 +313,21 @@ public enum Controller {
         if (!isNullOrBlank(gui.getSaveEveryNthIterationTextField().getText())) {
             properties.setSaveEveryNthIteration(Integer.parseInt(gui.getSaveEveryNthIterationTextField().getText()));
         }
+        
+        if (!isNullOrBlank(gui.getCorTextField().getText())) {
+            Number cor = New.num(gui.getCorTextField().getText());
+            if (cor.compareTo(ONE) > 0) {
+                cor = ONE;
+            } else if (cor.compareTo(ZERO) < 0) {
+                cor = ZERO;
+            }
+            properties.setCoefficientOfRestitution(cor);
+        }
 
         properties.setBounceFromWalls(gui.getBounceFromScreenWallsCheckBox().isSelected());
         properties.setRealTimeVisualization(gui.getRealTimeVisualizationCheckBox().isSelected());
         properties.setInteractingLaw(ForceCalculator.InteractingLaw.valueOf(String.valueOf(gui.getInteractingLawComboBox().getSelectedItem())));
+        properties.setMergeOnCollision(gui.getMergeObjectsWhenCollideCheckBox().isSelected());
     }
 
     public void onVisualizationWindowClosed() {
@@ -329,6 +341,7 @@ public enum Controller {
             setPrecisionFieldVisibility();
             setExecutionModeFieldVisibilityAndValue();
             setCpuGpuThresholdVisibility();
+            setCorVisibility();
         } else {
             gui.getPlayingComponents().forEach(c -> c.setEnabled(true));
         }
@@ -431,6 +444,8 @@ public enum Controller {
         gui.getRealTimeVisualizationCheckBox().setSelected(prop.isRealTimeVisualization());
         gui.getBounceFromScreenWallsCheckBox().setSelected(prop.isBounceFromWalls());
         gui.getPlayingSpeedTextField().setText(String.valueOf(prop.getPlayingSpeed()));
+        gui.getMergeObjectsWhenCollideCheckBox().setSelected(prop.isMergeOnCollision());
+        gui.getCorTextField().setText(String.valueOf(prop.getCoefficientOfRestitution()));
 
         ((InitialObjectsTableModelAndListener) gui.getInitialObjectsTable().getModel()).setInitialObjects(prop.getInitialObjects());
         
@@ -818,5 +833,14 @@ public enum Controller {
 
     public void saveAccelerationCheckBoxEvent() {
         calculateAverageSize();
+    }
+
+    public void mergeObjectsWhenCollideCheckBoxEvent() {
+        setCorVisibility();
+    }
+
+    private void setCorVisibility() {
+        gui.getCorLabel().setEnabled(!gui.getMergeObjectsWhenCollideCheckBox().isSelected());
+        gui.getCorTextField().setEnabled(!gui.getMergeObjectsWhenCollideCheckBox().isSelected());
     }
 }
