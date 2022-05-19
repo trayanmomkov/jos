@@ -31,25 +31,44 @@ import static info.trekto.jos.util.Utils.*;
 
 public class GpuChecker {
     private static final Logger logger = LoggerFactory.getLogger(GpuChecker.class);
-    public static boolean gpuAvailable;
+    public static boolean gpuDoubleAvailable;
+    public static boolean gpuFloatAvailable;
 
     public static void checkGpu() {
         try {
-            AparapiTestKernel testKernel = new AparapiTestKernel();
+            AparapiDoubleTestKernel testKernel = new AparapiDoubleTestKernel();
             Range testKernelRange = Range.create(5);
             testKernel.setExecutionMode(GPU);
 
             testKernel.execute(testKernelRange);
             if (GPU.equals(testKernel.getExecutionMode())) {
-                gpuAvailable = true;
+                gpuDoubleAvailable = true;
             } else {
-                gpuAvailable = false;
-                info(logger, "GPU is not compatible. Will use CPU.");
+                gpuDoubleAvailable = false;
+                info(logger, "Double GPU is not compatible. Will try float.");
             }
-        } catch (Exception ex) {
-            gpuAvailable = false;
-            warn(logger, "GPU is not compatible. Will use CPU. Try to restart your machine for GPU.", ex);
+        } catch (Throwable tr) {
+            gpuDoubleAvailable = false;
+            warn(logger, "Double GPU is not compatible. Will try float.", tr);
         }
+
+        try {
+            AparapiFloatTestKernel testKernel = new AparapiFloatTestKernel();
+            Range testKernelRange = Range.create(5);
+            testKernel.setExecutionMode(GPU);
+
+            testKernel.execute(testKernelRange);
+            if (GPU.equals(testKernel.getExecutionMode())) {
+                gpuFloatAvailable = true;
+            } else {
+                gpuFloatAvailable = false;
+                info(logger, "Float GPU is not compatible. Will use CPU.");
+            }
+        } catch (Throwable tr) {
+            gpuFloatAvailable = false;
+            warn(logger, "Float GPU is not compatible. Will use CPU. Try to restart your computer for GPU.", tr);
+        }
+
         send_compatibility();
     }
 
@@ -58,11 +77,11 @@ public class GpuChecker {
             try {
                 String vendors = "";
                 String names = "";
-                String versions = "";
+                String gpuVersions = "";
                 for (OpenCLPlatform platform : OpenCLPlatform.getUncachedOpenCLPlatforms()) {
                     for (OpenCLDevice device : platform.getOpenCLDevices()) {
                         vendors += (isNullOrBlank(vendors) ? "" : "|") + platform.getVendor();
-                        versions += (isNullOrBlank(versions) ? "" : "|") + platform.getVersion();
+                        gpuVersions += (isNullOrBlank(gpuVersions) ? "" : "|") + platform.getVersion();
                         names += (isNullOrBlank(names) ? "" : "|") + device.getName();
                     }
                 }
@@ -74,10 +93,12 @@ public class GpuChecker {
                 http.setDoOutput(true);
 
                 Map<String, String> arguments = new HashMap<>();
+                arguments.put("osVersion", System.getProperty("os.name"));
                 arguments.put("vendor", vendors);
                 arguments.put("name", names);
-                arguments.put("version", versions);
-                arguments.put("compatible", Boolean.toString(gpuAvailable));
+                arguments.put("gpuVersion", gpuVersions);
+                arguments.put("floatCompatible", Boolean.toString(gpuFloatAvailable));
+                arguments.put("doubleCompatible", Boolean.toString(gpuDoubleAvailable));
                 StringJoiner sj = new StringJoiner("&");
                 for (Map.Entry<String, String> entry : arguments.entrySet()) {
                     sj.add(URLEncoder.encode(entry.getKey(), "UTF-8") + "="
@@ -92,12 +113,12 @@ public class GpuChecker {
                 try (OutputStream os = http.getOutputStream()) {
                     os.write(out);
                 }
-            } catch (Exception ignored) {
+            } catch (Throwable ignored) {
             }
         }).start();
     }
 
-    static class AparapiTestKernel extends Kernel {
+    static class AparapiDoubleTestKernel extends Kernel {
         public final double[] array = new double[]{1, 2, 3, 4, 5};
 
         /**
@@ -109,6 +130,24 @@ public class GpuChecker {
         public void run() {
             int i = getGlobalId();
             double a = 0;
+            for (int j = 0; j < array.length; j++) {
+                a = (a + array[i] + a * array[i] - j) / array[j];
+            }
+        }
+    }
+
+    static class AparapiFloatTestKernel extends Kernel {
+        public final float[] array = new float[]{1, 2, 3, 4, 5};
+
+        /**
+         * !!! DO NOT CHANGE THIS METHOD and methods called from it if you don't have experience with Aparapi library!!!
+         * This code is translated to OpenCL and executed on the GPU.
+         * You cannot use even simple 'break' here - it is not supported by Aparapi.
+         */
+        @Override
+        public void run() {
+            int i = getGlobalId();
+            float a = 0;
             for (int j = 0; j < array.length; j++) {
                 a = (a + array[i] + a * array[i] - j) / array[j];
             }

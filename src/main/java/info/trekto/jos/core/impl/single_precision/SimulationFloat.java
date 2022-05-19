@@ -298,4 +298,8 @@ public class SimulationFloat extends SimulationAP implements Simulation {
         }
         return false;
     }
+
+    public SimulationAP getCpuSimulation() {
+        return cpuSimulation;
+    }
 }

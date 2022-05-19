@@ -22,6 +22,6 @@ public interface NumberFactory {
     Number createPi();
 
     enum NumberType {
-        DOUBLE, FLOAT, ARBITRARY_PRECISION
+        FLOAT, DOUBLE, ARBITRARY_PRECISION
     }
 }

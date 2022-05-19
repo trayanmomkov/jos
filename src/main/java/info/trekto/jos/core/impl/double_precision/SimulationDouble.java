@@ -294,4 +294,8 @@ public class SimulationDouble extends SimulationAP implements Simulation {
         }
         return false;
     }
+
+    public SimulationAP getCpuSimulation() {
+        return cpuSimulation;
+    }
 }

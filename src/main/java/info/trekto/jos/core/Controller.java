@@ -36,11 +36,10 @@ import java.util.Date;
 import java.util.Properties;
 
 import static info.trekto.jos.core.ExecutionMode.*;
-import static info.trekto.jos.core.GpuChecker.checkGpu;
-import static info.trekto.jos.core.GpuChecker.findCpuThreshold;
-import static info.trekto.jos.core.numbers.NumberFactory.NumberType.ARBITRARY_PRECISION;
-import static info.trekto.jos.core.numbers.NumberFactory.NumberType.FLOAT;
-import static info.trekto.jos.core.numbers.NumberFactoryProxy.*;
+import static info.trekto.jos.core.GpuChecker.*;
+import static info.trekto.jos.core.numbers.NumberFactory.NumberType.*;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumberFactory;
 import static info.trekto.jos.util.Utils.*;
 import static java.awt.Color.PINK;
 import static javax.swing.JOptionPane.*;
@@ -53,7 +52,7 @@ public enum Controller {
     C;
 
     public static final int CPU_DEFAULT_THRESHOLD = 384;
-    private static int cpuThreshold;
+    static int cpuThreshold;
     private static final Logger logger = LoggerFactory.getLogger(Controller.class);
     public static final String PROGRAM_NAME = "JOS - arbitrary precision version";
 
@@ -133,26 +132,26 @@ public enum Controller {
         Controller.cpuThreshold = cpuThreshold;
     }
 
-    private Simulation createSimulation(SimulationProperties properties) {
-        ExecutionMode executionMode = getSelectedExecutionMode();
-        NumberFactory.NumberType numberType = properties.getNumberType();
+    Simulation createSimulation(SimulationProperties properties) {
+        return createSimulation(properties, getSelectedExecutionMode());
+    }
 
-        if (numberType == ARBITRARY_PRECISION || executionMode == CPU || !GpuChecker.gpuAvailable) {
+    /* This method is static for testing purposes */
+    static Simulation createSimulation(SimulationProperties properties, ExecutionMode executionMode) {
+        NumberFactory.NumberType numberType = properties.getNumberType();
+        int n = properties.getNumberOfObjects();
+
+        if (numberType == ARBITRARY_PRECISION
+                || executionMode == CPU
+                || (numberType == DOUBLE && !gpuDoubleAvailable)
+                || (numberType == FLOAT && !gpuFloatAvailable)
+                || (executionMode == AUTO && n <= cpuThreshold)) {
             return new SimulationAP(properties);
-        } else if (executionMode == GPU) {
-            if (numberType == FLOAT) {
-                return new SimulationFloat(properties, null);
-            } else {
-                return new SimulationDouble(properties, null);
-            }
         } else {
-            if (properties.getNumberOfObjects() <= cpuThreshold) {
-                return new SimulationAP(properties);
-            }
-            if (numberType == FLOAT) {
-                return new SimulationFloat(properties, new SimulationAP(properties));
+            if (numberType == DOUBLE) {
+                return new SimulationDouble(properties, executionMode == GPU ? null : new SimulationAP(properties));
             } else {
-                return new SimulationDouble(properties, new SimulationAP(properties));
+                return new SimulationFloat(properties, executionMode == GPU ? null : new SimulationAP(properties));
             }
         }
     }
@@ -240,11 +239,11 @@ public enum Controller {
                         visualizer.closeWindow();
                         showError(message + " " + ex.getMessage());
                     }
-                } catch (Exception ex) {
+                } catch (Throwable tr) {
                     String message = "Unexpected exception.";
-                    error(logger, message, ex);
+                    error(logger, message, tr);
                     visualizer.closeWindow();
-                    showError(message + " " + ex.getMessage());
+                    showError(message + " " + tr.getMessage());
                 } finally {
                     onVisualizationWindowClosed();
                 }
@@ -763,13 +762,20 @@ public enum Controller {
 
     private void setExecutionModeFieldVisibilityAndValue() {
         final int CPU_ITEM_INDEX = 2;
-        if (GpuChecker.gpuAvailable) {
+        if (gpuFloatAvailable && gpuDoubleAvailable) {
             gui.getExecutionModeComboBox().setToolTipText(null);
+        } else if (gpuFloatAvailable) {
+            gui.getExecutionModeComboBox().setToolTipText("Double precision on GPU is not available. Try to restart the application/computer.");
+        } else if (gpuDoubleAvailable) {
+            gui.getExecutionModeComboBox().setToolTipText("Float precision on GPU is not available. Try to restart the application/computer.");
         } else {
-            gui.getExecutionModeComboBox().setToolTipText("GPU is not compatible/available. Try to restart the application.");
+            gui.getExecutionModeComboBox().setToolTipText("GPU is not compatible/available. Try to restart the application/computer.");
         }
 
-        if (getSelectedNumberType() == ARBITRARY_PRECISION || !GpuChecker.gpuAvailable) {
+        if (getSelectedNumberType() == ARBITRARY_PRECISION
+                || (!gpuFloatAvailable && !gpuDoubleAvailable)
+                || (getSelectedNumberType() == DOUBLE && !gpuDoubleAvailable)
+                || (getSelectedNumberType() == FLOAT && !gpuFloatAvailable)) {
             gui.getExecutionModeLabel().setEnabled(false);
             gui.getExecutionModeComboBox().setEnabled(false);
             gui.getExecutionModeComboBox().setSelectedIndex(CPU_ITEM_INDEX);
@@ -804,7 +810,7 @@ public enum Controller {
                 int threshold = findCpuThreshold(properties);
                 gui.getCpuGpuThresholdField().setText(String.valueOf(threshold));
                 info(logger, "CPU/GPU threshold: " + threshold);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 warn(logger, "Cannot find CPU/GPU threshold. Will use default value: " + CPU_DEFAULT_THRESHOLD, e);
             } finally {
                 dialog.dispose();
