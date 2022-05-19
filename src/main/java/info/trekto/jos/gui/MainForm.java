@@ -597,7 +597,7 @@ public class MainForm {
         panel1.add(secondsPerIterationLabel, gbc);
         secondsPerIterationTextField = new JTextField();
         secondsPerIterationTextField.setColumns(8);
-        secondsPerIterationTextField.setText("0.01");
+        secondsPerIterationTextField.setText("0.005");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 2;
@@ -625,7 +625,7 @@ public class MainForm {
         panel1.add(numberOfObjectsLabel, gbc);
         numberOfObjectsTextField = new JTextField();
         numberOfObjectsTextField.setColumns(8);
-        numberOfObjectsTextField.setText("20");
+        numberOfObjectsTextField.setText("100");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 0;
@@ -768,7 +768,7 @@ public class MainForm {
         gbc.insets = new Insets(0, 5, 0, 5);
         panel2.add(cpuGpuThresholdLabel2, gbc);
         corTextField = new JTextField();
-        corTextField.setColumns(4);
+        corTextField.setColumns(3);
         corTextField.setEnabled(false);
         corTextField.setText("0.5");
         gbc = new GridBagConstraints();
@@ -792,7 +792,7 @@ public class MainForm {
         panel2.add(bounceFromScreenWallsCheckBox, gbc);
         corLabel = new JLabel();
         corLabel.setEnabled(false);
-        corLabel.setText("Coefficient of restitution");
+        corLabel.setText("Coef. of restitution");
         gbc = new GridBagConstraints();
         gbc.gridx = 4;
         gbc.gridy = 5;
@@ -802,7 +802,7 @@ public class MainForm {
         mergeObjectsWhenCollideCheckBox = new JCheckBox();
         mergeObjectsWhenCollideCheckBox.setHorizontalTextPosition(10);
         mergeObjectsWhenCollideCheckBox.setSelected(true);
-        mergeObjectsWhenCollideCheckBox.setText("Merge objects when collide");
+        mergeObjectsWhenCollideCheckBox.setText("Merge on collision");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 5;

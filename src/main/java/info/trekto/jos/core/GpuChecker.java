@@ -9,6 +9,7 @@ import info.trekto.jos.core.impl.SimulationGenerator;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.impl.arbitrary_precision.SimulationAP;
 import info.trekto.jos.core.impl.double_precision.SimulationDouble;
+import info.trekto.jos.core.impl.single_precision.SimulationFloat;
 import info.trekto.jos.core.numbers.New;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -182,7 +183,7 @@ public class GpuChecker {
             if (testProperties.getNumberType() == DOUBLE) {
                 gpuTime = measureIteration(new SimulationDouble(testProperties, null), numberOfIterations);
             } else {
-                gpuTime = measureIteration(new SimulationDouble(testProperties, null), numberOfIterations);
+                gpuTime = measureIteration(new SimulationFloat(testProperties, null), numberOfIterations);
             }
             if (C.isHasToStopCpuGpuMeasuring()) {
                 return (top + bottom) / 2;

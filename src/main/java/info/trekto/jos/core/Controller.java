@@ -54,7 +54,7 @@ public enum Controller {
     public static final int CPU_DEFAULT_THRESHOLD = 384;
     static int cpuThreshold;
     private static final Logger logger = LoggerFactory.getLogger(Controller.class);
-    public static final String PROGRAM_NAME = "JOS - arbitrary precision version";
+    public static final String PROGRAM_NAME = "JOS";
 
     private Simulation simulation;
     private MainForm gui;
@@ -91,7 +91,7 @@ public enum Controller {
         mainForm.setAboutMessage("JOS - v. " + applicationProperties.getProperty("version") + "\n\nAuthor: Trayan Momkov\n2022");
         mainForm.setNumberTypeMessage("DOUBLE - Double precision. Fast. (Uses GPU if possible)\n"
                                               + "FLOAT - Single precision. Fastest. (Uses GPU if possible)\n"
-                                              + "ARBITRARY_PRECISION - Arbitrary precision. Fast.");
+                                              + "ARBITRARY_PRECISION - Arbitrary precision.");
 
         mainForm.setCpuGpuThresholdMessage("If the objects are fewer than this threshold\n"
                                                    + "the execution will continue on the CPU.");
