@@ -1,4 +1,4 @@
-###v.2.0.0 - 2022-May-
+###v.2.0.0 - 2022-May-20
  - Elastic and partially inelastic collisions added.
  - Auto execution mode added. It dynamically switches between GPU and CPU. 
  - BigDecimal implementation removed.
