@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Random;
 
 import static info.trekto.jos.core.Controller.C;
+import static info.trekto.jos.core.Controller.JSON_GZIP_FILE_EXTENSION;
 import static info.trekto.jos.core.impl.arbitrary_precision.SimulationLogicAP.calculateVolumeFromRadius;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.*;
 import static info.trekto.jos.util.Utils.info;
@@ -25,7 +26,7 @@ public class SimulationGenerator {
 
     public static void generateObjects(SimulationProperties properties, boolean printInfo) {
         String filename = System.getProperty("user.home") + File.separator
-                + new SimpleDateFormat("yyyy-MMM-dd_HH-mm-ss").format(new Date()) + ".json.gz";
+                + new SimpleDateFormat("yyyy-MMM-dd_HH-mm-ss").format(new Date()) + JSON_GZIP_FILE_EXTENSION;
         properties.setOutputFile(filename);
 
         Rectangle maxWindowBounds = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();

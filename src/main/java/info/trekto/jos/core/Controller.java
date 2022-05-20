@@ -52,6 +52,8 @@ public enum Controller {
     C;
 
     public static final int CPU_DEFAULT_THRESHOLD = 384;
+    public static final String JSON_FILE_EXTENSION = ".json";
+    public static final String JSON_GZIP_FILE_EXTENSION = ".json.gz";
     static int cpuThreshold;
     private static final Logger logger = LoggerFactory.getLogger(Controller.class);
     public static final String PROGRAM_NAME = "JOS";
@@ -624,13 +626,17 @@ public enum Controller {
         if (userSelection == JFileChooser.APPROVE_OPTION) {
             File fileToSave = fileChooser.getSelectedFile();
             SimulationProperties properties = fetchPropertiesFromGuiAndCreateNumberFactory();
-            readerWriter.writeProperties(properties, fileToSave.getAbsolutePath());
+            String filename = fileToSave.getAbsolutePath();
+            if (!filename.endsWith(JSON_FILE_EXTENSION)) {
+                filename += JSON_FILE_EXTENSION;
+            }
+            readerWriter.writeProperties(properties, filename);
 
             /* Reopen just saved file.
              * This ensures the simulation is the same as opened from the file,
              * and can help us to detect a bug (when after saving the properties suddenly change). */
-            gui.getInputFilePathLabel().setText(fileToSave.getAbsolutePath());
-            properties = loadProperties(fileToSave.getAbsolutePath());
+            gui.getInputFilePathLabel().setText(filename);
+            properties = loadProperties(filename);
             refreshProperties(properties);
             unHighlightButtons(gui.getGenerateObjectsButton(), gui.getDetectCpuGpuThresholdButton());
         }
