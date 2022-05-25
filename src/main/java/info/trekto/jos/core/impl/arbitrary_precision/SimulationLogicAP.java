@@ -68,10 +68,10 @@ public class SimulationLogicAP implements SimulationLogic {
             /* Change the acceleration */
             newObject.setAcceleration(acceleration);
 
-            /* Bounce from walls */
+            /* Bounce from screen borders */
             /* Only change the direction of the velocity */
-            if (simulation.getProperties().isBounceFromWalls()) {
-                bounceFromWalls(newObject);
+            if (simulation.getProperties().isBounceFromScreenBorders()) {
+                bounceFromScreenBorders(newObject);
             }
         }
     }
@@ -208,7 +208,7 @@ public class SimulationLogicAP implements SimulationLogic {
                                 totalImpulse.getZ().divide(totalMass));
     }
 
-    private void bounceFromWalls(SimulationObject newObject) {
+    private void bounceFromScreenBorders(SimulationObject newObject) {
         if (C.getVisualizer() != null) {
             int width = C.getVisualizer().getVisualizationPanel().getWidth();
             int height = C.getVisualizer().getVisualizationPanel().getHeight();

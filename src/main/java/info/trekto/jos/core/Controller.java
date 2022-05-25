@@ -323,7 +323,7 @@ public enum Controller {
             properties.setCoefficientOfRestitution(cor);
         }
 
-        properties.setBounceFromWalls(gui.getBounceFromScreenWallsCheckBox().isSelected());
+        properties.setBounceFromScreenBorders(gui.getBounceFromScreenBordersCheckBox().isSelected());
         properties.setRealTimeVisualization(gui.getRealTimeVisualizationCheckBox().isSelected());
         properties.setInteractingLaw(ForceCalculator.InteractingLaw.valueOf(String.valueOf(gui.getInteractingLawComboBox().getSelectedItem())));
         properties.setMergeOnCollision(gui.getMergeObjectsWhenCollideCheckBox().isSelected());
@@ -441,7 +441,7 @@ public enum Controller {
         gui.getOutputFileTextField().setText(prop.getOutputFile());
         gui.getPrecisionTextField().setText(String.valueOf(prop.getPrecision()));
         gui.getRealTimeVisualizationCheckBox().setSelected(prop.isRealTimeVisualization());
-        gui.getBounceFromScreenWallsCheckBox().setSelected(prop.isBounceFromWalls());
+        gui.getBounceFromScreenBordersCheckBox().setSelected(prop.isBounceFromScreenBorders());
         gui.getPlayingSpeedTextField().setText(String.valueOf(prop.getPlayingSpeed()));
         gui.getMergeObjectsWhenCollideCheckBox().setSelected(prop.isMergeOnCollision());
         gui.getCorTextField().setText(String.valueOf(prop.getCoefficientOfRestitution()));
@@ -684,7 +684,7 @@ public enum Controller {
         gui.getFontSizeLabel().setEnabled(gui.getShowObjectIDsCheckBox().isSelected());
     }
 
-    public void bounceFromScreenWallsCheckBoxEvent() {
+    public void bounceFromScreenBordersCheckBoxEvent() {
     }
 
     public void realTimeVisualizationCheckBoxEvent() {

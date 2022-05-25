@@ -42,7 +42,7 @@ public class SimulationFloat extends SimulationAP implements Simulation {
         final int n = properties.getNumberOfObjects();
         int screenWidth = 0;
         int screenHeight = 0;
-        if (properties.isBounceFromWalls()) {
+        if (properties.isBounceFromScreenBorders()) {
             screenWidth = C.getVisualizer().getVisualizationPanel().getWidth();
             screenHeight = C.getVisualizer().getVisualizationPanel().getHeight();
         }

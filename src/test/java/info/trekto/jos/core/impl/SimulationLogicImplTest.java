@@ -21,7 +21,7 @@ public class SimulationLogicImplTest {
     }
 
     @Test
-    public void bounceFromWallsShouldWorkCorrectly() {
+    public void bounceFromScreenBordersShouldWorkCorrectly() {
     }
 
     @Test

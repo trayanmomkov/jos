@@ -139,14 +139,14 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
             accelerationX[i] = newAccelerationX;
             accelerationY[i] = newAccelerationY;
             
-            /* Bounce from walls */
+            /* Bounce from screen borders */
             if (screenWidth != 0 && screenHeight != 0) {
-                bounceFromWalls(i);
+                bounceFromScreenBorders(i);
             }
         }
     }
 
-    private void bounceFromWalls(int i) {
+    private void bounceFromScreenBorders(int i) {
         if (positionX[i] + radius[i] >= screenWidth / 2.0 || positionX[i] - radius[i] <= -screenWidth / 2.0) {
             velocityX[i] = -velocityX[i];
         }

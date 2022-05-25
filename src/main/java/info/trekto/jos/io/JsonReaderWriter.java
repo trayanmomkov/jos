@@ -85,7 +85,7 @@ public class JsonReaderWriter implements ReaderWriter {
         json.addProperty("precision", properties.getPrecision());
         json.addProperty("realTimeVisualization", properties.isRealTimeVisualization());
         json.addProperty("playingSpeed", properties.getPlayingSpeed());
-        json.addProperty("bounceFromWalls", properties.isBounceFromWalls());
+        json.addProperty("bounceFromScreenBorders", properties.isBounceFromScreenBorders());
         json.addProperty("mergeOnCollision", properties.isMergeOnCollision());
         json.addProperty("coefficientOfRestitution", properties.getCoefficientOfRestitution().toString());
         return json;
@@ -210,8 +210,11 @@ public class JsonReaderWriter implements ReaderWriter {
         properties.setRealTimeVisualization(json.get("realTimeVisualization").getAsBoolean());
         properties.setPlayingSpeed(json.get("playingSpeed").getAsInt());
         
-        JsonElement bounceFromWall = json.get("bounceFromWalls");
-        properties.setBounceFromWalls(bounceFromWall != null && bounceFromWall.getAsBoolean());
+        JsonElement bounceFromScreenBorders = json.get("bounceFromScreenBorders");
+        if (bounceFromScreenBorders == null) {
+            bounceFromScreenBorders = json.get("bounceFromWalls");
+        }
+        properties.setBounceFromScreenBorders(bounceFromScreenBorders != null && bounceFromScreenBorders.getAsBoolean());
         
         JsonElement mergeOnCollision = json.get("mergeOnCollision");
         properties.setMergeOnCollision(mergeOnCollision == null || mergeOnCollision.getAsBoolean());

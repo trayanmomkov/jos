@@ -35,7 +35,7 @@ public class MainForm {
     private JTextField outputFileTextField;
     private JCheckBox realTimeVisualizationCheckBox;
     private JTextField playingSpeedTextField;
-    private JCheckBox bounceFromScreenWallsCheckBox;
+    private JCheckBox bounceFromScreenBordersCheckBox;
     private JTextField numberOfObjectsTextField;
     private JTextField precisionTextField;
     private JTable initialObjectsTable;
@@ -133,7 +133,7 @@ public class MainForm {
         interactingLawComboBox.addActionListener(actionEvent -> C.interactingLawComboBoxEvent());
         precisionTextField.getDocument().addUndoableEditListener(actionEvent -> C.precisionTextFieldEvent());
         realTimeVisualizationCheckBox.addActionListener(actionEvent -> C.realTimeVisualizationCheckBoxEvent());
-        bounceFromScreenWallsCheckBox.addActionListener(actionEvent -> C.bounceFromScreenWallsCheckBoxEvent());
+        bounceFromScreenBordersCheckBox.addActionListener(actionEvent -> C.bounceFromScreenBordersCheckBoxEvent());
         playingSpeedTextField.getDocument().addUndoableEditListener(actionEvent -> C.playingSpeedTextFieldEvent());
         outputFileTextField.getDocument().addUndoableEditListener(actionEvent -> C.outputFileTextFieldEvent());
         cpuGpuThresholdField.getDocument().addUndoableEditListener(actionEvent -> C.cpuGpuThresholdFieldEvent());
@@ -155,7 +155,7 @@ public class MainForm {
                 secondsPerIterationLabel, numberTypeLabel, interactingLawLabel, outputFileLabel, precisionLabel,
                 initialObjectsTable, initialObjectsPanel, generateObjectsButton, numberTypeComboBox, precisionTextField,
                 precisionTextField, executionModeLabel, executionModeComboBox, cpuGpuThresholdLabel, cpuGpuThresholdField,
-                cpuGpuThresholdLabel2, detectCpuGpuThresholdButton, bounceFromScreenWallsCheckBox, mergeObjectsWhenCollideCheckBox,
+                cpuGpuThresholdLabel2, detectCpuGpuThresholdButton, bounceFromScreenBordersCheckBox, mergeObjectsWhenCollideCheckBox,
                 corLabel, corTextField);
 
         playingComponents = Arrays.asList(playFileLabel, playFromLabel, browsePlayingFileButton, playButton);
@@ -271,8 +271,8 @@ public class MainForm {
         return playingSpeedTextField;
     }
 
-    public JCheckBox getBounceFromScreenWallsCheckBox() {
-        return bounceFromScreenWallsCheckBox;
+    public JCheckBox getBounceFromScreenBordersCheckBox() {
+        return bounceFromScreenBordersCheckBox;
     }
 
     public JTextField getNumberOfObjectsTextField() {
@@ -776,20 +776,20 @@ public class MainForm {
         gbc.gridy = 5;
         gbc.anchor = GridBagConstraints.WEST;
         panel2.add(corTextField, gbc);
-        bounceFromScreenWallsCheckBox = new JCheckBox();
-        bounceFromScreenWallsCheckBox.setEnabled(true);
-        bounceFromScreenWallsCheckBox.setHideActionText(true);
-        bounceFromScreenWallsCheckBox.setHorizontalAlignment(10);
-        bounceFromScreenWallsCheckBox.setHorizontalTextPosition(10);
-        bounceFromScreenWallsCheckBox.setSelected(false);
-        bounceFromScreenWallsCheckBox.setText("Bounce from screen walls");
+        bounceFromScreenBordersCheckBox = new JCheckBox();
+        bounceFromScreenBordersCheckBox.setEnabled(true);
+        bounceFromScreenBordersCheckBox.setHideActionText(true);
+        bounceFromScreenBordersCheckBox.setHorizontalAlignment(10);
+        bounceFromScreenBordersCheckBox.setHorizontalTextPosition(10);
+        bounceFromScreenBordersCheckBox.setSelected(false);
+        bounceFromScreenBordersCheckBox.setText("Bounce from screen borders");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 4;
         gbc.gridwidth = 5;
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
-        panel2.add(bounceFromScreenWallsCheckBox, gbc);
+        panel2.add(bounceFromScreenBordersCheckBox, gbc);
         corLabel = new JLabel();
         corLabel.setEnabled(false);
         corLabel.setText("Coef. of restitution");

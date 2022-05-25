@@ -130,7 +130,7 @@ public class Utils {
         String remainingString = "Iteration " + i
                 + ", elapsed time: " + nanoToHumanReadable(System.nanoTime() - startTime)
                 + ", objects: " + numberOfObjects
-                + (numberOfIterations < 1 ? "" : ", remaining time: " + milliToHumanReadable(remainingTime));
+                + (numberOfIterations < 1 ? "" : ", remaining time: " + (remainingTime >= 1 ? milliToHumanReadable(remainingTime) : NA));
 
         info(logger, remainingString);
     }

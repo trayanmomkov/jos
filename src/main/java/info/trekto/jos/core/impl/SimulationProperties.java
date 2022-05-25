@@ -23,7 +23,7 @@ public class SimulationProperties {
     private InteractingLaw interactingLaw = NEWTON_LAW_OF_GRAVITATION;
     private boolean realTimeVisualization = false;
     private int playingSpeed = 0;
-    private boolean bounceFromWalls;
+    private boolean bounceFromScreenBorders;
     private int saveEveryNthIteration = 1;
     private boolean saveMass = false;
     private boolean saveVelocity = false;
@@ -50,7 +50,7 @@ public class SimulationProperties {
         this.interactingLaw = properties.interactingLaw;
         this.realTimeVisualization = properties.realTimeVisualization;
         this.playingSpeed = properties.playingSpeed;
-        this.bounceFromWalls = properties.bounceFromWalls;
+        this.bounceFromScreenBorders = properties.bounceFromScreenBorders;
         this.saveEveryNthIteration = properties.saveEveryNthIteration;
         this.numberOfObjects = properties.numberOfObjects;
         this.precision = properties.precision;
@@ -154,12 +154,12 @@ public class SimulationProperties {
         this.precision = precision;
     }
 
-    public boolean isBounceFromWalls() {
-        return bounceFromWalls;
+    public boolean isBounceFromScreenBorders() {
+        return bounceFromScreenBorders;
     }
 
-    public void setBounceFromWalls(boolean bounceFromWalls) {
-        this.bounceFromWalls = bounceFromWalls;
+    public void setBounceFromScreenBorders(boolean bounceFromScreenBorders) {
+        this.bounceFromScreenBorders = bounceFromScreenBorders;
     }
 
     public int getSaveEveryNthIteration() {
