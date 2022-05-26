@@ -171,9 +171,9 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
                 }
 
                 if (mergeOnCollision) {
-                    if (deleted[j]) {
-                        continue;
-                    }
+                if (deleted[j]) {
+                    continue;
+                }
                 } else if (processedElasticCollision.contains(new AbstractMap.SimpleEntry<>(i, j))) {
                     continue;
                 }
@@ -228,8 +228,8 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
      * we can remove this method and replace color encode/decode with java.awt.Color
      */
     private int calculateColor(int smaller, int bigger) {
-        float bigVolume = calculateVolumeFromRadius(radius[bigger]);
-        float smallVolume = calculateVolumeFromRadius(radius[smaller]);
+        float bigMass = mass[bigger];
+        float smallMass = mass[smaller];
 
         /* Decode color */
         int biggerRed = (color[bigger] >> 16) & 0xFF;
@@ -241,9 +241,9 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
         int smallerBlue = color[smaller] & 0xFF;
 
         /* Calculate new value */
-        int r = (int) Math.round((biggerRed * bigVolume + smallerRed * smallVolume) / (bigVolume + smallVolume));
-        int g = (int) Math.round((biggerGreen * bigVolume + smallerGreen * smallVolume) / (bigVolume + smallVolume));
-        int b = (int) Math.round((biggerBlue * bigVolume + smallerBlue * smallVolume) / (bigVolume + smallVolume));
+        int r = Math.round((biggerRed * bigMass + smallerRed * smallMass) / (bigMass + smallMass));
+        int g = Math.round((biggerGreen * bigMass + smallerGreen * smallMass) / (bigMass + smallMass));
+        int b = Math.round((biggerBlue * bigMass + smallerBlue * smallMass) / (bigMass + smallMass));
 
         /* Encode color */
         int rgb = r;

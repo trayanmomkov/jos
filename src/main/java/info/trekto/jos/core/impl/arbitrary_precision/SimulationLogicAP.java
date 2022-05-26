@@ -153,11 +153,12 @@ public class SimulationLogicAP implements SimulationLogic {
     }
 
     private int calculateColor(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
-        double bigV = calculateVolumeFromRadius(bigger.getRadius()).doubleValue();
-        double smallV = calculateVolumeFromRadius(smaller.getRadius()).doubleValue();
-        long r = Math.round((new Color(bigger.getColor()).getRed() * bigV + new Color(smaller.getColor()).getRed() * smallV) / (bigV + smallV));
-        long g = Math.round((new Color(bigger.getColor()).getGreen() * bigV + new Color(smaller.getColor()).getGreen() * smallV) / (bigV + smallV));
-        long b = Math.round((new Color(bigger.getColor()).getBlue() * bigV + new Color(smaller.getColor()).getBlue() * smallV) / (bigV + smallV));
+        double bigMass = bigger.getMass().doubleValue();
+        double smallMass = smaller.getMass().doubleValue();
+        double totalMass = bigMass + smallMass;
+        long r = Math.round((new Color(bigger.getColor()).getRed() * bigMass + new Color(smaller.getColor()).getRed() * smallMass) / totalMass);
+        long g = Math.round((new Color(bigger.getColor()).getGreen() * bigMass + new Color(smaller.getColor()).getGreen() * smallMass) / totalMass);
+        long b = Math.round((new Color(bigger.getColor()).getBlue() * bigMass + new Color(smaller.getColor()).getBlue() * smallMass) / totalMass);
 
         return new Color((int) r, (int) g, (int) b).getRGB();
     }

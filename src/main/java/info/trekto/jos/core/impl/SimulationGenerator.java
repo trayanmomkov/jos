@@ -63,7 +63,7 @@ public class SimulationGenerator {
         } while (!fit(sideX, sideY, horizontalZones, verticalZones, width, height, n));
 
         List<SimulationObject> objects = new ArrayList<>();
-        int generatedObjects = 0;
+int generatedObjects = 0;
         outerloop:
         for (int i = 0; i < horizontalZones; i++) {
             for (int j = 0; j < verticalZones; j++) {
@@ -99,42 +99,43 @@ public class SimulationGenerator {
         properties.setInitialObjects(objects);
     }
 
-    private static boolean fit(double sideX, double sideY, long horizontalZones, long verticalZones, double width, double height, int n) {
-        return sideX * horizontalZones <= width && sideY * verticalZones <= height && horizontalZones * verticalZones >= n;
-    }
-
     public static List<SimulationObject> generateComplexObject(Number x, Number y, Number radius, Number mass, String id, Number rotationDirection,
                                                                Number velocityX, Number velocityY, Color color) {
         final Number DEG_TO_RAD = PI.divide(New.num("180"));
         List<SimulationObject> objectParticles = new ArrayList<>();
-        Number objectNumberFactor = New.num("0.4");    // bigger = less objects
-        Number objectRadialDensity = New.num("4");    // bigger = less objects
-        int exponentialVelocityFactor = 1;   // smaller = lower velocity (including negative values) 
-        int exponentialMassChangeInDepth = 2;
-        Number particleRadius = ONE;
+        Number objectsInOneCircleDivisor = New.num("1");    // bigger = less objects
+        Number numberOfNestedCirclesDivisor = New.num("1");    // bigger = less objects
+        Number velocityFactor = New.num("0.2");   // smaller = lower velocity
+        Number massChangeInDepthFactor = New.num("1e10");
+        Number particleRadius = New.num("1");
 
         // Circles
-        Number centerObjectRadius = New.num("10");
-//        double minRadius = particleRadius * 2 + 1;
+        Number centerObjectRadius = ONE;
         Number minRadius = centerObjectRadius.multiply(TWO);
-        for (Number r = radius; r.compareTo(minRadius) >= 0; r = r.subtract(particleRadius.multiply(objectRadialDensity))) {
-            Number particlesInCurrentCircle = r.divide(objectNumberFactor);   // TODO Probably should be rounded to integer
-            Number step = New.num("360").divide(particlesInCurrentCircle);
+        Number minDistanceBetweenCircles = particleRadius.multiply(TWO).add(ONE);
+        Number maxNumberOfCircles = radius.subtract(minRadius).divide(minDistanceBetweenCircles);
+        Number outerLoopStep = numberOfNestedCirclesDivisor.compareTo(ONE) <= 0 ?
+                minDistanceBetweenCircles :
+                maxNumberOfCircles.divide(numberOfNestedCirclesDivisor);
+                
+        for (Number r = radius; r.compareTo(minRadius) >= 0; r = r.subtract(outerLoopStep)) {
+            Number particlesInCurrentCircle = New.num(Math.round(r.divide(objectsInOneCircleDivisor).doubleValue()));
+            Number innerLoopStep = New.num("360").divide(particlesInCurrentCircle);
 
             // Objects in the current circle
-            for (int i = 0; New.num(i).compareTo(r.divide(objectNumberFactor)) < 0; i++) {
-                Number radians = New.num(i).multiply(step).multiply(DEG_TO_RAD); //convert degrees into radians
+            for (Number i = ZERO; i.compareTo(New.num("359.9")) < 0; i = i.add(innerLoopStep)) {
+                Number radians = i.multiply(DEG_TO_RAD); //convert degrees into radians
 
                 SimulationObject o = C.createNewSimulationObject();
                 o.setX(IGNORED.cos(radians).multiply(r).add(x));
                 o.setY(IGNORED.sin(radians).multiply(r).add(y));
-                o.setVelocity(new TripleNumber(IGNORED.cos(radians.subtract(New.num("300"))).multiply(r.pow(exponentialVelocityFactor))
-                                                    .multiply(PI).multiply(rotationDirection).add(velocityX),
-                                               IGNORED.sin(radians.subtract(New.num("300"))).multiply(r.pow(exponentialVelocityFactor))
-                                                    .multiply(PI).multiply(rotationDirection).add(velocityY),
+                o.setVelocity(new TripleNumber(IGNORED.cos(radians.subtract(New.num("300"))).multiply(r.multiply(velocityFactor))
+                                                    .multiply(rotationDirection).add(velocityX),
+                                               IGNORED.sin(radians.subtract(New.num("300"))).multiply(r.multiply(velocityFactor))
+                                                    .multiply(rotationDirection).add(velocityY),
                                                ZERO));
                 o.setAcceleration(new TripleNumber());
-                o.setMass(mass.multiply(r.pow(exponentialMassChangeInDepth)));
+                o.setMass(mass.multiply(ONE.divide(r).multiply(massChangeInDepthFactor)));
                 o.setRadius(particleRadius);
                 o.setId(id + r + i);
                 o.setColor(color.getRGB());
@@ -142,5 +143,9 @@ public class SimulationGenerator {
             }
         }
         return objectParticles;
+    }
+
+    private static boolean fit(double sideX, double sideY, long horizontalZones, long verticalZones, double width, double height, int n) {
+        return sideX * horizontalZones <= width && sideY * verticalZones <= height && horizontalZones * verticalZones >= n;
     }
 }

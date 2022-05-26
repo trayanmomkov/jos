@@ -21,6 +21,7 @@ public class NumberFactoryProxy {
     public static Number THREE;
     public static Number FOUR;
     public static Number RATIO_FOUR_THREE;
+    public static Number TEN;
     public static Number BILLION;
     public static Number IGNORED;
     public static Number PI;
@@ -37,6 +38,7 @@ public class NumberFactoryProxy {
         THREE = createNumber("3");
         FOUR = createNumber("4");
         RATIO_FOUR_THREE = FOUR.divide(THREE);
+        TEN = createNumber("10");
         BILLION = createNumber("1000000000");
         IGNORED = createNumber("0");
         PI = factory.createPi();
