@@ -33,8 +33,11 @@ You can run the simulation **without visualization**, for faster computations, a
 To use the GPU execution mode you must have OpenCL compatible video card.
 
 List of video cards on which the system is tested:
- - **NVIDIA Quadro K1100M**: <span style="color: green;">**OK**</span>
- - **Intel UHD Graphics 620** (Whiskey Lake): <span style="color: red;">**PROBLEMS**</span>
+ - **Intel HD Graphics 530**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **NVIDIA Quadro K1100M**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **NVIDIA GeForce GTX 960**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **NVIDIA GeForce GTX 1070**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **NVIDIA GeForce RTX 2070**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
 
 ## Description
 The application had been initially written in C++ and OpenGL in 2009.

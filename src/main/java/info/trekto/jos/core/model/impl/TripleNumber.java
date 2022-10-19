@@ -15,7 +15,7 @@ import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
  * @author Trayan Momkov
  * 3 Mar 2016
  */
-public class TripleNumber {
+public final class TripleNumber {
 
     private final Number x;
     private final Number y;
