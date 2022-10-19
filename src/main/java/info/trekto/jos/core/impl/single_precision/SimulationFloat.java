@@ -66,13 +66,7 @@ public class SimulationFloat extends SimulationAP implements Simulation {
     public void doIteration(boolean saveCurrentIterationToFile, long iterationCounter) {
         deepCopy(simulationLogic.positionX, simulationLogic.readOnlyPositionX);
         deepCopy(simulationLogic.positionY, simulationLogic.readOnlyPositionY);
-        deepCopy(simulationLogic.velocityX, simulationLogic.readOnlyVelocityX);
-        deepCopy(simulationLogic.velocityY, simulationLogic.readOnlyVelocityY);
-        deepCopy(simulationLogic.accelerationX, simulationLogic.readOnlyAccelerationX);
-        deepCopy(simulationLogic.accelerationY, simulationLogic.readOnlyAccelerationY);
         deepCopy(simulationLogic.mass, simulationLogic.readOnlyMass);
-        deepCopy(simulationLogic.radius, simulationLogic.readOnlyRadius);
-        deepCopy(simulationLogic.color, simulationLogic.readOnlyColor);
         deepCopy(simulationLogic.deleted, simulationLogic.readOnlyDeleted);
 
         /* Execute in parallel on GPU if available */

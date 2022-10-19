@@ -18,7 +18,7 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
     private static final float TWO = 2.0f;
     private static final float RATIO_FOUR_THREE = 4 / 3.0f;
     private static final float GRAVITY = 0.000000000066743f; // 6.6743×10^−11 N⋅m2/kg2
-    private static final float PI = (float)Math.PI;
+    private static final float PI = (float) Math.PI;
 
     public final float[] positionX;
     public final float[] positionY;
@@ -34,13 +34,7 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
 
     public final float[] readOnlyPositionX;
     public final float[] readOnlyPositionY;
-    public final float[] readOnlyVelocityX;
-    public final float[] readOnlyVelocityY;
-    public final float[] readOnlyAccelerationX;
-    public final float[] readOnlyAccelerationY;
     public final float[] readOnlyMass;
-    public final float[] readOnlyRadius;
-    public final int[] readOnlyColor;
     public final boolean[] readOnlyDeleted;
 
     private final float secondsPerIteration;
@@ -68,15 +62,9 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
 
         readOnlyPositionX = new float[n];
         readOnlyPositionY = new float[n];
-        readOnlyVelocityX = new float[n];
-        readOnlyVelocityY = new float[n];
-        readOnlyAccelerationX = new float[n];
-        readOnlyAccelerationY = new float[n];
         readOnlyMass = new float[n];
-        readOnlyRadius = new float[n];
-        readOnlyColor = new int[n];
         readOnlyDeleted = new boolean[n];
-        
+
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
         this.mergeOnCollision = mergeOnCollision;
@@ -171,57 +159,57 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
                 }
 
                 if (mergeOnCollision) {
-                if (deleted[j]) {
-                    continue;
-                }
+                    if (deleted[j]) {
+                        continue;
+                    }
                 } else if (processedElasticCollision.contains(new AbstractMap.SimpleEntry<>(i, j))) {
                     continue;
                 }
 
                 float distance = calculateDistance(positionX[i], positionY[i], positionX[j], positionY[j]);
-                        if (distance < radius[i] + radius[j]) {    // if collide
+                if (distance < radius[i] + radius[j]) {    // if collide
                     if (!mergeOnCollision) {
                         processTwoDimensionalCollision(i, j, coefficientOfRestitution);
                         processedElasticCollision.add(new AbstractMap.SimpleEntry<>(i, j));
                         processedElasticCollision.add(new AbstractMap.SimpleEntry<>(j, i));
                     } else {
-                            /* Objects merging */
-                            int bigger;
-                            int smaller;
-                            if (mass[i] < mass[j]) {
-                                bigger = j;
-                                smaller = i;
-                            } else {
-                                bigger = i;
-                                smaller = j;
-                            }
+                        /* Objects merging */
+                        int bigger;
+                        int smaller;
+                        if (mass[i] < mass[j]) {
+                            bigger = j;
+                            smaller = i;
+                        } else {
+                            bigger = i;
+                            smaller = j;
+                        }
 
-                            deleted[smaller] = true;
+                        deleted[smaller] = true;
 
-                            /* Velocity */
-                            changeVelocityOnMerging(smaller, bigger);
+                        /* Velocity */
+                        changeVelocityOnMerging(smaller, bigger);
 
-                            /* Position */
-                            changePositionOnMerging(smaller, bigger);
+                        /* Position */
+                        changePositionOnMerging(smaller, bigger);
 
-                            /* Color */
-                            color[bigger] = calculateColor(smaller, bigger);
+                        /* Color */
+                        color[bigger] = calculateColor(smaller, bigger);
 
-                            /* Volume (radius) */
-                            radius[bigger] = calculateRadiusBasedOnNewVolumeAndDensity(smaller, bigger);
+                        /* Volume (radius) */
+                        radius[bigger] = calculateRadiusBasedOnNewVolumeAndDensity(smaller, bigger);
 
-                            /* Mass */
-                            mass[bigger] = mass[bigger] + mass[smaller];
+                        /* Mass */
+                        mass[bigger] = mass[bigger] + mass[smaller];
 
-                            if (i == smaller) {
-                                /* If the current object is deleted stop processing it further. */
-                                break;
-                            }
+                        if (i == smaller) {
+                            /* If the current object is deleted stop processing it further. */
+                            break;
                         }
                     }
                 }
             }
         }
+    }
 
     /**
      * Because processCollisions() method does not run on GPU
@@ -297,7 +285,7 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
     public static float calculateDistance(float object1X, float object1Y, float object2X, float object2Y) {
         float x = object2X - object1X;
         float y = object2Y - object1Y;
-        return (float)Math.sqrt(x * x + y * y);
+        return (float) Math.sqrt(x * x + y * y);
     }
 
     public static float calculateForce(final float object1Mass, final float object2Mass, final float distance) {
@@ -309,7 +297,7 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
         if (radius == 0) {
             return Float.MIN_VALUE;
         }
-        return RATIO_FOUR_THREE * PI * (float)Math.pow(radius, 3);
+        return RATIO_FOUR_THREE * PI * (float) Math.pow(radius, 3);
     }
 
     public static float calculateRadiusFromVolume(float volume) {
@@ -317,7 +305,7 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
         if (volume == 0) {
             return Float.MIN_VALUE;
         }
-        return (float)Math.cbrt(volume / (RATIO_FOUR_THREE * PI));
+        return (float) Math.cbrt(volume / (RATIO_FOUR_THREE * PI));
     }
 
     private void processTwoDimensionalCollision(int o1, int o2, float cor) {
@@ -325,15 +313,15 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
         float v1y = velocityY[o1];
         float v2x = velocityX[o2];
         float v2y = velocityY[o2];
-        
+
         float o1x = positionX[o1];
         float o1y = positionY[o1];
         float o2x = positionX[o2];
         float o2y = positionY[o2];
-        
+
         float o1m = mass[o1];
         float o2m = mass[o2];
-        
+
         // v'1y = v1y - 2*m2/(m1+m2) * dotProduct(o1, o2) / dotProduct(o1y, o1x, o2y, o2x) * (o1y-o2y)
         // v'2x = v2x - 2*m2/(m1+m2) * dotProduct(o2, o1) / dotProduct(o2x, o2y, o1x, o1y) * (o2x-o1x)
         // v'2y = v2y - 2*m2/(m1+m2) * dotProduct(o2, o1) / dotProduct(o2y, o2x, o1y, o1x) * (o2y-o1y)
@@ -367,17 +355,17 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
         velocityY[0] = o1.getVelocity().getY().floatValue();
         velocityX[1] = o2.getVelocity().getX().floatValue();
         velocityY[1] = o2.getVelocity().getY().floatValue();
-        
+
         positionX[0] = o1.getX().floatValue();
         positionY[0] = o1.getY().floatValue();
         positionX[1] = o2.getX().floatValue();
         positionY[1] = o2.getY().floatValue();
-        
+
         mass[0] = o1.getMass().floatValue();
         mass[1] = o2.getMass().floatValue();
-        
+
         processTwoDimensionalCollision(0, 1, cor.floatValue());
-        
+
         o1.setVelocity(new TripleNumber(New.num(velocityX[0]), New.num(velocityY[0]), ZERO));
         o2.setVelocity(new TripleNumber(New.num(velocityX[1]), New.num(velocityY[1]), ZERO));
     }
