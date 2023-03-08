@@ -26,6 +26,9 @@
                         <manifest>
                             <mainClass>info.trekto.jos.core.Controller</mainClass>
                         </manifest>
+                        <manifestEntries>
+                            <Created-By>Trayan Momkov</Created-By>
+                        </manifestEntries>
                     </archive>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>

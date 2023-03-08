@@ -669,7 +669,9 @@ public enum Controller {
     public void numberOfObjectsTextFieldEvent() {
         if (!isNullOrBlank(gui.getNumberOfObjectsTextField().getText())) {
             highlightButton(gui.getGenerateObjectsButton());
-            highlightButton(gui.getDetectCpuGpuThresholdButton());
+            if (getSelectedExecutionMode() == AUTO) {
+                highlightButton(gui.getDetectCpuGpuThresholdButton());
+            }
             calculateAverageSize();
         }
     }
