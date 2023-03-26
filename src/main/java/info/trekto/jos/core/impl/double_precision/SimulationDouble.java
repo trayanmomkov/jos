@@ -17,6 +17,7 @@ import java.util.*;
 
 import static com.aparapi.Kernel.EXECUTION_MODE.GPU;
 import static info.trekto.jos.core.Controller.C;
+import static info.trekto.jos.core.GpuChecker.checkExecutionMode;
 import static info.trekto.jos.util.Utils.*;
 
 /**
@@ -76,22 +77,14 @@ public class SimulationDouble extends SimulationAP implements Simulation {
 
         /* Execute in parallel on GPU if available */
         simulationLogic.execute(simulationLogicRange);
-        if (iterationCounter == 1) {
-            if (!GPU.equals(simulationLogic.getExecutionMode())) {
-                warn(logger, "Simulation logic execution mode = " + simulationLogic.getExecutionMode());
-            }
-        }
+        checkExecutionMode(iterationCounter, simulationLogic);
 
         /* Collision */
         collisionCheckKernel.prepare();
         
         /* Execute in parallel on GPU if available */
         collisionCheckKernel.execute(collisionCheckRange);
-        if (iterationCounter == 1) {
-            if (!GPU.equals(collisionCheckKernel.getExecutionMode())) {
-                warn(logger, "Collision detection execution mode = " + collisionCheckKernel.getExecutionMode());
-            }
-        }
+        checkExecutionMode(iterationCounter, simulationLogic);
 
         /* If collision/s exists execute sequentially on a single thread */
         if (collisionCheckKernel.collisionExists()) {

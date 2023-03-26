@@ -946,6 +946,7 @@ public class MainForm {
         mainPanel.add(consolePanel, gbc);
         consolePanel.setBorder(BorderFactory.createTitledBorder(null, "Output conosle", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
         consoleTextArea = new JTextArea();
+        consoleTextArea.setEditable(false);
         Font consoleTextAreaFont = this.$$$getFont$$$(null, -1, -1, consoleTextArea.getFont());
         if (consoleTextAreaFont != null) {
             consoleTextArea.setFont(consoleTextAreaFont);

@@ -446,6 +446,7 @@
           <component id="8685c" class="javax.swing.JTextArea" binding="consoleTextArea">
             <constraints/>
             <properties>
+              <editable value="false"/>
               <font/>
               <rows value="20"/>
               <text value=""/>

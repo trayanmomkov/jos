@@ -793,7 +793,7 @@ public enum Controller {
         }
     }
     
-    private ExecutionMode getSelectedExecutionMode() {
+    public ExecutionMode getSelectedExecutionMode() {
         return ((AbstractMap.SimpleEntry<ExecutionMode, String>) gui.getExecutionModeComboBox().getSelectedItem()).getKey();
     }
 

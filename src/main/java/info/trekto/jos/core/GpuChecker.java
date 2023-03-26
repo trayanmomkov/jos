@@ -119,6 +119,14 @@ public class GpuChecker {
         }).start();
     }
 
+    public static void checkExecutionMode(long iterationCounter, Kernel kernel) {
+        if (iterationCounter == 1) {
+            if (!GPU.equals(kernel.getExecutionMode())) {
+                warn(logger, kernel.getClass().getSimpleName() + " execution mode = " + kernel.getExecutionMode());
+            }
+        }
+    }
+
     static class AparapiDoubleTestKernel extends Kernel {
         public final double[] array = new double[]{1, 2, 3, 4, 5};
 

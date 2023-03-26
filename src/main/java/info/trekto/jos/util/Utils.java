@@ -1,5 +1,7 @@
 package info.trekto.jos.util;
 
+import com.aparapi.device.Device;
+import com.aparapi.device.OpenCLDevice;
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.model.SimulationObject;
@@ -13,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static info.trekto.jos.core.Controller.C;
+import static info.trekto.jos.core.ExecutionMode.AUTO;
+import static info.trekto.jos.core.ExecutionMode.GPU;
 import static info.trekto.jos.core.numbers.NumberFactory.DEFAULT_PRECISION;
 import static info.trekto.jos.core.numbers.NumberFactory.NumberType.DOUBLE;
 import static java.lang.Double.parseDouble;
@@ -75,12 +79,6 @@ public class Utils {
         }
         info(logger, "JRE version: " + System.getProperty("java.specification.version"));
         info(logger, "JVM  implementation name: " + System.getProperty("java.vm.name"));
-        info(logger, "Free memory (Mbytes): " + Runtime.getRuntime().freeMemory() / (1024 * 1024));
-
-        /* This will return Long.MAX_VALUE if there is no preset limit */
-        long maxMemory = Runtime.getRuntime().maxMemory();
-        /* Maximum amount of memory the JVM will attempt to use */
-        info(logger, "Maximum memory (Mbytes): " + (maxMemory == Long.MAX_VALUE ? "no limit" : maxMemory / (1024 * 1024)));
 
         /* Total memory currently available to the JVM */
         info(logger, "Total memory available to JVM (Mbytes): " + Runtime.getRuntime().totalMemory() / (1024 * 1024));
@@ -89,8 +87,17 @@ public class Utils {
         info(logger, "OS version: " + System.getProperty("os.version"));
         info(logger, "OS architecture: " + System.getProperty("os.arch"));
         info(logger, "Host machine native word size: " + System.getProperty("sun.arch.data.model"));
-
         info(logger, "Number of cores: " + CORES);
+
+        if ((C.getSelectedExecutionMode() == AUTO || C.getSelectedExecutionMode() == GPU)
+                && Device.bestGPU().getType() == Device.TYPE.GPU) {
+            OpenCLDevice openCLDevice = (OpenCLDevice) Device.bestGPU();
+            info(logger, "GPU Vendor: " + openCLDevice.getOpenCLPlatform().getVendor());
+            info(logger, "GPU Name: " + openCLDevice.getName());
+            info(logger, "GPU Platform: " + openCLDevice.getOpenCLPlatform().getVersion());
+            info(logger, "GPU Max work group size: " + openCLDevice.getMaxWorkGroupSize());
+        }
+
         info(logger, "Precision: " + properties.getPrecision());
         info(logger, "Number of objects: " + properties.getNumberOfObjects());
         info(logger, "Number of iterations: " + properties.getNumberOfIterations());
