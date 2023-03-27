@@ -13,12 +13,22 @@ import info.trekto.jos.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static com.aparapi.Kernel.EXECUTION_MODE.GPU;
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.GpuChecker.checkExecutionMode;
-import static info.trekto.jos.util.Utils.*;
+import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_MILLISECOND;
+import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_SECOND;
+import static info.trekto.jos.util.Utils.deepCopy;
+import static info.trekto.jos.util.Utils.error;
+import static info.trekto.jos.util.Utils.info;
+import static info.trekto.jos.util.Utils.nanoToHumanReadable;
+import static info.trekto.jos.util.Utils.showRemainingTime;
 import static java.util.stream.IntStream.range;
 
 /**
@@ -74,10 +84,8 @@ public class SimulationFloat extends SimulationAP implements Simulation {
         simulationLogic.execute(simulationLogicRange);
         checkExecutionMode(iterationCounter, simulationLogic);
 
-        /* Collision */
+        /* Collision - Execute in parallel on GPU if available */
         collisionCheckKernel.prepare();
-
-        /* Execute in parallel on GPU if available */
         collisionCheckKernel.execute(collisionCheckRange);
         checkExecutionMode(iterationCounter, collisionCheckKernel);
 

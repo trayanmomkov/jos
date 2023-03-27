@@ -7,10 +7,7 @@ import info.trekto.jos.core.model.impl.TripleNumber;
 import info.trekto.jos.core.numbers.New;
 import info.trekto.jos.core.numbers.Number;
 
-import java.util.AbstractMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.Arrays;
 
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
 
@@ -43,9 +40,12 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
     private final boolean mergeOnCollision;
     private final float coefficientOfRestitution;
 
+    private final boolean[] processedElasticCollision;
+    private final int n;
+
     public SimulationLogicFloat(int numberOfObjects, float secondsPerIteration, int screenWidth, int screenHeight, boolean mergeOnCollision,
                                 float coefficientOfRestitution) {
-        int n = numberOfObjects;
+        n = numberOfObjects;
         this.secondsPerIteration = secondsPerIteration;
 
         positionX = new float[n];
@@ -69,6 +69,13 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
         this.screenHeight = screenHeight;
         this.mergeOnCollision = mergeOnCollision;
         this.coefficientOfRestitution = coefficientOfRestitution;
+
+        if (mergeOnCollision) {
+            // We don't need processedElasticCollision but it has to be initialized.
+            processedElasticCollision = new boolean[1];
+        } else {
+            this.processedElasticCollision = new boolean[n * n];
+        }
     }
 
     @Override
@@ -122,11 +129,11 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
              * and these accelerations are applied for time T. */
             velocityX[i] = velocityX[i] + accelerationX[i] * secondsPerIteration;
             velocityY[i] = velocityY[i] + accelerationY[i] * secondsPerIteration;
-            
+
             /* Change the acceleration */
             accelerationX[i] = newAccelerationX;
             accelerationY[i] = newAccelerationY;
-            
+
             /* Bounce from screen borders */
             if (screenWidth != 0 && screenHeight != 0) {
                 bounceFromScreenBorders(i);
@@ -144,10 +151,17 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
         }
     }
 
+    private boolean isProcessed(int i, int j) {
+        return processedElasticCollision[i * n + j];
+    }
+
+    private void setProcessed(int i, int j) {
+        processedElasticCollision[i * n + j] = processedElasticCollision[j * n + i] = true;
+    }
+
     public void processCollisions() {
-        Set<Map.Entry<Integer, Integer>> processedElasticCollision = null;
         if (!mergeOnCollision) {
-            processedElasticCollision = new HashSet<>();
+            Arrays.fill(processedElasticCollision, false);
         }
         for (int i = 0; i < positionX.length; i++) {
             if (mergeOnCollision && deleted[i]) {
@@ -162,53 +176,56 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
                     if (deleted[j]) {
                         continue;
                     }
-                } else if (processedElasticCollision.contains(new AbstractMap.SimpleEntry<>(i, j))) {
+                } else if (isProcessed(i, j)) {
                     continue;
                 }
 
                 float distance = calculateDistance(positionX[i], positionY[i], positionX[j], positionY[j]);
                 if (distance < radius[i] + radius[j]) {    // if collide
-                    if (!mergeOnCollision) {
-                        processTwoDimensionalCollision(i, j, coefficientOfRestitution);
-                        processedElasticCollision.add(new AbstractMap.SimpleEntry<>(i, j));
-                        processedElasticCollision.add(new AbstractMap.SimpleEntry<>(j, i));
-                    } else {
-                        /* Objects merging */
-                        int bigger;
-                        int smaller;
-                        if (mass[i] < mass[j]) {
-                            bigger = j;
-                            smaller = i;
-                        } else {
-                            bigger = i;
-                            smaller = j;
-                        }
-
-                        deleted[smaller] = true;
-
-                        /* Velocity */
-                        changeVelocityOnMerging(smaller, bigger);
-
-                        /* Position */
-                        changePositionOnMerging(smaller, bigger);
-
-                        /* Color */
-                        color[bigger] = calculateColor(smaller, bigger);
-
-                        /* Volume (radius) */
-                        radius[bigger] = calculateRadiusBasedOnNewVolumeAndDensity(smaller, bigger);
-
-                        /* Mass */
-                        mass[bigger] = mass[bigger] + mass[smaller];
-
-                        if (i == smaller) {
-                            /* If the current object is deleted stop processing it further. */
+                    if (mergeOnCollision) {
+                        if (mergeObjectsAndCheckShouldIterationBreak(i, j)) {
                             break;
                         }
+                    } else {
+                        processTwoDimensionalCollision(i, j, coefficientOfRestitution);
+                        setProcessed(i, j);
                     }
                 }
             }
         }
+    }
+
+    private boolean mergeObjectsAndCheckShouldIterationBreak(int i, int j) {
+        /* Objects merging */
+        int bigger;
+        int smaller;
+        if (mass[i] < mass[j]) {
+            bigger = j;
+            smaller = i;
+        } else {
+            bigger = i;
+            smaller = j;
+        }
+
+        deleted[smaller] = true;
+
+        /* Velocity */
+        changeVelocityOnMerging(smaller, bigger);
+
+        /* Position */
+        changePositionOnMerging(smaller, bigger);
+
+        /* Color */
+        color[bigger] = calculateColor(smaller, bigger);
+
+        /* Volume (radius) */
+        radius[bigger] = calculateRadiusBasedOnNewVolumeAndDensity(smaller, bigger);
+
+        /* Mass */
+        mass[bigger] = mass[bigger] + mass[smaller];
+
+        /* If the current object is deleted stop processing it further. */
+        return i == smaller;
     }
 
     /**
@@ -308,19 +325,19 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
         return (float) Math.cbrt(volume / (RATIO_FOUR_THREE * PI));
     }
 
-    private void processTwoDimensionalCollision(int o1, int o2, float cor) {
-        float v1x = velocityX[o1];
-        float v1y = velocityY[o1];
-        float v2x = velocityX[o2];
-        float v2y = velocityY[o2];
+    private void processTwoDimensionalCollision(final int o1, final int o2, final float cor) {
+        final float v1x = velocityX[o1];
+        final float v1y = velocityY[o1];
+        final float v2x = velocityX[o2];
+        final float v2y = velocityY[o2];
 
-        float o1x = positionX[o1];
-        float o1y = positionY[o1];
-        float o2x = positionX[o2];
-        float o2y = positionY[o2];
+        final float o1x = positionX[o1];
+        final float o1y = positionY[o1];
+        final float o2x = positionX[o2];
+        final float o2y = positionY[o2];
 
-        float o1m = mass[o1];
-        float o2m = mass[o2];
+        final float o1m = mass[o1];
+        final float o2m = mass[o2];
 
         // v'1y = v1y - 2*m2/(m1+m2) * dotProduct(o1, o2) / dotProduct(o1y, o1x, o2y, o2x) * (o1y-o2y)
         // v'2x = v2x - 2*m2/(m1+m2) * dotProduct(o2, o1) / dotProduct(o2x, o2y, o1x, o1y) * (o2x-o1x)
@@ -332,8 +349,9 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
         velocityY[o2] = calculateVelocity(v2y, v2x, v1y, v1x, o2y, o2x, o1y, o1x, o2m, o1m, cor);
     }
 
-    private float calculateVelocity(float v1x, float v1y, float v2x, float v2y,
-                                    float o1x, float o1y, float o2x, float o2y, float o1m, float o2m, float cor) {
+    private static float calculateVelocity(final float v1x, final float v1y, final float v2x, final float v2y,
+                                    final float o1x, final float o1y, final float o2x, final float o2y,
+                                    final float o1m, final float o2m, final float cor) {
         // v'1x = v1x - 2*o2m/(o1m+o2m) * dotProduct(o1, o2) / dotProduct(o1x, o1y, o2x, o2y) * (o1x-o2x)
         return v1x - (cor * o2m + o2m) / (o1m + o2m)
                 * dotProduct2D(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y)
@@ -341,7 +359,8 @@ public class SimulationLogicFloat extends Kernel implements SimulationLogic {
                 * (o1x - o2x);
     }
 
-    private float dotProduct2D(float ax, float ay, float bx, float by, float cx, float cy, float dx, float dy) {
+    private static float dotProduct2D(final float ax, final float ay, final float bx, final float by, final float cx, final float cy, final float dx,
+                               final float dy) {
         // <a - b, c - d> = (ax - bx) * (cx - dx) + (ay - by) * (cy - dy)
         return (ax - bx) * (cx - dx) + (ay - by) * (cy - dy);
     }
