@@ -7,10 +7,7 @@ import info.trekto.jos.core.model.impl.TripleNumber;
 import info.trekto.jos.core.numbers.New;
 import info.trekto.jos.core.numbers.Number;
 
-import java.util.AbstractMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.Arrays;
 
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
 
@@ -34,13 +31,7 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
 
     public final double[] readOnlyPositionX;
     public final double[] readOnlyPositionY;
-    public final double[] readOnlyVelocityX;
-    public final double[] readOnlyVelocityY;
-    public final double[] readOnlyAccelerationX;
-    public final double[] readOnlyAccelerationY;
     public final double[] readOnlyMass;
-    public final double[] readOnlyRadius;
-    public final int[] readOnlyColor;
     public final boolean[] readOnlyDeleted;
 
     private final double secondsPerIteration;
@@ -49,9 +40,12 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
     private final boolean mergeOnCollision;
     private final double coefficientOfRestitution;
 
+    private final boolean[] processedElasticCollision;
+    private final int n;
+
     public SimulationLogicDouble(int numberOfObjects, double secondsPerIteration, int screenWidth, int screenHeight, boolean mergeOnCollision,
                                  double coefficientOfRestitution) {
-        int n = numberOfObjects;
+        n = numberOfObjects;
         this.secondsPerIteration = secondsPerIteration;
 
         positionX = new double[n];
@@ -68,19 +62,20 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
 
         readOnlyPositionX = new double[n];
         readOnlyPositionY = new double[n];
-        readOnlyVelocityX = new double[n];
-        readOnlyVelocityY = new double[n];
-        readOnlyAccelerationX = new double[n];
-        readOnlyAccelerationY = new double[n];
         readOnlyMass = new double[n];
-        readOnlyRadius = new double[n];
-        readOnlyColor = new int[n];
         readOnlyDeleted = new boolean[n];
         
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
         this.mergeOnCollision = mergeOnCollision;
         this.coefficientOfRestitution = coefficientOfRestitution;
+
+        if (mergeOnCollision) {
+            // We don't need processedElasticCollision but it has to be initialized.
+            processedElasticCollision = new boolean[1];
+        } else {
+            this.processedElasticCollision = new boolean[n * n];
+        }
     }
 
     @Override
@@ -156,10 +151,17 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
         }
     }
 
+    private boolean isProcessed(int i, int j) {
+        return processedElasticCollision[i * n + j];
+    }
+
+    private void setProcessed(int i, int j) {
+        processedElasticCollision[i * n + j] = processedElasticCollision[j * n + i] = true;
+    }
+
     public void processCollisions() {
-        Set<Map.Entry<Integer, Integer>> processedElasticCollision = null;
         if (!mergeOnCollision) {
-            processedElasticCollision = new HashSet<>();
+            Arrays.fill(processedElasticCollision, false);
         }
         for (int i = 0; i < positionX.length; i++) {
             if (mergeOnCollision && deleted[i]) {
@@ -174,53 +176,56 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
                     if (deleted[j]) {
                         continue;
                     }
-                } else if (processedElasticCollision.contains(new AbstractMap.SimpleEntry<>(i, j))) {
+                } else if (isProcessed(i, j)) {
                     continue;
                 }
 
                 double distance = calculateDistance(positionX[i], positionY[i], positionX[j], positionY[j]);
                 if (distance < radius[i] + radius[j]) {    // if collide
-                    if (!mergeOnCollision) {
-                        processTwoDimensionalCollision(i, j, coefficientOfRestitution);
-                        processedElasticCollision.add(new AbstractMap.SimpleEntry<>(i, j));
-                        processedElasticCollision.add(new AbstractMap.SimpleEntry<>(j, i));
-                    } else {
-                        /* Objects merging */
-                        int bigger;
-                        int smaller;
-                        if (mass[i] < mass[j]) {
-                            bigger = j;
-                            smaller = i;
-                        } else {
-                            bigger = i;
-                            smaller = j;
-                        }
-
-                        deleted[smaller] = true;
-
-                        /* Velocity */
-                        changeVelocityOnMerging(smaller, bigger);
-
-                        /* Position */
-                        changePositionOnMerging(smaller, bigger);
-
-                        /* Color */
-                        color[bigger] = calculateColor(smaller, bigger);
-
-                        /* Volume (radius) */
-                        radius[bigger] = calculateRadiusBasedOnNewVolumeAndDensity(smaller, bigger);
-
-                        /* Mass */
-                        mass[bigger] = mass[bigger] + mass[smaller];
-
-                        if (i == smaller) {
-                            /* If the current object is deleted stop processing it further. */
+                    if (mergeOnCollision) {
+                        if (mergeObjectsAndCheckShouldIterationBreak(i, j)) {
                             break;
                         }
+                    } else {
+                        processTwoDimensionalCollision(i, j, coefficientOfRestitution);
+                        setProcessed(i, j);
                     }
                 }
             }
         }
+    }
+
+    private boolean mergeObjectsAndCheckShouldIterationBreak(int i, int j) {
+        /* Objects merging */
+        int bigger;
+        int smaller;
+        if (mass[i] < mass[j]) {
+            bigger = j;
+            smaller = i;
+        } else {
+            bigger = i;
+            smaller = j;
+        }
+
+        deleted[smaller] = true;
+
+        /* Velocity */
+        changeVelocityOnMerging(smaller, bigger);
+
+        /* Position */
+        changePositionOnMerging(smaller, bigger);
+
+        /* Color */
+        color[bigger] = calculateColor(smaller, bigger);
+
+        /* Volume (radius) */
+        radius[bigger] = calculateRadiusBasedOnNewVolumeAndDensity(smaller, bigger);
+
+        /* Mass */
+        mass[bigger] = mass[bigger] + mass[smaller];
+
+        /* If the current object is deleted stop processing it further. */
+        return i == smaller;
     }
 
     /**
@@ -320,19 +325,19 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
         return Math.cbrt(volume / (RATIO_FOUR_THREE * PI));
     }
     
-    private void processTwoDimensionalCollision(int o1, int o2, double cor) {
-        double v1x = velocityX[o1];
-        double v1y = velocityY[o1];
-        double v2x = velocityX[o2];
-        double v2y = velocityY[o2];
+    private void processTwoDimensionalCollision(final int o1, final int o2, final double cor) {
+        final double v1x = velocityX[o1];
+        final double v1y = velocityY[o1];
+        final double v2x = velocityX[o2];
+        final double v2y = velocityY[o2];
         
-        double o1x = positionX[o1];
-        double o1y = positionY[o1];
-        double o2x = positionX[o2];
-        double o2y = positionY[o2];
+        final double o1x = positionX[o1];
+        final double o1y = positionY[o1];
+        final double o2x = positionX[o2];
+        final double o2y = positionY[o2];
         
-        double o1m = mass[o1];
-        double o2m = mass[o2];
+        final double o1m = mass[o1];
+        final double o2m = mass[o2];
         
         // v'1y = v1y - 2*m2/(m1+m2) * dotProduct(o1, o2) / dotProduct(o1y, o1x, o2y, o2x) * (o1y-o2y)
         // v'2x = v2x - 2*m2/(m1+m2) * dotProduct(o2, o1) / dotProduct(o2x, o2y, o1x, o1y) * (o2x-o1x)
@@ -344,8 +349,9 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
         velocityY[o2] = calculateVelocity(v2y, v2x, v1y, v1x, o2y, o2x, o1y, o1x, o2m, o1m, cor);
     }
 
-    private double calculateVelocity(double v1x, double v1y, double v2x, double v2y,
-                                     double o1x, double o1y, double o2x, double o2y, double o1m, double o2m, double cor) {
+    private static double calculateVelocity(final double v1x, final double v1y, final double v2x, final double v2y,
+                                     final double o1x, final double o1y, final double o2x, final double o2y,
+                                     final double o1m, final double o2m, final double cor) {
         // v'1x = v1x - 2*o2m/(o1m+o2m) * dotProduct(o1, o2) / dotProduct(o1x, o1y, o2x, o2y) * (o1x-o2x)
         return v1x - (cor * o2m + o2m) / (o1m + o2m)
                 * dotProduct2D(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y)
@@ -353,7 +359,7 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
                 * (o1x - o2x);
     }
 
-    private double dotProduct2D(double ax, double ay, double bx, double by, double cx, double cy, double dx, double dy) {
+    private static double dotProduct2D(final double ax, final double ay, final double bx, final double by, final double cx, final double cy, final double dx, final double dy) {
         // <a - b, c - d> = (ax - bx) * (cx - dx) + (ay - by) * (cy - dy)
         return (ax - bx) * (cx - dx) + (ay - by) * (cy - dy);
     }

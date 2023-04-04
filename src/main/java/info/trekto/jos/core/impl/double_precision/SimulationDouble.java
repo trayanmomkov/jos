@@ -13,12 +13,22 @@ import info.trekto.jos.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static com.aparapi.Kernel.EXECUTION_MODE.GPU;
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.GpuChecker.checkExecutionMode;
-import static info.trekto.jos.util.Utils.*;
+import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_MILLISECOND;
+import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_SECOND;
+import static info.trekto.jos.util.Utils.deepCopy;
+import static info.trekto.jos.util.Utils.error;
+import static info.trekto.jos.util.Utils.info;
+import static info.trekto.jos.util.Utils.nanoToHumanReadable;
+import static info.trekto.jos.util.Utils.showRemainingTime;
 
 /**
  * This implementation uses Aparapi library and runs on GPU if possible.
@@ -66,25 +76,17 @@ public class SimulationDouble extends SimulationAP implements Simulation {
     public void doIteration(boolean saveCurrentIterationToFile, long iterationCounter) {
         deepCopy(simulationLogic.positionX, simulationLogic.readOnlyPositionX);
         deepCopy(simulationLogic.positionY, simulationLogic.readOnlyPositionY);
-        deepCopy(simulationLogic.velocityX, simulationLogic.readOnlyVelocityX);
-        deepCopy(simulationLogic.velocityY, simulationLogic.readOnlyVelocityY);
-        deepCopy(simulationLogic.accelerationX, simulationLogic.readOnlyAccelerationX);
-        deepCopy(simulationLogic.accelerationY, simulationLogic.readOnlyAccelerationY);
         deepCopy(simulationLogic.mass, simulationLogic.readOnlyMass);
-        deepCopy(simulationLogic.radius, simulationLogic.readOnlyRadius);
-        deepCopy(simulationLogic.color, simulationLogic.readOnlyColor);
         deepCopy(simulationLogic.deleted, simulationLogic.readOnlyDeleted);
 
         /* Execute in parallel on GPU if available */
         simulationLogic.execute(simulationLogicRange);
         checkExecutionMode(iterationCounter, simulationLogic);
 
-        /* Collision */
+        /* Collision - Execute in parallel on GPU if available */
         collisionCheckKernel.prepare();
-        
-        /* Execute in parallel on GPU if available */
         collisionCheckKernel.execute(collisionCheckRange);
-        checkExecutionMode(iterationCounter, simulationLogic);
+        checkExecutionMode(iterationCounter, collisionCheckKernel);
 
         /* If collision/s exists execute sequentially on a single thread */
         if (collisionCheckKernel.collisionExists()) {
