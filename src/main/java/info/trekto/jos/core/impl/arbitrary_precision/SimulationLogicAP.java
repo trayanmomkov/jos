@@ -104,45 +104,14 @@ public class SimulationLogicAP implements SimulationLogic {
 
                 Number distance = calculateDistance(newObject, tempObject);
                 if (distance.compareTo(tempObject.getRadius().add(newObject.getRadius())) <= 0) {    // if collide
-                    if (!mergeOnCollision) {
+                    if (mergeOnCollision) {
+                        if (mergeObjectsAndCheckShouldIterationBreak(forRemoval, newObject, tempObject)) {
+                            break;
+                        }
+                    } else {
                         processTwoDimensionalCollision(newObject, tempObject, simulation.getProperties().getCoefficientOfRestitution());
                         processedElasticCollision.add(new AbstractMap.SimpleEntry<>(tempObject, newObject));
                         processedElasticCollision.add(new AbstractMap.SimpleEntry<>(newObject, tempObject));
-                    } else {
-                        SimulationObject bigger;
-                        ImmutableSimulationObject smaller;
-                        if (newObject.getMass().compareTo(tempObject.getMass()) < 0) {
-                            smaller = newObject;
-                            bigger = tempObject;
-                        } else {
-                            smaller = tempObject;
-                            bigger = newObject;
-                        }
-                        forRemoval.add(smaller);
-
-                        /* Objects merging */
-                        /* Velocity */
-                        bigger.setVelocity(calculateVelocityOnMerging(smaller, bigger));
-
-                        /* Position */
-                        TripleNumber position = calculatePosition(smaller, bigger);
-                        bigger.setX(position.getX());
-                        bigger.setY(position.getY());
-                        bigger.setZ(position.getZ());
-
-                        /* Color */
-                        bigger.setColor(calculateColor(smaller, bigger));
-
-                        /* Volume (radius) */
-                        bigger.setRadius(calculateRadiusBasedOnNewVolumeAndDensity(smaller, bigger));
-
-                        /* Mass */
-                        bigger.setMass(bigger.getMass().add(smaller.getMass()));
-
-                        if (newObject == smaller) {
-                            /* If the current object is deleted one, stop processing it further. */
-                            break;
-                        }
                     }
                 }
             }
@@ -150,6 +119,41 @@ public class SimulationLogicAP implements SimulationLogic {
         if (mergeOnCollision) {
             simulation.getAuxiliaryObjects().removeAll(forRemoval);
         }
+    }
+
+    private boolean mergeObjectsAndCheckShouldIterationBreak(List<ImmutableSimulationObject> forRemoval, SimulationObject newObject, SimulationObject tempObject) {
+        SimulationObject bigger;
+        ImmutableSimulationObject smaller;
+        if (newObject.getMass().compareTo(tempObject.getMass()) < 0) {
+            smaller = newObject;
+            bigger = tempObject;
+        } else {
+            smaller = tempObject;
+            bigger = newObject;
+        }
+        forRemoval.add(smaller);
+
+        /* Objects merging */
+        /* Velocity */
+        bigger.setVelocity(calculateVelocityOnMerging(smaller, bigger));
+
+        /* Position */
+        TripleNumber position = calculatePosition(smaller, bigger);
+        bigger.setX(position.getX());
+        bigger.setY(position.getY());
+        bigger.setZ(position.getZ());
+
+        /* Color */
+        bigger.setColor(calculateColor(smaller, bigger));
+
+        /* Volume (radius) */
+        bigger.setRadius(calculateRadiusBasedOnNewVolumeAndDensity(smaller, bigger));
+
+        /* Mass */
+        bigger.setMass(bigger.getMass().add(smaller.getMass()));
+
+        /* If the current object is deleted one, stop processing it further. */
+        return newObject == smaller;
     }
 
     private int calculateColor(ImmutableSimulationObject smaller, ImmutableSimulationObject bigger) {
