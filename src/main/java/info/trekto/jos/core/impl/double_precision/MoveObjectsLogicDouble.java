@@ -1,7 +1,7 @@
 package info.trekto.jos.core.impl.double_precision;
 
 import com.aparapi.Kernel;
-import info.trekto.jos.core.SimulationLogic;
+import info.trekto.jos.core.ProcessCollisionsLogic;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.model.impl.TripleNumber;
 import info.trekto.jos.core.numbers.New;
@@ -11,7 +11,7 @@ import java.util.Arrays;
 
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
 
-public class SimulationLogicDouble extends Kernel implements SimulationLogic {
+public class MoveObjectsLogicDouble extends Kernel implements ProcessCollisionsLogic {
     private static final double TWO = 2.0;
     private static final double RATIO_FOUR_THREE = 4 / 3.0;
     private static final double GRAVITY = 0.000000000066743; // 6.6743×10^−11 N⋅m2/kg2
@@ -43,8 +43,8 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
     private final boolean[] processedElasticCollision;
     private final int n;
 
-    public SimulationLogicDouble(int numberOfObjects, double secondsPerIteration, int screenWidth, int screenHeight, boolean mergeOnCollision,
-                                 double coefficientOfRestitution) {
+    public MoveObjectsLogicDouble(int numberOfObjects, double secondsPerIteration, int screenWidth, int screenHeight, boolean mergeOnCollision,
+                                  double coefficientOfRestitution) {
         n = numberOfObjects;
         this.secondsPerIteration = secondsPerIteration;
 
@@ -368,7 +368,7 @@ public class SimulationLogicDouble extends Kernel implements SimulationLogic {
      * For testing only.
      */
     @Override
-    public void processTwoDimensionalCollision(SimulationObject o1, SimulationObject o2, Number cor) {
+    public void processElasticCollisionObjects(SimulationObject o1, SimulationObject o2, Number cor) {
         velocityX[0] = o1.getVelocity().getX().doubleValue();
         velocityY[0] = o1.getVelocity().getY().doubleValue();
         velocityX[1] = o2.getVelocity().getX().doubleValue();

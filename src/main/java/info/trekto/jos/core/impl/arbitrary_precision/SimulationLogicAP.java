@@ -1,7 +1,7 @@
 package info.trekto.jos.core.impl.arbitrary_precision;
 
 import info.trekto.jos.core.Simulation;
-import info.trekto.jos.core.SimulationLogic;
+import info.trekto.jos.core.ProcessCollisionsLogic;
 import info.trekto.jos.core.model.ImmutableSimulationObject;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.model.impl.TripleNumber;
@@ -18,7 +18,7 @@ import static info.trekto.jos.core.numbers.NumberFactoryProxy.*;
  * @author Trayan Momkov
  * 2016-Mar-6
  */
-public class SimulationLogicAP implements SimulationLogic {
+public class SimulationLogicAP implements ProcessCollisionsLogic {
     private final Simulation simulation;
 
     public SimulationLogicAP(Simulation simulation) {
@@ -109,7 +109,7 @@ public class SimulationLogicAP implements SimulationLogic {
                             break;
                         }
                     } else {
-                        processTwoDimensionalCollision(newObject, tempObject, simulation.getProperties().getCoefficientOfRestitution());
+                        processElasticCollisionObjects(newObject, tempObject, simulation.getProperties().getCoefficientOfRestitution());
                         processedElasticCollision.add(new AbstractMap.SimpleEntry<>(tempObject, newObject));
                         processedElasticCollision.add(new AbstractMap.SimpleEntry<>(newObject, tempObject));
                     }
@@ -277,7 +277,7 @@ public class SimulationLogicAP implements SimulationLogic {
         return new TripleNumber(newAccelerationX, newAccelerationY, newAccelerationZ);
     }
     
-    public void processTwoDimensionalCollision(SimulationObject o1, SimulationObject o2, Number cor) {
+    public void processElasticCollisionObjects(SimulationObject o1, SimulationObject o2, Number cor) {
         Number v1x = o1.getVelocity().getX();
         Number v1y = o1.getVelocity().getY();
         Number v2x = o2.getVelocity().getX();

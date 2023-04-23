@@ -40,8 +40,8 @@ import static java.util.stream.IntStream.range;
 public class SimulationFloat extends SimulationAP implements Simulation {
     private static final Logger logger = LoggerFactory.getLogger(SimulationFloat.class);
 
-    private final SimulationLogicFloat simulationLogic;
-    private final Range simulationLogicRange;
+    private final MoveObjectsLogicFloat moveObjectsLogic;
+    private final Range moveObjectsRange;
     private final CollisionCheckFloat collisionCheckKernel;
     private final Range collisionCheckRange;
     private final float[] zeroArray;
@@ -57,32 +57,32 @@ public class SimulationFloat extends SimulationAP implements Simulation {
             screenWidth = C.getVisualizer().getVisualizationPanel().getWidth();
             screenHeight = C.getVisualizer().getVisualizationPanel().getHeight();
         }
-        simulationLogic = new SimulationLogicFloat(n, properties.getSecondsPerIteration().floatValue(), screenWidth, screenHeight,
-                                                   properties.isMergeOnCollision(), properties.getCoefficientOfRestitution().floatValue());
+        moveObjectsLogic = new MoveObjectsLogicFloat(n, properties.getSecondsPerIteration().floatValue(), screenWidth, screenHeight,
+                                                     properties.isMergeOnCollision(), properties.getCoefficientOfRestitution().floatValue());
         zeroArray = new float[n];
-        simulationLogicRange = Range.create(n);
-        simulationLogic.setExecutionMode(GPU);
+        moveObjectsRange = Range.create(n);
+        moveObjectsLogic.setExecutionMode(GPU);
 
         collisionCheckKernel = new CollisionCheckFloat(
                 n,
-                simulationLogic.positionX,
-                simulationLogic.positionY,
-                simulationLogic.radius,
-                simulationLogic.deleted);
+                moveObjectsLogic.positionX,
+                moveObjectsLogic.positionY,
+                moveObjectsLogic.radius,
+                moveObjectsLogic.deleted);
         collisionCheckRange = Range.create(n);
         collisionCheckKernel.setExecutionMode(GPU);
         this.cpuSimulation = cpuSimulation;
     }
 
     public void doIteration(boolean saveCurrentIterationToFile, long iterationCounter) {
-        deepCopy(simulationLogic.positionX, simulationLogic.readOnlyPositionX);
-        deepCopy(simulationLogic.positionY, simulationLogic.readOnlyPositionY);
-        deepCopy(simulationLogic.mass, simulationLogic.readOnlyMass);
-        deepCopy(simulationLogic.deleted, simulationLogic.readOnlyDeleted);
+        deepCopy(moveObjectsLogic.positionX, moveObjectsLogic.readOnlyPositionX);
+        deepCopy(moveObjectsLogic.positionY, moveObjectsLogic.readOnlyPositionY);
+        deepCopy(moveObjectsLogic.mass, moveObjectsLogic.readOnlyMass);
+        deepCopy(moveObjectsLogic.deleted, moveObjectsLogic.readOnlyDeleted);
 
         /* Execute in parallel on GPU if available */
-        simulationLogic.execute(simulationLogicRange);
-        checkExecutionMode(iterationCounter, simulationLogic);
+        moveObjectsLogic.execute(moveObjectsRange);
+        checkExecutionMode(iterationCounter, moveObjectsLogic);
 
         /* Collision - Execute in parallel on GPU if available */
         collisionCheckKernel.prepare();
@@ -91,11 +91,11 @@ public class SimulationFloat extends SimulationAP implements Simulation {
 
         /* If collision/s exists execute sequentially on a single thread */
         if (collisionCheckKernel.collisionExists()) {
-            simulationLogic.processCollisions();
+            moveObjectsLogic.processCollisions();
         }
 
         if (properties.isSaveToFile() && saveCurrentIterationToFile) {
-            SimulationLogicFloat sl = simulationLogic;
+            MoveObjectsLogicFloat sl = moveObjectsLogic;
             C.getReaderWriter().appendObjectsToFile(properties, iterationCounter, sl.positionX, sl.positionY, zeroArray, sl.velocityX, sl.velocityY,
                                                     zeroArray, sl.mass, sl.radius, sl.id, sl.color, sl.deleted, sl.accelerationX, sl.accelerationY,
                                                     zeroArray);
@@ -103,20 +103,20 @@ public class SimulationFloat extends SimulationAP implements Simulation {
     }
 
     public void initArrays(List<SimulationObject> initialObjects) {
-        Arrays.fill(simulationLogic.deleted, true);
+        Arrays.fill(moveObjectsLogic.deleted, true);
         for (int i = 0; i < initialObjects.size(); i++) {
             SimulationObject o = initialObjects.get(i);
-            simulationLogic.positionX[i] = o.getX().floatValue();
-            simulationLogic.positionY[i] = o.getY().floatValue();
-            simulationLogic.velocityX[i] = o.getVelocity().getX().floatValue();
-            simulationLogic.velocityY[i] = o.getVelocity().getY().floatValue();
-            simulationLogic.accelerationX[i] = o.getAcceleration().getX().floatValue();
-            simulationLogic.accelerationY[i] = o.getAcceleration().getY().floatValue();
-            simulationLogic.mass[i] = o.getMass().floatValue();
-            simulationLogic.radius[i] = o.getRadius().floatValue();
-            simulationLogic.id[i] = o.getId();
-            simulationLogic.color[i] = o.getColor();
-            simulationLogic.deleted[i] = false;
+            moveObjectsLogic.positionX[i] = o.getX().floatValue();
+            moveObjectsLogic.positionY[i] = o.getY().floatValue();
+            moveObjectsLogic.velocityX[i] = o.getVelocity().getX().floatValue();
+            moveObjectsLogic.velocityY[i] = o.getVelocity().getY().floatValue();
+            moveObjectsLogic.accelerationX[i] = o.getAcceleration().getX().floatValue();
+            moveObjectsLogic.accelerationY[i] = o.getAcceleration().getY().floatValue();
+            moveObjectsLogic.mass[i] = o.getMass().floatValue();
+            moveObjectsLogic.radius[i] = o.getRadius().floatValue();
+            moveObjectsLogic.id[i] = o.getId();
+            moveObjectsLogic.color[i] = o.getColor();
+            moveObjectsLogic.deleted[i] = false;
         }
     }
 
@@ -172,7 +172,7 @@ public class SimulationFloat extends SimulationAP implements Simulation {
                         if (executingOnCpu) {
                             C.getVisualizer().visualize(cpuSimulation.getObjects(), iterationCounter);
                         } else {
-                            SimulationLogicFloat sl = simulationLogic;
+                            MoveObjectsLogicFloat sl = moveObjectsLogic;
                             C.getVisualizer().visualize(iterationCounter, numberOfObjects, sl.id, sl.deleted,
                                                         range(0, sl.positionX.length).mapToDouble(j -> sl.positionX[j]).toArray(),
                                                         range(0, sl.positionY.length).mapToDouble(j -> sl.positionY[j]).toArray(),
@@ -208,7 +208,7 @@ public class SimulationFloat extends SimulationAP implements Simulation {
 
     private List<SimulationObject> convertToSimulationObjects() {
         List<SimulationObject> objects = new ArrayList<>();
-        SimulationLogicFloat sl = simulationLogic;
+        MoveObjectsLogicFloat sl = moveObjectsLogic;
 
         for (int i = 0; i < sl.positionX.length; i++) {
             if (!sl.deleted[i]) {
@@ -241,11 +241,11 @@ public class SimulationFloat extends SimulationAP implements Simulation {
 
     public void init() throws SimulationException {
         initArrays(properties.getInitialObjects());
-        if (duplicateIdExists(simulationLogic.id)) {
+        if (duplicateIdExists(moveObjectsLogic.id)) {
             throw new SimulationException("Objects with duplicate IDs exist!");
         }
 
-        if (collisionExists(simulationLogic.positionX, simulationLogic.positionY, simulationLogic.radius)) {
+        if (collisionExists(moveObjectsLogic.positionX, moveObjectsLogic.positionY, moveObjectsLogic.radius)) {
             throw new SimulationException("Initial collision exists!");
         }
 
@@ -267,8 +267,8 @@ public class SimulationFloat extends SimulationAP implements Simulation {
 
     public int countObjects() {
         int numberOfObjects = 0;
-        for (int j = 0; j < simulationLogic.deleted.length; j++) {
-            if (!simulationLogic.deleted[j]) {
+        for (int j = 0; j < moveObjectsLogic.deleted.length; j++) {
+            if (!moveObjectsLogic.deleted[j]) {
                 numberOfObjects++;
             }
         }
@@ -282,7 +282,7 @@ public class SimulationFloat extends SimulationAP implements Simulation {
                     continue;
                 }
                 // distance between centres
-                float distance = SimulationLogicFloat.calculateDistance(positionX[i], positionY[i], positionX[j], positionY[j]);
+                float distance = MoveObjectsLogicFloat.calculateDistance(positionX[i], positionY[i], positionX[j], positionY[j]);
 
                 if (distance < radius[i] + radius[j]) {
                     info(logger, String.format("Collision between object A(x:%f, y:%f, r:%f) and B(x:%f, y:%f, r:%f)",
