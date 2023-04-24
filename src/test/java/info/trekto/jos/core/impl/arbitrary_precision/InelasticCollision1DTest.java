@@ -2,6 +2,7 @@ package info.trekto.jos.core.impl.arbitrary_precision;
 
 import info.trekto.jos.core.ProcessCollisionsLogic;
 import info.trekto.jos.core.impl.SimulationProperties;
+import info.trekto.jos.core.impl.double_precision.ProcessCollisionsLogicDouble;
 import info.trekto.jos.core.impl.single_precision.ProcessCollisionsLogicFloat;
 import info.trekto.jos.core.model.ImmutableSimulationObject;
 import info.trekto.jos.core.model.SimulationObject;
@@ -60,7 +61,7 @@ public class InelasticCollision1DTest {
         Number cor = properties.getCoefficientOfRestitution();
         return new Object[][]{
                 {new SimulationLogicAP(new SimulationAP(properties)), PRECISION - 2},
-//                {new MoveObjectsLogicDouble(2, 1, 0, 0, false, cor.doubleValue()), DOUBLE_PRECISION - 1},
+                {new ProcessCollisionsLogicDouble(2, false, cor.doubleValue()), DOUBLE_PRECISION - 1},
                 {new ProcessCollisionsLogicFloat(2, false, cor.floatValue()), SINGLE_PRECISION - 1}
         };
     }

@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -41,11 +40,12 @@ public class SimulationDouble extends SimulationAP implements Simulation {
 
     private final MoveObjectsLogicDouble moveObjectsLogic;
     private final Range moveObjectsRange;
-    private final CollisionCheckDouble collisionCheckKernel;
-    private final Range collisionCheckRange;
+    private final ProcessCollisionsLogicDouble processCollisionsLogic;
+    private final Range processCollisionsRange;
     private final double[] zeroArray;
     private final SimulationAP cpuSimulation;
     private boolean executingOnCpu;
+    private final GpuDataDouble data;
 
     public SimulationDouble(SimulationProperties properties, SimulationAP cpuSimulation) {
         super(properties);
@@ -56,67 +56,65 @@ public class SimulationDouble extends SimulationAP implements Simulation {
             screenWidth = C.getVisualizer().getVisualizationPanel().getWidth();
             screenHeight = C.getVisualizer().getVisualizationPanel().getHeight();
         }
-        moveObjectsLogic = new MoveObjectsLogicDouble(n, properties.getSecondsPerIteration().doubleValue(), screenWidth, screenHeight,
-                                                      properties.isMergeOnCollision(), properties.getCoefficientOfRestitution().doubleValue());
         zeroArray = new double[n];
+        data = new GpuDataDouble(n);
+        double coefficientOfRestitution = properties.getCoefficientOfRestitution().doubleValue();
+        
+        moveObjectsLogic = new MoveObjectsLogicDouble(data, properties.getSecondsPerIteration().doubleValue(), screenWidth, screenHeight);
         moveObjectsRange = Range.create(n);
         moveObjectsLogic.setExecutionMode(GPU);
 
-        collisionCheckKernel = new CollisionCheckDouble(
-                n,
-                moveObjectsLogic.positionX,
-                moveObjectsLogic.positionY,
-                moveObjectsLogic.radius,
-                moveObjectsLogic.deleted);
-        collisionCheckRange = Range.create(n);
-        collisionCheckKernel.setExecutionMode(GPU);
+        processCollisionsLogic = new ProcessCollisionsLogicDouble(data, properties.isMergeOnCollision(), coefficientOfRestitution);
+        processCollisionsRange = Range.create(n);
+        processCollisionsLogic.setExecutionMode(GPU);
+        
         this.cpuSimulation = cpuSimulation;
     }
 
+    @Override
     public void doIteration(boolean saveCurrentIterationToFile, long iterationCounter) {
-        deepCopy(moveObjectsLogic.positionX, moveObjectsLogic.readOnlyPositionX);
-        deepCopy(moveObjectsLogic.positionY, moveObjectsLogic.readOnlyPositionY);
-        deepCopy(moveObjectsLogic.mass, moveObjectsLogic.readOnlyMass);
-        deepCopy(moveObjectsLogic.deleted, moveObjectsLogic.readOnlyDeleted);
-
-        /* Execute in parallel on GPU if available */
-        moveObjectsLogic.execute(moveObjectsRange);
+        data.copyToReadOnly(properties.isMergeOnCollision());
+        moveObjectsLogic.execute(moveObjectsRange); /* Execute in parallel on GPU if available */
+//        moveObjectsLogic.runOnCpu();
         checkExecutionMode(iterationCounter, moveObjectsLogic);
 
-        /* Collision - Execute in parallel on GPU if available */
-        collisionCheckKernel.prepare();
-        collisionCheckKernel.execute(collisionCheckRange);
-        checkExecutionMode(iterationCounter, collisionCheckKernel);
-
-        /* If collision/s exists execute sequentially on a single thread */
-        if (collisionCheckKernel.collisionExists()) {
-            moveObjectsLogic.processCollisions();
-        }
+        data.copyToReadOnly(properties.isMergeOnCollision());
+        processCollisionsLogic.execute(processCollisionsRange); /* Collisions - Execute in parallel on GPU if available */
+//        processCollisionsLogic.runOnCpu();
+        checkExecutionMode(iterationCounter, processCollisionsLogic);
 
         if (properties.isSaveToFile() && saveCurrentIterationToFile) {
-            MoveObjectsLogicDouble sl = moveObjectsLogic;
-            C.getReaderWriter().appendObjectsToFile(properties, iterationCounter, sl.positionX, sl.positionY, zeroArray, sl.velocityX, sl.velocityY,
-                                                    zeroArray, sl.mass, sl.radius, sl.id, sl.color, sl.deleted, sl.accelerationX, sl.accelerationY,
-                                                    zeroArray);
+            C.getReaderWriter().appendObjectsToFile(properties, iterationCounter, data.positionX, data.positionY, zeroArray, data.velocityX,
+                                                    data.velocityY, zeroArray, data.mass, data.radius, data.id, data.color, data.deleted,
+                                                    data.accelerationX, data.accelerationY, zeroArray);
         }
     }
 
     public void initArrays(List<SimulationObject> initialObjects) {
-        Arrays.fill(moveObjectsLogic.deleted, true);
+//        Arrays.fill(moveObjectsLogic.deleted, true);
         for (int i = 0; i < initialObjects.size(); i++) {
             SimulationObject o = initialObjects.get(i);
-            moveObjectsLogic.positionX[i] = o.getX().doubleValue();
-            moveObjectsLogic.positionY[i] = o.getY().doubleValue();
-            moveObjectsLogic.velocityX[i] = o.getVelocity().getX().doubleValue();
-            moveObjectsLogic.velocityY[i] = o.getVelocity().getY().doubleValue();
-            moveObjectsLogic.accelerationX[i] = o.getAcceleration().getX().doubleValue();
-            moveObjectsLogic.accelerationY[i] = o.getAcceleration().getY().doubleValue();
-            moveObjectsLogic.mass[i] = o.getMass().doubleValue();
-            moveObjectsLogic.radius[i] = o.getRadius().doubleValue();
-            moveObjectsLogic.id[i] = o.getId();
-            moveObjectsLogic.color[i] = o.getColor();
-            moveObjectsLogic.deleted[i] = false;
+            data.positionX[i] = o.getX().doubleValue();
+            data.positionY[i] = o.getY().doubleValue();
+            data.velocityX[i] = o.getVelocity().getX().doubleValue();
+            data.velocityY[i] = o.getVelocity().getY().doubleValue();
+            data.accelerationX[i] = o.getAcceleration().getX().doubleValue();
+            data.accelerationY[i] = o.getAcceleration().getY().doubleValue();
+            data.mass[i] = o.getMass().doubleValue();
+            data.radius[i] = o.getRadius().doubleValue();
+            data.id[i] = o.getId();
+            data.color[i] = o.getColor();
+            data.deleted[i] = false;
         }
+        
+        deepCopy(data.mass, data.readOnlyMass);
+        deepCopy(data.deleted, data.readOnlyDeleted);
+        deepCopy(data.color, data.readOnlyColor);
+        deepCopy(data.positionX, data.readOnlyPositionX);
+        deepCopy(data.positionY, data.readOnlyPositionY);
+        deepCopy(data.radius, data.readOnlyRadius);
+        deepCopy(data.velocityX, data.readOnlyVelocityX);
+        deepCopy(data.velocityY, data.readOnlyVelocityY);
     }
 
     @Override
@@ -171,9 +169,8 @@ public class SimulationDouble extends SimulationAP implements Simulation {
                         if (executingOnCpu) {
                             C.getVisualizer().visualize(cpuSimulation.getObjects(), iterationCounter);
                         } else {
-                            MoveObjectsLogicDouble sl = moveObjectsLogic;
-                            C.getVisualizer().visualize(iterationCounter, numberOfObjects, sl.id, sl.deleted, sl.positionX, sl.positionY, sl.radius,
-                                                        sl.color);
+                            C.getVisualizer().visualize(iterationCounter, numberOfObjects, data.id, data.deleted, data.positionX, data.positionY,
+                                                         data.radius, data.color);
                         }
                         previousVisualizationTime = System.nanoTime();
                     }
@@ -185,6 +182,7 @@ public class SimulationDouble extends SimulationAP implements Simulation {
                     }
                 } catch (InterruptedException e) {
                     error(logger, "Concurrency failure. One of the threads interrupted in cycle " + i, e);
+                    return;
                 }
             }
 
@@ -204,29 +202,28 @@ public class SimulationDouble extends SimulationAP implements Simulation {
 
     private List<SimulationObject> convertToSimulationObjects() {
         List<SimulationObject> objects = new ArrayList<>();
-        MoveObjectsLogicDouble sl = moveObjectsLogic;
 
-        for (int i = 0; i < sl.positionX.length; i++) {
-            if (!sl.deleted[i]) {
+        for (int i = 0; i < data.n; i++) {
+            if (!data.deleted[i]) {
                 SimulationObject simo = new SimulationObjectImpl();
-                simo.setId(sl.id[i]);
+                simo.setId(data.id[i]);
 
-                simo.setX(New.num(sl.positionX[i]));
-                simo.setY(New.num(sl.positionY[i]));
+                simo.setX(New.num(data.positionX[i]));
+                simo.setY(New.num(data.positionY[i]));
                 simo.setZ(New.num(0));
 
-                simo.setMass(New.num(sl.mass[i]));
+                simo.setMass(New.num(data.mass[i]));
 
-                simo.setVelocity(new TripleNumber(New.num(sl.velocityX[i]),
-                                                  New.num(sl.velocityY[i]),
+                simo.setVelocity(new TripleNumber(New.num(data.velocityX[i]),
+                                                  New.num(data.velocityY[i]),
                                                   New.num(0)));
 
-                simo.setAcceleration(new TripleNumber(New.num(sl.accelerationX[i]),
-                                               New.num(sl.accelerationY[i]),
-                                               New.num(0)));
+                simo.setAcceleration(new TripleNumber(New.num(data.accelerationX[i]),
+                                                      New.num(data.accelerationY[i]),
+                                                      New.num(0)));
 
-                simo.setRadius(New.num(sl.radius[i]));
-                simo.setColor(sl.color[i]);
+                simo.setRadius(New.num(data.radius[i]));
+                simo.setColor(data.color[i]);
 
                 objects.add(simo);
             }
@@ -237,11 +234,12 @@ public class SimulationDouble extends SimulationAP implements Simulation {
 
     public void init() throws SimulationException {
         initArrays(properties.getInitialObjects());
-        if (duplicateIdExists(moveObjectsLogic.id)) {
+        
+        if (duplicateIdExists(data.id)) {
             throw new SimulationException("Objects with duplicate IDs exist!");
         }
 
-        if (collisionExists(moveObjectsLogic.positionX, moveObjectsLogic.positionY, moveObjectsLogic.radius)) {
+        if (collisionExists(data.positionX, data.positionY, data.radius)) {
             throw new SimulationException("Initial collision exists!");
         }
 
@@ -263,8 +261,8 @@ public class SimulationDouble extends SimulationAP implements Simulation {
 
     public int countObjects() {
         int numberOfObjects = 0;
-        for (int j = 0; j < moveObjectsLogic.deleted.length; j++) {
-            if (!moveObjectsLogic.deleted[j]) {
+        for (int j = 0; j < data.deleted.length; j++) {
+            if (!data.deleted[j]) {
                 numberOfObjects++;
             }
         }
@@ -278,7 +276,7 @@ public class SimulationDouble extends SimulationAP implements Simulation {
                     continue;
                 }
                 // distance between centres
-                double distance = MoveObjectsLogicDouble.calculateDistance(positionX[i], positionY[i], positionX[j], positionY[j]);
+                double distance = moveObjectsLogic.calculateDistance(positionX[i], positionY[i], positionX[j], positionY[j]);
 
                 if (distance < radius[i] + radius[j]) {
                     info(logger, String.format("Collision between object A(x:%f, y:%f, r:%f) and B(x:%f, y:%f, r:%f)",

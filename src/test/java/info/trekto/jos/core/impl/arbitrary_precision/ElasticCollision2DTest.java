@@ -2,6 +2,7 @@ package info.trekto.jos.core.impl.arbitrary_precision;
 
 import info.trekto.jos.core.ProcessCollisionsLogic;
 import info.trekto.jos.core.impl.SimulationProperties;
+import info.trekto.jos.core.impl.double_precision.ProcessCollisionsLogicDouble;
 import info.trekto.jos.core.impl.single_precision.ProcessCollisionsLogicFloat;
 import info.trekto.jos.core.model.ImmutableSimulationObject;
 import info.trekto.jos.core.model.SimulationObject;
@@ -12,6 +13,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import static info.trekto.jos.core.impl.arbitrary_precision.ElasticCollision1DTest.DOUBLE_PRECISION;
 import static info.trekto.jos.core.impl.arbitrary_precision.ElasticCollision1DTest.PRECISION;
 import static info.trekto.jos.core.impl.arbitrary_precision.ElasticCollision1DTest.SINGLE_PRECISION;
 import static info.trekto.jos.core.impl.arbitrary_precision.ElasticCollision1DTest.error;
@@ -45,7 +47,7 @@ public class ElasticCollision2DTest {
     public static Object[][] logicImplementations() {
         return new Object[][]{
                 {new SimulationLogicAP(new SimulationAP(new SimulationProperties())), PRECISION - 2},
-//                {new MoveObjectsLogicDouble(2, 1, 0, 0, false, 1), DOUBLE_PRECISION - 1},
+                {new ProcessCollisionsLogicDouble(2, false, 1), DOUBLE_PRECISION - 1},
                 {new ProcessCollisionsLogicFloat(2, false, 1), SINGLE_PRECISION - 1}
         };
     }

@@ -1,80 +1,62 @@
 package info.trekto.jos.core.impl.double_precision;
 
 import com.aparapi.Kernel;
-import info.trekto.jos.core.ProcessCollisionsLogic;
-import info.trekto.jos.core.model.SimulationObject;
-import info.trekto.jos.core.model.impl.TripleNumber;
-import info.trekto.jos.core.numbers.New;
-import info.trekto.jos.core.numbers.Number;
 
-import java.util.Arrays;
-
-import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
-
-public class MoveObjectsLogicDouble extends Kernel implements ProcessCollisionsLogic {
-    private static final double TWO = 2.0;
-    private static final double RATIO_FOUR_THREE = 4 / 3.0;
+public class MoveObjectsLogicDouble extends Kernel {
     private static final double GRAVITY = 0.000000000066743; // 6.6743×10^−11 N⋅m2/kg2
-    private static final double PI = Math.PI;
 
-    public final double[] positionX;
-    public final double[] positionY;
-    public final double[] velocityX;
-    public final double[] velocityY;
-    public final double[] accelerationX;
-    public final double[] accelerationY;
-    public final double[] mass;
-    public final double[] radius;
-    public final String[] id;
-    public final int[] color;
-    public final boolean[] deleted;
+    private final double[] positionX;
+    private final double[] positionY;
+    private final double[] velocityX;
+    private final double[] velocityY;
+    private final double[] accelerationX;
+    private final double[] accelerationY;
+    private final double[] mass;
+    private final double[] radius;
+    private final boolean[] deleted;
 
-    public final double[] readOnlyPositionX;
-    public final double[] readOnlyPositionY;
-    public final double[] readOnlyMass;
-    public final boolean[] readOnlyDeleted;
+    private final double[] readOnlyPositionX;
+    private final double[] readOnlyPositionY;
+    private final double[] readOnlyMass;
+    private final boolean[] readOnlyDeleted;
 
     private final double secondsPerIteration;
     private final int screenWidth;
     private final int screenHeight;
-    private final boolean mergeOnCollision;
-    private final double coefficientOfRestitution;
 
-    private final boolean[] processedElasticCollision;
     private final int n;
+    
+    public MoveObjectsLogicDouble(int n, double secondsPerIteration, int screenWidth, int screenHeight) {
+        this(new GpuDataDouble(n), secondsPerIteration, screenWidth, screenHeight);
+    }
 
-    public MoveObjectsLogicDouble(int numberOfObjects, double secondsPerIteration, int screenWidth, int screenHeight, boolean mergeOnCollision,
-                                  double coefficientOfRestitution) {
-        n = numberOfObjects;
-        this.secondsPerIteration = secondsPerIteration;
+    public MoveObjectsLogicDouble(GpuDataDouble data, double secondsPerIteration, int screenWidth, int screenHeight) {
+        n = data.n;
 
-        positionX = new double[n];
-        positionY = new double[n];
-        velocityX = new double[n];
-        velocityY = new double[n];
-        accelerationX = new double[n];
-        accelerationY = new double[n];
-        mass = new double[n];
-        radius = new double[n];
-        id = new String[n];
-        color = new int[n];
-        deleted = new boolean[n];
+        positionX = data.positionX;
+        positionY = data.positionY;
+        velocityX = data.velocityX;
+        velocityY = data.velocityY;
+        accelerationX = data.accelerationX;
+        accelerationY = data.accelerationY;
+        mass = data.mass;
+        radius = data.radius;
+        deleted = data.deleted;
 
-        readOnlyPositionX = new double[n];
-        readOnlyPositionY = new double[n];
-        readOnlyMass = new double[n];
-        readOnlyDeleted = new boolean[n];
-        
+        readOnlyPositionX = data.readOnlyPositionX;
+        readOnlyPositionY = data.readOnlyPositionY;
+        readOnlyMass = data.readOnlyMass;
+        readOnlyDeleted = data.readOnlyDeleted;
+
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
-        this.mergeOnCollision = mergeOnCollision;
-        this.coefficientOfRestitution = coefficientOfRestitution;
 
-        if (mergeOnCollision) {
-            // We don't need processedElasticCollision but it has to be initialized.
-            processedElasticCollision = new boolean[1];
-        } else {
-            this.processedElasticCollision = new boolean[n * n];
+        this.secondsPerIteration = secondsPerIteration;
+    }
+
+    public void runOnCpu() {
+        for (int i = 0; i < n; i++) {
+            calculateNewValues(i);
         }
     }
 
@@ -100,7 +82,7 @@ public class MoveObjectsLogicDouble extends Kernel implements ProcessCollisionsL
              * and these forces are applied for time T. */
             double newAccelerationX = 0;
             double newAccelerationY = 0;
-            for (int j = 0; j < readOnlyPositionX.length; j++) {
+            for (int j = 0; j < n; j++) {
                 if (i != j && !readOnlyDeleted[j]) {
                     /* Calculate force */
                     double distance = calculateDistance(positionX[i], positionY[i], readOnlyPositionX[j], readOnlyPositionY[j]);
@@ -129,11 +111,11 @@ public class MoveObjectsLogicDouble extends Kernel implements ProcessCollisionsL
              * and these accelerations are applied for time T. */
             velocityX[i] = velocityX[i] + accelerationX[i] * secondsPerIteration;
             velocityY[i] = velocityY[i] + accelerationY[i] * secondsPerIteration;
-            
+
             /* Change the acceleration */
             accelerationX[i] = newAccelerationX;
             accelerationY[i] = newAccelerationY;
-            
+
             /* Bounce from screen borders */
             if (screenWidth != 0 && screenHeight != 0) {
                 bounceFromScreenBorders(i);
@@ -151,240 +133,13 @@ public class MoveObjectsLogicDouble extends Kernel implements ProcessCollisionsL
         }
     }
 
-    private boolean isProcessed(int i, int j) {
-        return processedElasticCollision[i * n + j];
-    }
-
-    private void setProcessed(int i, int j) {
-        processedElasticCollision[i * n + j] = processedElasticCollision[j * n + i] = true;
-    }
-
-    public void processCollisions() {
-        if (!mergeOnCollision) {
-            Arrays.fill(processedElasticCollision, false);
-        }
-        for (int i = 0; i < positionX.length; i++) {
-            if (mergeOnCollision && deleted[i]) {
-                continue;
-            }
-            for (int j = 0; j < positionX.length; j++) {
-                if (i == j) {
-                    continue;
-                }
-
-                if (mergeOnCollision) {
-                    if (deleted[j]) {
-                        continue;
-                    }
-                } else if (isProcessed(i, j)) {
-                    continue;
-                }
-
-                double distance = calculateDistance(positionX[i], positionY[i], positionX[j], positionY[j]);
-                if (distance < radius[i] + radius[j]) {    // if collide
-                    if (mergeOnCollision) {
-                        if (mergeObjectsAndCheckShouldIterationBreak(i, j)) {
-                            break;
-                        }
-                    } else {
-                        processTwoDimensionalCollision(i, j, coefficientOfRestitution);
-                        setProcessed(i, j);
-                    }
-                }
-            }
-        }
-    }
-
-    private boolean mergeObjectsAndCheckShouldIterationBreak(int i, int j) {
-        /* Objects merging */
-        int bigger;
-        int smaller;
-        if (mass[i] < mass[j]) {
-            bigger = j;
-            smaller = i;
-        } else {
-            bigger = i;
-            smaller = j;
-        }
-
-        deleted[smaller] = true;
-
-        /* Velocity */
-        changeVelocityOnMerging(smaller, bigger);
-
-        /* Position */
-        changePositionOnMerging(smaller, bigger);
-
-        /* Color */
-        color[bigger] = calculateColor(smaller, bigger);
-
-        /* Volume (radius) */
-        radius[bigger] = calculateRadiusBasedOnNewVolumeAndDensity(smaller, bigger);
-
-        /* Mass */
-        mass[bigger] = mass[bigger] + mass[smaller];
-
-        /* If the current object is deleted stop processing it further. */
-        return i == smaller;
-    }
-
-    /**
-     * Because processCollisions() method does not run on GPU
-     * we can remove this method and replace color encode/decode with java.awt.Color
-     */
-    private int calculateColor(int smaller, int bigger) {
-        double bigMass = mass[bigger];
-        double smallMass = mass[smaller];
-
-        /* Decode color */
-        int biggerRed = (color[bigger] >> 16) & 0xFF;
-        int biggerGreen = (color[bigger] >> 8) & 0xFF;
-        int biggerBlue = color[bigger] & 0xFF;
-
-        int smallerRed = (color[smaller] >> 16) & 0xFF;
-        int smallerGreen = (color[smaller] >> 8) & 0xFF;
-        int smallerBlue = color[smaller] & 0xFF;
-
-        /* Calculate new value */
-        int r = (int) Math.round((biggerRed * bigMass + smallerRed * smallMass) / (bigMass + smallMass));
-        int g = (int) Math.round((biggerGreen * bigMass + smallerGreen * smallMass) / (bigMass + smallMass));
-        int b = (int) Math.round((biggerBlue * bigMass + smallerBlue * smallMass) / (bigMass + smallMass));
-
-        /* Encode color */
-        int rgb = r;
-        rgb = (rgb << 8) + g;
-        rgb = (rgb << 8) + b;
-
-        return rgb;
-    }
-
-    /**
-     * We calculate for sphere, not for circle, so in 2D volume may not look real.
-     */
-    public double calculateRadiusBasedOnNewVolumeAndDensity(int smaller, int bigger) {
-        // density = mass / volume
-        // calculate volume of smaller and add it to volume of bigger
-        // calculate new radius of bigger based on new volume
-        double smallVolume = calculateVolumeFromRadius(radius[smaller]);
-        double smallDensity = mass[smaller] / smallVolume;
-        double bigVolume = calculateVolumeFromRadius(radius[bigger]);
-        double bigDensity = mass[bigger] / bigVolume;
-        double newMass = mass[bigger] + mass[smaller];
-
-        /* Volume and density are two sides of one coin. We should decide what we want one of them to be,
-         * and calculate the other. Here we want the new object to have an average density of the two collided. */
-        double newDensity = (smallDensity * mass[smaller] + bigDensity * mass[bigger]) / newMass;
-        double newVolume = newMass / newDensity;
-
-        return calculateRadiusFromVolume(newVolume);
-    }
-
-    private void changePositionOnMerging(int smaller, int bigger) {
-        double distanceX = positionX[bigger] - positionX[smaller];
-        double distanceY = positionY[bigger] - positionY[smaller];
-
-        double massRatio = mass[smaller] / mass[bigger];
-
-        positionX[bigger] = positionX[bigger] - distanceX * massRatio / TWO;
-        positionY[bigger] = positionY[bigger] - distanceY * massRatio / TWO;
-    }
-
-    private void changeVelocityOnMerging(int smaller, int bigger) {
-        /* We want to get already updated velocity for the current one (bigger), thus we use velocityX and not readOnlyVelocityX */
-        double totalImpulseX = velocityX[smaller] * mass[smaller] + velocityX[bigger] * mass[bigger];
-        double totalImpulseY = velocityY[smaller] * mass[smaller] + velocityY[bigger] * mass[bigger];
-        double totalMass = mass[bigger] + mass[smaller];
-
-        velocityX[bigger] = totalImpulseX / totalMass;
-        velocityY[bigger] = totalImpulseY / totalMass;
-    }
-
-    public static double calculateDistance(double object1X, double object1Y, double object2X, double object2Y) {
-        double x = object2X - object1X;
-        double y = object2Y - object1Y;
-        return Math.sqrt(x * x + y * y);
+    public double calculateDistance(final double object1X, final double object1Y, final double object2X, final double object2Y) {
+        final double x = object2X - object1X;
+        final double y = object2Y - object1Y;
+        return sqrt(x * x + y * y);
     }
 
     public static double calculateForce(final double object1Mass, final double object2Mass, final double distance) {
         return GRAVITY * object1Mass * object2Mass / (distance * distance);
-    }
-
-    public static double calculateVolumeFromRadius(double radius) {
-        // V = 4/3 * pi * r^3
-        if (radius == 0) {
-            return Double.MIN_VALUE;
-        }
-        return RATIO_FOUR_THREE * PI * Math.pow(radius, 3);
-    }
-
-    public static double calculateRadiusFromVolume(double volume) {
-        // V = 4/3 * pi * r^3
-        if (volume == 0) {
-            return Double.MIN_VALUE;
-        }
-        return Math.cbrt(volume / (RATIO_FOUR_THREE * PI));
-    }
-    
-    private void processTwoDimensionalCollision(final int o1, final int o2, final double cor) {
-        final double v1x = velocityX[o1];
-        final double v1y = velocityY[o1];
-        final double v2x = velocityX[o2];
-        final double v2y = velocityY[o2];
-        
-        final double o1x = positionX[o1];
-        final double o1y = positionY[o1];
-        final double o2x = positionX[o2];
-        final double o2y = positionY[o2];
-        
-        final double o1m = mass[o1];
-        final double o2m = mass[o2];
-        
-        // v'1y = v1y - 2*m2/(m1+m2) * dotProduct(o1, o2) / dotProduct(o1y, o1x, o2y, o2x) * (o1y-o2y)
-        // v'2x = v2x - 2*m2/(m1+m2) * dotProduct(o2, o1) / dotProduct(o2x, o2y, o1x, o1y) * (o2x-o1x)
-        // v'2y = v2y - 2*m2/(m1+m2) * dotProduct(o2, o1) / dotProduct(o2y, o2x, o1y, o1x) * (o2y-o1y)
-        // v'1x = v1x - 2*m2/(m1+m2) * dotProduct(o1, o2) / dotProduct(o1x, o1y, o2x, o2y) * (o1x-o2x)
-        velocityX[o1] = calculateVelocity(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y, o1m, o2m, cor);
-        velocityY[o1] = calculateVelocity(v1y, v1x, v2y, v2x, o1y, o1x, o2y, o2x, o1m, o2m, cor);
-        velocityX[o2] = calculateVelocity(v2x, v2y, v1x, v1y, o2x, o2y, o1x, o1y, o2m, o1m, cor);
-        velocityY[o2] = calculateVelocity(v2y, v2x, v1y, v1x, o2y, o2x, o1y, o1x, o2m, o1m, cor);
-    }
-
-    private static double calculateVelocity(final double v1x, final double v1y, final double v2x, final double v2y,
-                                     final double o1x, final double o1y, final double o2x, final double o2y,
-                                     final double o1m, final double o2m, final double cor) {
-        // v'1x = v1x - 2*o2m/(o1m+o2m) * dotProduct(o1, o2) / dotProduct(o1x, o1y, o2x, o2y) * (o1x-o2x)
-        return v1x - (cor * o2m + o2m) / (o1m + o2m)
-                * dotProduct2D(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y)
-                / dotProduct2D(o1x, o1y, o2x, o2y, o1x, o1y, o2x, o2y)
-                * (o1x - o2x);
-    }
-
-    private static double dotProduct2D(final double ax, final double ay, final double bx, final double by, final double cx, final double cy, final double dx, final double dy) {
-        // <a - b, c - d> = (ax - bx) * (cx - dx) + (ay - by) * (cy - dy)
-        return (ax - bx) * (cx - dx) + (ay - by) * (cy - dy);
-    }
-
-    /**
-     * For testing only.
-     */
-    @Override
-    public void processElasticCollisionObjects(SimulationObject o1, SimulationObject o2, Number cor) {
-        velocityX[0] = o1.getVelocity().getX().doubleValue();
-        velocityY[0] = o1.getVelocity().getY().doubleValue();
-        velocityX[1] = o2.getVelocity().getX().doubleValue();
-        velocityY[1] = o2.getVelocity().getY().doubleValue();
-        
-        positionX[0] = o1.getX().doubleValue();
-        positionY[0] = o1.getY().doubleValue();
-        positionX[1] = o2.getX().doubleValue();
-        positionY[1] = o2.getY().doubleValue();
-        
-        mass[0] = o1.getMass().doubleValue();
-        mass[1] = o2.getMass().doubleValue();
-        
-        processTwoDimensionalCollision(0, 1, cor.doubleValue());
-        
-        o1.setVelocity(new TripleNumber(New.num(velocityX[0]), New.num(velocityY[0]), ZERO));
-        o2.setVelocity(new TripleNumber(New.num(velocityX[1]), New.num(velocityY[1]), ZERO));
     }
 }

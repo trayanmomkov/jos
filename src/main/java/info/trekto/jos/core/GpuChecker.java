@@ -28,7 +28,10 @@ import static com.aparapi.Kernel.EXECUTION_MODE.GPU;
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.numbers.NumberFactory.NumberType.DOUBLE;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumberFactory;
-import static info.trekto.jos.util.Utils.*;
+import static info.trekto.jos.util.Utils.info;
+import static info.trekto.jos.util.Utils.isNullOrBlank;
+import static info.trekto.jos.util.Utils.nanoToHumanReadable;
+import static info.trekto.jos.util.Utils.warn;
 
 public class GpuChecker {
     private static final Logger logger = LoggerFactory.getLogger(GpuChecker.class);

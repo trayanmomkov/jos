@@ -1,14 +1,14 @@
-package info.trekto.jos.core.impl.single_precision;
+package info.trekto.jos.core.impl;
 
 import static info.trekto.jos.util.Utils.deepCopy;
 
 public class GpuData {
-    public String[] id;
-    public int[] color;
-    public boolean[] deleted;
-    public boolean[] readOnlyDeleted;
-    public int[] readOnlyColor;
-    public int n;
+    public final String[] id;
+    public final int[] color;
+    public final boolean[] deleted;
+    public final boolean[] readOnlyDeleted;
+    public final int[] readOnlyColor;
+    public final int n;
 
     public GpuData(int n) {
         this.n = n;

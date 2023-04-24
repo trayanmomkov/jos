@@ -1,24 +1,26 @@
 package info.trekto.jos.core.impl.single_precision;
 
+import info.trekto.jos.core.impl.GpuData;
+
 import static info.trekto.jos.util.Utils.deepCopy;
 
 public class GpuDataFloat extends GpuData {
 
-    public float[] positionX;
-    public float[] positionY;
-    public float[] velocityX;
-    public float[] velocityY;
-    public float[] accelerationX;
-    public float[] accelerationY;
-    public float[] mass;
-    public float[] radius;
+    public final float[] positionX;
+    public final float[] positionY;
+    public final float[] velocityX;
+    public final float[] velocityY;
+    public final float[] accelerationX;
+    public final float[] accelerationY;
+    public final float[] mass;
+    public final float[] radius;
 
-    public float[] readOnlyPositionX;
-    public float[] readOnlyPositionY;
-    public float[] readOnlyVelocityX;
-    public float[] readOnlyVelocityY;
-    public float[] readOnlyMass;
-    public float[] readOnlyRadius;
+    public final float[] readOnlyPositionX;
+    public final float[] readOnlyPositionY;
+    public final float[] readOnlyVelocityX;
+    public final float[] readOnlyVelocityY;
+    public final float[] readOnlyMass;
+    public final float[] readOnlyRadius;
 
     public GpuDataFloat(int n) {
         super(n);

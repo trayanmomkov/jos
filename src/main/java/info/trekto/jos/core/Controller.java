@@ -35,14 +35,29 @@ import java.util.AbstractMap;
 import java.util.Date;
 import java.util.Properties;
 
-import static info.trekto.jos.core.ExecutionMode.*;
-import static info.trekto.jos.core.GpuChecker.*;
-import static info.trekto.jos.core.numbers.NumberFactory.NumberType.*;
+import static info.trekto.jos.core.ExecutionMode.AUTO;
+import static info.trekto.jos.core.ExecutionMode.CPU;
+import static info.trekto.jos.core.ExecutionMode.GPU;
+import static info.trekto.jos.core.GpuChecker.checkGpu;
+import static info.trekto.jos.core.GpuChecker.findCpuThreshold;
+import static info.trekto.jos.core.GpuChecker.gpuDoubleAvailable;
+import static info.trekto.jos.core.GpuChecker.gpuFloatAvailable;
+import static info.trekto.jos.core.numbers.NumberFactory.NumberType.ARBITRARY_PRECISION;
+import static info.trekto.jos.core.numbers.NumberFactory.NumberType.DOUBLE;
+import static info.trekto.jos.core.numbers.NumberFactory.NumberType.FLOAT;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumberFactory;
-import static info.trekto.jos.util.Utils.*;
+import static info.trekto.jos.util.Utils.calculateAverageFileSize;
+import static info.trekto.jos.util.Utils.error;
+import static info.trekto.jos.util.Utils.info;
+import static info.trekto.jos.util.Utils.isNullOrBlank;
+import static info.trekto.jos.util.Utils.isNumeric;
+import static info.trekto.jos.util.Utils.warn;
 import static java.awt.Color.PINK;
-import static javax.swing.JOptionPane.*;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
+import static javax.swing.JOptionPane.WARNING_MESSAGE;
+import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 /**

@@ -10,10 +10,16 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import static info.trekto.jos.core.Controller.createSimulation;
-import static info.trekto.jos.core.ExecutionMode.*;
-import static info.trekto.jos.core.numbers.NumberFactory.NumberType.*;
+import static info.trekto.jos.core.ExecutionMode.AUTO;
+import static info.trekto.jos.core.ExecutionMode.CPU;
+import static info.trekto.jos.core.ExecutionMode.GPU;
+import static info.trekto.jos.core.numbers.NumberFactory.NumberType.ARBITRARY_PRECISION;
+import static info.trekto.jos.core.numbers.NumberFactory.NumberType.DOUBLE;
+import static info.trekto.jos.core.numbers.NumberFactory.NumberType.FLOAT;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.ONE;
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNull;
 
 public class ControllerTest {
     public static final boolean DOUBLE_YES = true;
