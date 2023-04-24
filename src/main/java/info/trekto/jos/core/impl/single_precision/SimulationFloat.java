@@ -21,6 +21,7 @@ import java.util.Set;
 import static com.aparapi.Kernel.EXECUTION_MODE.GPU;
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.GpuChecker.checkExecutionMode;
+import static info.trekto.jos.core.GpuChecker.createRange;
 import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_MILLISECOND;
 import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_SECOND;
 import static info.trekto.jos.util.Utils.deepCopy;
@@ -62,11 +63,11 @@ public class SimulationFloat extends SimulationAP implements Simulation {
         float coefficientOfRestitution = properties.getCoefficientOfRestitution().floatValue();
         
         moveObjectsLogic = new MoveObjectsLogicFloat(data, properties.getSecondsPerIteration().floatValue(), screenWidth, screenHeight);
-        moveObjectsRange = Range.create(n);
+        moveObjectsRange = createRange(n);
         moveObjectsLogic.setExecutionMode(GPU);
 
         processCollisionsLogic = new ProcessCollisionsLogicFloat(data, properties.isMergeOnCollision(), coefficientOfRestitution);
-        processCollisionsRange = Range.create(n);
+        processCollisionsRange = createRange(n);
         processCollisionsLogic.setExecutionMode(GPU);
         
         this.cpuSimulation = cpuSimulation;

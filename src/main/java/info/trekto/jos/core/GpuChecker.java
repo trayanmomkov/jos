@@ -35,6 +35,7 @@ import static info.trekto.jos.util.Utils.warn;
 
 public class GpuChecker {
     private static final Logger logger = LoggerFactory.getLogger(GpuChecker.class);
+    public static final int MAX_LOCAL_SIZE = 256;
     public static boolean gpuDoubleAvailable;
     public static boolean gpuFloatAvailable;
 
@@ -212,6 +213,19 @@ public class GpuChecker {
         }
         info(logger, "Measuring time total: " + nanoToHumanReadable(System.nanoTime() - startTime));
         return (top + bottom) / 2;
+    }
+
+    public static Range createRange(int n) {
+        Range range;
+        range = Range.create(n);
+        if (range.getLocalSize_0() > MAX_LOCAL_SIZE) {
+            warn(logger, "Local size %d > %d. Will select another one.".formatted(range.getLocalSize_0(), MAX_LOCAL_SIZE));
+            int i = MAX_LOCAL_SIZE;
+            while (n % i > 0) i--;
+            range = Range.create(n, i);
+            warn(logger, "Local size set to: %d".formatted(i));
+        }
+        return range;
     }
 
     private static double measureIteration(SimulationAP simulation, long numberOfIterations) throws SimulationException, InterruptedException {

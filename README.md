@@ -13,7 +13,7 @@ It offers **arbitrary precision** (alongside float and double) and three executi
  - SourceForge: **[jos.jar](https://sourceforge.net/projects/jos-n-body/files/jos.jar/download)**
  
 ## Prerequisites
-- JOS should be able to run on every system with **Java 8** or later installed, including Linux, Mac OS and Windows.
+- JOS should be able to run on every system with **Java 17** or later installed, including Linux, Mac OS and Windows.
 - If you want to use the GPU execution mode, be sure you have installed the **latest driver for your video card**.
  It should include OpenCL needed for the GPU.
 
@@ -173,11 +173,11 @@ You should be able to import it as a maven project in your favorite IDE.
 
 ## Contributing to JOS
 ### TODO List
+- Implement simulation generator using formula for placing objects in more
+complex structures or create GUI for that.
 - Implement tests.
 - Fix viewport navigation during visualization.
 - Implement video recording of the simulation.
-- Implement simulation generator using formula for placing objects in more
-complex structures or create GUI for that.
 - Implement 3D visualization.
 
  If you can implement anything from the TODO list, or you want to fix a bug
