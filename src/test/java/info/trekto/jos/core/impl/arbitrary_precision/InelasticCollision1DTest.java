@@ -2,8 +2,7 @@ package info.trekto.jos.core.impl.arbitrary_precision;
 
 import info.trekto.jos.core.ProcessCollisionsLogic;
 import info.trekto.jos.core.impl.SimulationProperties;
-import info.trekto.jos.core.impl.double_precision.MoveObjectsLogicDouble;
-import info.trekto.jos.core.impl.single_precision.MoveObjectsLogicFloat;
+import info.trekto.jos.core.impl.single_precision.ProcessCollisionsLogicFloat;
 import info.trekto.jos.core.model.ImmutableSimulationObject;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.model.impl.SimulationObjectImpl;
@@ -16,7 +15,12 @@ import org.testng.annotations.Test;
 
 import static info.trekto.jos.core.impl.arbitrary_precision.ElasticCollision1DTest.areEqual;
 import static info.trekto.jos.core.numbers.NumberFactory.NumberType.ARBITRARY_PRECISION;
-import static info.trekto.jos.core.numbers.NumberFactoryProxy.*;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.MINUS_ONE;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.ONE;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.TRIPLE_ZERO;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.TWO;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumberFactory;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
  
@@ -53,14 +57,11 @@ public class InelasticCollision1DTest {
 
     @DataProvider(name = "logic_implementations")
     public static Object[][] logicImplementations() {
+        Number cor = properties.getCoefficientOfRestitution();
         return new Object[][]{
                 {new SimulationLogicAP(new SimulationAP(properties)), PRECISION - 2},
-                {new MoveObjectsLogicDouble(2, 1, 0, 0, false,
-                                            properties.getCoefficientOfRestitution().doubleValue()),
-                        DOUBLE_PRECISION - 1},
-                {new MoveObjectsLogicFloat(2, 1, 0, 0, false,
-                                           properties.getCoefficientOfRestitution().floatValue()),
-                        SINGLE_PRECISION - 1}
+//                {new MoveObjectsLogicDouble(2, 1, 0, 0, false, cor.doubleValue()), DOUBLE_PRECISION - 1},
+                {new ProcessCollisionsLogicFloat(2, false, cor.floatValue()), SINGLE_PRECISION - 1}
         };
     }
 

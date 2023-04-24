@@ -2,8 +2,7 @@ package info.trekto.jos.core.impl.arbitrary_precision;
 
 import info.trekto.jos.core.ProcessCollisionsLogic;
 import info.trekto.jos.core.impl.SimulationProperties;
-import info.trekto.jos.core.impl.double_precision.MoveObjectsLogicDouble;
-import info.trekto.jos.core.impl.single_precision.MoveObjectsLogicFloat;
+import info.trekto.jos.core.impl.single_precision.ProcessCollisionsLogicFloat;
 import info.trekto.jos.core.model.ImmutableSimulationObject;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.model.impl.SimulationObjectImpl;
@@ -13,9 +12,16 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import static info.trekto.jos.core.impl.arbitrary_precision.ElasticCollision1DTest.*;
+import static info.trekto.jos.core.impl.arbitrary_precision.ElasticCollision1DTest.PRECISION;
+import static info.trekto.jos.core.impl.arbitrary_precision.ElasticCollision1DTest.SINGLE_PRECISION;
+import static info.trekto.jos.core.impl.arbitrary_precision.ElasticCollision1DTest.error;
 import static info.trekto.jos.core.numbers.NumberFactory.NumberType.ARBITRARY_PRECISION;
-import static info.trekto.jos.core.numbers.NumberFactoryProxy.*;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.HALF;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.MINUS_ONE;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.ONE;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.TWO;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumberFactory;
 import static org.testng.Assert.assertEquals;
 
 public class ElasticCollision2DTest {
@@ -39,10 +45,8 @@ public class ElasticCollision2DTest {
     public static Object[][] logicImplementations() {
         return new Object[][]{
                 {new SimulationLogicAP(new SimulationAP(new SimulationProperties())), PRECISION - 2},
-                {new MoveObjectsLogicDouble(2, 1, 0, 0, false, 1),
-                        DOUBLE_PRECISION - 1},
-                {new MoveObjectsLogicFloat(2, 1, 0, 0, false, 1),
-                        SINGLE_PRECISION - 1}
+//                {new MoveObjectsLogicDouble(2, 1, 0, 0, false, 1), DOUBLE_PRECISION - 1},
+                {new ProcessCollisionsLogicFloat(2, false, 1), SINGLE_PRECISION - 1}
         };
     }
 

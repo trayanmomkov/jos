@@ -49,7 +49,7 @@ public class Utils {
     public static final DateFormat df = new SimpleDateFormat("HH:mm:ss.SSS");
 
     public static List<SimulationObject> deepCopy(List<SimulationObject> src) {
-        ArrayList<SimulationObject> dst = new ArrayList<>();
+        List<SimulationObject> dst = new ArrayList<>();
         for (SimulationObject element : src) {
             dst.add(C.createNewSimulationObject(element));
         }
