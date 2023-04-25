@@ -13,7 +13,7 @@ It offers **arbitrary precision** (alongside float and double) and three executi
  - SourceForge: **[jos.jar](https://sourceforge.net/projects/jos-n-body/files/jos.jar/download)**
  
 ## Prerequisites
-- JOS should be able to run on every system with **Java 17** or later installed, including Linux, Mac OS and Windows.
+- JOS should be able to run on every system with **Java 1.8** or later installed, including Linux, Mac OS and Windows.
 - If you want to use the GPU execution mode, be sure you have installed the **latest driver for your video card**.
  It should include OpenCL needed for the GPU.
 

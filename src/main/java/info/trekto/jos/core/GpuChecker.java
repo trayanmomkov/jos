@@ -219,11 +219,11 @@ public class GpuChecker {
         Range range;
         range = Range.create(n);
         if (range.getLocalSize_0() > MAX_LOCAL_SIZE) {
-            warn(logger, "Local size %d > %d. Will select another one.".formatted(range.getLocalSize_0(), MAX_LOCAL_SIZE));
+            warn(logger, String.format("Local size %d > %d. Will select another one.", range.getLocalSize_0(), MAX_LOCAL_SIZE));
             int i = MAX_LOCAL_SIZE;
             while (n % i > 0) i--;
             range = Range.create(n, i);
-            warn(logger, "Local size set to: %d".formatted(i));
+            warn(logger, String.format("Local size set to: %d", i));
         }
         return range;
     }
