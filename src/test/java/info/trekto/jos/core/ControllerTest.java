@@ -131,7 +131,7 @@ public class ControllerTest {
 
         assertEquals(simulation.getClass(), expectedSimulationClass);
         if (expectedSimulationClass != SimulationAP.class) {
-            SimulationAP cpuSimulation;
+            CpuSimulation cpuSimulation;
             if (simulation instanceof SimulationDouble) {
                 cpuSimulation = ((SimulationDouble) simulation).getCpuSimulation();
             } else {

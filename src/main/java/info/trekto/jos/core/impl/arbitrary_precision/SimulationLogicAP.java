@@ -1,6 +1,6 @@
 package info.trekto.jos.core.impl.arbitrary_precision;
 
-import info.trekto.jos.core.Simulation;
+import info.trekto.jos.core.CpuSimulation;
 import info.trekto.jos.core.ProcessCollisionsLogic;
 import info.trekto.jos.core.model.ImmutableSimulationObject;
 import info.trekto.jos.core.model.SimulationObject;
@@ -8,20 +8,29 @@ import info.trekto.jos.core.model.impl.TripleNumber;
 import info.trekto.jos.core.numbers.Number;
 
 import java.awt.*;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 
 import static info.trekto.jos.core.Controller.C;
-import static info.trekto.jos.core.numbers.NumberFactoryProxy.*;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.IGNORED;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.PI;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.RATIO_FOUR_THREE;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.TWO;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
 
 /**
  * @author Trayan Momkov
  * 2016-Mar-6
  */
 public class SimulationLogicAP implements ProcessCollisionsLogic {
-    private final Simulation simulation;
+    private final CpuSimulation simulation;
 
-    public SimulationLogicAP(Simulation simulation) {
+    public SimulationLogicAP(CpuSimulation simulation) {
         this.simulation = simulation;
     }
 
@@ -76,7 +85,7 @@ public class SimulationLogicAP implements ProcessCollisionsLogic {
         }
     }
 
-    public void processCollisions(Simulation simulation) {
+    public void processCollisions(CpuSimulation simulation) {
         boolean mergeOnCollision = simulation.getProperties().isMergeOnCollision();
         List<ImmutableSimulationObject> forRemoval = null;
         Set<Map.Entry<SimulationObject, SimulationObject>> processedElasticCollision = null;

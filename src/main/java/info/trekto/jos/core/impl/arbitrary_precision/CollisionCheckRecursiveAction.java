@@ -1,6 +1,6 @@
 package info.trekto.jos.core.impl.arbitrary_precision;
 
-import info.trekto.jos.core.Simulation;
+import info.trekto.jos.core.CpuSimulation;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.numbers.Number;
 
@@ -14,9 +14,9 @@ import static info.trekto.jos.core.impl.arbitrary_precision.SimulationRecursiveA
 class CollisionCheckRecursiveAction extends RecursiveAction {
     private final int fromIndex;
     private final int toIndex;
-    private final Simulation simulation;
+    private final CpuSimulation simulation;
 
-    public CollisionCheckRecursiveAction(int fromIndex, int toIndex, Simulation simulation) {
+    public CollisionCheckRecursiveAction(int fromIndex, int toIndex, CpuSimulation simulation) {
         this.fromIndex = fromIndex;
         this.toIndex = toIndex;
         this.simulation = simulation;

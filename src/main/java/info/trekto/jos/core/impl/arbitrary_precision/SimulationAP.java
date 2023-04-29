@@ -1,7 +1,7 @@
 package info.trekto.jos.core.impl.arbitrary_precision;
 
+import info.trekto.jos.core.CpuSimulation;
 import info.trekto.jos.core.ForceCalculator;
-import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.impl.Iteration;
 import info.trekto.jos.core.impl.SimulationProperties;
@@ -22,7 +22,14 @@ import java.util.Set;
 
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.impl.arbitrary_precision.SimulationRecursiveAction.threshold;
-import static info.trekto.jos.util.Utils.*;
+import static info.trekto.jos.util.Utils.CORES;
+import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_MILLISECOND;
+import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_SECOND;
+import static info.trekto.jos.util.Utils.deepCopy;
+import static info.trekto.jos.util.Utils.error;
+import static info.trekto.jos.util.Utils.info;
+import static info.trekto.jos.util.Utils.nanoToHumanReadable;
+import static info.trekto.jos.util.Utils.showRemainingTime;
 
 /**
  * This implementation uses fork/join Java framework introduced in Java 7.
@@ -30,7 +37,7 @@ import static info.trekto.jos.util.Utils.*;
  * @author Trayan Momkov
  * 2017-May-18
  */
-public class SimulationAP implements Simulation {
+public final class SimulationAP implements CpuSimulation {
     private static final Logger logger = LoggerFactory.getLogger(SimulationAP.class);
     public static final int PAUSE_SLEEP_MILLISECONDS = 100;
     public static final int SHOW_REMAINING_INTERVAL_SECONDS = 2;
@@ -240,7 +247,7 @@ public class SimulationAP implements Simulation {
 
     public void init(boolean printInfo) throws SimulationException {
         if (printInfo) {
-            logger.info("Initialize simulation...");
+            info(logger, "Initialize simulation...");
         }
 
         switch (properties.getInteractingLaw()) {
@@ -269,13 +276,13 @@ public class SimulationAP implements Simulation {
             throw new SimulationException("Initial collision exists!");
         }
         if (printInfo) {
-            logger.info("Done.\n");
+            info(logger, "Done.\n");
             Utils.printConfiguration(this);
         }
     }
 
     public void initSwitchingFromGpu(List<SimulationObject> currentObjects) {
-        logger.info("Switching to CPU - Initialize simulation...");
+        info(logger, "Switching to CPU - Initialize simulation...");
 
         switch (properties.getInteractingLaw()) {
             case NEWTON_LAW_OF_GRAVITATION:
@@ -290,7 +297,7 @@ public class SimulationAP implements Simulation {
         }
 
         objects = currentObjects;
-        logger.info("Done.\n");
+        info(logger, "Done.\n");
 
         Utils.printConfiguration(this);
     }
@@ -303,11 +310,6 @@ public class SimulationAP implements Simulation {
     @Override
     public List<SimulationObject> getAuxiliaryObjects() {
         return auxiliaryObjects;
-    }
-
-    @Override
-    public long getCurrentIterationNumber() {
-        return iterationCounter;
     }
 
     @Override

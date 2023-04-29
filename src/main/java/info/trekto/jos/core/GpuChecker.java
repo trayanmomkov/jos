@@ -228,7 +228,7 @@ public class GpuChecker {
         return range;
     }
 
-    private static double measureIteration(SimulationAP simulation, long numberOfIterations) throws SimulationException, InterruptedException {
+    private static double measureIteration(Simulation simulation, long numberOfIterations) throws SimulationException, InterruptedException {
         simulation.init(false);
 
         long startTime = System.nanoTime();

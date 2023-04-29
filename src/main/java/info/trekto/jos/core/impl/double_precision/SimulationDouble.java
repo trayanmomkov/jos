@@ -1,10 +1,10 @@
 package info.trekto.jos.core.impl.double_precision;
 
 import com.aparapi.Range;
+import info.trekto.jos.core.CpuSimulation;
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.impl.SimulationProperties;
-import info.trekto.jos.core.impl.arbitrary_precision.SimulationAP;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.model.impl.SimulationObjectImpl;
 import info.trekto.jos.core.model.impl.TripleNumber;
@@ -21,6 +21,7 @@ import java.util.Set;
 import static com.aparapi.Kernel.EXECUTION_MODE.GPU;
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.GpuChecker.checkExecutionMode;
+import static info.trekto.jos.core.GpuChecker.createRange;
 import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_MILLISECOND;
 import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_SECOND;
 import static info.trekto.jos.util.Utils.deepCopy;
@@ -35,20 +36,24 @@ import static info.trekto.jos.util.Utils.showRemainingTime;
  * @author Trayan Momkov
  * 2017-May-18
  */
-public class SimulationDouble extends SimulationAP implements Simulation {
+public class SimulationDouble implements Simulation {
     private static final Logger logger = LoggerFactory.getLogger(SimulationDouble.class);
+    public static final int PAUSE_SLEEP_MILLISECONDS = 100;
+    public static final int SHOW_REMAINING_INTERVAL_SECONDS = 2;
 
     private final MoveObjectsLogicDouble moveObjectsLogic;
     private final Range moveObjectsRange;
     private final ProcessCollisionsLogicDouble processCollisionsLogic;
     private final Range processCollisionsRange;
     private final double[] zeroArray;
-    private final SimulationAP cpuSimulation;
+    private final CpuSimulation cpuSimulation;
     private boolean executingOnCpu;
     private final GpuDataDouble data;
+    private final SimulationProperties properties;
+    protected long iterationCounter;
 
-    public SimulationDouble(SimulationProperties properties, SimulationAP cpuSimulation) {
-        super(properties);
+    public SimulationDouble(SimulationProperties properties, CpuSimulation cpuSimulation) {
+        this.properties = properties;
         final int n = properties.getNumberOfObjects();
         int screenWidth = 0;
         int screenHeight = 0;
@@ -61,11 +66,11 @@ public class SimulationDouble extends SimulationAP implements Simulation {
         double coefficientOfRestitution = properties.getCoefficientOfRestitution().doubleValue();
         
         moveObjectsLogic = new MoveObjectsLogicDouble(data, properties.getSecondsPerIteration().doubleValue(), screenWidth, screenHeight);
-        moveObjectsRange = Range.create(n);
+        moveObjectsRange = createRange(n);
         moveObjectsLogic.setExecutionMode(GPU);
 
         processCollisionsLogic = new ProcessCollisionsLogicDouble(data, properties.isMergeOnCollision(), coefficientOfRestitution);
-        processCollisionsRange = Range.create(n);
+        processCollisionsRange = createRange(n);
         processCollisionsLogic.setExecutionMode(GPU);
         
         this.cpuSimulation = cpuSimulation;
@@ -119,7 +124,7 @@ public class SimulationDouble extends SimulationAP implements Simulation {
 
     @Override
     public void startSimulation() throws SimulationException {
-        init();
+        init(true);
 
         info(logger, "Start simulation...");
         C.setEndText("END.");
@@ -232,7 +237,11 @@ public class SimulationDouble extends SimulationAP implements Simulation {
         return objects;
     }
 
-    public void init() throws SimulationException {
+    public void init(boolean printInfo) throws SimulationException {
+        if (printInfo) {
+            info(logger, "Initialize simulation...");
+        }
+
         initArrays(properties.getInitialObjects());
         
         if (duplicateIdExists(data.id)) {
@@ -245,8 +254,10 @@ public class SimulationDouble extends SimulationAP implements Simulation {
 
         executingOnCpu = false;
 
-        info(logger, "Done.\n");
-        Utils.printConfiguration(this);
+        if (printInfo) {
+            info(logger, "Done.\n");
+            Utils.printConfiguration(this);
+        }
     }
 
     private boolean duplicateIdExists(String[] id) {
@@ -288,7 +299,23 @@ public class SimulationDouble extends SimulationAP implements Simulation {
         return false;
     }
 
-    public SimulationAP getCpuSimulation() {
+    public CpuSimulation getCpuSimulation() {
         return cpuSimulation;
+    }
+
+    protected void doStop() {
+        C.setHasToStop(false);
+        if (properties.isSaveToFile()) {
+            C.getReaderWriter().endFile();
+        }
+        if (C.getVisualizer() != null) {
+            C.setEndText("Stopped!");
+            C.getVisualizer().closeWindow();
+        }
+    }
+
+    @Override
+    public SimulationProperties getProperties() {
+        return properties;
     }
 }

@@ -1,10 +1,10 @@
 package info.trekto.jos.core.impl.single_precision;
 
 import com.aparapi.Range;
+import info.trekto.jos.core.CpuSimulation;
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.impl.SimulationProperties;
-import info.trekto.jos.core.impl.arbitrary_precision.SimulationAP;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.model.impl.SimulationObjectImpl;
 import info.trekto.jos.core.model.impl.TripleNumber;
@@ -37,20 +37,24 @@ import static java.util.stream.IntStream.range;
  * @author Trayan Momkov
  * 2017-May-18
  */
-public class SimulationFloat extends SimulationAP implements Simulation {
+public class SimulationFloat implements Simulation {
     private static final Logger logger = LoggerFactory.getLogger(SimulationFloat.class);
+    public static final int PAUSE_SLEEP_MILLISECONDS = 100;
+    public static final int SHOW_REMAINING_INTERVAL_SECONDS = 2;
 
     private final MoveObjectsLogicFloat moveObjectsLogic;
     private final Range moveObjectsRange;
     private final ProcessCollisionsLogicFloat processCollisionsLogic;
     private final Range processCollisionsRange;
     private final float[] zeroArray;
-    private final SimulationAP cpuSimulation;
+    private final CpuSimulation cpuSimulation;
     private boolean executingOnCpu;
     private final GpuDataFloat data;
+    private final SimulationProperties properties;
+    protected long iterationCounter;
 
-    public SimulationFloat(SimulationProperties properties, SimulationAP cpuSimulation) {
-        super(properties);
+    public SimulationFloat(SimulationProperties properties, CpuSimulation cpuSimulation) {
+        this.properties = properties;
         final int n = properties.getNumberOfObjects();
         int screenWidth = 0;
         int screenHeight = 0;
@@ -121,7 +125,7 @@ public class SimulationFloat extends SimulationAP implements Simulation {
 
     @Override
     public void startSimulation() throws SimulationException {
-        init();
+        init(true);
 
         info(logger, "Start simulation...");
         C.setEndText("END.");
@@ -237,7 +241,11 @@ public class SimulationFloat extends SimulationAP implements Simulation {
         return objects;
     }
 
-    public void init() throws SimulationException {
+    public void init(boolean printInfo) throws SimulationException {
+        if (printInfo) {
+            info(logger, "Initialize simulation...");
+        }
+
         initArrays(properties.getInitialObjects());
         
         if (duplicateIdExists(data.id)) {
@@ -250,8 +258,10 @@ public class SimulationFloat extends SimulationAP implements Simulation {
 
         executingOnCpu = false;
 
+        if (printInfo) {
         info(logger, "Done.\n");
         Utils.printConfiguration(this);
+    }
     }
 
     private boolean duplicateIdExists(String[] id) {
@@ -293,7 +303,23 @@ public class SimulationFloat extends SimulationAP implements Simulation {
         return false;
     }
 
-    public SimulationAP getCpuSimulation() {
+    public CpuSimulation getCpuSimulation() {
         return cpuSimulation;
+    }
+
+    protected void doStop() {
+        C.setHasToStop(false);
+        if (properties.isSaveToFile()) {
+            C.getReaderWriter().endFile();
+        }
+        if (C.getVisualizer() != null) {
+            C.setEndText("Stopped!");
+            C.getVisualizer().closeWindow();
+        }
+    }
+
+    @Override
+    public SimulationProperties getProperties() {
+        return properties;
     }
 }

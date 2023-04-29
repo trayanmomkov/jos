@@ -98,7 +98,7 @@ public enum Controller {
             mainForm.setIcon(icon);
             jFrame.setIconImage(icon);
         } catch (Exception e) {
-            logger.error("Cannot load properties and/or icon image.", e);
+            error(logger, "Cannot load properties and/or icon image.", e);
         }
 
         if (isNullOrBlank(applicationProperties.getProperty("version"))) {
@@ -205,13 +205,13 @@ public enum Controller {
     }
 
     public void play() {
-        simulation = createSimulation(fetchPropertiesFromGuiAndCreateNumberFactory());
+        simulation = createSimulation(fetchPropertiesFromGuiAndCreateNumberFactory(), CPU);
         paused = false;
         new Thread(() -> {
             try {
                 if (simulation != null && playFile != null) {
                     hasToStop = false;
-                    simulation.playSimulation(playFile.getAbsolutePath());
+                    ((CpuSimulation) simulation).playSimulation(playFile.getAbsolutePath());
                 }
             } catch (Exception ex) {
                 String message = "Error during playing.";
