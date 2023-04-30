@@ -6,7 +6,7 @@ import info.trekto.jos.core.numbers.Number;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
 
 public class MoveObjectsLogicAP {
-    private final Number GRAVITY;
+    private final Number gravity;
 
     private final Number[] positionX;
     private final Number[] positionY;
@@ -30,7 +30,7 @@ public class MoveObjectsLogicAP {
     private final int n;
 
     public MoveObjectsLogicAP(DataAP data, Number secondsPerIteration, int screenWidth, int screenHeight) {
-        GRAVITY = New.num("0.000000000066743"); // 6.6743×10^−11 N⋅m2/kg2
+        gravity = New.num("0.000000000066743"); // 6.6743×10^−11 N⋅m2/kg2
         n = data.n;
 
         positionX = data.positionX;
@@ -63,7 +63,7 @@ public class MoveObjectsLogicAP {
     public void run() {
         new MoveObjectsRecursiveAction(0, n, this).compute();
     }
-    
+
     public void calculateNewValues(int fromIndex, int toIndex) {
         for (int i = fromIndex; i < toIndex; i++) {
             calculateNewValues(i);
@@ -140,7 +140,7 @@ public class MoveObjectsLogicAP {
     }
 
     public Number calculateForce(final Number object1Mass, final Number object2Mass, final Number distance) {
-        return GRAVITY.multiply(object1Mass).multiply(object2Mass).divide(distance.multiply(distance));
+        return gravity.multiply(object1Mass).multiply(object2Mass).divide(distance.multiply(distance));
     }
 
     public int getScreenWidth() {

@@ -28,6 +28,9 @@ public class NumberFactoryProxy {
     public static TripleNumber TRIPLE_ZERO;
 
     private static NumberFactory factory;
+    
+    private NumberFactoryProxy() {
+    }
 
     private static void calculateConstants() {
         MINUS_ONE = createNumber("-1");

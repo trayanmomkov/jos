@@ -60,10 +60,10 @@ public class JsonReaderWriter implements ReaderWriter {
     public void writeProperties(SimulationProperties properties, String outputFilePath) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonObject json = mapPropertiesAndInitialObjects(properties, gson);
-        try (Writer writer = new FileWriter(outputFilePath)) {
-            writer.write("{\n  \"properties\":\n");
-            gson.toJson(json, writer);
-            writer.write("\n}");
+        try (Writer tempWriter = new FileWriter(outputFilePath)) {
+            tempWriter.write("{\n  \"properties\":\n");
+            gson.toJson(json, tempWriter);
+            tempWriter.write("\n}");
         } catch (IOException e) {
             error(logger, "Cannot save properties.");
         }

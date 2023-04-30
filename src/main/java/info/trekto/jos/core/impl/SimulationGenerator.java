@@ -23,6 +23,9 @@ import static info.trekto.jos.util.Utils.info;
 
 public class SimulationGenerator {
     private static final Logger logger = LoggerFactory.getLogger(SimulationGenerator.class);
+    
+    private SimulationGenerator() {
+    }
 
     public static void generateObjects(SimulationProperties properties, boolean printInfo) {
         String filename = System.getProperty("user.home") + File.separator
@@ -63,7 +66,7 @@ public class SimulationGenerator {
         } while (!fit(sideX, sideY, horizontalZones, verticalZones, width, height, n));
 
         List<SimulationObject> objects = new ArrayList<>();
-int generatedObjects = 0;
+        int generatedObjects = 0;
         outerloop:
         for (int i = 0; i < horizontalZones; i++) {
             for (int j = 0; j < verticalZones; j++) {

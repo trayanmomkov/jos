@@ -60,6 +60,7 @@ public class VisualizerImpl implements Visualizer {
             visualizationPanel = new VisualizationPanel(Color.WHITE);
             frame.add(visualizationPanel);
             frame.addWindowListener(new WindowAdapter() {
+                @Override
                 public void windowClosing(WindowEvent e) {
                     C.setHasToStop(true);
                 }

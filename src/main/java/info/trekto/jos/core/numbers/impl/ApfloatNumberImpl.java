@@ -94,6 +94,9 @@ public class ApfloatNumberImpl implements Number {
 
     @Override
     public int compareTo(Number val) {
+        if (val == null) {
+            return 1;
+        }
         return value.compareTo(((ApfloatNumberImpl) val).value);
     }
 

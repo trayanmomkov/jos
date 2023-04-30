@@ -5,15 +5,12 @@ import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.impl.Iteration;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.model.SimulationObject;
-import info.trekto.jos.core.model.impl.SimulationObjectImpl;
-import info.trekto.jos.core.model.impl.TripleNumber;
 import info.trekto.jos.core.numbers.Number;
 import info.trekto.jos.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -21,7 +18,6 @@ import java.util.Set;
 
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.impl.Data.countObjects;
-import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
 import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_MILLISECOND;
 import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_SECOND;
 import static info.trekto.jos.util.Utils.deepCopy;
@@ -42,7 +38,6 @@ public class SimulationAP implements CpuSimulation {
     private DataAP data;
 
     private SimulationProperties properties;
-    private long iterationCounter;
 
     public SimulationAP(SimulationProperties properties) {
         this.properties = properties;
@@ -78,7 +73,6 @@ public class SimulationAP implements CpuSimulation {
     }
 
     public void initArrays(List<SimulationObject> initialObjects) {
-//        Arrays.fill(moveObjectsLogic.deleted, true);
         for (int i = 0; i < initialObjects.size(); i++) {
             SimulationObject o = initialObjects.get(i);
             data.positionX[i] = o.getX();
@@ -128,7 +122,6 @@ public class SimulationAP implements CpuSimulation {
                         Thread.sleep(PAUSE_SLEEP_MILLISECONDS);
                     }
 
-                    iterationCounter = i + 1;
                     int numberOfObjects = countObjects(data);
 
                     if (System.nanoTime() - previousTime >= NANOSECONDS_IN_ONE_SECOND * SHOW_REMAINING_INTERVAL_SECONDS) {
@@ -148,7 +141,7 @@ public class SimulationAP implements CpuSimulation {
                     }
 
                     if (visualize) {
-                        C.getVisualizer().visualize(iterationCounter, numberOfObjects, data.id, data.deleted,
+                        C.getVisualizer().visualize(i + 1, numberOfObjects, data.id, data.deleted,
                                                     Arrays.stream(data.positionX).mapToDouble(Number::doubleValue).toArray(),
                                                     Arrays.stream(data.positionY).mapToDouble(Number::doubleValue).toArray(),
                                                     Arrays.stream(data.radius).mapToDouble(Number::doubleValue).toArray(),
@@ -156,7 +149,7 @@ public class SimulationAP implements CpuSimulation {
                         previousVisualizationTime = System.nanoTime();
                     }
 
-                    doIteration(i % properties.getSaveEveryNthIteration() == 0, iterationCounter);
+                    doIteration(i % properties.getSaveEveryNthIteration() == 0, i + 1);
                 } catch (InterruptedException e) {
                     error(logger, "Concurrency failure. One of the threads interrupted in cycle " + i, e);
                     return;
@@ -175,33 +168,6 @@ public class SimulationAP implements CpuSimulation {
         }
 
         info(logger, "End of simulation. Time: " + nanoToHumanReadable(endTime - startTime));
-    }
-
-    private List<SimulationObject> convertToSimulationObjects() {
-        List<SimulationObject> objects = new ArrayList<>();
-
-        for (int i = 0; i < data.n; i++) {
-            if (!data.deleted[i]) {
-                SimulationObject simo = new SimulationObjectImpl();
-                simo.setId(data.id[i]);
-
-                simo.setX(data.positionX[i]);
-                simo.setY(data.positionY[i]);
-                simo.setZ(ZERO);
-
-                simo.setMass(data.mass[i]);
-
-                simo.setVelocity(new TripleNumber(data.velocityX[i], data.velocityY[i], ZERO));
-                simo.setAcceleration(new TripleNumber(data.accelerationX[i], data.accelerationY[i], ZERO));
-
-                simo.setRadius(data.radius[i]);
-                simo.setColor(data.color[i]);
-
-                objects.add(simo);
-            }
-        }
-
-        return objects;
     }
 
     public void init(boolean printInfo) throws SimulationException {

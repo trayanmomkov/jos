@@ -39,6 +39,9 @@ public class GpuChecker {
     public static boolean gpuDoubleAvailable;
     public static boolean gpuFloatAvailable;
 
+    private GpuChecker() {
+    }
+
     public static void checkGpu() {
         try {
             AparapiDoubleTestKernel testKernel = new AparapiDoubleTestKernel();
@@ -52,7 +55,7 @@ public class GpuChecker {
                 gpuDoubleAvailable = false;
                 info(logger, "Double GPU is not compatible. Will try float.");
             }
-        } catch (Throwable tr) {
+        } catch (Exception tr) {
             gpuDoubleAvailable = false;
             warn(logger, "Double GPU is not compatible. Will try float.", tr);
         }
@@ -69,15 +72,15 @@ public class GpuChecker {
                 gpuFloatAvailable = false;
                 info(logger, "Float GPU is not compatible. Will use CPU.");
             }
-        } catch (Throwable tr) {
+        } catch (Exception tr) {
             gpuFloatAvailable = false;
             warn(logger, "Float GPU is not compatible. Will use CPU. Try to restart your computer for GPU.", tr);
         }
 
-        send_compatibility();
+        sendCompatibility();
     }
 
-    private static void send_compatibility() {
+    private static void sendCompatibility() {
         new Thread(() -> {
             try {
                 String vendors = "";
@@ -118,7 +121,7 @@ public class GpuChecker {
                 try (OutputStream os = http.getOutputStream()) {
                     os.write(out);
                 }
-            } catch (Throwable ignored) {
+            } catch (Exception ignored) {
             }
         }).start();
     }

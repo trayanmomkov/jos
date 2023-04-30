@@ -7,15 +7,12 @@ import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.impl.arbitrary_precision.DataAP;
 import info.trekto.jos.core.model.SimulationObject;
-import info.trekto.jos.core.model.impl.SimulationObjectImpl;
-import info.trekto.jos.core.model.impl.TripleNumber;
 import info.trekto.jos.core.numbers.New;
 import info.trekto.jos.core.numbers.Number;
 import info.trekto.jos.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -85,12 +82,12 @@ public class SimulationFloat implements Simulation {
     public void doIteration(boolean saveCurrentIterationToFile, long iterationCounter) {
         data.copyToReadOnly(properties.isMergeOnCollision());
         moveObjectsLogic.execute(moveObjectsRange); /* Execute in parallel on GPU if available */
-//        moveObjectsLogic.runOnCpu();
+//        moveObjectsLogic.runOnSingleThread();
         checkExecutionMode(iterationCounter, moveObjectsLogic);
 
         data.copyToReadOnly(properties.isMergeOnCollision());
         processCollisionsLogic.execute(processCollisionsRange); /* Collisions - Execute in parallel on GPU if available */
-//        processCollisionsLogic.runOnCpu();
+//        processCollisionsLogic.runOnSingleThread();
         checkExecutionMode(iterationCounter, processCollisionsLogic);
 
         if (properties.isSaveToFile() && saveCurrentIterationToFile) {
@@ -101,7 +98,6 @@ public class SimulationFloat implements Simulation {
     }
 
     public void initArrays(List<SimulationObject> initialObjects) {
-//        Arrays.fill(moveObjectsLogic.deleted, true);
         for (int i = 0; i < initialObjects.size(); i++) {
             SimulationObject o = initialObjects.get(i);
             data.positionX[i] = o.getX().floatValue();
@@ -221,38 +217,6 @@ public class SimulationFloat implements Simulation {
         }
 
         info(logger, "End of simulation. Time: " + nanoToHumanReadable(endTime - startTime));
-    }
-
-    private List<SimulationObject> convertToSimulationObjects() {
-        List<SimulationObject> objects = new ArrayList<>();
-
-        for (int i = 0; i < data.n; i++) {
-            if (!data.deleted[i]) {
-                SimulationObject simo = new SimulationObjectImpl();
-                simo.setId(data.id[i]);
-
-                simo.setX(New.num(data.positionX[i]));
-                simo.setY(New.num(data.positionY[i]));
-                simo.setZ(New.num(0));
-
-                simo.setMass(New.num(data.mass[i]));
-
-                simo.setVelocity(new TripleNumber(New.num(data.velocityX[i]),
-                                                  New.num(data.velocityY[i]),
-                                                  New.num(0)));
-
-                simo.setAcceleration(new TripleNumber(New.num(data.accelerationX[i]),
-                                                      New.num(data.accelerationY[i]),
-                                                      New.num(0)));
-
-                simo.setRadius(New.num(data.radius[i]));
-                simo.setColor(data.color[i]);
-
-                objects.add(simo);
-            }
-        }
-
-        return objects;
     }
 
     public void init(boolean printInfo) throws SimulationException {

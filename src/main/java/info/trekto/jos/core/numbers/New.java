@@ -9,6 +9,8 @@ import java.math.BigDecimal;
  * 7 Dec 2015
  */
 public class New {
+    private New() {
+    }
 
     public static Number num(BigDecimal val) {
         return NumberFactoryProxy.createNumber(val);

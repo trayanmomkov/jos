@@ -69,7 +69,7 @@ public enum Controller {
     public static final int CPU_DEFAULT_THRESHOLD = 384;
     public static final String JSON_FILE_EXTENSION = ".json";
     public static final String JSON_GZIP_FILE_EXTENSION = ".json.gz";
-    static int cpuThreshold;
+    int cpuThreshold;
     private static final Logger logger = LoggerFactory.getLogger(Controller.class);
     public static final String PROGRAM_NAME = "JOS";
 
@@ -141,12 +141,12 @@ public enum Controller {
         C.setReaderWriter(new JsonReaderWriter());
     }
 
-    public static int getCpuThreshold() {
+    public int getCpuThreshold() {
         return cpuThreshold;
     }
 
-    public static void setCpuThreshold(int cpuThreshold) {
-        Controller.cpuThreshold = cpuThreshold;
+    public void setCpuThreshold(int cpuThreshold) {
+        this.cpuThreshold = cpuThreshold;
     }
 
     Simulation createSimulation(SimulationProperties properties) {
@@ -162,7 +162,7 @@ public enum Controller {
                 || executionMode == CPU
                 || (numberType == DOUBLE && !gpuDoubleAvailable)
                 || (numberType == FLOAT && !gpuFloatAvailable)
-                || (executionMode == AUTO && n <= cpuThreshold)) {
+                || (executionMode == AUTO && n <= C.cpuThreshold)) {
             return new SimulationAP(properties);
         } else {
             if (numberType == DOUBLE) {
@@ -200,7 +200,7 @@ public enum Controller {
 
     public void append(String message) {
         if (gui != null) {
-            appendMessage(Utils.df.format(new Date()) + " " + message);
+            appendMessage(Utils.DATE_FORMAT.format(new Date()) + " " + message);
         }
     }
 
@@ -256,11 +256,11 @@ public enum Controller {
                         visualizer.closeWindow();
                         showError(message + " " + ex.getMessage());
                     }
-                } catch (Throwable tr) {
+                } catch (Exception ex) {
                     String message = "Unexpected exception.";
-                    error(logger, message, tr);
+                    error(logger, message, ex);
                     visualizer.closeWindow();
-                    showError(message + " " + tr.getMessage());
+                    showError(message + " " + ex.getMessage());
                 } finally {
                     onVisualizationWindowClosed();
                 }
@@ -833,7 +833,7 @@ public enum Controller {
                 int threshold = findCpuThreshold(properties);
                 gui.getCpuGpuThresholdField().setText(String.valueOf(threshold));
                 info(logger, "CPU/GPU threshold: " + threshold);
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 warn(logger, "Cannot find CPU/GPU threshold. Will use default value: " + CPU_DEFAULT_THRESHOLD, e);
             } finally {
                 dialog.dispose();

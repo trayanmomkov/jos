@@ -11,7 +11,7 @@ import java.util.concurrent.RecursiveAction;
  */
 class CheckCollisionsRecursiveAction extends RecursiveAction {
 
-    public static int threshold = 20;
+    public static final int THRESHOLD = 20;
     private final int fromIndex;
     private final int toIndex;
     private final ProcessCollisionsLogicAP processCollisionsLogic;
@@ -24,7 +24,7 @@ class CheckCollisionsRecursiveAction extends RecursiveAction {
 
     @Override
     public void compute() {
-        if (toIndex - fromIndex <= threshold) {
+        if (toIndex - fromIndex <= THRESHOLD) {
             processCollisionsLogic.processCollisions(fromIndex, toIndex);
         } else {
             List<RecursiveAction> subtasks = new ArrayList<>();

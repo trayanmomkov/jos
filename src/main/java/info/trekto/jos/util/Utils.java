@@ -27,12 +27,12 @@ import static java.lang.Double.parseDouble;
  * 2016-Mar-6
  */
 public class Utils {
-    public static final long NANOSECONDS_IN_ONE_SECOND = 1000 * 1000 * 1000;
+    public static final long NANOSECONDS_IN_ONE_SECOND = 1000 * 1000 * 1000L;
     public static final long MILLISECONDS_IN_ONE_SECOND = 1000;
     public static final long MILLI_IN_MINUTE = 60 * MILLISECONDS_IN_ONE_SECOND;
     public static final long MILLI_IN_HOUR = 60 * 60 * MILLISECONDS_IN_ONE_SECOND;
     public static final long MILLI_IN_DAY = 24 * 60 * 60 * MILLISECONDS_IN_ONE_SECOND;
-    public static final long NANOSECONDS_IN_ONE_MILLISECOND = 1000 * 1000;
+    public static final long NANOSECONDS_IN_ONE_MILLISECOND = 1000 * 1000L;
     
     private static final int ONE_DOUBLE_OBJECT_SIZE_BYTES = 443; // 299
     private static final int ONE_FLOAT_OBJECT_SIZE_BYTES = 373; // 247
@@ -47,7 +47,10 @@ public class Utils {
 
     private static final List<Long> lastIterationsCount = new ArrayList<>();
     private static final List<Long> lastTime = new ArrayList<>();
-    public static final DateFormat df = new SimpleDateFormat("HH:mm:ss.SSS");
+    public static final DateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:ss.SSS");
+    
+    private Utils() {
+    }
 
     public static List<SimulationObject> deepCopy(List<SimulationObject> src) {
         List<SimulationObject> dst = new ArrayList<>();
@@ -143,10 +146,11 @@ public class Utils {
             remainingTime = 0;
         }
 
+        String remainingTimeString = remainingTime >= 1 ? milliToHumanReadable(remainingTime) : NA;
         String remainingString = "Iteration " + i
                 + ", elapsed time: " + nanoToHumanReadable(System.nanoTime() - startTime)
                 + ", objects: " + numberOfObjects
-                + (numberOfIterations < 1 ? "" : ", remaining time: " + (remainingTime >= 1 ? milliToHumanReadable(remainingTime) : NA));
+                + (numberOfIterations < 1 ? "" : ", remaining time: " + remainingTimeString);
 
         info(logger, remainingString);
     }

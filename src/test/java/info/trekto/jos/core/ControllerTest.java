@@ -9,6 +9,7 @@ import info.trekto.jos.core.numbers.NumberFactoryProxy;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.Controller.createSimulation;
 import static info.trekto.jos.core.ExecutionMode.AUTO;
 import static info.trekto.jos.core.ExecutionMode.CPU;
@@ -119,10 +120,10 @@ public class ControllerTest {
                                      Class expectedCpuSimulationClass) {
         GpuChecker.gpuDoubleAvailable = gpuDoubleAvailable;
         GpuChecker.gpuFloatAvailable = gpuFloatAvailable;
-        Controller.cpuThreshold = 10;
+        C.cpuThreshold = 10;
         SimulationProperties properties = new SimulationProperties();
         properties.setNumberType(numberType);
-        properties.setNumberOfObjects(Controller.cpuThreshold + (aboveCpuThreshold ? 1 : 0));
+        properties.setNumberOfObjects(C.cpuThreshold + (aboveCpuThreshold ? 1 : 0));
         NumberFactoryProxy.createNumberFactory(numberType, NumberFactory.DEFAULT_PRECISION);
         properties.setSecondsPerIteration(ONE);
         properties.setCoefficientOfRestitution(ONE);

@@ -17,8 +17,8 @@ import static info.trekto.jos.util.Utils.info;
 public class VisualizationPanel extends JPanel {
     private static final Logger logger = LoggerFactory.getLogger(VisualizationPanel.class);
 
-    private final double scaleStep = 0.1;
-    private final double translateStep = 1;
+    private static final double SCALE_STEP = 0.1;
+    private static final double TRANSLATE_STEP = 1;
     private List<ShapeWithColorAndText> shapes;
     private Image image = null;
     private final Color backgroundColor;
@@ -84,28 +84,28 @@ public class VisualizationPanel extends JPanel {
 
     public void zoomIn() {
         info(logger, "zoomIn");
-        scale += scaleStep;
+        scale += SCALE_STEP;
     }
 
     public void zoomOut() {
         info(logger, "zoomOut");
-        scale -= scaleStep;
+        scale -= SCALE_STEP;
     }
 
     public void translateLeft() {
-        translateX += translateStep;
+        translateX += TRANSLATE_STEP;
     }
 
     public void translateUp() {
-        translateY += translateStep;
+        translateY += TRANSLATE_STEP;
     }
 
     public void translateRight() {
-        translateX -= translateStep;
+        translateX -= TRANSLATE_STEP;
     }
 
     public void translateDown() {
-        translateY -= translateStep;
+        translateY -= TRANSLATE_STEP;
     }
 
 }
