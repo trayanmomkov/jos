@@ -1,6 +1,11 @@
 package info.trekto.jos.io;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import info.trekto.jos.core.ForceCalculator;
 import info.trekto.jos.core.impl.Iteration;
 import info.trekto.jos.core.impl.SimulationProperties;
@@ -16,7 +21,17 @@ import org.codehaus.jackson.map.MappingJsonFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -334,8 +349,35 @@ public class JsonReaderWriter implements ReaderWriter {
         writeFileTail(currentIterationNumber, objectsAsJsonArray, gson, properties);
     }
 
+    @Override
+    public void appendObjectsToFile(SimulationProperties properties, long currentIterationNumber, Number[] positionX,
+                                    Number[] positionY, Number[] positionZ, Number[] velocityX,
+                                    Number[] velocityY, Number[] velocityZ, Number[] mass, Number[] radius,
+                                    String[] id, int[] color, boolean[] deleted, Number[] accelerationX, Number[] accelerationY,
+                                    Number[] accelerationZ) {
+        Gson gson = createGsonAndWriteFileHead(properties);
+
+        JsonArray objectsAsJsonArray = new JsonArray();
+        for (int i = 0; i < positionX.length; i++) {
+            if (!deleted[i]) {
+                objectsAsJsonArray.add(mapSimulationObjectToJson(gson, positionX[i].toString(), positionY[i].toString(),
+                                                                 zeroToNull(positionZ[i]), velocityX[i].toString(), velocityY[i].toString(),
+                                                                 zeroToNull(velocityZ[i]), mass[i].toString(), radius[i].toString(), id[i],
+                                                                 color[i], accelerationX[i].toString(), accelerationY[i].toString(),
+                                                                 zeroToNull(accelerationZ[i]), properties.isSaveMass(), properties.isSaveVelocity(),
+                                                                 properties.isSaveAcceleration()));
+            }
+        }
+
+        writeFileTail(currentIterationNumber, objectsAsJsonArray, gson, properties);
+    }
+
     private Object zeroToNull(float v) {
         return v == 0 ? null : v;
+    }
+
+    private Object zeroToNull(Number v) {
+        return ZERO.compareTo(v) == 0 ? null : v;
     }
 
     private Object zeroToNull(double v) {

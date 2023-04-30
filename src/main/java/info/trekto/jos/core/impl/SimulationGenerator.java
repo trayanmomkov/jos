@@ -17,7 +17,7 @@ import java.util.Random;
 
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.Controller.JSON_GZIP_FILE_EXTENSION;
-import static info.trekto.jos.core.impl.arbitrary_precision.SimulationLogicAP.calculateVolumeFromRadius;
+import static info.trekto.jos.core.impl.arbitrary_precision.ProcessCollisionsLogicAP.calculateVolumeFromRadius;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.*;
 import static info.trekto.jos.util.Utils.info;
 

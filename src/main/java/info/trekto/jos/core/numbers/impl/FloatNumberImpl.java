@@ -89,6 +89,9 @@ public class FloatNumberImpl implements Number {
 
     @Override
     public int compareTo(Number val) {
+        if (val == null) {
+            return 1;
+        }
         return Float.compare(value, ((FloatNumberImpl) val).value);
     }
 

@@ -39,10 +39,10 @@ public class ProcessCollisionsLogicFloat extends Kernel implements ProcessCollis
     private final int n;
 
     public ProcessCollisionsLogicFloat(int n, boolean mergeOnCollision, float coefficientOfRestitution) {
-        this(new GpuDataFloat(n), mergeOnCollision, coefficientOfRestitution);
+        this(new DataFloat(n), mergeOnCollision, coefficientOfRestitution);
     }
 
-    public ProcessCollisionsLogicFloat(GpuDataFloat data, boolean mergeOnCollision, float coefficientOfRestitution) {
+    public ProcessCollisionsLogicFloat(DataFloat data, boolean mergeOnCollision, float coefficientOfRestitution) {
         n = data.n;
 
         positionX = data.positionX;

@@ -5,6 +5,7 @@ import com.aparapi.device.OpenCLDevice;
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.model.SimulationObject;
+import info.trekto.jos.core.numbers.Number;
 import info.trekto.jos.core.numbers.NumberFactory.NumberType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,6 +70,14 @@ public class Utils {
     }
 
     public static void deepCopy(boolean[] src, boolean[] dst) {
+        System.arraycopy(src, 0, dst, 0, src.length);
+    }
+
+    public static void deepCopy(String[] src, String[] dst) {
+        System.arraycopy(src, 0, dst, 0, src.length);
+    }
+
+    public static void deepCopy(Number[] src, Number[] dst) {
         System.arraycopy(src, 0, dst, 0, src.length);
     }
 

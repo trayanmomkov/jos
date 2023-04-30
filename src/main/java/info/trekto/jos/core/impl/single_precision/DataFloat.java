@@ -1,10 +1,10 @@
 package info.trekto.jos.core.impl.single_precision;
 
-import info.trekto.jos.core.impl.GpuData;
+import info.trekto.jos.core.impl.Data;
 
 import static info.trekto.jos.util.Utils.deepCopy;
 
-public class GpuDataFloat extends GpuData {
+public class DataFloat extends Data {
 
     public final float[] positionX;
     public final float[] positionY;
@@ -22,7 +22,7 @@ public class GpuDataFloat extends GpuData {
     public final float[] readOnlyMass;
     public final float[] readOnlyRadius;
 
-    public GpuDataFloat(int n) {
+    public DataFloat(int n) {
         super(n);
         positionX = new float[n];
         positionY = new float[n];

@@ -39,10 +39,10 @@ public class ProcessCollisionsLogicDouble extends Kernel implements ProcessColli
     private final int n;
 
     public ProcessCollisionsLogicDouble(int n, boolean mergeOnCollision, double coefficientOfRestitution) {
-        this(new GpuDataDouble(n), mergeOnCollision, coefficientOfRestitution);
+        this(new DataDouble(n), mergeOnCollision, coefficientOfRestitution);
     }
 
-    public ProcessCollisionsLogicDouble(GpuDataDouble data, boolean mergeOnCollision, double coefficientOfRestitution) {
+    public ProcessCollisionsLogicDouble(DataDouble data, boolean mergeOnCollision, double coefficientOfRestitution) {
         n = data.n;
 
         positionX = data.positionX;
@@ -67,7 +67,7 @@ public class ProcessCollisionsLogicDouble extends Kernel implements ProcessColli
         this.coefficientOfRestitution = coefficientOfRestitution;
     }
 
-    public void runOnCpu() {
+    public void runOnSingleThread() {
         for (int i = 0; i < n; i++) {
             if (mergeOnCollision == 1) {
                 processMergeCollisions(i);
@@ -256,8 +256,8 @@ public class ProcessCollisionsLogicDouble extends Kernel implements ProcessColli
     }
 
     private static double calculateVelocity(final double v1x, final double v1y, final double v2x, final double v2y,
-                                           final double o1x, final double o1y, final double o2x, final double o2y,
-                                           final double o1m, final double o2m, final double cor) {
+                                            final double o1x, final double o1y, final double o2x, final double o2y,
+                                            final double o1m, final double o2m, final double cor) {
         // v'1x = v1x - 2*o2m/(o1m+o2m) * dotProduct(o1, o2) / dotProduct(o1x, o1y, o2x, o2y) * (o1x-o2x)
         return v1x - (cor * o2m + o2m) / (o1m + o2m)
                 * dotProduct2D(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y)
@@ -266,7 +266,7 @@ public class ProcessCollisionsLogicDouble extends Kernel implements ProcessColli
     }
 
     private static double dotProduct2D(final double ax, final double ay, final double bx, final double by, final double cx, final double cy, final double dx,
-                                      final double dy) {
+                                       final double dy) {
         // <a - b, c - d> = (ax - bx) * (cx - dx) + (ay - by) * (cy - dy)
         return (ax - bx) * (cx - dx) + (ay - by) * (cy - dy);
     }

@@ -77,6 +77,9 @@ public class DoubleNumberImpl implements Number {
     }
 
     public int compareTo(Number val) {
+        if (val == null) {
+            return 1;
+        }
         return Double.compare(value, ((DoubleNumberImpl) val).value);
     }
 

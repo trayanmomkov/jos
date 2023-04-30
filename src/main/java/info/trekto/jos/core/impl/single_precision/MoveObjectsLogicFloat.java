@@ -25,12 +25,8 @@ public class MoveObjectsLogicFloat extends Kernel {
     private final int screenHeight;
 
     private final int n;
-    
-    public MoveObjectsLogicFloat(int n, float secondsPerIteration, int screenWidth, int screenHeight) {
-        this(new GpuDataFloat(n), secondsPerIteration, screenWidth, screenHeight);
-    }
 
-    public MoveObjectsLogicFloat(GpuDataFloat data, float secondsPerIteration, int screenWidth, int screenHeight) {
+    public MoveObjectsLogicFloat(DataFloat data, float secondsPerIteration, int screenWidth, int screenHeight) {
         n = data.n;
 
         positionX = data.positionX;

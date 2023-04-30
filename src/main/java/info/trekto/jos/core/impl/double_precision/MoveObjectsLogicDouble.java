@@ -25,12 +25,8 @@ public class MoveObjectsLogicDouble extends Kernel {
     private final int screenHeight;
 
     private final int n;
-    
-    public MoveObjectsLogicDouble(int n, double secondsPerIteration, int screenWidth, int screenHeight) {
-        this(new GpuDataDouble(n), secondsPerIteration, screenWidth, screenHeight);
-    }
 
-    public MoveObjectsLogicDouble(GpuDataDouble data, double secondsPerIteration, int screenWidth, int screenHeight) {
+    public MoveObjectsLogicDouble(DataDouble data, double secondsPerIteration, int screenWidth, int screenHeight) {
         n = data.n;
 
         positionX = data.positionX;
@@ -54,7 +50,7 @@ public class MoveObjectsLogicDouble extends Kernel {
         this.secondsPerIteration = secondsPerIteration;
     }
 
-    public void runOnCpu() {
+    public void runOnSingleThread() {
         for (int i = 0; i < n; i++) {
             calculateNewValues(i);
         }

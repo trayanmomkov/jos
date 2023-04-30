@@ -60,7 +60,7 @@ public class InelasticCollision1DTest {
     public static Object[][] logicImplementations() {
         Number cor = properties.getCoefficientOfRestitution();
         return new Object[][]{
-                {new SimulationLogicAP(new SimulationAP(properties)), PRECISION - 2},
+                {new ProcessCollisionsLogicAP(2, false, ONE), PRECISION - 2},
                 {new ProcessCollisionsLogicDouble(2, false, cor.doubleValue()), DOUBLE_PRECISION - 1},
                 {new ProcessCollisionsLogicFloat(2, false, cor.floatValue()), SINGLE_PRECISION - 1}
         };

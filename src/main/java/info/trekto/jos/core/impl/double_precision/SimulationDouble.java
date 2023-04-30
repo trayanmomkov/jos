@@ -5,15 +5,18 @@ import info.trekto.jos.core.CpuSimulation;
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.impl.SimulationProperties;
+import info.trekto.jos.core.impl.arbitrary_precision.DataAP;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.model.impl.SimulationObjectImpl;
 import info.trekto.jos.core.model.impl.TripleNumber;
 import info.trekto.jos.core.numbers.New;
+import info.trekto.jos.core.numbers.Number;
 import info.trekto.jos.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,6 +25,8 @@ import static com.aparapi.Kernel.EXECUTION_MODE.GPU;
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.GpuChecker.checkExecutionMode;
 import static info.trekto.jos.core.GpuChecker.createRange;
+import static info.trekto.jos.core.impl.Data.countObjects;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
 import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_MILLISECOND;
 import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_SECOND;
 import static info.trekto.jos.util.Utils.deepCopy;
@@ -48,9 +53,9 @@ public class SimulationDouble implements Simulation {
     private final double[] zeroArray;
     private final CpuSimulation cpuSimulation;
     private boolean executingOnCpu;
-    private final GpuDataDouble data;
+    private final DataDouble data;
     private final SimulationProperties properties;
-    protected long iterationCounter;
+    private long iterationCounter;
 
     public SimulationDouble(SimulationProperties properties, CpuSimulation cpuSimulation) {
         this.properties = properties;
@@ -62,9 +67,9 @@ public class SimulationDouble implements Simulation {
             screenHeight = C.getVisualizer().getVisualizationPanel().getHeight();
         }
         zeroArray = new double[n];
-        data = new GpuDataDouble(n);
+        data = new DataDouble(n);
         double coefficientOfRestitution = properties.getCoefficientOfRestitution().doubleValue();
-        
+
         moveObjectsLogic = new MoveObjectsLogicDouble(data, properties.getSecondsPerIteration().doubleValue(), screenWidth, screenHeight);
         moveObjectsRange = createRange(n);
         moveObjectsLogic.setExecutionMode(GPU);
@@ -72,7 +77,7 @@ public class SimulationDouble implements Simulation {
         processCollisionsLogic = new ProcessCollisionsLogicDouble(data, properties.isMergeOnCollision(), coefficientOfRestitution);
         processCollisionsRange = createRange(n);
         processCollisionsLogic.setExecutionMode(GPU);
-        
+
         this.cpuSimulation = cpuSimulation;
     }
 
@@ -80,12 +85,12 @@ public class SimulationDouble implements Simulation {
     public void doIteration(boolean saveCurrentIterationToFile, long iterationCounter) {
         data.copyToReadOnly(properties.isMergeOnCollision());
         moveObjectsLogic.execute(moveObjectsRange); /* Execute in parallel on GPU if available */
-//        moveObjectsLogic.runOnCpu();
+//        moveObjectsLogic.runOnSingleThread();
         checkExecutionMode(iterationCounter, moveObjectsLogic);
 
         data.copyToReadOnly(properties.isMergeOnCollision());
         processCollisionsLogic.execute(processCollisionsRange); /* Collisions - Execute in parallel on GPU if available */
-//        processCollisionsLogic.runOnCpu();
+//        processCollisionsLogic.runOnSingleThread();
         checkExecutionMode(iterationCounter, processCollisionsLogic);
 
         if (properties.isSaveToFile() && saveCurrentIterationToFile) {
@@ -111,7 +116,7 @@ public class SimulationDouble implements Simulation {
             data.color[i] = o.getColor();
             data.deleted[i] = false;
         }
-        
+
         deepCopy(data.mass, data.readOnlyMass);
         deepCopy(data.deleted, data.readOnlyDeleted);
         deepCopy(data.color, data.readOnlyColor);
@@ -147,11 +152,16 @@ public class SimulationDouble implements Simulation {
                     }
 
                     iterationCounter = i + 1;
-                    int numberOfObjects = executingOnCpu ? cpuSimulation.getObjects().size() : countObjects();
+                    int numberOfObjects = countObjects(data);
 
                     if (cpuSimulation != null && !executingOnCpu && numberOfObjects <= C.getCpuThreshold()) {
-                        cpuSimulation.initSwitchingFromGpu(convertToSimulationObjects());
+                        info(logger, "Switching to CPU - Initialize simulation...");
+
+                        cpuSimulation.setDataAndInitializeLogic(convertToDataAP());
                         executingOnCpu = true;
+
+                        info(logger, "Done.\n");
+                        Utils.printConfiguration(this);
                     }
 
                     if (System.nanoTime() - previousTime >= NANOSECONDS_IN_ONE_SECOND * SHOW_REMAINING_INTERVAL_SECONDS) {
@@ -172,10 +182,15 @@ public class SimulationDouble implements Simulation {
 
                     if (visualize) {
                         if (executingOnCpu) {
-                            C.getVisualizer().visualize(cpuSimulation.getObjects(), iterationCounter);
+                            DataAP cpuData = cpuSimulation.getData();
+                            C.getVisualizer().visualize(iterationCounter, numberOfObjects, cpuData.id, cpuData.deleted,
+                                                        Arrays.stream(cpuData.positionX).mapToDouble(Number::doubleValue).toArray(),
+                                                        Arrays.stream(cpuData.positionY).mapToDouble(Number::doubleValue).toArray(),
+                                                        Arrays.stream(cpuData.radius).mapToDouble(Number::doubleValue).toArray(),
+                                                        cpuData.color);
                         } else {
                             C.getVisualizer().visualize(iterationCounter, numberOfObjects, data.id, data.deleted, data.positionX, data.positionY,
-                                                         data.radius, data.color);
+                                                        data.radius, data.color);
                         }
                         previousVisualizationTime = System.nanoTime();
                     }
@@ -215,17 +230,12 @@ public class SimulationDouble implements Simulation {
 
                 simo.setX(New.num(data.positionX[i]));
                 simo.setY(New.num(data.positionY[i]));
-                simo.setZ(New.num(0));
+                simo.setZ(ZERO);
 
                 simo.setMass(New.num(data.mass[i]));
 
-                simo.setVelocity(new TripleNumber(New.num(data.velocityX[i]),
-                                                  New.num(data.velocityY[i]),
-                                                  New.num(0)));
-
-                simo.setAcceleration(new TripleNumber(New.num(data.accelerationX[i]),
-                                                      New.num(data.accelerationY[i]),
-                                                      New.num(0)));
+                simo.setVelocity(new TripleNumber(New.num(data.velocityX[i]), New.num(data.velocityY[i]), ZERO));
+                simo.setAcceleration(new TripleNumber(New.num(data.accelerationX[i]), New.num(data.accelerationY[i]), ZERO));
 
                 simo.setRadius(New.num(data.radius[i]));
                 simo.setColor(data.color[i]);
@@ -243,7 +253,7 @@ public class SimulationDouble implements Simulation {
         }
 
         initArrays(properties.getInitialObjects());
-        
+
         if (duplicateIdExists(data.id)) {
             throw new SimulationException("Objects with duplicate IDs exist!");
         }
@@ -268,16 +278,6 @@ public class SimulationDouble implements Simulation {
             }
         }
         return false;
-    }
-
-    public int countObjects() {
-        int numberOfObjects = 0;
-        for (int j = 0; j < data.deleted.length; j++) {
-            if (!data.deleted[j]) {
-                numberOfObjects++;
-            }
-        }
-        return numberOfObjects;
     }
 
     public boolean collisionExists(double[] positionX, double[] positionY, double[] radius) {
@@ -317,5 +317,34 @@ public class SimulationDouble implements Simulation {
     @Override
     public SimulationProperties getProperties() {
         return properties;
+    }
+
+    private DataAP convertToDataAP() {
+        DataAP dataAp = new DataAP(data.n);
+        deepCopy(data.id, dataAp.id);
+        deepCopy(data.deleted, dataAp.deleted);
+        deepCopy(data.color, dataAp.color);
+        deepCopy(data.deleted, dataAp.readOnlyDeleted);
+        deepCopy(data.color, dataAp.readOnlyColor);
+
+        for (int i = 0; i < data.n; i++) {
+            dataAp.positionX[i] = New.num(data.positionX[i]);
+            dataAp.positionY[i] = New.num(data.positionY[i]);
+            dataAp.radius[i] = New.num(data.radius[i]);
+            dataAp.velocityX[i] = New.num(data.velocityX[i]);
+            dataAp.velocityY[i] = New.num(data.velocityY[i]);
+            dataAp.accelerationX[i] = New.num(data.accelerationX[i]);
+            dataAp.accelerationY[i] = New.num(data.accelerationY[i]);
+            dataAp.mass[i] = New.num(data.mass[i]);
+
+            dataAp.mass[i] = New.num(data.mass[i]);
+            dataAp.positionX[i] = New.num(data.positionX[i]);
+            dataAp.positionY[i] = New.num(data.positionY[i]);
+            dataAp.radius[i] = New.num(data.radius[i]);
+            dataAp.velocityX[i] = New.num(data.velocityX[i]);
+            dataAp.velocityY[i] = New.num(data.velocityY[i]);
+        }
+
+        return dataAp;
     }
 }

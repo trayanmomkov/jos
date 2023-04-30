@@ -1,28 +1,28 @@
 package info.trekto.jos.core.impl.double_precision;
 
-import info.trekto.jos.core.impl.GpuData;
+import info.trekto.jos.core.impl.Data;
 
 import static info.trekto.jos.util.Utils.deepCopy;
 
-public class GpuDataDouble extends GpuData {
+public class DataDouble extends Data {
 
-    public double[] positionX;
-    public double[] positionY;
-    public double[] velocityX;
-    public double[] velocityY;
-    public double[] accelerationX;
-    public double[] accelerationY;
-    public double[] mass;
-    public double[] radius;
+    public final double[] positionX;
+    public final double[] positionY;
+    public final double[] velocityX;
+    public final double[] velocityY;
+    public final double[] accelerationX;
+    public final double[] accelerationY;
+    public final double[] mass;
+    public final double[] radius;
 
-    public double[] readOnlyPositionX;
-    public double[] readOnlyPositionY;
-    public double[] readOnlyVelocityX;
-    public double[] readOnlyVelocityY;
-    public double[] readOnlyMass;
-    public double[] readOnlyRadius;
+    public final double[] readOnlyPositionX;
+    public final double[] readOnlyPositionY;
+    public final double[] readOnlyVelocityX;
+    public final double[] readOnlyVelocityY;
+    public final double[] readOnlyMass;
+    public final double[] readOnlyRadius;
 
-    public GpuDataDouble(int n) {
+    public DataDouble(int n) {
         super(n);
         positionX = new double[n];
         positionY = new double[n];

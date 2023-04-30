@@ -5,15 +5,18 @@ import info.trekto.jos.core.CpuSimulation;
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.impl.SimulationProperties;
+import info.trekto.jos.core.impl.arbitrary_precision.DataAP;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.model.impl.SimulationObjectImpl;
 import info.trekto.jos.core.model.impl.TripleNumber;
 import info.trekto.jos.core.numbers.New;
+import info.trekto.jos.core.numbers.Number;
 import info.trekto.jos.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,6 +25,7 @@ import static com.aparapi.Kernel.EXECUTION_MODE.GPU;
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.GpuChecker.checkExecutionMode;
 import static info.trekto.jos.core.GpuChecker.createRange;
+import static info.trekto.jos.core.impl.Data.countObjects;
 import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_MILLISECOND;
 import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_SECOND;
 import static info.trekto.jos.util.Utils.deepCopy;
@@ -49,7 +53,7 @@ public class SimulationFloat implements Simulation {
     private final float[] zeroArray;
     private final CpuSimulation cpuSimulation;
     private boolean executingOnCpu;
-    private final GpuDataFloat data;
+    private final DataFloat data;
     private final SimulationProperties properties;
     protected long iterationCounter;
 
@@ -63,9 +67,9 @@ public class SimulationFloat implements Simulation {
             screenHeight = C.getVisualizer().getVisualizationPanel().getHeight();
         }
         zeroArray = new float[n];
-        data = new GpuDataFloat(n);
+        data = new DataFloat(n);
         float coefficientOfRestitution = properties.getCoefficientOfRestitution().floatValue();
-        
+
         moveObjectsLogic = new MoveObjectsLogicFloat(data, properties.getSecondsPerIteration().floatValue(), screenWidth, screenHeight);
         moveObjectsRange = createRange(n);
         moveObjectsLogic.setExecutionMode(GPU);
@@ -73,7 +77,7 @@ public class SimulationFloat implements Simulation {
         processCollisionsLogic = new ProcessCollisionsLogicFloat(data, properties.isMergeOnCollision(), coefficientOfRestitution);
         processCollisionsRange = createRange(n);
         processCollisionsLogic.setExecutionMode(GPU);
-        
+
         this.cpuSimulation = cpuSimulation;
     }
 
@@ -112,7 +116,7 @@ public class SimulationFloat implements Simulation {
             data.color[i] = o.getColor();
             data.deleted[i] = false;
         }
-        
+
         deepCopy(data.mass, data.readOnlyMass);
         deepCopy(data.deleted, data.readOnlyDeleted);
         deepCopy(data.color, data.readOnlyColor);
@@ -148,11 +152,16 @@ public class SimulationFloat implements Simulation {
                     }
 
                     iterationCounter = i + 1;
-                    int numberOfObjects = executingOnCpu ? cpuSimulation.getObjects().size() : countObjects();
+                    int numberOfObjects = countObjects(data);
 
                     if (cpuSimulation != null && !executingOnCpu && numberOfObjects <= C.getCpuThreshold()) {
-                        cpuSimulation.initSwitchingFromGpu(convertToSimulationObjects());
+                        info(logger, "Switching to CPU - Initialize simulation...");
+
+                        cpuSimulation.setDataAndInitializeLogic(convertToDataAP());
                         executingOnCpu = true;
+
+                        info(logger, "Done.\n");
+                        Utils.printConfiguration(this);
                     }
 
                     if (System.nanoTime() - previousTime >= NANOSECONDS_IN_ONE_SECOND * SHOW_REMAINING_INTERVAL_SECONDS) {
@@ -173,12 +182,17 @@ public class SimulationFloat implements Simulation {
 
                     if (visualize) {
                         if (executingOnCpu) {
-                            C.getVisualizer().visualize(cpuSimulation.getObjects(), iterationCounter);
+                            DataAP cpuData = cpuSimulation.getData();
+                            C.getVisualizer().visualize(iterationCounter, numberOfObjects, cpuData.id, cpuData.deleted,
+                                                        Arrays.stream(cpuData.positionX).mapToDouble(Number::doubleValue).toArray(),
+                                                        Arrays.stream(cpuData.positionY).mapToDouble(Number::doubleValue).toArray(),
+                                                        Arrays.stream(cpuData.radius).mapToDouble(Number::doubleValue).toArray(),
+                                                        cpuData.color);
                         } else {
                             C.getVisualizer().visualize(iterationCounter, numberOfObjects, data.id, data.deleted,
-                                                        range(0, data.positionX.length).mapToDouble(j -> data.positionX[j]).toArray(),
-                                                        range(0, data.positionY.length).mapToDouble(j -> data.positionY[j]).toArray(),
-                                                        range(0, data.radius.length).mapToDouble(j -> data.radius[j]).toArray(),
+                                                        range(0, data.n).mapToDouble(j -> data.positionX[j]).toArray(),
+                                                        range(0, data.n).mapToDouble(j -> data.positionY[j]).toArray(),
+                                                        range(0, data.n).mapToDouble(j -> data.radius[j]).toArray(),
                                                         data.color);
                         }
                         previousVisualizationTime = System.nanoTime();
@@ -247,7 +261,7 @@ public class SimulationFloat implements Simulation {
         }
 
         initArrays(properties.getInitialObjects());
-        
+
         if (duplicateIdExists(data.id)) {
             throw new SimulationException("Objects with duplicate IDs exist!");
         }
@@ -259,9 +273,9 @@ public class SimulationFloat implements Simulation {
         executingOnCpu = false;
 
         if (printInfo) {
-        info(logger, "Done.\n");
-        Utils.printConfiguration(this);
-    }
+            info(logger, "Done.\n");
+            Utils.printConfiguration(this);
+        }
     }
 
     private boolean duplicateIdExists(String[] id) {
@@ -272,16 +286,6 @@ public class SimulationFloat implements Simulation {
             }
         }
         return false;
-    }
-
-    public int countObjects() {
-        int numberOfObjects = 0;
-        for (int j = 0; j < data.deleted.length; j++) {
-            if (!data.deleted[j]) {
-                numberOfObjects++;
-            }
-        }
-        return numberOfObjects;
     }
 
     public boolean collisionExists(float[] positionX, float[] positionY, float[] radius) {
@@ -321,5 +325,34 @@ public class SimulationFloat implements Simulation {
     @Override
     public SimulationProperties getProperties() {
         return properties;
+    }
+
+    private DataAP convertToDataAP() {
+        DataAP dataAp = new DataAP(data.n);
+        deepCopy(data.id, dataAp.id);
+        deepCopy(data.deleted, dataAp.deleted);
+        deepCopy(data.color, dataAp.color);
+        deepCopy(data.deleted, dataAp.readOnlyDeleted);
+        deepCopy(data.color, dataAp.readOnlyColor);
+
+        for (int i = 0; i < data.n; i++) {
+            dataAp.positionX[i] = New.num(data.positionX[i]);
+            dataAp.positionY[i] = New.num(data.positionY[i]);
+            dataAp.radius[i] = New.num(data.radius[i]);
+            dataAp.velocityX[i] = New.num(data.velocityX[i]);
+            dataAp.velocityY[i] = New.num(data.velocityY[i]);
+            dataAp.accelerationX[i] = New.num(data.accelerationX[i]);
+            dataAp.accelerationY[i] = New.num(data.accelerationY[i]);
+            dataAp.mass[i] = New.num(data.mass[i]);
+
+            dataAp.mass[i] = New.num(data.mass[i]);
+            dataAp.positionX[i] = New.num(data.positionX[i]);
+            dataAp.positionY[i] = New.num(data.positionY[i]);
+            dataAp.radius[i] = New.num(data.radius[i]);
+            dataAp.velocityX[i] = New.num(data.velocityX[i]);
+            dataAp.velocityY[i] = New.num(data.velocityY[i]);
+        }
+
+        return dataAp;
     }
 }
