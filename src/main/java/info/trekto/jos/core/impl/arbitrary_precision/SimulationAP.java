@@ -122,6 +122,7 @@ public class SimulationAP implements CpuSimulation {
                         Thread.sleep(PAUSE_SLEEP_MILLISECONDS);
                     }
 
+                    long iterationCounter = i + 1;
                     int numberOfObjects = countObjects(data);
 
                     if (System.nanoTime() - previousTime >= NANOSECONDS_IN_ONE_SECOND * SHOW_REMAINING_INTERVAL_SECONDS) {
@@ -141,7 +142,7 @@ public class SimulationAP implements CpuSimulation {
                     }
 
                     if (visualize) {
-                        C.getVisualizer().visualize(i + 1, numberOfObjects, data.id, data.deleted,
+                        C.getVisualizer().visualize(iterationCounter, numberOfObjects, data.id, data.deleted,
                                                     Arrays.stream(data.positionX).mapToDouble(Number::doubleValue).toArray(),
                                                     Arrays.stream(data.positionY).mapToDouble(Number::doubleValue).toArray(),
                                                     Arrays.stream(data.radius).mapToDouble(Number::doubleValue).toArray(),
@@ -149,7 +150,7 @@ public class SimulationAP implements CpuSimulation {
                         previousVisualizationTime = System.nanoTime();
                     }
 
-                    doIteration(i % properties.getSaveEveryNthIteration() == 0, i + 1);
+                    doIteration(i % properties.getSaveEveryNthIteration() == 0, iterationCounter);
                 } catch (InterruptedException e) {
                     error(logger, "Concurrency failure. One of the threads interrupted in cycle " + i, e);
                     return;
@@ -210,8 +211,9 @@ public class SimulationAP implements CpuSimulation {
                 Number distance = moveObjectsLogic.calculateDistance(positionX[i], positionY[i], positionX[j], positionY[j]);
 
                 if (distance.compareTo(radius[i].add(radius[j])) < 0) {
-                    info(logger, String.format("Collision between object A(x:%f, y:%f, r:%f) and B(x:%f, y:%f, r:%f)",
-                                               positionX[i], positionY[i], radius[i], positionX[j], positionY[j], radius[j]));
+                    info(logger, String.format("Collision between object A(x:%s, y:%s, r:%s) and B(x:%s, y:%s, r:%s)",
+                                               positionX[i].toString(), positionY[i].toString(), radius[i].toString(),
+                                               positionX[j].toString(), positionY[j].toString(), radius[j].toString()));
                     return true;
                 }
             }

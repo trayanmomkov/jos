@@ -240,27 +240,17 @@ public enum Controller {
                     }
                     simulation.startSimulation();
                 } catch (SimulationException ex) {
-                    String message = "Error during simulation.";
-                    error(logger, message, ex);
-                    visualizer.closeWindow();
-                    showError(message + " " + ex.getMessage());
+                    handleException(ex, "Error during simulation.");
                 } catch (ArithmeticException ex) {
                     if (ex.getMessage().contains("zero")) {
-                        String message = "Operation with zero. Please increase the precision and try again.";
-                        error(logger, message, ex);
-                        visualizer.closeWindow();
-                        showError(message + " " + ex.getMessage());
+                        handleException(ex, "Operation with zero. Please increase the precision and try again.");
                     } else {
-                        String message = "Arithmetic exception.";
-                        error(logger, message, ex);
-                        visualizer.closeWindow();
-                        showError(message + " " + ex.getMessage());
+                        handleException(ex, "Arithmetic exception.");
                     }
+                } catch (ClassCastException ex) {
+                        handleException(ex, "It looks like number types are incompatible. Did you forget to push 'Generate objects' button?");
                 } catch (Exception ex) {
-                    String message = "Unexpected exception.";
-                    error(logger, message, ex);
-                    visualizer.closeWindow();
-                    showError(message + " " + ex.getMessage());
+                    handleException(ex, "Unexpected exception.");
                 } finally {
                     onVisualizationWindowClosed();
                 }
@@ -274,6 +264,12 @@ public enum Controller {
             gui.getStopButton().setEnabled(true);
             gui.getPauseButton().setEnabled(true);
         }
+    }
+
+    private void handleException(Exception ex, String message) {
+        error(logger, message, ex);
+        visualizer.closeWindow();
+        showError(message + "\n" + ex.getMessage());
     }
 
     private SimulationProperties fetchPropertiesFromGuiAndCreateNumberFactory() {

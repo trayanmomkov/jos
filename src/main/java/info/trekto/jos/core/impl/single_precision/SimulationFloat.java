@@ -52,7 +52,6 @@ public class SimulationFloat implements Simulation {
     private boolean executingOnCpu;
     private final DataFloat data;
     private final SimulationProperties properties;
-    protected long iterationCounter;
 
     public SimulationFloat(SimulationProperties properties, CpuSimulation cpuSimulation) {
         this.properties = properties;
@@ -147,7 +146,7 @@ public class SimulationFloat implements Simulation {
                         Thread.sleep(PAUSE_SLEEP_MILLISECONDS);
                     }
 
-                    iterationCounter = i + 1;
+                    long iterationCounter = i + 1;
                     int numberOfObjects = countObjects(data);
 
                     if (cpuSimulation != null && !executingOnCpu && numberOfObjects <= C.getCpuThreshold()) {

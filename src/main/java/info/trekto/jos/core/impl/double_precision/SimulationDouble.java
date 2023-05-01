@@ -145,6 +145,7 @@ public class SimulationDouble implements Simulation {
                         Thread.sleep(PAUSE_SLEEP_MILLISECONDS);
                     }
 
+                    long iterationCounter = i + 1;
                     int numberOfObjects = countObjects(data);
 
                     if (cpuSimulation != null && !executingOnCpu && numberOfObjects <= C.getCpuThreshold()) {
@@ -176,22 +177,22 @@ public class SimulationDouble implements Simulation {
                     if (visualize) {
                         if (executingOnCpu) {
                             DataAP cpuData = cpuSimulation.getData();
-                            C.getVisualizer().visualize(i + 1, numberOfObjects, cpuData.id, cpuData.deleted,
+                            C.getVisualizer().visualize(iterationCounter, numberOfObjects, cpuData.id, cpuData.deleted,
                                                         Arrays.stream(cpuData.positionX).mapToDouble(Number::doubleValue).toArray(),
                                                         Arrays.stream(cpuData.positionY).mapToDouble(Number::doubleValue).toArray(),
                                                         Arrays.stream(cpuData.radius).mapToDouble(Number::doubleValue).toArray(),
                                                         cpuData.color);
                         } else {
-                            C.getVisualizer().visualize(i + 1, numberOfObjects, data.id, data.deleted, data.positionX, data.positionY,
+                            C.getVisualizer().visualize(iterationCounter, numberOfObjects, data.id, data.deleted, data.positionX, data.positionY,
                                                         data.radius, data.color);
                         }
                         previousVisualizationTime = System.nanoTime();
                     }
 
                     if (executingOnCpu) {
-                        cpuSimulation.doIteration(i % properties.getSaveEveryNthIteration() == 0, i + 1);
+                        cpuSimulation.doIteration(i % properties.getSaveEveryNthIteration() == 0, iterationCounter);
                     } else {
-                        doIteration(i % properties.getSaveEveryNthIteration() == 0, i + 1);
+                        doIteration(i % properties.getSaveEveryNthIteration() == 0, iterationCounter);
                     }
                 } catch (InterruptedException e) {
                     error(logger, "Concurrency failure. One of the threads interrupted in cycle " + i, e);

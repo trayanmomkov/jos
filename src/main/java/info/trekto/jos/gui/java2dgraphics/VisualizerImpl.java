@@ -16,9 +16,13 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
-import java.util.*;
 
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.Controller.PROGRAM_NAME;
@@ -172,17 +176,14 @@ public class VisualizerImpl implements Visualizer {
     }
 
     private Collection<? extends ShapeWithColorAndText> createInfo(long iteration, Number secondsPerIteration, int objectsCount) {
-        ShapeWithColorAndText info1 = new ShapeWithColorAndText(
-                new Rectangle2D.Double(0, 20, 100, 40), BLUE, "Iteration: " + iteration);
+        List<ShapeWithColorAndText> info = new ArrayList<>();
+        info.add(new ShapeWithColorAndText(new Rectangle2D.Double(0, 20, 100, 40), BLUE, "Iteration: " + iteration));
+        info.add(new ShapeWithColorAndText(new Rectangle2D.Double(0, 60, 100, 40), BLUE, "Time: "
+                + secondsToHumanReadable(secondsPerIteration.multiply(New.num(iteration)).doubleValue())));
 
-        ShapeWithColorAndText info2 = new ShapeWithColorAndText(
-                new Rectangle2D.Double(0, 60, 100, 40), BLUE, "Time: "
-                + secondsToHumanReadable(secondsPerIteration.multiply(New.num(iteration)).doubleValue()));
-
-        ShapeWithColorAndText info3 = new ShapeWithColorAndText(
-                new Rectangle2D.Double(0, 100, 100, 40), BLUE, "Objects: " + objectsCount);
-
-        return Arrays.asList(info1, info2, info3);
+        info.add(new ShapeWithColorAndText(new Rectangle2D.Double(0, 100, 100, 40), BLUE, "Objects: " + objectsCount));
+        
+        return info;
     }
 
     public void end() {
