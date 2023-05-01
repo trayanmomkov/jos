@@ -1,6 +1,7 @@
 package info.trekto.jos.core;
 
 import info.trekto.jos.core.exceptions.SimulationException;
+import info.trekto.jos.core.impl.Data;
 import info.trekto.jos.core.impl.SimulationProperties;
 
 /**
@@ -16,4 +17,10 @@ public interface Simulation {
     SimulationProperties getProperties();
 
     void doIteration(boolean saveCurrentIterationToFile, long iterationCounter) throws InterruptedException;
+
+    double calculateTotalMass();
+
+    double calculateTotalMomentum();
+    
+    Data getData();
 }

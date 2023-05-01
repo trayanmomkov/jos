@@ -16,6 +16,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+import java.text.DecimalFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,6 +38,7 @@ import static java.awt.Color.RED;
 public class VisualizerImpl implements Visualizer {
     private static final Logger logger = LoggerFactory.getLogger(VisualizerImpl.class);
     public static final int TRAIL_SIZE = 2;
+    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.000E0");
     private VisualizationPanel visualizationPanel;
     private JFrame frame = null;
     List<ShapeWithColorAndText> latestShapes;
@@ -170,12 +172,14 @@ public class VisualizerImpl implements Visualizer {
         }
 
         if (C.getShowTimeAndIteration()) {
-            shapes.addAll(createInfo(currentIterationNumber, properties.getSecondsPerIteration(), numberOfObjects));
+            shapes.addAll(createInfo(currentIterationNumber, properties.getSecondsPerIteration(), numberOfObjects
+                                     /*, C.getSimulation().calculateTotalMass(), C.getSimulation().calculateTotalMomentum()*/));
         }
         return shapes;
     }
 
-    private Collection<? extends ShapeWithColorAndText> createInfo(long iteration, Number secondsPerIteration, int objectsCount) {
+    private Collection<? extends ShapeWithColorAndText> createInfo(long iteration, Number secondsPerIteration, int objectsCount
+            /*, double totalMass, double totalMomentum*/) {
         List<ShapeWithColorAndText> info = new ArrayList<>();
         info.add(new ShapeWithColorAndText(new Rectangle2D.Double(0, 20, 100, 40), BLUE, "Iteration: " + iteration));
         info.add(new ShapeWithColorAndText(new Rectangle2D.Double(0, 60, 100, 40), BLUE, "Time: "
@@ -183,6 +187,12 @@ public class VisualizerImpl implements Visualizer {
 
         info.add(new ShapeWithColorAndText(new Rectangle2D.Double(0, 100, 100, 40), BLUE, "Objects: " + objectsCount));
         
+        /* For debugging purposes */
+//        info.add(new ShapeWithColorAndText(new Rectangle2D.Double(0, 140, 100, 40), BLUE,
+//                                           String.format("Mass: %s kg", DECIMAL_FORMAT.format(totalMass))));
+//        info.add(new ShapeWithColorAndText(new Rectangle2D.Double(0, 180, 100, 40), BLUE,
+//                                           String.format("Momentum: %s kg⋅m/s", DECIMAL_FORMAT.format(totalMomentum))));
+
         return info;
     }
 

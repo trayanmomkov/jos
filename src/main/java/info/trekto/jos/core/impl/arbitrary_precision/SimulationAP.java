@@ -18,6 +18,7 @@ import java.util.Set;
 
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.impl.Data.countObjects;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
 import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_MILLISECOND;
 import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_SECOND;
 import static info.trekto.jos.util.Utils.deepCopy;
@@ -70,6 +71,28 @@ public class SimulationAP implements CpuSimulation {
                                                     data.velocityY, zeroArray, data.mass, data.radius, data.id, data.color, data.deleted,
                                                     data.accelerationX, data.accelerationY, zeroArray);
         }
+    }
+
+    @Override
+    public double calculateTotalMass() {
+        Number mass = ZERO;
+        for (int i = 0; i < data.n; i++) {
+            if (!data.deleted[i]) {
+                mass = mass.add(data.mass[i]);
+            }
+        }
+        return mass.doubleValue();
+    }
+
+    @Override
+    public double calculateTotalMomentum() {
+        Number momentum = ZERO;
+        for (int i = 0; i < data.n; i++) {
+            if (!data.deleted[i]) {
+                momentum = momentum.add(data.mass[i].multiply(data.velocityX[i].abs().add(data.velocityY[i].abs())));
+            }
+        }
+        return momentum.doubleValue();
     }
 
     public void initArrays(List<SimulationObject> initialObjects) {

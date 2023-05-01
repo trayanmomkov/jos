@@ -4,6 +4,7 @@ import com.aparapi.Range;
 import info.trekto.jos.core.CpuSimulation;
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.exceptions.SimulationException;
+import info.trekto.jos.core.impl.Data;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.impl.arbitrary_precision.DataAP;
 import info.trekto.jos.core.model.SimulationObject;
@@ -94,6 +95,28 @@ public class SimulationFloat implements Simulation {
                                                     data.velocityY, zeroArray, data.mass, data.radius, data.id, data.color, data.deleted,
                                                     data.accelerationX, data.accelerationY, zeroArray);
         }
+    }
+
+    @Override
+    public double calculateTotalMass() {
+        double mass = 0;
+        for (int i = 0; i < data.n; i++) {
+            if (!data.deleted[i]) {
+                mass += data.mass[i];
+            }
+        }
+        return mass;
+    }
+
+    @Override
+    public double calculateTotalMomentum() {
+        double momentum = 0;
+        for (int i = 0; i < data.n; i++) {
+            if (!data.deleted[i]) {
+                momentum += data.mass[i] * (Math.abs(data.velocityX[i]) + Math.abs(data.velocityY[i]));
+            }
+        }
+        return momentum;
     }
 
     public void initArrays(List<SimulationObject> initialObjects) {
@@ -288,6 +311,11 @@ public class SimulationFloat implements Simulation {
     @Override
     public SimulationProperties getProperties() {
         return properties;
+    }
+
+    @Override
+    public Data getData() {
+        return data;
     }
 
     private DataAP convertToDataAP() {
