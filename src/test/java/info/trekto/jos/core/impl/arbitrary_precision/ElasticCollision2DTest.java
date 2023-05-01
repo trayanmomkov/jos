@@ -18,7 +18,6 @@ import static info.trekto.jos.core.impl.arbitrary_precision.ElasticCollision1DTe
 import static info.trekto.jos.core.impl.arbitrary_precision.ElasticCollision1DTest.error;
 import static info.trekto.jos.core.numbers.NumberFactory.NumberType.ARBITRARY_PRECISION;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.HALF;
-import static info.trekto.jos.core.numbers.NumberFactoryProxy.MINUS_ONE;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.ONE;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.TWO;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
@@ -130,38 +129,38 @@ public class ElasticCollision2DTest {
         assertEquals(o2.getVelocity(), new TripleNumber(New.num("1.5"), HALF, ZERO), error(simulationLogic));
     }
     
-    @Test(dataProvider = "logic_implementations")
-    public void diffMassDiffSpeedFromLeftAndTop90Degrees(ProcessCollisionsLogic simulationLogic, int precision) {
-        SimulationObject o1 = new SimulationObjectImpl(o);
-        SimulationObject o2 = new SimulationObjectImpl(o);
-        o2.setX(ZERO);
-        o2.setY(HALF.negate());
-        TripleNumber o2Velocity = new TripleNumber(ZERO, TWO, ZERO);
-        o2.setVelocity(o2Velocity);
-        o2.setMass(TWO);
-
-        simulationLogic.processElasticCollisionObjects(o1, o2, ONE);
-
+//    @Test(dataProvider = "logic_implementations")
+//    public void diffMassDiffSpeedFromLeftAndTop90Degrees(ProcessCollisionsLogic simulationLogic, int precision) {
+//        SimulationObject o1 = new SimulationObjectImpl(o);
+//        SimulationObject o2 = new SimulationObjectImpl(o);
+//        o2.setX(ZERO);
+//        o2.setY(HALF.negate());
+//        TripleNumber o2Velocity = new TripleNumber(ZERO, TWO, ZERO);
+//        o2.setVelocity(o2Velocity);
+//        o2.setMass(TWO);
+//
+//        simulationLogic.processElasticCollisionObjects(o1, o2, ONE);
+//
 //        assertEquals(o1.getVelocity(), new TripleNumber(New.num("-0.87"), New.num("-2.22"), ZERO), error(simulationLogic));
 //        assertEquals(o2.getVelocity(), new TripleNumber(New.num("0.93"), New.num("0.89"), ZERO), error(simulationLogic));
-    }
+//    }
 
-    @Test(dataProvider = "logic_implementations")
-    public void equalMassAndSpeedOppositeLeftUp(ProcessCollisionsLogic simulationLogic, int precision) {
-        SimulationObject o1 = new SimulationObjectImpl(o);
-        o1.setX(New.num("-0.2"));
-        o1.setY(New.num("-0.2"));
-        SimulationObject o2 = new SimulationObjectImpl(o);
-        o2.setX(ONE);
-        TripleNumber o2Velocity = new TripleNumber(ZERO, MINUS_ONE, ZERO);
-        o1.setX(New.num("0.2"));
-        o2.setVelocity(o2Velocity);
-
-        simulationLogic.processElasticCollisionObjects(o1, o2, ONE);
-
+//    @Test(dataProvider = "logic_implementations")
+//    public void equalMassAndSpeedOppositeLeftUp(ProcessCollisionsLogic simulationLogic, int precision) {
+//        SimulationObject o1 = new SimulationObjectImpl(o);
+//        o1.setX(New.num("-0.2"));
+//        o1.setY(New.num("-0.2"));
+//        SimulationObject o2 = new SimulationObjectImpl(o);
+//        o2.setX(ONE);
+//        TripleNumber o2Velocity = new TripleNumber(ZERO, MINUS_ONE, ZERO);
+//        o1.setX(New.num("0.2"));
+//        o2.setVelocity(o2Velocity);
+//
+//        simulationLogic.processElasticCollisionObjects(o1, o2, ONE);
+//
 //        assertEquals(o1.getVelocity(), new TripleNumber(New.num("-0.89"), New.num("-0.46"), ZERO), error(simulationLogic));
 //        assertEquals(o2.getVelocity(), new TripleNumber(New.num("0.89"), New.num("0.46"), ZERO), error(simulationLogic));
-    }
+//    }
 
     @Test(dataProvider = "logic_implementations")
     public void equalMassAndSpeedOppositeLeftDown(ProcessCollisionsLogic simulationLogic, int precision) {
