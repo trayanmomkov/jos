@@ -21,10 +21,11 @@ public class MoveObjectsLogicDouble extends Kernel {
     private final double secondsPerIteration;
     private final int screenWidth;
     private final int screenHeight;
+    private final double minDistance;
 
     private final int n;
 
-    public MoveObjectsLogicDouble(DataDouble data, double secondsPerIteration, int screenWidth, int screenHeight) {
+    public MoveObjectsLogicDouble(DataDouble data, double secondsPerIteration, double minDistance, int screenWidth, int screenHeight) {
         n = data.n;
 
         positionX = data.positionX;
@@ -44,6 +45,7 @@ public class MoveObjectsLogicDouble extends Kernel {
         this.screenHeight = screenHeight;
 
         this.secondsPerIteration = secondsPerIteration;
+        this.minDistance = minDistance;
     }
 
     public void runOnCpu() {
@@ -98,6 +100,9 @@ public class MoveObjectsLogicDouble extends Kernel {
             if (i != j && !readOnlyDeleted[j]) {
                 /* Calculate force */
                 double distance = calculateDistance(positionX[i], positionY[i], readOnlyPositionX[j], readOnlyPositionY[j]);
+                if (distance < minDistance) {
+                    distance = minDistance;
+                }
                 double force = calculateForce(mass[i], readOnlyMass[j], distance);
                 //       Fx = F*x/r;
                 double forceX = force * (readOnlyPositionX[j] - positionX[i]) / distance;

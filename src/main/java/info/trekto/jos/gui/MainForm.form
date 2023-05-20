@@ -227,7 +227,7 @@
               </component>
               <component id="d0331" class="javax.swing.JTextField" binding="cpuGpuThresholdField">
                 <constraints>
-                  <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                  <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="0" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="-1"/>
                   </grid>
                   <gridbag weightx="0.0" weighty="0.0"/>
@@ -293,6 +293,32 @@
                   <horizontalTextPosition value="10"/>
                   <selected value="true"/>
                   <text value="Merge on collision"/>
+                </properties>
+              </component>
+              <component id="67488" class="javax.swing.JTextField" binding="minDistanceField">
+                <constraints>
+                  <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="-1"/>
+                  </grid>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <columns value="3"/>
+                  <editable value="true"/>
+                  <enabled value="false"/>
+                  <text value="10"/>
+                </properties>
+              </component>
+              <component id="52e9c" class="javax.swing.JLabel" binding="minDistanceLabel">
+                <constraints>
+                  <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <gridbag top="0" left="4" bottom="0" right="5" weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <enabled value="false"/>
+                  <foreground color="-16776961"/>
+                  <labelFor value="d0331"/>
+                  <text value="Min. dist."/>
                 </properties>
               </component>
             </children>

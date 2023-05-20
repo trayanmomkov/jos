@@ -67,6 +67,7 @@ public enum Controller {
     C;
 
     public static final int CPU_DEFAULT_THRESHOLD = 384;
+    public static final int DEFAULT_MIN_DISTANCE = 10;
     public static final String JSON_FILE_EXTENSION = ".json";
     public static final String JSON_GZIP_FILE_EXTENSION = ".json.gz";
     int cpuThreshold;
@@ -109,7 +110,8 @@ public enum Controller {
         mainForm.setNumberTypeMessage("DOUBLE - Double precision. Fast. (Uses GPU if possible)\n"
                                               + "FLOAT - Single precision. Fastest. (Uses GPU if possible)\n"
                                               + "ARBITRARY_PRECISION - Arbitrary precision.");
-
+                                              
+        mainForm.setMinDistanceMessage("If distance < minDistance, minDistane will be used when calculating acceleration.");
         mainForm.setCpuGpuThresholdMessage("If the objects are fewer than this threshold\n"
                                                    + "the execution will continue on the CPU.");
         mainForm.init();
@@ -334,6 +336,14 @@ public enum Controller {
             properties.setCoefficientOfRestitution(cor);
         }
 
+        if (isNullOrBlank(gui.getMinDistanceField().getText()) || !isNumeric(gui.getMinDistanceField().getText())
+                || New.num(gui.getMinDistanceField().getText()).compareTo(ZERO) < 0) {
+            properties.setMinDistance(New.num(DEFAULT_MIN_DISTANCE));
+            gui.getMinDistanceField().setText(String.valueOf(DEFAULT_MIN_DISTANCE));
+        } else {
+            properties.setMinDistance(New.num(gui.getMinDistanceField().getText()));
+        }
+
         properties.setBounceFromScreenBorders(gui.getBounceFromScreenBordersCheckBox().isSelected());
         properties.setRealTimeVisualization(gui.getRealTimeVisualizationCheckBox().isSelected());
         properties.setInteractingLaw(ForceCalculator.InteractingLaw.valueOf(String.valueOf(gui.getInteractingLawComboBox().getSelectedItem())));
@@ -352,6 +362,7 @@ public enum Controller {
             setExecutionModeFieldVisibilityAndValue();
             setCpuGpuThresholdVisibility();
             setCorVisibility();
+            setMinDistanceVisibility();
         } else {
             gui.getPlayingComponents().forEach(c -> c.setEnabled(true));
         }
@@ -456,6 +467,7 @@ public enum Controller {
         gui.getPlayingSpeedTextField().setText(String.valueOf(prop.getPlayingSpeed()));
         gui.getMergeObjectsWhenCollideCheckBox().setSelected(prop.isMergeOnCollision());
         gui.getCorTextField().setText(String.valueOf(prop.getCoefficientOfRestitution()));
+        gui.getMinDistanceField().setText(String.valueOf(prop.getMinDistance()));
 
         ((InitialObjectsTableModelAndListener) gui.getInitialObjectsTable().getModel()).setInitialObjects(prop.getInitialObjects());
 
@@ -867,10 +879,16 @@ public enum Controller {
 
     public void mergeObjectsWhenCollideCheckBoxEvent() {
         setCorVisibility();
+        setMinDistanceVisibility();
     }
 
     private void setCorVisibility() {
         gui.getCorLabel().setEnabled(!gui.getMergeObjectsWhenCollideCheckBox().isSelected());
         gui.getCorTextField().setEnabled(!gui.getMergeObjectsWhenCollideCheckBox().isSelected());
+    }
+
+    private void setMinDistanceVisibility() {
+        gui.getMinDistanceLabel().setEnabled(!gui.getMergeObjectsWhenCollideCheckBox().isSelected());
+        gui.getMinDistanceField().setEnabled(!gui.getMergeObjectsWhenCollideCheckBox().isSelected());
     }
 }

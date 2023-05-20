@@ -40,6 +40,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import static info.trekto.jos.core.Controller.C;
+import static info.trekto.jos.core.Controller.DEFAULT_MIN_DISTANCE;
 import static info.trekto.jos.core.model.impl.SimulationObjectImpl.DEFAULT_COLOR;
 import static info.trekto.jos.core.model.impl.SimulationObjectImpl.DEFAULT_COLOR_SIMPLIFIED;
 import static info.trekto.jos.core.numbers.NumberFactory.NumberType.ARBITRARY_PRECISION;
@@ -103,6 +104,7 @@ public class JsonReaderWriter implements ReaderWriter {
         json.addProperty("bounceFromScreenBorders", properties.isBounceFromScreenBorders());
         json.addProperty("mergeOnCollision", properties.isMergeOnCollision());
         json.addProperty("coefficientOfRestitution", properties.getCoefficientOfRestitution().toString());
+        json.addProperty("minimumDistance", properties.getMinDistance().toString());
         return json;
     }
 
@@ -236,6 +238,9 @@ public class JsonReaderWriter implements ReaderWriter {
         
         JsonElement cor = json.get("coefficientOfRestitution");
         properties.setCoefficientOfRestitution(cor != null ? New.num(cor.getAsString()) : ZERO);
+        
+        JsonElement minDistance = json.get("minimumDistance");
+        properties.setMinDistance(minDistance != null ? New.num(minDistance.getAsString()) : New.num(DEFAULT_MIN_DISTANCE));
 
         List<SimulationObject> initialObjects = new ArrayList<>();
         for (JsonElement jsonElement : json.get("initialObjects").getAsJsonArray()) {
@@ -471,7 +476,9 @@ public class JsonReaderWriter implements ReaderWriter {
             }
             writer = new OutputStreamWriter(new BufferedOutputStream(new GZIPOutputStream(new FileOutputStream(inputFilePath))));
         } catch (IOException e) {
-            info(logger, "Cannot open output file " + inputFilePath, e);
+            String msg = "Cannot open output file " + inputFilePath;
+            info(logger, msg, e);
+            C.showHtmlError(msg, e);
         }
     }
 }

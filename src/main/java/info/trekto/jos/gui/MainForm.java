@@ -3,8 +3,6 @@ package info.trekto.jos.gui;
 import info.trekto.jos.core.ExecutionMode;
 import info.trekto.jos.core.ForceCalculator;
 import info.trekto.jos.core.numbers.NumberFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -15,16 +13,23 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.util.AbstractMap;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.*;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Vector;
 
 import static info.trekto.jos.core.Controller.C;
-import static info.trekto.jos.core.ExecutionMode.*;
+import static info.trekto.jos.core.ExecutionMode.AUTO;
+import static info.trekto.jos.core.ExecutionMode.CPU;
+import static info.trekto.jos.core.ExecutionMode.GPU;
 
 public class MainForm {
-    private static final Logger logger = LoggerFactory.getLogger(MainForm.class);
     private static final String PLAYING_SPEED_TIP = "If x < 0: every iteration sleep x milliseconds; If x >= 0: visualize every x milliseconds";
     private String aboutMessage;
+    private String minDistanceMessage;
     private String numberTypeMessage;
     private BufferedImage icon;
 
@@ -92,6 +97,8 @@ public class MainForm {
     private JCheckBox mergeObjectsWhenCollideCheckBox;
     private JTextField corTextField;
     private JLabel corLabel;
+    private JLabel minDistanceLabel;
+    private JTextField minDistanceField;
     private ButtonGroup buttonGroup;
     private List<Component> runningComponents;
     private List<Component> playingComponents;
@@ -192,6 +199,12 @@ public class MainForm {
             }
         });
 
+        minDistanceLabel.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                JOptionPane.showMessageDialog(mainPanel, minDistanceMessage, "Minimum distane", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
         playingSpeedLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 JOptionPane.showMessageDialog(mainPanel, PLAYING_SPEED_TIP, "Playing speed", JOptionPane.INFORMATION_MESSAGE);
@@ -229,6 +242,10 @@ public class MainForm {
 
     public void setAboutMessage(String aboutMessage) {
         this.aboutMessage = aboutMessage;
+    }
+
+    public void setMinDistanceMessage(String message) {
+        this.minDistanceMessage = message;
     }
 
     public void setIcon(BufferedImage icon) {
@@ -523,6 +540,14 @@ public class MainForm {
         return corTextField;
     }
 
+    public JTextField getMinDistanceField() {
+        return minDistanceField;
+    }
+
+    public JLabel getMinDistanceLabel() {
+        return minDistanceLabel;
+    }
+
     public JLabel getCorLabel() {
         return corLabel;
     }
@@ -757,7 +782,6 @@ public class MainForm {
         gbc.gridx = 1;
         gbc.gridy = 3;
         gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
         panel2.add(cpuGpuThresholdField, gbc);
         cpuGpuThresholdLabel2 = new JLabel();
         cpuGpuThresholdLabel2.setText("objects");
@@ -809,6 +833,26 @@ public class MainForm {
         gbc.gridwidth = 3;
         gbc.anchor = GridBagConstraints.WEST;
         panel2.add(mergeObjectsWhenCollideCheckBox, gbc);
+        minDistanceField = new JTextField();
+        minDistanceField.setColumns(3);
+        minDistanceField.setEditable(true);
+        minDistanceField.setEnabled(false);
+        minDistanceField.setText("10");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 6;
+        gbc.anchor = GridBagConstraints.WEST;
+        panel2.add(minDistanceField, gbc);
+        minDistanceLabel = new JLabel();
+        minDistanceLabel.setEnabled(false);
+        minDistanceLabel.setForeground(new Color(-16776961));
+        minDistanceLabel.setText("Min. dist.");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 6;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(0, 4, 0, 5);
+        panel2.add(minDistanceLabel, gbc);
         saveToFileCheckBox = new JCheckBox();
         saveToFileCheckBox.setHorizontalTextPosition(10);
         saveToFileCheckBox.setText("Save to file");
@@ -1180,6 +1224,7 @@ public class MainForm {
         cpuGpuThresholdLabel.setLabelFor(cpuGpuThresholdField);
         cpuGpuThresholdLabel2.setLabelFor(cpuGpuThresholdField);
         corLabel.setLabelFor(corTextField);
+        minDistanceLabel.setLabelFor(cpuGpuThresholdField);
         outputFileLabel.setLabelFor(outputFileTextField);
     }
 

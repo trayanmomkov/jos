@@ -21,10 +21,11 @@ public class MoveObjectsLogicFloat extends Kernel {
     private final float secondsPerIteration;
     private final int screenWidth;
     private final int screenHeight;
+    private final float minDistance;
 
     private final int n;
 
-    public MoveObjectsLogicFloat(DataFloat data, float secondsPerIteration, int screenWidth, int screenHeight) {
+    public MoveObjectsLogicFloat(DataFloat data, float secondsPerIteration, float minDistance, int screenWidth, int screenHeight) {
         n = data.n;
 
         positionX = data.positionX;
@@ -44,6 +45,7 @@ public class MoveObjectsLogicFloat extends Kernel {
         this.screenHeight = screenHeight;
 
         this.secondsPerIteration = secondsPerIteration;
+        this.minDistance = minDistance;
     }
 
     public void runOnCpu() {
@@ -98,6 +100,9 @@ public class MoveObjectsLogicFloat extends Kernel {
             if (i != j && !readOnlyDeleted[j]) {
                 /* Calculate force */
                 float distance = calculateDistance(positionX[i], positionY[i], readOnlyPositionX[j], readOnlyPositionY[j]);
+                if (distance < minDistance) {
+                    distance = minDistance;
+                }
                 float force = calculateForce(mass[i], readOnlyMass[j], distance);
                 //       Fx = F*x/r;
                 float forceX = force * (readOnlyPositionX[j] - positionX[i]) / distance;

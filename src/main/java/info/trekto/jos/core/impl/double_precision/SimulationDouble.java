@@ -66,7 +66,8 @@ public class SimulationDouble implements Simulation {
         data = new DataDouble(n);
         double coefficientOfRestitution = properties.getCoefficientOfRestitution().doubleValue();
 
-        moveObjectsLogic = new MoveObjectsLogicDouble(data, properties.getSecondsPerIteration().doubleValue(), screenWidth, screenHeight);
+        moveObjectsLogic = new MoveObjectsLogicDouble(data, properties.getSecondsPerIteration().doubleValue(),
+                                                      properties.getMinDistance().doubleValue(), screenWidth, screenHeight);
         moveObjectsRange = createRange(n);
         moveObjectsLogic.setExecutionMode(GPU);
 

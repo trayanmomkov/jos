@@ -60,6 +60,9 @@ public class SimulationFloat implements Simulation {
         int screenWidth = 0;
         int screenHeight = 0;
         if (properties.isBounceFromScreenBorders()) {
+            if (C.getVisualizer() == null) {
+                C.setVisualizer(C.createVisualizer(properties));
+            }
             screenWidth = C.getVisualizer().getVisualizationPanel().getWidth();
             screenHeight = C.getVisualizer().getVisualizationPanel().getHeight();
         }
@@ -67,7 +70,8 @@ public class SimulationFloat implements Simulation {
         data = new DataFloat(n);
         float coefficientOfRestitution = properties.getCoefficientOfRestitution().floatValue();
 
-        moveObjectsLogic = new MoveObjectsLogicFloat(data, properties.getSecondsPerIteration().floatValue(), screenWidth, screenHeight);
+        moveObjectsLogic = new MoveObjectsLogicFloat(data, properties.getSecondsPerIteration().floatValue(), properties.getMinDistance().floatValue(),
+                                                     screenWidth, screenHeight);
         moveObjectsRange = createRange(n);
         moveObjectsLogic.setExecutionMode(GPU);
 

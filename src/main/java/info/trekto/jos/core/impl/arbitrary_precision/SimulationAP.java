@@ -46,13 +46,17 @@ public class SimulationAP implements CpuSimulation {
         int screenWidth = 0;
         int screenHeight = 0;
         if (properties.isBounceFromScreenBorders()) {
+            if (C.getVisualizer() == null) {
+                C.setVisualizer(C.createVisualizer(properties));
+            }
             screenWidth = C.getVisualizer().getVisualizationPanel().getWidth();
             screenHeight = C.getVisualizer().getVisualizationPanel().getHeight();
         }
         zeroArray = new Number[n];
         data = new DataAP(n);
-        
-        moveObjectsLogic = new MoveObjectsLogicAP(data, properties.getSecondsPerIteration(), screenWidth, screenHeight);
+
+        moveObjectsLogic = new MoveObjectsLogicAP(data, properties.getSecondsPerIteration(), properties.getMinDistance(),
+                                                  screenWidth, screenHeight);
         processCollisionsLogic = new ProcessCollisionsLogicAP(data, properties.isMergeOnCollision(), properties.getCoefficientOfRestitution());
     }
 
@@ -325,8 +329,8 @@ public class SimulationAP implements CpuSimulation {
 
     public void setDataAndInitializeLogic(DataAP data) {
         this.data = data;
-        moveObjectsLogic = new MoveObjectsLogicAP(data, properties.getSecondsPerIteration(), moveObjectsLogic.getScreenWidth(),
-                                                  moveObjectsLogic.getScreenHeight());
+        moveObjectsLogic = new MoveObjectsLogicAP(data, properties.getSecondsPerIteration(), properties.getMinDistance(),
+                                                  moveObjectsLogic.getScreenWidth(), moveObjectsLogic.getScreenHeight());
         processCollisionsLogic = new ProcessCollisionsLogicAP(data, properties.isMergeOnCollision(), properties.getCoefficientOfRestitution());
     }
 

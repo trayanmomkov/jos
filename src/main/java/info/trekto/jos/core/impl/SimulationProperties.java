@@ -30,6 +30,7 @@ public class SimulationProperties {
     private boolean saveAcceleration = false;
     private boolean mergeOnCollision = true;
     private Number coefficientOfRestitution;
+    private Number minDistance;
 
     /* Java {@link ArrayList} is limited to Integer.MAX_VALUE */
     private int numberOfObjects;
@@ -60,6 +61,7 @@ public class SimulationProperties {
         this.saveAcceleration = properties.saveAcceleration;
         this.mergeOnCollision = properties.mergeOnCollision;
         this.coefficientOfRestitution = properties.coefficientOfRestitution;
+        this.minDistance = properties.minDistance;
     }
 
     public boolean isInfiniteSimulation() {
@@ -208,5 +210,13 @@ public class SimulationProperties {
 
     public void setCoefficientOfRestitution(Number coefficientOfRestitution) {
         this.coefficientOfRestitution = coefficientOfRestitution;
+    }
+
+    public Number getMinDistance() {
+        return minDistance;
+    }
+
+    public void setMinDistance(Number minDistance) {
+        this.minDistance = minDistance;
     }
 }

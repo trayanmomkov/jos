@@ -22,12 +22,13 @@ public class MoveObjectsLogicAP {
     private final boolean[] readOnlyDeleted;
 
     private final Number secondsPerIteration;
+    private final Number minDistance;
     private final int screenWidth;
     private final int screenHeight;
 
     private final int n;
 
-    public MoveObjectsLogicAP(DataAP data, Number secondsPerIteration, int screenWidth, int screenHeight) {
+    public MoveObjectsLogicAP(DataAP data, Number secondsPerIteration, Number minDistance, int screenWidth, int screenHeight) {
         gravity = New.num("0.000000000066743"); // 6.6743×10^−11 N⋅m2/kg2
         n = data.n;
 
@@ -48,6 +49,7 @@ public class MoveObjectsLogicAP {
         this.screenHeight = screenHeight;
 
         this.secondsPerIteration = secondsPerIteration;
+        this.minDistance = minDistance;
     }
 
     public void runOnCpu() {
@@ -102,6 +104,9 @@ public class MoveObjectsLogicAP {
             if (i != j && !readOnlyDeleted[j]) {
                 /* Calculate force */
                 Number distance = calculateDistance(positionX[i], positionY[i], readOnlyPositionX[j], readOnlyPositionY[j]);
+                if (distance.compareTo(minDistance) < 0) {
+                    distance = minDistance;
+                }
                 Number force = calculateForce(mass[i], readOnlyMass[j], distance);
                 //       Fx = F*x/r;
                 Number forceX = force.multiply(readOnlyPositionX[j].subtract(positionX[i])).divide(distance);
