@@ -12,8 +12,6 @@ public class MoveObjectsLogicAP {
     private final Number[] positionY;
     private final Number[] velocityX;
     private final Number[] velocityY;
-    private final Number[] accelerationX;
-    private final Number[] accelerationY;
     private final Number[] mass;
     private final Number[] radius;
     private final boolean[] deleted;
@@ -37,8 +35,6 @@ public class MoveObjectsLogicAP {
         positionY = data.positionY;
         velocityX = data.velocityX;
         velocityY = data.velocityY;
-        accelerationX = data.accelerationX;
-        accelerationY = data.accelerationY;
         mass = data.mass;
         radius = data.radius;
         deleted = data.deleted;
@@ -54,7 +50,7 @@ public class MoveObjectsLogicAP {
         this.secondsPerIteration = secondsPerIteration;
     }
 
-    public void runOnSingleThread() {
+    public void runOnCpu() {
         for (int i = 0; i < n; i++) {
             calculateNewValues(i);
         }
@@ -74,53 +70,52 @@ public class MoveObjectsLogicAP {
         if (!deleted[i]) {
             /* Speed is scalar, velocity is vector. Velocity = speed + direction. */
 
-            /* Time T passed */
-
-            /* Calculate acceleration */
-            /* For the time T, forces accelerated the objects (changed their velocities).
-             * Forces are calculated having the positions of the objects at the beginning of the period,
-             * and these forces are applied for time T. */
-            Number newAccelerationX = ZERO;
-            Number newAccelerationY = ZERO;
-            for (int j = 0; j < n; j++) {
-                if (i != j && !readOnlyDeleted[j]) {
-                    /* Calculate force */
-                    Number distance = calculateDistance(positionX[i], positionY[i], readOnlyPositionX[j], readOnlyPositionY[j]);
-                    Number force = calculateForce(mass[i], readOnlyMass[j], distance);
-                    //       Fx = F*x/r;
-                    Number forceX = force.multiply(readOnlyPositionX[j].subtract(positionX[i])).divide(distance);
-                    Number forceY = force.multiply(readOnlyPositionY[j].subtract(positionY[i])).divide(distance);
-
-                    /* Add to current acceleration */
-                    // ax = Fx / m
-                    newAccelerationX = newAccelerationX.add(forceX.divide(mass[i]));
-                    newAccelerationY = newAccelerationY.add(forceY.divide(mass[i]));
-                }
-            }
+            /* Time T has passed */
 
             /* Move objects */
-            /* For the time T, velocity moved the objects (changed their positions).
+            /* For the time T, velocities have moved the objects (changed their positions).
              * New objects positions are calculated having the velocity at the beginning of the period,
              * and these velocities are applied for time T. */
             positionX[i] = positionX[i].add(velocityX[i].multiply(secondsPerIteration));
             positionY[i] = positionY[i].add(velocityY[i].multiply(secondsPerIteration));
 
             /* Change velocity */
-            /* For the time T, accelerations changed the velocities.
+            /* For the time T, accelerations have changed the velocities.
              * Velocities are calculated having the accelerations of the objects at the beginning of the period,
              * and these accelerations are applied for time T. */
-            velocityX[i] = velocityX[i].add(accelerationX[i].multiply(secondsPerIteration));
-            velocityY[i] = velocityY[i].add(accelerationY[i].multiply(secondsPerIteration));
-
-            /* Change the acceleration */
-            accelerationX[i] = newAccelerationX;
-            accelerationY[i] = newAccelerationY;
+            calculateAccelerationAndChangeVelocity(i);
 
             /* Bounce from screen borders */
             if (screenWidth != 0 && screenHeight != 0) {
                 bounceFromScreenBorders(i);
             }
         }
+    }
+
+    public void calculateAccelerationAndChangeVelocity(int i) {
+        /* Calculate acceleration */
+        /* For the time T, forces have accelerated the objects (changed their velocities).
+         * Forces are calculated having the positions of the objects at the beginning of the period. */
+        Number newAccelerationX = ZERO;
+        Number newAccelerationY = ZERO;
+        for (int j = 0; j < n; j++) {
+            if (i != j && !readOnlyDeleted[j]) {
+                /* Calculate force */
+                Number distance = calculateDistance(positionX[i], positionY[i], readOnlyPositionX[j], readOnlyPositionY[j]);
+                Number force = calculateForce(mass[i], readOnlyMass[j], distance);
+                //       Fx = F*x/r;
+                Number forceX = force.multiply(readOnlyPositionX[j].subtract(positionX[i])).divide(distance);
+                Number forceY = force.multiply(readOnlyPositionY[j].subtract(positionY[i])).divide(distance);
+
+                /* Add to current acceleration */
+                // ax = Fx / m
+                newAccelerationX = newAccelerationX.add(forceX.divide(mass[i]));
+                newAccelerationY = newAccelerationY.add(forceY.divide(mass[i]));
+            }
+        }
+
+        velocityX[i] = velocityX[i].add(newAccelerationX.multiply(secondsPerIteration));
+        velocityY[i] = velocityY[i].add(newAccelerationY.multiply(secondsPerIteration));
     }
 
     private void bounceFromScreenBorders(int i) {

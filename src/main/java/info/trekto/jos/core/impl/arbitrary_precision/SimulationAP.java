@@ -59,12 +59,12 @@ public class SimulationAP implements CpuSimulation {
     @Override
     public void doIteration(boolean saveCurrentIterationToFile, long iterationCounter) {
         data.copyToReadOnly(properties.isMergeOnCollision());
-        moveObjectsLogic.run(); /* Execute in parallel */
 //        moveObjectsLogic.runOnSingleThread();
+        moveObjectsLogic.run(); /* Execute in parallel */
 
         data.copyToReadOnly(properties.isMergeOnCollision());
-        processCollisionsLogic.run(); /* Collisions - Execute in parallel */
 //        processCollisionsLogic.runOnSingleThread();
+        processCollisionsLogic.run(); /* Collisions - Execute in parallel */
 
         if (properties.isSaveToFile() && saveCurrentIterationToFile) {
             C.getReaderWriter().appendObjectsToFile(properties, iterationCounter, data.positionX, data.positionY, zeroArray, data.velocityX,

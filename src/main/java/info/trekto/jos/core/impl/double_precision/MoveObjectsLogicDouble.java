@@ -9,8 +9,6 @@ public class MoveObjectsLogicDouble extends Kernel {
     private final double[] positionY;
     private final double[] velocityX;
     private final double[] velocityY;
-    private final double[] accelerationX;
-    private final double[] accelerationY;
     private final double[] mass;
     private final double[] radius;
     private final boolean[] deleted;
@@ -33,8 +31,6 @@ public class MoveObjectsLogicDouble extends Kernel {
         positionY = data.positionY;
         velocityX = data.velocityX;
         velocityY = data.velocityY;
-        accelerationX = data.accelerationX;
-        accelerationY = data.accelerationY;
         mass = data.mass;
         radius = data.radius;
         deleted = data.deleted;
@@ -50,7 +46,7 @@ public class MoveObjectsLogicDouble extends Kernel {
         this.secondsPerIteration = secondsPerIteration;
     }
 
-    public void runOnSingleThread() {
+    public void runOnCpu() {
         for (int i = 0; i < n; i++) {
             calculateNewValues(i);
         }
@@ -70,53 +66,52 @@ public class MoveObjectsLogicDouble extends Kernel {
         if (!deleted[i]) {
             /* Speed is scalar, velocity is vector. Velocity = speed + direction. */
 
-            /* Time T passed */
-
-            /* Calculate acceleration */
-            /* For the time T, forces accelerated the objects (changed their velocities).
-             * Forces are calculated having the positions of the objects at the beginning of the period,
-             * and these forces are applied for time T. */
-            double newAccelerationX = 0;
-            double newAccelerationY = 0;
-            for (int j = 0; j < n; j++) {
-                if (i != j && !readOnlyDeleted[j]) {
-                    /* Calculate force */
-                    double distance = calculateDistance(positionX[i], positionY[i], readOnlyPositionX[j], readOnlyPositionY[j]);
-                    double force = calculateForce(mass[i], readOnlyMass[j], distance);
-                    //       Fx = F*x/r;
-                    double forceX = force * (readOnlyPositionX[j] - positionX[i]) / distance;
-                    double forceY = force * (readOnlyPositionY[j] - positionY[i]) / distance;
-
-                    /* Add to current acceleration */
-                    // ax = Fx / m
-                    newAccelerationX = newAccelerationX + forceX / mass[i];
-                    newAccelerationY = newAccelerationY + forceY / mass[i];
-                }
-            }
+            /* Time T has passed */
 
             /* Move objects */
-            /* For the time T, velocity moved the objects (changed their positions).
+            /* For the time T, velocities have moved the objects (changed their positions).
              * New objects positions are calculated having the velocity at the beginning of the period,
              * and these velocities are applied for time T. */
             positionX[i] = positionX[i] + velocityX[i] * secondsPerIteration;
             positionY[i] = positionY[i] + velocityY[i] * secondsPerIteration;
 
             /* Change velocity */
-            /* For the time T, accelerations changed the velocities.
+            /* For the time T, accelerations have changed the velocities.
              * Velocities are calculated having the accelerations of the objects at the beginning of the period,
              * and these accelerations are applied for time T. */
-            velocityX[i] = velocityX[i] + accelerationX[i] * secondsPerIteration;
-            velocityY[i] = velocityY[i] + accelerationY[i] * secondsPerIteration;
-
-            /* Change the acceleration */
-            accelerationX[i] = newAccelerationX;
-            accelerationY[i] = newAccelerationY;
+            calculateAccelerationAndChangeVelocity(i);
 
             /* Bounce from screen borders */
             if (screenWidth != 0 && screenHeight != 0) {
                 bounceFromScreenBorders(i);
             }
         }
+    }
+
+    public void calculateAccelerationAndChangeVelocity(int i) {
+        /* Calculate acceleration */
+        /* For the time T, forces have accelerated the objects (changed their velocities).
+         * Forces are calculated having the positions of the objects at the beginning of the period. */
+        double newAccelerationX = 0;
+        double newAccelerationY = 0;
+        for (int j = 0; j < n; j++) {
+            if (i != j && !readOnlyDeleted[j]) {
+                /* Calculate force */
+                double distance = calculateDistance(positionX[i], positionY[i], readOnlyPositionX[j], readOnlyPositionY[j]);
+                double force = calculateForce(mass[i], readOnlyMass[j], distance);
+                //       Fx = F*x/r;
+                double forceX = force * (readOnlyPositionX[j] - positionX[i]) / distance;
+                double forceY = force * (readOnlyPositionY[j] - positionY[i]) / distance;
+
+                /* Add to current acceleration */
+                // ax = Fx / m
+                newAccelerationX = newAccelerationX + forceX / mass[i];
+                newAccelerationY = newAccelerationY + forceY / mass[i];
+            }
+        }
+
+        velocityX[i] = velocityX[i] + newAccelerationX * secondsPerIteration;
+        velocityY[i] = velocityY[i] + newAccelerationY * secondsPerIteration;
     }
 
     private void bounceFromScreenBorders(int i) {

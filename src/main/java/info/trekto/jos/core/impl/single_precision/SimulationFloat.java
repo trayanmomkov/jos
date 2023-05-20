@@ -81,13 +81,13 @@ public class SimulationFloat implements Simulation {
     @Override
     public void doIteration(boolean saveCurrentIterationToFile, long iterationCounter) {
         data.copyToReadOnly(properties.isMergeOnCollision());
+//        moveObjectsLogic.runOnCpu();
         moveObjectsLogic.execute(moveObjectsRange); /* Execute in parallel on GPU if available */
-//        moveObjectsLogic.runOnSingleThread();
         checkExecutionMode(iterationCounter, moveObjectsLogic);
 
         data.copyToReadOnly(properties.isMergeOnCollision());
+//        processCollisionsLogic.runOnCpu();
         processCollisionsLogic.execute(processCollisionsRange); /* Collisions - Execute in parallel on GPU if available */
-//        processCollisionsLogic.runOnSingleThread();
         checkExecutionMode(iterationCounter, processCollisionsLogic);
 
         if (properties.isSaveToFile() && saveCurrentIterationToFile) {
