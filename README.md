@@ -17,6 +17,9 @@ It offers **arbitrary precision** (alongside float and double) and three executi
 - If you want to use the GPU execution mode, be sure you have installed the **latest driver for your video card**.
  It should include OpenCL needed for the GPU.
 
+## Sample simulations
+[Accretion](samples/accretion.zip)
+
 ## Usage
 0. Start the application by:
    1. Double-click on the jar file. (Execution permission needed.)
@@ -34,12 +37,43 @@ To use the GPU execution mode you must have OpenCL compatible video card.
 
 List of video cards on which the system is tested:
  - **Intel HD Graphics 530**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **Intel HD Graphics 5500**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: red;">**NO**</span>
+ - **Intel HD Graphics 620**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **Intel Iris Plus**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: red;">**NO**</span>
+ - **Intel Iris Xe**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: red;">**NO**</span>
+ - **Intel UHD 620**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **Intel UHD 630**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
  - **NVIDIA Quadro K1100M**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
  - **NVIDIA GeForce GTX 960**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **NVIDIA GeForce GTX 1050**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **NVIDIA GeForce GTX 1050 Ti**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **NVIDIA GeForce GTX 1060**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
  - **NVIDIA GeForce GTX 1070**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **NVIDIA GeForce GTX 1070 Ti**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **NVIDIA GeForce GTX 1650**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **NVIDIA GeForce GTX 1660**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **NVIDIA GeForce GTX 1660 Ti**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **NVIDIA GeForce GTX 850M**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **NVIDIA GeForce GTX 950**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **NVIDIA GeForce GTX 960**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **NVIDIA GeForce GTX 960M**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **NVIDIA GeForce MX150**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **NVIDIA GeForce MX330**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **NVIDIA GeForce MX350**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **NVIDIA GeForce MX450**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
  - **NVIDIA GeForce RTX 2060**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
  - **NVIDIA GeForce RTX 2070**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **NVIDIA GeForce RTX 2080**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **NVIDIA GeForce RTX 3050**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **NVIDIA GeForce RTX 3050 Ti**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **NVIDIA GeForce RTX 3060**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **NVIDIA GeForce RTX 3060 Ti**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
  - **NVIDIA GeForce RTX 3070**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **NVIDIA GeForce RTX 3070 Ti**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **AMD Ellesmere**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **AMD gfx902**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **AMD gfx1010**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
+ - **AMD gfx1031**: Float: <span style="color: green;">**OK**</span>, Double: <span style="color: green;">**OK**</span>
 
 ## Description
 The application had been initially written in C++ and OpenGL in 2009.
@@ -99,6 +133,7 @@ a particular iteration and object.
     <span style='color:#bf0303;'>&quot;bounceFromScreenBorders&quot;</span><span style='color:#bf0303;'>:</span> <b>false</b><b><span style='color:#644a9b;'>,</span></b>             <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>If</span> <span style='color:#bf0303;'>true</span><b><span style='color:#644a9b;'>,</span></b> <span style='color:#bf0303;'>objects</span> <span style='color:#bf0303;'>will</span> <span style='color:#bf0303;'>bounce</span> <span style='color:#bf0303;'>from</span> <span style='color:#bf0303;'>the</span> <span style='color:#bf0303;'>screen</span> <span style='color:#bf0303;'>borders.</span>
     <span style='color:#0057ae;'>&quot;mergeOnCollision&quot;</span><b><span style='color:#644a9b;'>:</span></b> <b>false</b><b><span style='color:#644a9b;'>,</span></b>
     <span style='color:#0057ae;'>&quot;coefficientOfRestitution&quot;</span><b><span style='color:#644a9b;'>:</span></b> <span style='color:#bf0303;'>&quot;0.8&quot;</span><b><span style='color:#644a9b;'>,</span></b>            <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Coefficient</span> <span style='color:#bf0303;'>of</span> <span style='color:#bf0303;'>restitution.</span> <span style='color:#bf0303;'>1</span><b><span style='color:#644a9b;'>:</span></b> <span style='color:#bf0303;'>elastic</span><b><span style='color:#644a9b;'>,</span></b> <span style='color:#bf0303;'>0</span><b><span style='color:#644a9b;'>:</span></b> <span style='color:#bf0303;'>perfectly</span> <span style='color:#bf0303;'>inelastic</span><b><span style='color:#644a9b;'>,</span></b> <span style='color:#bf0303;'>above</span> <span style='color:#bf0303;'>1</span><b><span style='color:#644a9b;'>:</span></b> <span style='color:#bf0303;'>objects</span> <span style='color:#bf0303;'>will</span> <span style='color:#bf0303;'>gain</span> <span style='color:#bf0303;'>energy</span> <span style='color:#bf0303;'>on</span> <span style='color:#bf0303;'>collision.</span>
+    <span style='color:#0057ae;'>&quot;minimumDistance&quot;</span><b><span style='color:#644a9b;'>:</span></b> <span style='color:#bf0303;'>&quot;10.0&quot;</span><b><span style='color:#644a9b;'>,</span></b>                    <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>If distance between objects centers < minimumDistance, minimumDistance will be used on acceleration calculation.</span>
     <span style='color:#bf0303;'>&quot;initialObjects&quot;</span><span style='color:#bf0303;'>:</span><b><span style='color:#006e28;'>[</span></b>
       <b><span style='color:#644a9b;'>{</span></b>
         <span style='color:#0057ae;'>&quot;id&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#bf0303;'>&quot;0&quot;</span><b><span style='color:#644a9b;'>,</span></b>                                 <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Unique</span> <span style='color:#bf0303;'>id</span> <span style='color:#bf0303;'>of</span> <span style='color:#bf0303;'>the</span> <span style='color:#bf0303;'>object</span>
@@ -140,7 +175,7 @@ There is a lot of things which are not finished or implemented (such as viewport
 but the main functionality is there.
 
 For GPU mode, the main
-calculations have to be translated from byte code to OpenCL. This is done by
+calculations are translated from byte code to OpenCL. This is done by
 Aparapi library. This code is located in methods:
  - SimulationLogicImpl.**calculateNewValues**(int i);
  - CollisionCheck.**run**();

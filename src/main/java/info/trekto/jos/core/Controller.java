@@ -106,7 +106,7 @@ public enum Controller {
             applicationProperties.setProperty("version", "Unknown");
         }
 
-        mainForm.setAboutMessage("JOS - v. " + applicationProperties.getProperty("version") + "\n\nAuthor: Trayan Momkov\n2022");
+        mainForm.setAboutMessage("JOS - v. " + applicationProperties.getProperty("version") + "\n\nAuthor: Trayan Momkov\n2023");
         mainForm.setNumberTypeMessage("DOUBLE - Double precision. Fast. (Uses GPU if possible)\n"
                                               + "FLOAT - Single precision. Fastest. (Uses GPU if possible)\n"
                                               + "ARBITRARY_PRECISION - Arbitrary precision.");

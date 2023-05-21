@@ -1,5 +1,6 @@
 package info.trekto.jos.util;
 
+import info.trekto.jos.core.Controller;
 import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.impl.arbitrary_precision.SimulationAP;
@@ -32,6 +33,7 @@ public class UtilsTest {
     public static SimulationDouble createDoubleSimulation(SimulationObject... objects) throws SimulationException {
         SimulationProperties properties = new SimulationProperties();
         properties.setCoefficientOfRestitution(ZERO);
+        properties.setMinDistance(New.num(Controller.DEFAULT_MIN_DISTANCE));
         properties.setSecondsPerIteration(ONE);
         properties.setNumberOfObjects(objects.length);
         properties.setInitialObjects(Arrays.asList(objects));
@@ -43,6 +45,7 @@ public class UtilsTest {
     public static SimulationFloat createFloatSimulation(SimulationObject... objects) throws SimulationException {
         SimulationProperties properties = new SimulationProperties();
         properties.setCoefficientOfRestitution(ZERO);
+        properties.setMinDistance(New.num(Controller.DEFAULT_MIN_DISTANCE));
         properties.setSecondsPerIteration(ONE);
         properties.setNumberOfObjects(objects.length);
         properties.setInitialObjects(Arrays.asList(objects));

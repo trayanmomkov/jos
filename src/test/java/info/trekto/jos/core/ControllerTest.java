@@ -4,12 +4,14 @@ import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.impl.arbitrary_precision.SimulationAP;
 import info.trekto.jos.core.impl.double_precision.SimulationDouble;
 import info.trekto.jos.core.impl.single_precision.SimulationFloat;
+import info.trekto.jos.core.numbers.New;
 import info.trekto.jos.core.numbers.NumberFactory;
 import info.trekto.jos.core.numbers.NumberFactoryProxy;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import static info.trekto.jos.core.Controller.C;
+import static info.trekto.jos.core.Controller.DEFAULT_MIN_DISTANCE;
 import static info.trekto.jos.core.Controller.createSimulation;
 import static info.trekto.jos.core.ExecutionMode.AUTO;
 import static info.trekto.jos.core.ExecutionMode.CPU;
@@ -127,6 +129,7 @@ public class ControllerTest {
         NumberFactoryProxy.createNumberFactory(numberType, NumberFactory.DEFAULT_PRECISION);
         properties.setSecondsPerIteration(ONE);
         properties.setCoefficientOfRestitution(ONE);
+        properties.setMinDistance(New.num(DEFAULT_MIN_DISTANCE));
         
         Simulation simulation = createSimulation(properties, executionMode);
 
