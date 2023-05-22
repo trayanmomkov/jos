@@ -7,7 +7,7 @@
 
 It offers **arbitrary precision** (alongside float and double) and three execution modes: CPU, GPU and Auto.
 
-[![JOS - N-body simulation video](resources/JOS-N-Body-Simulation.png)](https://youtu.be/am-L0w5Wr3E)
+[![JOS - N-body simulation video](resources/JOS-N-Body-Simulation.png)](https://youtu.be/EfCrmT-ZGPs)
 
 ## Download
  - SourceForge: **[jos.jar](https://sourceforge.net/projects/jos-n-body/files/jos.jar/download)**
