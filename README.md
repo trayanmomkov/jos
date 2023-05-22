@@ -177,8 +177,8 @@ but the main functionality is there.
 For GPU mode, the main
 calculations are translated from byte code to OpenCL. This is done by
 Aparapi library. This code is located in methods:
- - SimulationLogicImpl.**calculateNewValues**(int i);
- - CollisionCheck.**run**();
+ - MoveObjectsLogic(Float|Double).run();
+ - ProcessCollisions(Float|Double).run();
 
 !!! DO NOT CHANGE THESE METHODS and methods called from them if you don't have experience with Aparapi library!!!
 

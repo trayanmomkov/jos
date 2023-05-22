@@ -2,8 +2,6 @@ package info.trekto.jos.core;
 
 import com.aparapi.Kernel;
 import com.aparapi.Range;
-import com.aparapi.device.OpenCLDevice;
-import com.aparapi.internal.opencl.OpenCLPlatform;
 import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.impl.SimulationGenerator;
 import info.trekto.jos.core.impl.SimulationProperties;
@@ -14,22 +12,11 @@ import info.trekto.jos.core.numbers.New;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringJoiner;
-
 import static com.aparapi.Kernel.EXECUTION_MODE.GPU;
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.numbers.NumberFactory.NumberType.DOUBLE;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumberFactory;
 import static info.trekto.jos.util.Utils.info;
-import static info.trekto.jos.util.Utils.isNullOrBlank;
 import static info.trekto.jos.util.Utils.nanoToHumanReadable;
 import static info.trekto.jos.util.Utils.warn;
 
@@ -76,54 +63,6 @@ public class GpuChecker {
             gpuFloatAvailable = false;
             warn(logger, "Float GPU is not compatible. Will use CPU. Try to restart your computer for GPU.", tr);
         }
-
-        sendCompatibility();
-    }
-
-    private static void sendCompatibility() {
-        new Thread(() -> {
-            try {
-                String vendors = "";
-                String names = "";
-                String gpuVersions = "";
-                for (OpenCLPlatform platform : OpenCLPlatform.getUncachedOpenCLPlatforms()) {
-                    for (OpenCLDevice device : platform.getOpenCLDevices()) {
-                        vendors += (isNullOrBlank(vendors) ? "" : "|") + platform.getVendor();
-                        gpuVersions += (isNullOrBlank(gpuVersions) ? "" : "|") + platform.getVersion();
-                        names += (isNullOrBlank(names) ? "" : "|") + device.getName();
-                    }
-                }
-
-                URL url = new URL("https://trekto.info/jos/");
-                URLConnection con = url.openConnection();
-                HttpURLConnection http = (HttpURLConnection) con;
-                http.setRequestMethod("POST");
-                http.setDoOutput(true);
-
-                Map<String, String> arguments = new HashMap<>();
-                arguments.put("osVersion", System.getProperty("os.name"));
-                arguments.put("vendor", vendors);
-                arguments.put("name", names);
-                arguments.put("gpuVersion", gpuVersions);
-                arguments.put("floatCompatible", Boolean.toString(gpuFloatAvailable));
-                arguments.put("doubleCompatible", Boolean.toString(gpuDoubleAvailable));
-                StringJoiner sj = new StringJoiner("&");
-                for (Map.Entry<String, String> entry : arguments.entrySet()) {
-                    sj.add(URLEncoder.encode(entry.getKey(), "UTF-8") + "="
-                                   + URLEncoder.encode(entry.getValue(), "UTF-8"));
-                }
-                byte[] out = sj.toString().getBytes(StandardCharsets.UTF_8);
-                int length = out.length;
-
-                http.setFixedLengthStreamingMode(length);
-                http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-                http.connect();
-                try (OutputStream os = http.getOutputStream()) {
-                    os.write(out);
-                }
-            } catch (Exception ignored) {
-            }
-        }).start();
     }
 
     public static void checkExecutionMode(long iterationCounter, Kernel kernel) {
