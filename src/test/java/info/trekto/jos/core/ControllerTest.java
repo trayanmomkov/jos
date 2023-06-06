@@ -12,6 +12,7 @@ import org.testng.annotations.Test;
 
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.Controller.DEFAULT_MIN_DISTANCE;
+import static info.trekto.jos.core.Controller.DEFAULT_SCALE;
 import static info.trekto.jos.core.Controller.createSimulation;
 import static info.trekto.jos.core.ExecutionMode.AUTO;
 import static info.trekto.jos.core.ExecutionMode.CPU;
@@ -130,6 +131,7 @@ public class ControllerTest {
         properties.setSecondsPerIteration(ONE);
         properties.setCoefficientOfRestitution(ONE);
         properties.setMinDistance(New.num(DEFAULT_MIN_DISTANCE));
+        properties.setScale(DEFAULT_SCALE);
         
         Simulation simulation = createSimulation(properties, executionMode);
 

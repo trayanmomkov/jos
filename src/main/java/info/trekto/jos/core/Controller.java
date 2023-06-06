@@ -68,6 +68,7 @@ public enum Controller {
 
     public static final int CPU_DEFAULT_THRESHOLD = 384;
     public static final int DEFAULT_MIN_DISTANCE = 10;
+    public static final double DEFAULT_SCALE = 1;
     public static final String JSON_FILE_EXTENSION = ".json";
     public static final String JSON_GZIP_FILE_EXTENSION = ".json.gz";
     int cpuThreshold;
@@ -336,12 +337,20 @@ public enum Controller {
             properties.setCoefficientOfRestitution(cor);
         }
 
-        if (isNullOrBlank(gui.getMinDistanceField().getText()) || !isNumeric(gui.getMinDistanceField().getText())
-                || New.num(gui.getMinDistanceField().getText()).compareTo(ZERO) < 0) {
+        String minDistanceText = gui.getMinDistanceField().getText();
+        if (isNullOrBlank(minDistanceText) || !isNumeric(minDistanceText) || New.num(minDistanceText).compareTo(ZERO) < 0) {
             properties.setMinDistance(New.num(DEFAULT_MIN_DISTANCE));
             gui.getMinDistanceField().setText(String.valueOf(DEFAULT_MIN_DISTANCE));
         } else {
-            properties.setMinDistance(New.num(gui.getMinDistanceField().getText()));
+            properties.setMinDistance(New.num(minDistanceText));
+        }
+
+        String scaleText = gui.getScaleField().getText();
+        if (isNullOrBlank(scaleText) || !isNumeric(scaleText) || Double.parseDouble(scaleText) <= 0) {
+            properties.setScale(DEFAULT_SCALE);
+            gui.getScaleField().setText(String.valueOf(DEFAULT_SCALE));
+        } else {
+            properties.setScale(Double.parseDouble(scaleText));
         }
 
         properties.setBounceFromScreenBorders(gui.getBounceFromScreenBordersCheckBox().isSelected());
@@ -468,6 +477,7 @@ public enum Controller {
         gui.getMergeObjectsWhenCollideCheckBox().setSelected(prop.isMergeOnCollision());
         gui.getCorTextField().setText(String.valueOf(prop.getCoefficientOfRestitution()));
         gui.getMinDistanceField().setText(String.valueOf(prop.getMinDistance()));
+        gui.getScaleField().setText(String.valueOf(prop.getScale()));
 
         ((InitialObjectsTableModelAndListener) gui.getInitialObjectsTable().getModel()).setInitialObjects(prop.getInitialObjects());
 
@@ -890,5 +900,10 @@ public enum Controller {
     private void setMinDistanceVisibility() {
         gui.getMinDistanceLabel().setEnabled(!gui.getMergeObjectsWhenCollideCheckBox().isSelected());
         gui.getMinDistanceField().setEnabled(!gui.getMergeObjectsWhenCollideCheckBox().isSelected());
+    }
+    
+    public void updateScaleLabel(double scale) {
+        gui.getScaleField().setText(String.valueOf(scale));
+        gui.getScaleField().setCaretPosition(0); 
     }
 }

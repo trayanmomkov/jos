@@ -64,6 +64,7 @@ public class VisualizerImpl implements Visualizer {
             frame.setSize(new Dimension(displayWidth, displayHeight));
             frame.setBackground(Color.WHITE);
             visualizationPanel = new VisualizationPanel(Color.WHITE);
+            visualizationPanel.setScale(properties.getScale());
             frame.add(visualizationPanel);
             frame.addWindowListener(new WindowAdapter() {
                 @Override
@@ -181,11 +182,11 @@ public class VisualizerImpl implements Visualizer {
     private Collection<? extends ShapeWithColorAndText> createInfo(long iteration, Number secondsPerIteration, int objectsCount
             /*, double totalMass, double totalMomentum*/) {
         List<ShapeWithColorAndText> info = new ArrayList<>();
-        info.add(new ShapeWithColorAndText(new Rectangle2D.Double(0, 20, 100, 40), BLUE, "Iteration: " + iteration));
+        info.add(new ShapeWithColorAndText(new Rectangle2D.Double(0, 20, 100, 40), BLUE, "Iteration: " + iteration, true));
         info.add(new ShapeWithColorAndText(new Rectangle2D.Double(0, 60, 100, 40), BLUE, "Time: "
-                + secondsToHumanReadable(secondsPerIteration.multiply(New.num(iteration)).doubleValue())));
+                + secondsToHumanReadable(secondsPerIteration.multiply(New.num(iteration)).doubleValue()), true));
 
-        info.add(new ShapeWithColorAndText(new Rectangle2D.Double(0, 100, 100, 40), BLUE, "Objects: " + objectsCount));
+        info.add(new ShapeWithColorAndText(new Rectangle2D.Double(0, 100, 100, 40), BLUE, "Objects: " + objectsCount, true));
         
         /* For debugging purposes */
 //        info.add(new ShapeWithColorAndText(new Rectangle2D.Double(0, 140, 100, 40), BLUE,

@@ -15,6 +15,7 @@ import info.trekto.jos.core.numbers.Number;
 import java.util.Arrays;
 import java.util.UUID;
 
+import static info.trekto.jos.core.Controller.DEFAULT_SCALE;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.ONE;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
 
@@ -34,6 +35,7 @@ public class UtilsTest {
         SimulationProperties properties = new SimulationProperties();
         properties.setCoefficientOfRestitution(ZERO);
         properties.setMinDistance(New.num(Controller.DEFAULT_MIN_DISTANCE));
+        properties.setScale(DEFAULT_SCALE);
         properties.setSecondsPerIteration(ONE);
         properties.setNumberOfObjects(objects.length);
         properties.setInitialObjects(Arrays.asList(objects));
@@ -46,6 +48,7 @@ public class UtilsTest {
         SimulationProperties properties = new SimulationProperties();
         properties.setCoefficientOfRestitution(ZERO);
         properties.setMinDistance(New.num(Controller.DEFAULT_MIN_DISTANCE));
+        properties.setScale(DEFAULT_SCALE);
         properties.setSecondsPerIteration(ONE);
         properties.setNumberOfObjects(objects.length);
         properties.setInitialObjects(Arrays.asList(objects));

@@ -99,6 +99,7 @@ public class MainForm {
     private JLabel corLabel;
     private JLabel minDistanceLabel;
     private JTextField minDistanceField;
+    private JTextField scaleField;
     private ButtonGroup buttonGroup;
     private List<Component> runningComponents;
     private List<Component> playingComponents;
@@ -550,6 +551,10 @@ public class MainForm {
 
     public JLabel getCorLabel() {
         return corLabel;
+    }
+
+    public JTextField getScaleField() {
+        return scaleField;
     }
 
     {
@@ -1028,7 +1033,7 @@ public class MainForm {
         playingSpeedLabel.setForeground(new Color(-16776961));
         playingSpeedLabel.setText("Playing speed");
         gbc = new GridBagConstraints();
-        gbc.gridx = 9;
+        gbc.gridx = 10;
         gbc.gridy = 0;
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.EAST;
@@ -1040,7 +1045,7 @@ public class MainForm {
         playingSpeedTextField.setText("0");
         playingSpeedTextField.setToolTipText("");
         gbc = new GridBagConstraints();
-        gbc.gridx = 10;
+        gbc.gridx = 11;
         gbc.gridy = 0;
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.EAST;
@@ -1061,7 +1066,7 @@ public class MainForm {
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
         gbc.gridy = 1;
-        gbc.gridwidth = 9;
+        gbc.gridwidth = 10;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         playingPanel.add(playFileLabel, gbc);
@@ -1070,7 +1075,7 @@ public class MainForm {
         fontSize.setEnabled(false);
         fontSize.setText("24");
         gbc = new GridBagConstraints();
-        gbc.gridx = 8;
+        gbc.gridx = 9;
         gbc.gridy = 0;
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.EAST;
@@ -1080,7 +1085,7 @@ public class MainForm {
         showObjectIDsCheckBox.setHorizontalTextPosition(10);
         showObjectIDsCheckBox.setText("Object IDs");
         gbc = new GridBagConstraints();
-        gbc.gridx = 6;
+        gbc.gridx = 7;
         gbc.gridy = 0;
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.EAST;
@@ -1090,7 +1095,7 @@ public class MainForm {
         fontSizeLabel.setEnabled(false);
         fontSizeLabel.setText("Font size:");
         gbc = new GridBagConstraints();
-        gbc.gridx = 7;
+        gbc.gridx = 8;
         gbc.gridy = 0;
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
@@ -1100,7 +1105,7 @@ public class MainForm {
         showTrailCheckBox.setHorizontalTextPosition(10);
         showTrailCheckBox.setText("Trail");
         gbc = new GridBagConstraints();
-        gbc.gridx = 3;
+        gbc.gridx = 4;
         gbc.gridy = 0;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
@@ -1110,7 +1115,7 @@ public class MainForm {
         trailSizeTextLabel.setEnabled(false);
         trailSizeTextLabel.setText("Trail size:");
         gbc = new GridBagConstraints();
-        gbc.gridx = 4;
+        gbc.gridx = 5;
         gbc.gridy = 0;
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
@@ -1120,7 +1125,7 @@ public class MainForm {
         trailSizeTextField.setEnabled(false);
         trailSizeTextField.setText("500");
         gbc = new GridBagConstraints();
-        gbc.gridx = 5;
+        gbc.gridx = 6;
         gbc.gridy = 0;
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.EAST;
@@ -1162,6 +1167,26 @@ public class MainForm {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(0, 2, 0, 0);
         playingPanel.add(browsePlayingFileButton, gbc);
+        final JLabel label1 = new JLabel();
+        label1.setText("Scale");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        gbc.weightx = 10.0;
+        gbc.weighty = 1.0;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(0, 0, 0, 4);
+        playingPanel.add(label1, gbc);
+        scaleField = new JTextField();
+        scaleField.setColumns(4);
+        scaleField.setHorizontalAlignment(10);
+        scaleField.setText("1");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 3;
+        gbc.gridy = 0;
+        gbc.weighty = 1.0;
+        gbc.anchor = GridBagConstraints.EAST;
+        playingPanel.add(scaleField, gbc);
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new GridBagLayout());
         gbc = new GridBagConstraints();

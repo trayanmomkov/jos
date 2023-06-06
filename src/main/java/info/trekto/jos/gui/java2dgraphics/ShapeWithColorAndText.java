@@ -6,16 +6,18 @@ public class ShapeWithColorAndText {
     private Shape shape;
     private Color color;
     private String text;
+    private boolean metaData;
 
     public ShapeWithColorAndText(Shape shape, Color color) {
         this.shape = shape;
         this.color = color;
     }
 
-    public ShapeWithColorAndText(Shape shape, Color color, String text) {
+    public ShapeWithColorAndText(Shape shape, Color color, String text, boolean metaData) {
         this.shape = shape;
         this.color = color;
         this.text = text;
+        this.metaData = metaData;
     }
 
     public Color getColor() {
@@ -40,5 +42,13 @@ public class ShapeWithColorAndText {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public boolean isMetaData() {
+        return metaData;
+    }
+
+    public void setMetaData(boolean metaData) {
+        this.metaData = metaData;
     }
 }

@@ -31,6 +31,7 @@ public class SimulationProperties {
     private boolean mergeOnCollision = true;
     private Number coefficientOfRestitution;
     private Number minDistance;
+    private double scale;
 
     /* Java {@link ArrayList} is limited to Integer.MAX_VALUE */
     private int numberOfObjects;
@@ -62,6 +63,7 @@ public class SimulationProperties {
         this.mergeOnCollision = properties.mergeOnCollision;
         this.coefficientOfRestitution = properties.coefficientOfRestitution;
         this.minDistance = properties.minDistance;
+        this.scale = properties.scale;
     }
 
     public boolean isInfiniteSimulation() {
@@ -218,5 +220,13 @@ public class SimulationProperties {
 
     public void setMinDistance(Number minDistance) {
         this.minDistance = minDistance;
+    }
+
+    public double getScale() {
+        return scale;
+    }
+
+    public void setScale(double scale) {
+        this.scale = scale;
     }
 }

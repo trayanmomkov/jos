@@ -5,10 +5,17 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static info.trekto.jos.core.Controller.C;
+import static info.trekto.jos.core.Controller.DEFAULT_SCALE;
 import static info.trekto.jos.util.Utils.info;
+import static java.awt.RenderingHints.KEY_ANTIALIASING;
+import static java.awt.RenderingHints.KEY_RENDERING;
+import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
+import static java.awt.RenderingHints.VALUE_RENDER_QUALITY;
 
 /**
  * @author Trayan Momkov
@@ -17,12 +24,11 @@ import static info.trekto.jos.util.Utils.info;
 public class VisualizationPanel extends JPanel {
     private static final Logger logger = LoggerFactory.getLogger(VisualizationPanel.class);
 
-    private static final double SCALE_STEP = 0.1;
-    private static final double TRANSLATE_STEP = 1;
+    private static final double SCALE_STEP = 1.25;
+    private static final double TRANSLATE_STEP = 5;
     private List<ShapeWithColorAndText> shapes;
-    private Image image = null;
     private final Color backgroundColor;
-    private double scale = 1;
+    private double scale = DEFAULT_SCALE;
     private double translateX = 0;
     private double translateY = 0;
 
@@ -37,44 +43,69 @@ public class VisualizationPanel extends JPanel {
     }
 
     @Override
-    public void paint(Graphics g) {
+    public void paint(Graphics graphics) {
+        super.paintComponent(graphics);
+        Graphics2D g = (Graphics2D) graphics;
+        g.setColor(backgroundColor);
+        g.fillRect(0, 0, getWidth(), getHeight());
 
-        final Dimension dimension = getSize();
-        if (image == null) {
-            /* Double-buffer: clear the offscreen image. */
-            image = createImage(dimension.width, dimension.height);
-            //            image = new BufferedImage(dimension.width, dimension.height, BufferedImage.TYPE_INT_RGB);
-        }
-        Graphics graphics = image.getGraphics();
-        graphics.setColor(backgroundColor);
-        graphics.fillRect(0, 0, dimension.width, dimension.height);
+        /* High quality */
+        g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
 
-        /* Paint Offscreen */
-        renderOffScreen(image.getGraphics());
-
-        /* Scaling */
-        ((Graphics2D) g).scale(scale, scale);
-
-        /* Translating */
-        ((Graphics2D) g).translate(translateX, translateY);
-
-        g.drawImage(image, 0, 0, null);
+        paintByScalingGraphics(g);
     }
 
-    public void renderOffScreen(final Graphics g) {
-        if (shapes != null) {
-            for (ShapeWithColorAndText shape : shapes) {
-                g.setColor(shape.getColor());
-                if (shape.getText() != null) {
-                    g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, C.getFontSize()));
-                    ((Graphics2D) g).drawString(shape.getText(),
-                                                Math.round(shape.getShape().getBounds2D().getX()),
-                                                Math.round(shape.getShape().getBounds2D().getY()));
-                } else {
-                    ((Graphics2D) g).fill(shape.getShape());
-                }
+    private void paintByScalingGraphics(Graphics2D g) {
+        if (shapes == null) {
+            return;
+        }
+        
+        drawMetadata(g, shapes.stream().filter(ShapeWithColorAndText::isMetaData).collect(Collectors.toList()));
+        
+        AffineTransform currentAffineTransform = g.getTransform();
+        AffineTransform at = new AffineTransform();
+        
+        double width = getWidth();
+        double height = getHeight();
+
+        double zoomWidth = width * scale;
+        double zoomHeight = height * scale;
+
+        double anchorX = (width - zoomWidth) / 2.0;
+        double anchorY = (height - zoomHeight) / 2.0;
+
+        at.translate(anchorX + translateX / scale, anchorY + translateY / scale);
+        at.scale(scale, scale);
+        
+        g.setTransform(at);
+        drawObjects(g, shapes.stream().filter(e -> !e.isMetaData()).collect(Collectors.toList()));
+        g.setTransform(currentAffineTransform);
+    }
+
+    private void drawObjects(final Graphics2D g, List<ShapeWithColorAndText> shapesList) {
+        for (ShapeWithColorAndText shape : shapesList) {
+            g.setColor(shape.getColor());
+            if (shape.getText() != null) {
+                drawString(g, shape, (int) Math.round(C.getFontSize() / scale));
+            } else {
+                g.fill(shape.getShape());
             }
         }
+    }
+
+    private void drawMetadata(final Graphics2D g, List<ShapeWithColorAndText> shapesList) {
+        for (ShapeWithColorAndText shape : shapesList) {
+            g.setColor(shape.getColor());
+            drawString(g, shape, C.getFontSize());
+        }
+    }
+
+    private void drawString(Graphics2D g, ShapeWithColorAndText shape, int fontSize) {
+        g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, fontSize));
+        g.drawString(shape.getText(),
+                     Math.round(shape.getShape().getBounds2D().getX()),
+                     Math.round(shape.getShape().getBounds2D().getY()));
     }
 
     public void draw(List<ShapeWithColorAndText> shapes) {
@@ -84,12 +115,14 @@ public class VisualizationPanel extends JPanel {
 
     public void zoomIn() {
         info(logger, "zoomIn");
-        scale += SCALE_STEP;
+        scale *= SCALE_STEP;
+        C.updateScaleLabel(scale);
     }
 
     public void zoomOut() {
         info(logger, "zoomOut");
-        scale -= SCALE_STEP;
+        scale /= SCALE_STEP;
+        C.updateScaleLabel(scale);
     }
 
     public void translateLeft() {
@@ -108,4 +141,11 @@ public class VisualizationPanel extends JPanel {
         translateY -= TRANSLATE_STEP;
     }
 
+    public double getScale() {
+        return scale;
+    }
+
+    public void setScale(double scale) {
+        this.scale = scale;
+    }
 }

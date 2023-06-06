@@ -41,6 +41,7 @@ import java.util.zip.GZIPOutputStream;
 
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.Controller.DEFAULT_MIN_DISTANCE;
+import static info.trekto.jos.core.Controller.DEFAULT_SCALE;
 import static info.trekto.jos.core.model.impl.SimulationObjectImpl.DEFAULT_COLOR;
 import static info.trekto.jos.core.model.impl.SimulationObjectImpl.DEFAULT_COLOR_SIMPLIFIED;
 import static info.trekto.jos.core.numbers.NumberFactory.NumberType.ARBITRARY_PRECISION;
@@ -105,6 +106,7 @@ public class JsonReaderWriter implements ReaderWriter {
         json.addProperty("mergeOnCollision", properties.isMergeOnCollision());
         json.addProperty("coefficientOfRestitution", properties.getCoefficientOfRestitution().toString());
         json.addProperty("minimumDistance", properties.getMinDistance().toString());
+        json.addProperty("scale", properties.getScale());
         return json;
     }
 
@@ -241,6 +243,9 @@ public class JsonReaderWriter implements ReaderWriter {
         
         JsonElement minDistance = json.get("minimumDistance");
         properties.setMinDistance(minDistance != null ? New.num(minDistance.getAsString()) : New.num(DEFAULT_MIN_DISTANCE));
+        
+        JsonElement scale = json.get("scale");
+        properties.setScale(scale != null ? Double.parseDouble(scale.getAsString()) : DEFAULT_SCALE);
 
         List<SimulationObject> initialObjects = new ArrayList<>();
         for (JsonElement jsonElement : json.get("initialObjects").getAsJsonArray()) {
