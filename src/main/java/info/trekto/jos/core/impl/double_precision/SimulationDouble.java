@@ -59,6 +59,9 @@ public class SimulationDouble implements Simulation {
         int screenWidth = 0;
         int screenHeight = 0;
         if (properties.isBounceFromScreenBorders()) {
+            if (C.getVisualizer() == null) {
+                C.setVisualizer(C.createVisualizer(properties));
+            }
             screenWidth = C.getVisualizer().getVisualizationPanel().getWidth();
             screenHeight = C.getVisualizer().getVisualizationPanel().getHeight();
         }
@@ -249,9 +252,11 @@ public class SimulationDouble implements Simulation {
             throw new SimulationException("Objects with duplicate IDs exist!");
         }
 
+        long start = System.nanoTime();
         if (collisionExists(data.positionX, data.positionY, data.radius)) {
             throw new SimulationException("Initial collision exists!");
         }
+        info(logger, "Initial collision check time: " + (System.nanoTime() - start) / (double)NANOSECONDS_IN_ONE_SECOND);
 
         executingOnCpu = false;
 
@@ -272,21 +277,17 @@ public class SimulationDouble implements Simulation {
     }
 
     public boolean collisionExists(double[] positionX, double[] positionY, double[] radius) {
-        for (int i = 0; i < positionX.length; i++) {
-            for (int j = 0; j < positionX.length; j++) {
-                if (i == j) {
-                    continue;
-                }
-                // distance between centres
-                double distance = moveObjectsLogic.calculateDistance(positionX[i], positionY[i], positionX[j], positionY[j]);
+        ProcessCollisionsLogicDouble tempCollisionLogic = new ProcessCollisionsLogicDouble(data, true, 1);
+        Range tempRange = createRange(data.n);
 
-                if (distance < radius[i] + radius[j]) {
-                    info(logger, String.format("Collision between object A(x:%f, y:%f, r:%f) and B(x:%f, y:%f, r:%f)",
-                                               positionX[i], positionY[i], radius[i], positionX[j], positionY[j], radius[j]));
+        data.copyToReadOnly(true);
+        tempCollisionLogic.execute(tempRange);
+        for (int i = 0; i < data.n; i++) {
+            if (data.deleted[i]) {
+                info(logger, String.format("Collision with object A(x:%f, y:%f, r:%f)", positionX[i], positionY[i], radius[i]));
                     return true;
                 }
             }
-        }
         return false;
     }
 

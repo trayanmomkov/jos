@@ -279,19 +279,15 @@ public class SimulationFloat implements Simulation {
     }
 
     public boolean collisionExists(float[] positionX, float[] positionY, float[] radius) {
-        for (int i = 0; i < positionX.length; i++) {
-            for (int j = 0; j < positionX.length; j++) {
-                if (i == j) {
-                    continue;
-                }
-                // distance between centres
-                float distance = moveObjectsLogic.calculateDistance(positionX[i], positionY[i], positionX[j], positionY[j]);
+        ProcessCollisionsLogicFloat tempCollisionLogic = new ProcessCollisionsLogicFloat(data, true, 1);
+        Range tempRange = createRange(data.n);
 
-                if (distance < radius[i] + radius[j]) {
-                    info(logger, String.format("Collision between object A(x:%f, y:%f, r:%f) and B(x:%f, y:%f, r:%f)",
-                                               positionX[i], positionY[i], radius[i], positionX[j], positionY[j], radius[j]));
-                    return true;
-                }
+        data.copyToReadOnly(true);
+        tempCollisionLogic.execute(tempRange);
+        for (int i = 0; i < data.n; i++) {
+            if (data.deleted[i]) {
+                info(logger, String.format("Collision with object A(x:%f, y:%f, r:%f)", positionX[i], positionY[i], radius[i]));
+                return true;
             }
         }
         return false;

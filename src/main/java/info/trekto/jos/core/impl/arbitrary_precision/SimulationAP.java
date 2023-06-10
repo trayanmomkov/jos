@@ -18,6 +18,7 @@ import java.util.Set;
 
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.impl.Data.countObjects;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.ONE;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
 import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_MILLISECOND;
 import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_SECOND;
@@ -229,22 +230,16 @@ public class SimulationAP implements CpuSimulation {
     }
 
     public boolean collisionExists(Number[] positionX, Number[] positionY, Number[] radius) {
-        for (int i = 0; i < positionX.length; i++) {
-            for (int j = 0; j < positionX.length; j++) {
-                if (i == j) {
-                    continue;
-                }
-                // distance between centres
-                Number distance = moveObjectsLogic.calculateDistance(positionX[i], positionY[i], positionX[j], positionY[j]);
+        ProcessCollisionsLogicAP tempCollisionLogic = new ProcessCollisionsLogicAP(data, true, ONE);
 
-                if (distance.compareTo(radius[i].add(radius[j])) < 0) {
-                    info(logger, String.format("Collision between object A(x:%s, y:%s, r:%s) and B(x:%s, y:%s, r:%s)",
-                                               positionX[i].toString(), positionY[i].toString(), radius[i].toString(),
-                                               positionX[j].toString(), positionY[j].toString(), radius[j].toString()));
+        data.copyToReadOnly(true);
+        tempCollisionLogic.run();
+        for (int i = 0; i < data.n; i++) {
+            if (data.deleted[i]) {
+                info(logger, String.format("Collision with object A(x:%s, y:%s, r:%s)", positionX[i], positionY[i], radius[i]));
                     return true;
                 }
             }
-        }
         return false;
     }
 
