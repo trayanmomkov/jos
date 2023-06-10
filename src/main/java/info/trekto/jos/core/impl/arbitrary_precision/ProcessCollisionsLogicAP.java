@@ -217,7 +217,7 @@ public class ProcessCollisionsLogicAP implements ProcessCollisionsLogic {
         return RATIO_FOUR_THREE.multiply(PI).multiply(radius.pow(3));
     }
 
-    public Number calculateRadiusFromVolume(final Number volume) {
+    public static Number calculateRadiusFromVolume(final Number volume) {
         // V = 4/3 * pi * r^3
         return IGNORED.cbrt(volume.divide(RATIO_FOUR_THREE.multiply(PI)));
     }

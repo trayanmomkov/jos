@@ -10,10 +10,12 @@ import info.trekto.jos.core.numbers.NumberFactory.NumberType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.ExecutionMode.AUTO;
@@ -32,6 +34,7 @@ public class Utils {
     public static final long MILLI_IN_MINUTE = 60 * MILLISECONDS_IN_ONE_SECOND;
     public static final long MILLI_IN_HOUR = 60 * 60 * MILLISECONDS_IN_ONE_SECOND;
     public static final long MILLI_IN_DAY = 24 * 60 * 60 * MILLISECONDS_IN_ONE_SECOND;
+    public static final long MILLI_IN_YEAR = 31560000000L;
     public static final long NANOSECONDS_IN_ONE_MILLISECOND = 1000 * 1000L;
     
     private static final int ONE_DOUBLE_OBJECT_SIZE_BYTES = 443; // 299
@@ -164,11 +167,19 @@ public class Utils {
     }
 
     public static String milliToHumanReadable(long milliseconds) {
-        long days = milliseconds / MILLI_IN_DAY;
-        long hours = (milliseconds - (days * MILLI_IN_DAY)) / MILLI_IN_HOUR;
-        long minutes = (milliseconds - (days * MILLI_IN_DAY + hours * MILLI_IN_HOUR)) / MILLI_IN_MINUTE;
-        long seconds = (milliseconds - (days * MILLI_IN_DAY + hours * MILLI_IN_HOUR + minutes * MILLI_IN_MINUTE)) / MILLISECONDS_IN_ONE_SECOND;
-        milliseconds = milliseconds - (days * MILLI_IN_DAY + hours * MILLI_IN_HOUR + minutes * MILLI_IN_MINUTE + seconds * MILLISECONDS_IN_ONE_SECOND);
+        long years = milliseconds / MILLI_IN_YEAR;
+        long days = (milliseconds - (years * MILLI_IN_YEAR)) / MILLI_IN_DAY;
+        long hours = (milliseconds - (years * MILLI_IN_YEAR + days * MILLI_IN_DAY)) / MILLI_IN_HOUR;
+        long minutes = (milliseconds - (years * MILLI_IN_YEAR + days * MILLI_IN_DAY + hours * MILLI_IN_HOUR)) / MILLI_IN_MINUTE;
+        long seconds = (milliseconds - (years * MILLI_IN_YEAR + days * MILLI_IN_DAY + hours * MILLI_IN_HOUR + minutes * MILLI_IN_MINUTE)) / MILLISECONDS_IN_ONE_SECOND;
+        milliseconds = milliseconds - (years * MILLI_IN_YEAR + days * MILLI_IN_DAY + hours * MILLI_IN_HOUR + minutes * MILLI_IN_MINUTE + seconds * MILLISECONDS_IN_ONE_SECOND);
+
+        if (years > 0) {
+            return years + " y. "
+                    + (days > 0 ? days + " d. " : "")
+                    + (hours > 0 && years < 10 ? hours + " h. " : "");
+        }
+
         return (days > 0 ? days + " d. " : "")
                 + (hours > 0 ? hours + " h. " : "")
                 + (minutes > 0 ? minutes + " m. " : "")
@@ -299,5 +310,13 @@ public class Utils {
     public static void info(Logger logger, String s, Throwable tr) {
         logger.info(s, tr);
         C.append("INFO: " + s + " - " + tr.getMessage());
+    }
+    
+    public static double nextDouble(Random random, double origin, double bound) {
+        return origin + (bound - origin) * random.nextDouble();
+    }
+
+    public static Color invertColor(Color c) {
+        return new Color(255 - c.getRed(), 255 - c.getGreen(), 255 - c.getBlue());
     }
 }

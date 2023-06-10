@@ -27,6 +27,7 @@ import java.util.Queue;
 
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.Controller.PROGRAM_NAME;
+import static info.trekto.jos.util.Utils.invertColor;
 import static info.trekto.jos.util.Utils.secondsToHumanReadable;
 import static java.awt.Color.BLUE;
 import static java.awt.Color.RED;
@@ -38,6 +39,8 @@ import static java.awt.Color.RED;
 public class VisualizerImpl implements Visualizer {
     private static final Logger logger = LoggerFactory.getLogger(VisualizerImpl.class);
     public static final int TRAIL_SIZE = 2;
+    public static final Color DEFAULT_BACKGROUND_COLOR = Color.WHITE;
+    public static final Color DEFAULT_COLOR = BLUE;
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.000E0");
     private VisualizationPanel visualizationPanel;
     private JFrame frame = null;
@@ -62,8 +65,8 @@ public class VisualizerImpl implements Visualizer {
             int displayHeight = gd.getDisplayMode().getHeight();
 
             frame.setSize(new Dimension(displayWidth, displayHeight));
-            frame.setBackground(Color.WHITE);
-            visualizationPanel = new VisualizationPanel(Color.WHITE);
+            frame.setBackground(Color.BLACK);
+            visualizationPanel = new VisualizationPanel(Color.BLACK);
             visualizationPanel.setScale(properties.getScale());
             frame.add(visualizationPanel);
             frame.addWindowListener(new WindowAdapter() {
@@ -75,6 +78,11 @@ public class VisualizerImpl implements Visualizer {
             frame.setVisible(true);
         }
     }
+    
+    /*
+    save background colour
+    threshold detector improvement
+     */
 
     @Override
     public void closeWindow() {
@@ -181,13 +189,15 @@ public class VisualizerImpl implements Visualizer {
 
     private Collection<? extends ShapeWithColorAndText> createInfo(long iteration, Number secondsPerIteration, int objectsCount
             /*, double totalMass, double totalMomentum*/) {
-        List<ShapeWithColorAndText> info = new ArrayList<>();
-        info.add(new ShapeWithColorAndText(new Rectangle2D.Double(0, 20, 100, 40), BLUE, "Iteration: " + iteration, true));
-        info.add(new ShapeWithColorAndText(new Rectangle2D.Double(0, 60, 100, 40), BLUE, "Time: "
-                + secondsToHumanReadable(secondsPerIteration.multiply(New.num(iteration)).doubleValue()), true));
-
-        info.add(new ShapeWithColorAndText(new Rectangle2D.Double(0, 100, 100, 40), BLUE, "Objects: " + objectsCount, true));
+        int verPos = 20;
+        final int verStep = 20;
         
+        List<ShapeWithColorAndText> info = new ArrayList<>();
+        info.add(newMeta(verPos, "Iteration: " + iteration));
+        info.add(newMeta(verPos += verStep, "Time: " + secondsToHumanReadable(secondsPerIteration.multiply(New.num(iteration)).doubleValue())));
+        info.add(newMeta(verPos += verStep, String.format("Scale: %1.2E", visualizationPanel.getScale())));
+        info.add(newMeta(verPos += verStep, "Objects: " + objectsCount));
+
         /* For debugging purposes */
 //        info.add(new ShapeWithColorAndText(new Rectangle2D.Double(0, 140, 100, 40), BLUE,
 //                                           String.format("Mass: %s kg", DECIMAL_FORMAT.format(totalMass))));
@@ -196,12 +206,19 @@ public class VisualizerImpl implements Visualizer {
 
         return info;
     }
+    
+    private ShapeWithColorAndText newMeta(double y, String text) {
+        return new ShapeWithColorAndText(new Rectangle2D.Double(2, y, 100, 20), invertedBackground(), text, true);
+    }
+
+    public Color invertedBackground() {
+        return frame.getBackground().equals(DEFAULT_BACKGROUND_COLOR) ? DEFAULT_COLOR : invertColor(frame.getBackground());
+    }
 
     public void end() {
         Ellipse2D ellipse = new Ellipse2D.Double();
         ellipse.setFrame(convertCoordinatesForDisplayX(-100), convertCoordinatesForDisplayY(-10), 1, 1);
-        ShapeWithColorAndText text = new ShapeWithColorAndText(ellipse, BLUE);
-        text.setText(C.getEndText());
+        ShapeWithColorAndText text = new ShapeWithColorAndText(ellipse, invertedBackground(), C.getEndText(), true);
         if (latestShapes == null) {
             latestShapes = new ArrayList<>();
         }

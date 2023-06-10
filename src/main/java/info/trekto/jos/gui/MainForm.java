@@ -1073,7 +1073,7 @@ public class MainForm {
         fontSize = new JTextField();
         fontSize.setColumns(2);
         fontSize.setEnabled(false);
-        fontSize.setText("24");
+        fontSize.setText("18");
         gbc = new GridBagConstraints();
         gbc.gridx = 9;
         gbc.gridy = 0;

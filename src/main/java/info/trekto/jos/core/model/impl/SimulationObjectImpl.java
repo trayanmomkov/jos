@@ -3,18 +3,18 @@ package info.trekto.jos.core.model.impl;
 import info.trekto.jos.core.model.ImmutableSimulationObject;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.numbers.Number;
+import info.trekto.jos.gui.java2dgraphics.VisualizerImpl;
 
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.TRIPLE_ZERO;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
-import static java.awt.Color.BLUE;
 
 /**
  * @author Trayan Momkov
  * 3 Mar 2016
  */
 public class SimulationObjectImpl implements SimulationObject {
-    public static final int DEFAULT_COLOR = BLUE.getRGB();
-    public static final int DEFAULT_COLOR_SIMPLIFIED = BLUE.getBlue();
+    public static final int DEFAULT_COLOR = VisualizerImpl.DEFAULT_COLOR.getRGB();
+    public static final int DEFAULT_COLOR_SIMPLIFIED = VisualizerImpl.DEFAULT_COLOR.getBlue();
 
     private Number x;
     private Number y;

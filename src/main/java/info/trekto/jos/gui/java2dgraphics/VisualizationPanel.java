@@ -25,7 +25,9 @@ public class VisualizationPanel extends JPanel {
     private static final Logger logger = LoggerFactory.getLogger(VisualizationPanel.class);
 
     private static final double SCALE_STEP = 1.25;
-    private static final double TRANSLATE_STEP = 5;
+    private static final double TRANSLATE_STEP = 10;
+    public static final int DEFAULT_FONT_SIZE = 18;
+    public static final Font DEFAULT_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, DEFAULT_FONT_SIZE);
     private List<ShapeWithColorAndText> shapes;
     private final Color backgroundColor;
     private double scale = DEFAULT_SCALE;
@@ -75,7 +77,7 @@ public class VisualizationPanel extends JPanel {
         double anchorX = (width - zoomWidth) / 2.0;
         double anchorY = (height - zoomHeight) / 2.0;
 
-        at.translate(anchorX + translateX / scale, anchorY + translateY / scale);
+        at.translate(anchorX + translateX, anchorY + translateY);
         at.scale(scale, scale);
         
         g.setTransform(at);
@@ -102,7 +104,7 @@ public class VisualizationPanel extends JPanel {
     }
 
     private void drawString(Graphics2D g, ShapeWithColorAndText shape, int fontSize) {
-        g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, fontSize));
+        g.setFont(fontSize == DEFAULT_FONT_SIZE ? DEFAULT_FONT : new Font(Font.SANS_SERIF, Font.PLAIN, fontSize));
         g.drawString(shape.getText(),
                      Math.round(shape.getShape().getBounds2D().getX()),
                      Math.round(shape.getShape().getBounds2D().getY()));

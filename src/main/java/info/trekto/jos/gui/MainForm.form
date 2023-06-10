@@ -556,7 +556,7 @@
             <properties>
               <columns value="2"/>
               <enabled value="false"/>
-              <text value="24"/>
+              <text value="18"/>
             </properties>
           </component>
           <component id="f8a16" class="javax.swing.JCheckBox" binding="showObjectIDsCheckBox" default-binding="true">

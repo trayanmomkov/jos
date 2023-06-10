@@ -47,6 +47,7 @@ import static info.trekto.jos.core.numbers.NumberFactory.NumberType.DOUBLE;
 import static info.trekto.jos.core.numbers.NumberFactory.NumberType.FLOAT;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumberFactory;
+import static info.trekto.jos.gui.java2dgraphics.VisualizationPanel.DEFAULT_FONT_SIZE;
 import static info.trekto.jos.util.Utils.calculateAverageFileSize;
 import static info.trekto.jos.util.Utils.error;
 import static info.trekto.jos.util.Utils.info;
@@ -540,7 +541,7 @@ public enum Controller {
         if (!isNullOrBlank(gui.getFontSize().getText().replace("-", ""))) {
             return Integer.parseInt(gui.getFontSize().getText());
         } else {
-            return 48;
+            return DEFAULT_FONT_SIZE;
         }
     }
 
