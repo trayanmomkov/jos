@@ -38,7 +38,7 @@ import static java.awt.Color.RED;
  */
 public class VisualizerImpl implements Visualizer {
     private static final Logger logger = LoggerFactory.getLogger(VisualizerImpl.class);
-    public static final int TRAIL_SIZE = 2;
+    public static final int TRAIL_SIZE = 1;
     public static final Color DEFAULT_BACKGROUND_COLOR = Color.WHITE;
     public static final Color DEFAULT_COLOR = BLUE;
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.000E0");
@@ -163,7 +163,7 @@ public class VisualizerImpl implements Visualizer {
                     shapes.addAll(trail);
                 }
                 Ellipse2D trailEllipse = new Ellipse2D.Double();
-                double trailEllipseRadius = TRAIL_SIZE / 2.0;
+                double trailEllipseRadius = TRAIL_SIZE / 2.0 / properties.getScale();
                 double trailEllipseX = convertCoordinatesForDisplayX(x + radius - trailEllipseRadius / 2);
                 double trailEllipseY = convertCoordinatesForDisplayY(y + radius - trailEllipseRadius / 2);
                 trailEllipse.setFrame(trailEllipseX, trailEllipseY, trailEllipseRadius * TRAIL_SIZE, trailEllipseRadius * TRAIL_SIZE);

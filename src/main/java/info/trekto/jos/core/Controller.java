@@ -558,6 +558,7 @@ public enum Controller {
 
     public void setShowTrail(boolean selected) {
         gui.getShowTrailCheckBox().setSelected(selected);
+        showTrailCheckBoxEvent();
     }
 
     public int getTrailSize() {
