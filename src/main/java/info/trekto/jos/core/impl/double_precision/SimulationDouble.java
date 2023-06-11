@@ -252,11 +252,9 @@ public class SimulationDouble implements Simulation {
             throw new SimulationException("Objects with duplicate IDs exist!");
         }
 
-        long start = System.nanoTime();
         if (collisionExists(data.positionX, data.positionY, data.radius)) {
             throw new SimulationException("Initial collision exists!");
         }
-        info(logger, "Initial collision check time: " + (System.nanoTime() - start) / (double)NANOSECONDS_IN_ONE_SECOND);
 
         executingOnCpu = false;
 

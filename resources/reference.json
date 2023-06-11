@@ -1,0 +1,55 @@
+{
+  "properties":{
+    "numberOfIterations":0,                       # Zero means no limit
+    "secondsPerIteration":0.001,
+    "numberOfObjects":2,
+    "outputFile":"2022-Feb-07_00-26-53.json.gz",  # Where to save the simulation run
+    "saveToFile":true,                            # Whether to save the simulation run
+    "saveEveryNthIteration": 100,                 # Will save only every 100th iteration. This way the output file will be much smaller.
+    "saveMass": false,                            # Whether to save the mass of the obejcts in the output file.
+    "saveVelocity": false,                        # Whether to save the velocity.
+    "saveAcceleration": false,                    # Whether to save the acceleration.
+    "numberType":"DOUBLE",                        # What type to use for numbers. GPU version works with DOUBLE only
+    "interactingLaw":"NEWTON_LAW_OF_GRAVITATION", # Current version (1.0.0) supports only NEWTON_LAW_OF_GRAVITATION
+    "precision":32,                               # Numbers precision. Used by BigDecimal and ApFloat
+    "realTimeVisualization":true,                 # Whether to visualize during simulation run. If true, runs slower
+    "playingSpeed":0,                             # If playingSpeed < 0: every iteration sleep playingSpeed milliseconds.
+                                                  # If playingSpeed >= 0: visualize every playingSpeed milliseconds.
+    "bounceFromScreenBorders": false,             # If true, objects will bounce from the screen borders.
+    "mergeOnCollision": false,
+    "coefficientOfRestitution": "0.8",            # Coefficient of restitution. 1: elastic, 0: perfectly inelastic, above 1: objects will gain energy on collision.
+    "minimumDistance": "10.0",                    # If distance between objects centers < minimumDistance, minimumDistance will be used on acceleration calculating.
+    "initialObjects":[
+      {
+        "id":"0",                                 # Unique id of the object
+        "x":-200,                                 # Position of the centre
+        "y":0,
+        "z":0,
+        "velocityX":-4,                           # Metre per second (m/s)
+        "velocityY":-2.5,
+        "velocityZ":0.0,
+        "accelerationX": "-8.003695",             # Current acceleration
+        "accelerationY": "34.10966",
+        "accelerationZ": "0",
+        "mass":1E17,                              # Kilogram (kg)
+        "radius":80                               # Metre (m)
+        "color":"0000FF",                         # Blue
+      },
+      {
+        "id":"1",
+        "x":200,
+        "y":0,
+        "z":0,
+        "velocityX":-1.5,
+        "velocityY":3,
+        "velocityZ":0.0,
+        "accelerationX": "-9.364132",
+        "accelerationY": "14.401725",
+        "accelerationZ": "0",
+        "mass":2E17,
+        "radius":70,
+        "color":"FF0000",                         # Red
+      }
+    ]
+  }
+}

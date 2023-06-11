@@ -690,7 +690,8 @@ public enum Controller {
             String numberOfObjectsBefore = gui.getNumberOfObjectsTextField().getText();
             refreshProperties(loadProperties(file.getAbsolutePath()));
             unHighlightButtons(gui.getGenerateObjectsButton());
-            if (gui.getNumberOfObjectsTextField().getText().equals(numberOfObjectsBefore)) {
+            if (gui.getNumberOfObjectsTextField().getText().equals(numberOfObjectsBefore)
+                    || getSelectedExecutionMode() != AUTO) {
                 unHighlightButtons(gui.getDetectCpuGpuThresholdButton());
             }
             saveToFileCheckBoxEvent();
@@ -803,6 +804,7 @@ public enum Controller {
             gui.getCpuGpuThresholdField().setEnabled(false);
             gui.getCpuGpuThresholdLabel2().setEnabled(false);
             gui.getDetectCpuGpuThresholdButton().setEnabled(false);
+            unHighlightButtons(gui.getDetectCpuGpuThresholdButton());
         }
     }
 

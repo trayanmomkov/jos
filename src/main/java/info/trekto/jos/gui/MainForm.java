@@ -4,7 +4,6 @@ import info.trekto.jos.core.ExecutionMode;
 import info.trekto.jos.core.ForceCalculator;
 import info.trekto.jos.core.numbers.NumberFactory;
 import info.trekto.jos.gui.java2dgraphics.VisualizerImpl;
-import info.trekto.jos.util.Utils;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -27,6 +26,9 @@ import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.ExecutionMode.AUTO;
 import static info.trekto.jos.core.ExecutionMode.CPU;
 import static info.trekto.jos.core.ExecutionMode.GPU;
+import static info.trekto.jos.util.Utils.colorToString;
+import static info.trekto.jos.util.Utils.invertColor;
+import static info.trekto.jos.util.Utils.stringToColor;
 
 public class MainForm {
     private static final String PLAYING_SPEED_TIP = "If x < 0: every iteration sleep x milliseconds; If x >= 0: visualize every x milliseconds";
@@ -233,8 +235,10 @@ public class MainForm {
         playingSpeedLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         cpuGpuThresholdLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        backgroundColorField.addActionListener(actionEvent ->
-                                                       backgroundColorField.setBackground(Utils.stringToColor(backgroundColorField.getText())));
+        backgroundColorField.addActionListener(e -> {
+            backgroundColorField.setBackground(stringToColor(backgroundColorField.getText()));
+            backgroundColorField.setForeground(invertColor(stringToColor(backgroundColorField.getText())));
+        });
 
         backgroundColorField.addMouseListener(new MouseAdapter() {
             @Override
@@ -243,12 +247,14 @@ public class MainForm {
                 Color chosenColor = JColorChooser.showDialog(null, "Choose a color", backgroundColorField.getBackground());
                 if (chosenColor != null) {
                     backgroundColorField.setBackground(chosenColor);
-                    backgroundColorField.setText(Utils.colorToString(chosenColor));
+                    backgroundColorField.setText(colorToString(chosenColor));
+                    backgroundColorField.setForeground(invertColor(chosenColor));
+                    
                 }
             }
         });
 
-        backgroundColorField.setBackground(Utils.stringToColor(backgroundColorField.getText()));
+        backgroundColorField.setBackground(stringToColor(backgroundColorField.getText()));
     }
 
     /////////////////////////////////////////
@@ -584,7 +590,7 @@ public class MainForm {
 
     public void setBackgroundColor(Color backgroundColor) {
         backgroundColorField.setBackground(backgroundColor);
-        backgroundColorField.setText(Utils.colorToString(backgroundColor));
+        backgroundColorField.setText(colorToString(backgroundColor));
     }
 
     {
