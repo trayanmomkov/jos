@@ -15,6 +15,7 @@ import info.trekto.jos.core.model.impl.TripleNumber;
 import info.trekto.jos.core.numbers.New;
 import info.trekto.jos.core.numbers.Number;
 import info.trekto.jos.core.numbers.NumberFactory;
+import info.trekto.jos.gui.java2dgraphics.VisualizerImpl;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonToken;
 import org.codehaus.jackson.map.MappingJsonFactory;
@@ -47,8 +48,12 @@ import static info.trekto.jos.core.model.impl.SimulationObjectImpl.DEFAULT_COLOR
 import static info.trekto.jos.core.numbers.NumberFactory.NumberType.ARBITRARY_PRECISION;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumberFactory;
+import static info.trekto.jos.util.Utils.colorIntToString;
+import static info.trekto.jos.util.Utils.colorToString;
 import static info.trekto.jos.util.Utils.error;
 import static info.trekto.jos.util.Utils.info;
+import static info.trekto.jos.util.Utils.stringToColor;
+import static info.trekto.jos.util.Utils.stringToColorInt;
 import static org.codehaus.jackson.JsonToken.END_OBJECT;
 
 /**
@@ -107,6 +112,7 @@ public class JsonReaderWriter implements ReaderWriter {
         json.addProperty("coefficientOfRestitution", properties.getCoefficientOfRestitution().toString());
         json.addProperty("minimumDistance", properties.getMinDistance().toString());
         json.addProperty("scale", properties.getScale());
+        json.addProperty("backgroundColor", colorToString(properties.getBackgroundColor()));
         return json;
     }
 
@@ -144,7 +150,7 @@ public class JsonReaderWriter implements ReaderWriter {
         simulationObjectMap.put("radius", simulationObject.getRadius().toString());
 
         if (simulationObject.getColor() != DEFAULT_COLOR && simulationObject.getColor() != DEFAULT_COLOR_SIMPLIFIED) {
-            simulationObjectMap.put("color", String.format("%08X", simulationObject.getColor()).substring(2));
+            simulationObjectMap.put("color", colorIntToString(simulationObject.getColor()));
         }
         return gson.toJsonTree(simulationObjectMap).getAsJsonObject();
     }
@@ -185,7 +191,7 @@ public class JsonReaderWriter implements ReaderWriter {
         simulationObjectMap.put("radius", radius);
 
         if (color != DEFAULT_COLOR && color != DEFAULT_COLOR_SIMPLIFIED) {
-            simulationObjectMap.put("color", String.format("%08X", color).substring(2));
+            simulationObjectMap.put("color", colorIntToString(color));
         }
         return gson.toJsonTree(simulationObjectMap).getAsJsonObject();
     }
@@ -247,6 +253,11 @@ public class JsonReaderWriter implements ReaderWriter {
         JsonElement scale = json.get("scale");
         properties.setScale(scale != null ? Double.parseDouble(scale.getAsString()) : DEFAULT_SCALE);
 
+        JsonElement backgroundColor = json.get("backgroundColor");
+        properties.setBackgroundColor(backgroundColor != null ?
+                                              stringToColor(backgroundColor.getAsString())
+                                              : VisualizerImpl.DEFAULT_BACKGROUND_COLOR);
+
         List<SimulationObject> initialObjects = new ArrayList<>();
         for (JsonElement jsonElement : json.get("initialObjects").getAsJsonArray()) {
             JsonObject o = jsonElement.getAsJsonObject();
@@ -276,7 +287,7 @@ public class JsonReaderWriter implements ReaderWriter {
             simo.setRadius(New.num(o.get("radius").getAsString()));
             
             if (o.get("color") != null) {
-                simo.setColor(Integer.parseInt(o.get("color").getAsString(), 16));
+                simo.setColor(stringToColorInt(o.get("color").getAsString()));
             }
 
             initialObjects.add(simo);
@@ -329,7 +340,7 @@ public class JsonReaderWriter implements ReaderWriter {
                 o.setZ(node.get("z") != null ? New.num(node.get("z").asText()) : ZERO);
                 o.setRadius(New.num(node.get("radius").asText()));
                 if (node.get("color") != null) {
-                    o.setColor(Integer.parseInt(node.get("color").getTextValue(), 16));
+                    o.setColor(stringToColorInt(node.get("color").getTextValue()));
                 }
                 objects.add(o);
             }

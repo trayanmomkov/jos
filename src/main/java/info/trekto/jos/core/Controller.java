@@ -353,6 +353,8 @@ public enum Controller {
         } else {
             properties.setScale(Double.parseDouble(scaleText));
         }
+        
+        properties.setBackgroundColor(gui.getBackgroundColor());
 
         properties.setBounceFromScreenBorders(gui.getBounceFromScreenBordersCheckBox().isSelected());
         properties.setRealTimeVisualization(gui.getRealTimeVisualizationCheckBox().isSelected());
@@ -479,6 +481,7 @@ public enum Controller {
         gui.getCorTextField().setText(String.valueOf(prop.getCoefficientOfRestitution()));
         gui.getMinDistanceField().setText(String.valueOf(prop.getMinDistance()));
         gui.getScaleField().setText(String.valueOf(prop.getScale()));
+        gui.setBackgroundColor(prop.getBackgroundColor());
 
         ((InitialObjectsTableModelAndListener) gui.getInitialObjectsTable().getModel()).setInitialObjects(prop.getInitialObjects());
 

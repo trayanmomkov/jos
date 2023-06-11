@@ -319,4 +319,20 @@ public class Utils {
     public static Color invertColor(Color c) {
         return new Color(255 - c.getRed(), 255 - c.getGreen(), 255 - c.getBlue());
     }
+    
+    public static String colorIntToString(int color) {
+        return String.format("%08X", color).substring(2);
+    }
+
+    public static int stringToColorInt(String backgroundColor) {
+        return Integer.parseInt(backgroundColor, 16);
+    }
+    
+    public static String colorToString(Color color) {
+        return String.format("%08X", color.getRGB()).substring(2);
+    }
+
+    public static Color stringToColor(String backgroundColor) {
+        return new Color(Integer.parseInt(backgroundColor, 16));
+    }
 }

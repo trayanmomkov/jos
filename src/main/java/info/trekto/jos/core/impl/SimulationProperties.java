@@ -6,6 +6,7 @@ import info.trekto.jos.core.numbers.Number;
 import info.trekto.jos.core.numbers.NumberFactory;
 import info.trekto.jos.core.numbers.NumberFactory.NumberType;
 
+import java.awt.*;
 import java.util.List;
 
 import static info.trekto.jos.core.ForceCalculator.InteractingLaw.NEWTON_LAW_OF_GRAVITATION;
@@ -32,6 +33,7 @@ public class SimulationProperties {
     private Number coefficientOfRestitution;
     private Number minDistance;
     private double scale;
+    private Color backgroundColor;
 
     /* Java {@link ArrayList} is limited to Integer.MAX_VALUE */
     private int numberOfObjects;
@@ -64,6 +66,7 @@ public class SimulationProperties {
         this.coefficientOfRestitution = properties.coefficientOfRestitution;
         this.minDistance = properties.minDistance;
         this.scale = properties.scale;
+        this.backgroundColor = properties.backgroundColor;
     }
 
     public boolean isInfiniteSimulation() {
@@ -228,5 +231,13 @@ public class SimulationProperties {
 
     public void setScale(double scale) {
         this.scale = scale;
+    }
+
+    public Color getBackgroundColor() {
+        return backgroundColor;
+    }
+
+    public void setBackgroundColor(Color backgroundColor) {
+        this.backgroundColor = backgroundColor;
     }
 }

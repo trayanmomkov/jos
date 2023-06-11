@@ -65,8 +65,8 @@ public class VisualizerImpl implements Visualizer {
             int displayHeight = gd.getDisplayMode().getHeight();
 
             frame.setSize(new Dimension(displayWidth, displayHeight));
-            frame.setBackground(Color.BLACK);
-            visualizationPanel = new VisualizationPanel(Color.BLACK);
+            frame.setBackground(properties.getBackgroundColor());
+            visualizationPanel = new VisualizationPanel(properties.getBackgroundColor());
             visualizationPanel.setScale(properties.getScale());
             frame.add(visualizationPanel);
             frame.addWindowListener(new WindowAdapter() {
@@ -78,11 +78,6 @@ public class VisualizerImpl implements Visualizer {
             frame.setVisible(true);
         }
     }
-    
-    /*
-    save background colour
-    threshold detector improvement
-     */
 
     @Override
     public void closeWindow() {
@@ -212,7 +207,7 @@ public class VisualizerImpl implements Visualizer {
     }
 
     public Color invertedBackground() {
-        return frame.getBackground().equals(DEFAULT_BACKGROUND_COLOR) ? DEFAULT_COLOR : invertColor(frame.getBackground());
+        return visualizationPanel.getBackground().equals(DEFAULT_BACKGROUND_COLOR) ? DEFAULT_COLOR : invertColor(visualizationPanel.getBackground());
     }
 
     public void end() {
