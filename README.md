@@ -112,63 +112,65 @@ JSON but the file is **GZipped** to be smaller. You can unzip it with any archiv
 a particular iteration and object.
 
 ### Simulation properties (input) file format
-<pre style='color:#1f1c1b;background-color:#ffffff;'>
-<b><span style='color:#644a9b;'>{</span></b>
-  <span style='color:#0057ae;'>&quot;properties&quot;</span><b><span style='color:#644a9b;'>:{</span></b>
-    <span style='color:#0057ae;'>&quot;numberOfIterations&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>0</span><b><span style='color:#644a9b;'>,</span></b>                       <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Zero</span> <span style='color:#bf0303;'>means</span> <span style='color:#bf0303;'>no</span> <span style='color:#bf0303;'>limit</span>
-    <span style='color:#0057ae;'>&quot;secondsPerIteration&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>0.001</span><b><span style='color:#644a9b;'>,</span></b>
-    <span style='color:#0057ae;'>&quot;numberOfObjects&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>2</span><b><span style='color:#644a9b;'>,</span></b>
-    <span style='color:#0057ae;'>&quot;outputFile&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#bf0303;'>&quot;2022-Feb-07_00-26-53.json.gz&quot;</span><b><span style='color:#644a9b;'>,</span></b>  <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Where</span> <span style='color:#bf0303;'>to</span> <span style='color:#bf0303;'>save</span> <span style='color:#bf0303;'>the</span> <span style='color:#bf0303;'>simulation</span> <span style='color:#bf0303;'>run</span>
-    <span style='color:#0057ae;'>&quot;saveToFile&quot;</span><b><span style='color:#644a9b;'>:</span></b><b>true</b><b><span style='color:#644a9b;'>,</span></b>                            <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Whether</span> <span style='color:#bf0303;'>to</span> <span style='color:#bf0303;'>save</span> <span style='color:#bf0303;'>the</span> <span style='color:#bf0303;'>simulation</span> <span style='color:#bf0303;'>run</span>
-    <span style='color:#0057ae;'>&quot;saveEveryNthIteration&quot;</span><b><span style='color:#644a9b;'>:</span></b> <span style='color:#b08000;'>100</span><b><span style='color:#644a9b;'>,</span></b>                 <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Will</span> <span style='color:#bf0303;'>save</span> <span style='color:#bf0303;'>only</span> <span style='color:#bf0303;'>every</span> <span style='color:#bf0303;'>100th</span> <span style='color:#bf0303;'>iteration.</span> <span style='color:#bf0303;'>This</span> <span style='color:#bf0303;'>way</span> <span style='color:#bf0303;'>the</span> <span style='color:#bf0303;'>output</span> <span style='color:#bf0303;'>file</span> <span style='color:#bf0303;'>will</span> <span style='color:#bf0303;'>be</span> <span style='color:#bf0303;'>much</span> <span style='color:#bf0303;'>smaller.</span>
-    <span style='color:#0057ae;'>&quot;saveMass&quot;</span><b><span style='color:#644a9b;'>:</span></b> <b>false</b><b><span style='color:#644a9b;'>,</span></b>                            <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Whether</span> <span style='color:#bf0303;'>to</span> <span style='color:#bf0303;'>save</span> <span style='color:#bf0303;'>the</span> <span style='color:#bf0303;'>mass</span> <span style='color:#bf0303;'>of</span> <span style='color:#bf0303;'>the</span> <span style='color:#bf0303;'>obejcts</span> <span style='color:#bf0303;'>in</span> <span style='color:#bf0303;'>the</span> <span style='color:#bf0303;'>output</span> <span style='color:#bf0303;'>file.</span>
-    <span style='color:#0057ae;'>&quot;saveVelocity&quot;</span><b><span style='color:#644a9b;'>:</span></b> <b>false</b><b><span style='color:#644a9b;'>,</span></b>                        <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Whether</span> <span style='color:#bf0303;'>to</span> <span style='color:#bf0303;'>save</span> <span style='color:#bf0303;'>the</span> <span style='color:#bf0303;'>velocity.</span>
-    <span style='color:#0057ae;'>&quot;saveAcceleration&quot;</span><b><span style='color:#644a9b;'>:</span></b> <b>false</b><b><span style='color:#644a9b;'>,</span></b>                    <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Whether</span> <span style='color:#bf0303;'>to</span> <span style='color:#bf0303;'>save</span> <span style='color:#bf0303;'>the</span> <span style='color:#bf0303;'>acceleration.</span>
-    <span style='color:#0057ae;'>&quot;numberType&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#bf0303;'>&quot;DOUBLE&quot;</span><b><span style='color:#644a9b;'>,</span></b>                        <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>What</span> <span style='color:#bf0303;'>type</span> <span style='color:#bf0303;'>to</span> <span style='color:#bf0303;'>use</span> <span style='color:#bf0303;'>for</span> <span style='color:#bf0303;'>numbers.</span> <span style='color:#bf0303;'>GPU</span> <span style='color:#bf0303;'>version</span> <span style='color:#bf0303;'>works</span> <span style='color:#bf0303;'>with</span> <span style='color:#bf0303;'>DOUBLE</span> <span style='color:#bf0303;'>only</span>
-    <span style='color:#0057ae;'>&quot;interactingLaw&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#bf0303;'>&quot;NEWTON_LAW_OF_GRAVITATION&quot;</span><b><span style='color:#644a9b;'>,</span></b> <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Current</span> <span style='color:#bf0303;'>version</span> <span style='color:#bf0303;'>(1.0.0)</span> <span style='color:#bf0303;'>supports</span> <span style='color:#bf0303;'>only</span> <span style='color:#bf0303;'>NEWTON_LAW_OF_GRAVITATION</span>
-    <span style='color:#0057ae;'>&quot;precision&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>32</span><b><span style='color:#644a9b;'>,</span></b>                               <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Numbers</span> <span style='color:#bf0303;'>precision.</span> <span style='color:#bf0303;'>Used</span> <span style='color:#bf0303;'>by</span> <span style='color:#bf0303;'>BigDecimal</span> <span style='color:#bf0303;'>and</span> <span style='color:#bf0303;'>ApFloat</span>
-    <span style='color:#0057ae;'>&quot;realTimeVisualization&quot;</span><b><span style='color:#644a9b;'>:</span></b><b>true</b><b><span style='color:#644a9b;'>,</span></b>                 <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Whether</span> <span style='color:#bf0303;'>to</span> <span style='color:#bf0303;'>visualize</span> <span style='color:#bf0303;'>during</span> <span style='color:#bf0303;'>simulation</span> <span style='color:#bf0303;'>run.</span> <span style='color:#bf0303;'>If</span> <span style='color:#bf0303;'>true</span><b><span style='color:#644a9b;'>,</span></b> <span style='color:#bf0303;'>runs</span> <span style='color:#bf0303;'>slower</span>
-    <span style='color:#0057ae;'>&quot;playingSpeed&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>0</span><b><span style='color:#644a9b;'>,</span></b>                             <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>If</span> <span style='color:#bf0303;'>playingSpeed</span> <span style='color:#bf0303;'>&lt;</span> <span style='color:#bf0303;'>0</span><b><span style='color:#644a9b;'>:</span></b> <span style='color:#bf0303;'>every</span> <span style='color:#bf0303;'>iteration</span> <span style='color:#bf0303;'>sleep</span> <span style='color:#bf0303;'>playingSpeed</span> <span style='color:#bf0303;'>milliseconds.</span>
-                                                  <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>If</span> <span style='color:#bf0303;'>playingSpeed</span> <span style='color:#bf0303;'>&gt;=</span> <span style='color:#b08000;'>0</span><span style='color:#bf0303;'>:</span> <span style='color:#bf0303;'>visualize</span> <span style='color:#bf0303;'>every</span> <span style='color:#bf0303;'>playingSpeed</span> <span style='color:#bf0303;'>milliseconds.</span>
-    <span style='color:#bf0303;'>&quot;bounceFromScreenBorders&quot;</span><span style='color:#bf0303;'>:</span> <b>false</b><b><span style='color:#644a9b;'>,</span></b>             <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>If</span> <span style='color:#bf0303;'>true</span><b><span style='color:#644a9b;'>,</span></b> <span style='color:#bf0303;'>objects</span> <span style='color:#bf0303;'>will</span> <span style='color:#bf0303;'>bounce</span> <span style='color:#bf0303;'>from</span> <span style='color:#bf0303;'>the</span> <span style='color:#bf0303;'>screen</span> <span style='color:#bf0303;'>borders.</span>
-    <span style='color:#0057ae;'>&quot;mergeOnCollision&quot;</span><b><span style='color:#644a9b;'>:</span></b> <b>false</b><b><span style='color:#644a9b;'>,</span></b>
-    <span style='color:#0057ae;'>&quot;coefficientOfRestitution&quot;</span><b><span style='color:#644a9b;'>:</span></b> <span style='color:#bf0303;'>&quot;0.8&quot;</span><b><span style='color:#644a9b;'>,</span></b>            <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Coefficient</span> <span style='color:#bf0303;'>of</span> <span style='color:#bf0303;'>restitution.</span> <span style='color:#bf0303;'>1</span><b><span style='color:#644a9b;'>:</span></b> <span style='color:#bf0303;'>elastic</span><b><span style='color:#644a9b;'>,</span></b> <span style='color:#bf0303;'>0</span><b><span style='color:#644a9b;'>:</span></b> <span style='color:#bf0303;'>perfectly</span> <span style='color:#bf0303;'>inelastic</span><b><span style='color:#644a9b;'>,</span></b> <span style='color:#bf0303;'>above</span> <span style='color:#bf0303;'>1</span><b><span style='color:#644a9b;'>:</span></b> <span style='color:#bf0303;'>objects</span> <span style='color:#bf0303;'>will</span> <span style='color:#bf0303;'>gain</span> <span style='color:#bf0303;'>energy</span> <span style='color:#bf0303;'>on</span> <span style='color:#bf0303;'>collision.</span>
-    <span style='color:#0057ae;'>&quot;minimumDistance&quot;</span><b><span style='color:#644a9b;'>:</span></b> <span style='color:#bf0303;'>&quot;10.0&quot;</span><b><span style='color:#644a9b;'>,</span></b>                    <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>If distance between objects centers < minimumDistance, minimumDistance will be used on acceleration calculation.</span>
-    <span style='color:#bf0303;'>&quot;initialObjects&quot;</span><span style='color:#bf0303;'>:</span><b><span style='color:#006e28;'>[</span></b>
-      <b><span style='color:#644a9b;'>{</span></b>
-        <span style='color:#0057ae;'>&quot;id&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#bf0303;'>&quot;0&quot;</span><b><span style='color:#644a9b;'>,</span></b>                                 <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Unique</span> <span style='color:#bf0303;'>id</span> <span style='color:#bf0303;'>of</span> <span style='color:#bf0303;'>the</span> <span style='color:#bf0303;'>object</span>
-        <span style='color:#0057ae;'>&quot;x&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>-200</span><b><span style='color:#644a9b;'>,</span></b>                                 <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Position</span> <span style='color:#bf0303;'>of</span> <span style='color:#bf0303;'>the</span> <span style='color:#bf0303;'>centre</span>
-        <span style='color:#0057ae;'>&quot;y&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>0</span><b><span style='color:#644a9b;'>,</span></b>
-        <span style='color:#0057ae;'>&quot;z&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>0</span><b><span style='color:#644a9b;'>,</span></b>
-        <span style='color:#0057ae;'>&quot;velocityX&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>-4</span><b><span style='color:#644a9b;'>,</span></b>                           <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Metre</span> <span style='color:#bf0303;'>per</span> <span style='color:#bf0303;'>second</span> <span style='color:#bf0303;'>(m/s)</span>
-        <span style='color:#0057ae;'>&quot;velocityY&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>-2.5</span><b><span style='color:#644a9b;'>,</span></b>
-        <span style='color:#0057ae;'>&quot;velocityZ&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>0.0</span><b><span style='color:#644a9b;'>,</span></b>
-        <span style='color:#0057ae;'>&quot;accelerationX&quot;</span><b><span style='color:#644a9b;'>:</span></b> <span style='color:#bf0303;'>&quot;-8.003695&quot;</span><b><span style='color:#644a9b;'>,</span></b>             <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Current</span> <span style='color:#bf0303;'>acceleration</span>
-        <span style='color:#0057ae;'>&quot;accelerationY&quot;</span><b><span style='color:#644a9b;'>:</span></b> <span style='color:#bf0303;'>&quot;34.10966&quot;</span><b><span style='color:#644a9b;'>,</span></b>
-        <span style='color:#0057ae;'>&quot;accelerationZ&quot;</span><b><span style='color:#644a9b;'>:</span></b> <span style='color:#bf0303;'>&quot;0&quot;</span><b><span style='color:#644a9b;'>,</span></b>
-        <span style='color:#0057ae;'>&quot;mass&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>1E17</span><b><span style='color:#644a9b;'>,</span></b>                              <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Kilogram</span> <span style='color:#bf0303;'>(kg)</span>
-        <span style='color:#0057ae;'>&quot;radius&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>80</span>                               <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Metre</span> <span style='color:#bf0303;'>(m)</span>
-        <span style='color:#bf0303;'>&quot;color&quot;</span><span style='color:#bf0303;'>:</span><span style='color:#bf0303;'>&quot;0000FF&quot;</span><b><span style='color:#644a9b;'>,</span></b>                         <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Blue</span>
-      <b><span style='color:#644a9b;'>}</span></b><b><span style='color:#006e28;'>,</span></b>
-      <b><span style='color:#644a9b;'>{</span></b>
-        <span style='color:#0057ae;'>&quot;id&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#bf0303;'>&quot;1&quot;</span><b><span style='color:#644a9b;'>,</span></b>
-        <span style='color:#0057ae;'>&quot;x&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>200</span><b><span style='color:#644a9b;'>,</span></b>
-        <span style='color:#0057ae;'>&quot;y&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>0</span><b><span style='color:#644a9b;'>,</span></b>
-        <span style='color:#0057ae;'>&quot;z&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>0</span><b><span style='color:#644a9b;'>,</span></b>
-        <span style='color:#0057ae;'>&quot;velocityX&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>-1.5</span><b><span style='color:#644a9b;'>,</span></b>
-        <span style='color:#0057ae;'>&quot;velocityY&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>3</span><b><span style='color:#644a9b;'>,</span></b>
-        <span style='color:#0057ae;'>&quot;velocityZ&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>0.0</span><b><span style='color:#644a9b;'>,</span></b>
-        <span style='color:#0057ae;'>&quot;accelerationX&quot;</span><b><span style='color:#644a9b;'>:</span></b> <span style='color:#bf0303;'>&quot;-9.364132&quot;</span><b><span style='color:#644a9b;'>,</span></b>
-        <span style='color:#0057ae;'>&quot;accelerationY&quot;</span><b><span style='color:#644a9b;'>:</span></b> <span style='color:#bf0303;'>&quot;14.401725&quot;</span><b><span style='color:#644a9b;'>,</span></b>
-        <span style='color:#0057ae;'>&quot;accelerationZ&quot;</span><b><span style='color:#644a9b;'>:</span></b> <span style='color:#bf0303;'>&quot;0&quot;</span><b><span style='color:#644a9b;'>,</span></b>
-        <span style='color:#0057ae;'>&quot;mass&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>2E17</span><b><span style='color:#644a9b;'>,</span></b>
-        <span style='color:#0057ae;'>&quot;radius&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#b08000;'>70</span><b><span style='color:#644a9b;'>,</span></b>
-        <span style='color:#0057ae;'>&quot;color&quot;</span><b><span style='color:#644a9b;'>:</span></b><span style='color:#bf0303;'>&quot;FF0000&quot;</span><b><span style='color:#644a9b;'>,</span></b>                         <span style='color:#bf0303;'>#</span> <span style='color:#bf0303;'>Red</span>
-      <b><span style='color:#644a9b;'>}</span></b>
-    <b><span style='color:#006e28;'>]</span></b>
-  <b><span style='color:#644a9b;'>}</span></b>
-<b><span style='color:#644a9b;'>}</span></b>
-</pre>
+```json
+{
+  "properties":{
+    "numberOfIterations":0,                       # Zero means no limit
+    "secondsPerIteration":0.001,
+    "numberOfObjects":2,
+    "outputFile":"2022-Feb-07_00-26-53.json.gz",  # Where to save the simulation run
+    "saveToFile":true,                            # Whether to save the simulation run
+    "saveEveryNthIteration": 100,                 # Will save only every 100th iteration. This way the output file will be much smaller.
+    "saveMass": false,                            # Whether to save the mass of the obejcts in the output file.
+    "saveVelocity": false,                        # Whether to save the velocity.
+    "saveAcceleration": false,                    # Whether to save the acceleration.
+    "numberType":"DOUBLE",                        # What type to use for numbers. GPU version works with DOUBLE only
+    "interactingLaw":"NEWTON_LAW_OF_GRAVITATION", # Current version (1.0.0) supports only NEWTON_LAW_OF_GRAVITATION
+    "precision":32,                               # Numbers precision. Used by BigDecimal and ApFloat
+    "realTimeVisualization":true,                 # Whether to visualize during simulation run. If true, runs slower
+    "playingSpeed":0,                             # If playingSpeed < 0: every iteration sleep playingSpeed milliseconds.
+                                                  # If playingSpeed >= 0: visualize every playingSpeed milliseconds.
+    "bounceFromScreenBorders": false,             # If true, objects will bounce from the screen borders.
+    "mergeOnCollision": false,
+    "coefficientOfRestitution": "0.8",            # Coefficient of restitution. 1: elastic, 0: perfectly inelastic, above 1: objects will gain energy on collision.
+    "minimumDistance": "10.0",                    # If distance between objects centers < minimumDistance, minimumDistance will be used on acceleration calculating.,
+    "scale": 1.0,                                 # Visual scale/zoom of the scene.
+    "backgroundColor": "FFFFFF",                  # Background color of the simulaiton.
+    "initialObjects":[
+      {
+        "id":"0",                                 # Unique id of the object
+        "x":-200,                                 # Position of the centre
+        "y":0,
+        "z":0,
+        "velocityX":-4,                           # Metre per second (m/s)
+        "velocityY":-2.5,
+        "velocityZ":0.0,
+        "accelerationX": "-8.003695",             # Current acceleration
+        "accelerationY": "34.10966",
+        "accelerationZ": "0",
+        "mass":1E17,                              # Kilogram (kg)
+        "radius":80                               # Metre (m)
+        "color":"0000FF",                         # Blue
+      },
+      {
+        "id":"1",
+        "x":200,
+        "y":0,
+        "z":0,
+        "velocityX":-1.5,
+        "velocityY":3,
+        "velocityZ":0.0,
+        "accelerationX": "-9.364132",
+        "accelerationY": "14.401725",
+        "accelerationZ": "0",
+        "mass":2E17,
+        "radius":70,
+        "color":"FF0000",                         # Red
+      }
+    ]
+  }
+}
+```
 
 ## Source code description (for developers)
 There is a lot of things which are not finished or implemented (such as viewport navigation),
@@ -211,7 +213,6 @@ You should be able to import it as a maven project in your favorite IDE.
 - Implement simulation generator using formula for placing objects in more
 complex structures or create GUI for that.
 - Implement tests.
-- Fix viewport navigation during visualization.
 - Implement video recording of the simulation.
 - Implement 3D visualization.
 

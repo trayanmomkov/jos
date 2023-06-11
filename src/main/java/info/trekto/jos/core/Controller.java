@@ -535,6 +535,10 @@ public enum Controller {
         JOptionPane.showMessageDialog(parent, message, "Warning", WARNING_MESSAGE);
     }
 
+    private void showWarn(String message) {
+        showWarn(gui.getMainPanel(), message);
+    }
+
     public void appendMessage(String message) {
         gui.getConsoleTextArea().append(message + "\n");
         gui.getConsoleTextArea().setCaretPosition(gui.getConsoleTextArea().getDocument().getLength());
@@ -663,8 +667,14 @@ public enum Controller {
         int userSelection = fileChooser.showSaveDialog(gui.getMainPanel());
         if (userSelection == JFileChooser.APPROVE_OPTION) {
             File fileToSave = fileChooser.getSelectedFile();
-            SimulationProperties properties = fetchPropertiesFromGuiAndCreateNumberFactory();
             String filename = fileToSave.getAbsolutePath();
+            if (fileToSave.exists()) {
+                String message = "File already exists: " + filename;
+                warn(logger, message);
+                showWarn(message);
+                return;
+            }
+            SimulationProperties properties = fetchPropertiesFromGuiAndCreateNumberFactory();
             if (!filename.endsWith(JSON_FILE_EXTENSION)) {
                 filename += JSON_FILE_EXTENSION;
             }

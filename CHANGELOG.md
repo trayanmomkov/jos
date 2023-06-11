@@ -1,6 +1,9 @@
-###v.3.1.0 - 2023-Jun-6
-- Improve visualization.
+###v.3.1.0 - 2023-Jun-11
 - Fix scaling.
+- Improve visualization.
+- Add option to change the background color.
+- Speed up initialization.
+- Do not overwrite existing file when saving properties.
 
 ###v.3.0.0 - 2023-May-21
 - Dramatically improve performance by moving collision processing on GPU.

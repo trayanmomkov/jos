@@ -26,6 +26,7 @@ import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.ExecutionMode.AUTO;
 import static info.trekto.jos.core.ExecutionMode.CPU;
 import static info.trekto.jos.core.ExecutionMode.GPU;
+import static info.trekto.jos.util.Utils.CORES;
 import static info.trekto.jos.util.Utils.colorToString;
 import static info.trekto.jos.util.Utils.invertColor;
 import static info.trekto.jos.util.Utils.stringToColor;
@@ -142,6 +143,8 @@ public class MainForm {
             executionModeComboBox.setModel(new DefaultComboBoxModel<>(model));
             executionModeComboBox.setRenderer(new ExecutionModeRenderer());
         }
+        
+        cpuGpuThresholdField.setText(String.valueOf(CORES));
 
         numberTypeComboBox.addActionListener(C::numberTypeComboBoxEvent);
         interactingLawComboBox.addActionListener(actionEvent -> C.interactingLawComboBoxEvent());
