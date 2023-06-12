@@ -106,6 +106,7 @@ public class MainForm {
     private JTextField minDistanceField;
     private JTextField scaleField;
     private JTextField backgroundColorField;
+    private JCheckBox autoscrollCheckBox;
     private ButtonGroup buttonGroup;
     private List<Component> runningComponents;
     private List<Component> playingComponents;
@@ -143,7 +144,7 @@ public class MainForm {
             executionModeComboBox.setModel(new DefaultComboBoxModel<>(model));
             executionModeComboBox.setRenderer(new ExecutionModeRenderer());
         }
-        
+
         cpuGpuThresholdField.setText(String.valueOf(CORES));
 
         numberTypeComboBox.addActionListener(C::numberTypeComboBoxEvent);
@@ -252,12 +253,21 @@ public class MainForm {
                     backgroundColorField.setBackground(chosenColor);
                     backgroundColorField.setText(colorToString(chosenColor));
                     backgroundColorField.setForeground(invertColor(chosenColor));
-                    
+
                 }
             }
         });
 
         backgroundColorField.setBackground(stringToColor(backgroundColorField.getText()));
+        autoscrollCheckBox.addActionListener(actionEvent -> {
+            if (autoscrollCheckBox.isSelected()) {
+                scroll();
+            }
+        });
+    }
+
+    public void scroll() {
+        consoleTextArea.setCaretPosition(consoleTextArea.getDocument().getLength());
     }
 
     /////////////////////////////////////////
@@ -594,6 +604,10 @@ public class MainForm {
     public void setBackgroundColor(Color backgroundColor) {
         backgroundColorField.setBackground(backgroundColor);
         backgroundColorField.setText(colorToString(backgroundColor));
+    }
+
+    public JCheckBox getAutoscrollCheckBox() {
+        return autoscrollCheckBox;
     }
 
     {
@@ -1104,6 +1118,7 @@ public class MainForm {
         gbc = new GridBagConstraints();
         gbc.gridx = 11;
         gbc.gridy = 0;
+        gbc.gridwidth = 2;
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.EAST;
         playingPanel.add(playingSpeedTextField, gbc);
@@ -1244,6 +1259,15 @@ public class MainForm {
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.EAST;
         playingPanel.add(scaleField, gbc);
+        autoscrollCheckBox = new JCheckBox();
+        autoscrollCheckBox.setHorizontalTextPosition(10);
+        autoscrollCheckBox.setSelected(true);
+        autoscrollCheckBox.setText("Autoscroll");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 12;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        playingPanel.add(autoscrollCheckBox, gbc);
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new GridBagLayout());
         gbc = new GridBagConstraints();

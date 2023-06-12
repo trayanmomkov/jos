@@ -539,7 +539,7 @@
           </component>
           <component id="8a44d" class="javax.swing.JTextField" binding="playingSpeedTextField">
             <constraints>
-              <grid row="0" column="11" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="11" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
               <gridbag weightx="0.0" weighty="1.0"/>
             </constraints>
             <properties>
@@ -691,6 +691,17 @@
               <columns value="4"/>
               <horizontalAlignment value="10"/>
               <text value="1"/>
+            </properties>
+          </component>
+          <component id="eaa71" class="javax.swing.JCheckBox" binding="autoscrollCheckBox" default-binding="true">
+            <constraints>
+              <grid row="1" column="12" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <horizontalTextPosition value="10"/>
+              <selected value="true"/>
+              <text value="Autoscroll"/>
             </properties>
           </component>
         </children>

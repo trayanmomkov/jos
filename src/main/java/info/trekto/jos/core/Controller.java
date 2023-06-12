@@ -541,7 +541,9 @@ public enum Controller {
 
     public void appendMessage(String message) {
         gui.getConsoleTextArea().append(message + "\n");
-        gui.getConsoleTextArea().setCaretPosition(gui.getConsoleTextArea().getDocument().getLength());
+        if (gui.getAutoscrollCheckBox().isSelected()) {
+            gui.scroll();
+        }
     }
 
     public int getFontSize() {
