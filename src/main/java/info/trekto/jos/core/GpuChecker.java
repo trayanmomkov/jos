@@ -2,6 +2,8 @@ package info.trekto.jos.core;
 
 import com.aparapi.Kernel;
 import com.aparapi.Range;
+import com.aparapi.device.Device;
+import com.aparapi.device.OpenCLDevice;
 import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.impl.SimulationGenerator;
 import info.trekto.jos.core.impl.SimulationProperties;
@@ -16,6 +18,7 @@ import static com.aparapi.Kernel.EXECUTION_MODE.GPU;
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.numbers.NumberFactory.NumberType.DOUBLE;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumberFactory;
+import static info.trekto.jos.util.Utils.CORES;
 import static info.trekto.jos.util.Utils.info;
 import static info.trekto.jos.util.Utils.nanoToHumanReadable;
 import static info.trekto.jos.util.Utils.warn;
@@ -71,6 +74,29 @@ public class GpuChecker {
                 warn(logger, kernel.getClass().getSimpleName() + " execution mode = " + kernel.getExecutionMode());
             }
         }
+    }
+
+    public static int roundNumberOfObjects(int n) {
+        try {
+            int cores = CORES;
+            if (C.getSelectedExecutionMode() == ExecutionMode.AUTO || C.getSelectedExecutionMode() == ExecutionMode.GPU) {
+                OpenCLDevice openCLDevice = (OpenCLDevice) Device.bestGPU();
+                int localGroup = openCLDevice.getMaxWorkGroupSize();
+                cores = localGroup > MAX_LOCAL_SIZE ? MAX_LOCAL_SIZE : localGroup;
+            }
+
+            if (n > cores) {
+                int diff = n % cores;
+                if (diff > cores / 2) {
+                    n = n + (cores - diff);
+                } else {
+                    n = n - diff;
+                }
+            }
+        } catch (Exception ex) {
+            logger.error("Error during rounding number of objects.", ex);
+        }
+        return n;
     }
 
     static class AparapiDoubleTestKernel extends Kernel {

@@ -2,6 +2,7 @@ package info.trekto.jos.gui;
 
 import info.trekto.jos.core.ExecutionMode;
 import info.trekto.jos.core.ForceCalculator;
+import info.trekto.jos.core.GpuChecker;
 import info.trekto.jos.core.numbers.NumberFactory;
 import info.trekto.jos.gui.java2dgraphics.VisualizerImpl;
 
@@ -11,6 +12,8 @@ import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.text.StyleContext;
 import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -107,6 +110,7 @@ public class MainForm {
     private JTextField scaleField;
     private JTextField backgroundColorField;
     private JCheckBox autoscrollCheckBox;
+    private JCheckBox roundCheckBox;
     private ButtonGroup buttonGroup;
     private List<Component> runningComponents;
     private List<Component> playingComponents;
@@ -194,11 +198,14 @@ public class MainForm {
         numberOfIterationsTextField.addActionListener(actionEvent -> C.numberOfIterationsTextFieldEvent());
         secondsPerIterationTextField.addActionListener(actionEvent -> C.secondsPerIterationTextFieldEvent());
         detectCpuGpuThresholdButton.addActionListener(actionEvent -> C.detectCpuGpuThresholdButtonEvent());
-        executionModeComboBox.addActionListener(actionEvent -> C.executionModeComboBoxEvent());
         saveMassCheckBox.addActionListener(actionEvent -> C.saveMassCheckBoxEvent());
         saveVelocityCheckBox.addActionListener(actionEvent -> C.saveVelocityCheckBoxEvent());
         saveAccelerationCheckBox.addActionListener(actionEvent -> C.saveAccelerationCheckBoxEvent());
         mergeObjectsWhenCollideCheckBox.addActionListener(actionEvent -> C.mergeObjectsWhenCollideCheckBoxEvent());
+        executionModeComboBox.addActionListener(actionEvent -> {
+            C.executionModeComboBoxEvent();
+            roundNumberOfObjects();
+        });
 
         saveEveryNthIterationTextField.getDocument().addUndoableEditListener(actionEvent -> C.saveEveryNthIterationTextFieldEvent());
 
@@ -264,6 +271,23 @@ public class MainForm {
                 scroll();
             }
         });
+
+        numberOfObjectsTextField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                super.focusLost(e);
+                roundNumberOfObjects();
+            }
+        });
+
+        roundCheckBox.addActionListener(actionEvent -> roundNumberOfObjects());
+    }
+
+    private void roundNumberOfObjects() {
+        if (roundCheckBox.isSelected()) {
+            numberOfObjectsTextField.setText(String.valueOf(
+                    GpuChecker.roundNumberOfObjects(Integer.parseInt(numberOfObjectsTextField.getText()))));
+        }
     }
 
     public void scroll() {
@@ -645,7 +669,7 @@ public class MainForm {
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 1;
-        gbc.gridwidth = 6;
+        gbc.gridwidth = 5;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
@@ -660,14 +684,15 @@ public class MainForm {
         gbc.insets = new Insets(0, 2, 0, 0);
         panel1.add(numberOfIterationsLabel, gbc);
         numberOfIterationsTextField = new JTextField();
-        numberOfIterationsTextField.setColumns(8);
+        numberOfIterationsTextField.setColumns(12);
         numberOfIterationsTextField.setText("0");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 1;
+        gbc.gridwidth = 2;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
         panel1.add(numberOfIterationsTextField, gbc);
         secondsPerIterationLabel = new JLabel();
         secondsPerIterationLabel.setText("Seconds per iteration");
@@ -679,14 +704,15 @@ public class MainForm {
         gbc.insets = new Insets(0, 2, 0, 0);
         panel1.add(secondsPerIterationLabel, gbc);
         secondsPerIterationTextField = new JTextField();
-        secondsPerIterationTextField.setColumns(8);
+        secondsPerIterationTextField.setColumns(12);
         secondsPerIterationTextField.setText("0.005");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 2;
+        gbc.gridwidth = 2;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
         panel1.add(secondsPerIterationTextField, gbc);
         interactingLawLabel = new JLabel();
         interactingLawLabel.setText("Interacting law");
@@ -707,20 +733,21 @@ public class MainForm {
         gbc.insets = new Insets(0, 2, 0, 0);
         panel1.add(numberOfObjectsLabel, gbc);
         numberOfObjectsTextField = new JTextField();
-        numberOfObjectsTextField.setColumns(8);
+        numberOfObjectsTextField.setColumns(12);
         numberOfObjectsTextField.setText("100");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
         panel1.add(numberOfObjectsTextField, gbc);
         interactingLawComboBox = new JComboBox();
         interactingLawComboBox.setEnabled(false);
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 3;
+        gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.WEST;
         panel1.add(interactingLawComboBox, gbc);
         realTimeVisualizationCheckBox = new JCheckBox();
@@ -743,14 +770,25 @@ public class MainForm {
         gbc.insets = new Insets(0, 2, 0, 0);
         panel1.add(label1, gbc);
         backgroundColorField = new JTextField();
+        backgroundColorField.setColumns(12);
         backgroundColorField.setEditable(false);
         backgroundColorField.setText("FFFFFF");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 4;
+        gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
         panel1.add(backgroundColorField, gbc);
+        roundCheckBox = new JCheckBox();
+        roundCheckBox.setForeground(new Color(-16776961));
+        roundCheckBox.setSelected(true);
+        roundCheckBox.setText("Round");
+        roundCheckBox.setToolTipText("Round to number of cores for better performance");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        panel1.add(roundCheckBox, gbc);
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridBagLayout());
         gbc = new GridBagConstraints();
