@@ -4,7 +4,6 @@ import info.trekto.jos.core.ExecutionMode;
 import info.trekto.jos.core.ForceCalculator;
 import info.trekto.jos.core.GpuChecker;
 import info.trekto.jos.core.numbers.NumberFactory;
-import info.trekto.jos.gui.java2dgraphics.VisualizerImpl;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -116,7 +115,6 @@ public class MainForm {
     private List<Component> playingComponents;
     private List<Component> savingToFileComponents;
     private String cpuGpuThresholdMessage;
-    private Color backgroundColor = VisualizerImpl.DEFAULT_BACKGROUND_COLOR;
 
     public void init() {
         precisionTextField.addActionListener(actionEvent -> C.precisionTextFieldEvent());

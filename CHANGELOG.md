@@ -4,6 +4,9 @@
 - Add option to change the background color.
 - Speed up initialization.
 - Do not overwrite existing file when saving properties.
+- Add checkbox to control console auto-scrolling.
+- Add checkbox for rounding number of objects.
+- Print simulation time in the console.
 
 ###v.3.0.0 - 2023-May-21
 - Dramatically improve performance by moving collision processing on GPU.

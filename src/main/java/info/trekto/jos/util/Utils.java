@@ -5,6 +5,7 @@ import com.aparapi.device.OpenCLDevice;
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.model.SimulationObject;
+import info.trekto.jos.core.numbers.New;
 import info.trekto.jos.core.numbers.Number;
 import info.trekto.jos.core.numbers.NumberFactory.NumberType;
 import org.slf4j.Logger;
@@ -149,9 +150,12 @@ public class Utils {
             remainingTime = 0;
         }
 
+        Number secondsPerIteration = C.getSimulation().getProperties().getSecondsPerIteration();
+        String simulationTime = secondsToHumanReadable(secondsPerIteration.multiply(New.num(i)).doubleValue());
         String remainingTimeString = remainingTime >= 1 ? milliToHumanReadable(remainingTime) : NA;
         String remainingString = "Iteration " + i
                 + ", elapsed time: " + nanoToHumanReadable(System.nanoTime() - startTime)
+                + ", simulation time: " + simulationTime
                 + ", objects: " + numberOfObjects
                 + (numberOfIterations < 1 ? "" : ", remaining time: " + remainingTimeString);
 
