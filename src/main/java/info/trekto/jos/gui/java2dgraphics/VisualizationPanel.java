@@ -25,7 +25,7 @@ public class VisualizationPanel extends JPanel {
     private static final Logger logger = LoggerFactory.getLogger(VisualizationPanel.class);
 
     private static final double SCALE_STEP = 1.25;
-    private static final double TRANSLATE_STEP = 10;
+    private static final double TRANSLATE_STEP = 50;
     public static final int DEFAULT_FONT_SIZE = 18;
     public static final Font DEFAULT_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, DEFAULT_FONT_SIZE);
     private List<ShapeWithColorAndText> shapes;

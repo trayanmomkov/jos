@@ -427,6 +427,17 @@ public class JsonReaderWriter implements ReaderWriter {
     }
 
     @Override
+    public boolean moveToNextIteration() throws IOException {
+        JsonToken currentToken = parser.nextToken(); // Object start
+        if (currentToken.equals(END_OBJECT)) {
+            return false;
+        }
+        parser.readValueAsTree();
+        parser.nextToken(); // Object end
+        return true;
+    }
+
+    @Override
     public void appendObjectsToFile(List<SimulationObject> simulationObjects, SimulationProperties properties, long currentIterationNumber) {
         Gson gson = createGsonAndWriteFileHead(properties);
 

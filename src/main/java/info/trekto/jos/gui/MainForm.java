@@ -34,7 +34,8 @@ import static info.trekto.jos.util.Utils.invertColor;
 import static info.trekto.jos.util.Utils.stringToColor;
 
 public class MainForm {
-    private static final String PLAYING_SPEED_TIP = "If x < 0: every iteration sleep x milliseconds; If x >= 0: visualize every x milliseconds";
+    private static final String PLAYING_SPEED_TIP = "When running: If x < 0: every iteration sleep x milliseconds; If x >= 0: visualize every x milliseconds\n" +
+            "When playing: If x < 0: every iteration sleep x milliseconds; If x >= 0: skip every x-1 iterations";
     private String aboutMessage;
     private String minDistanceMessage;
     private String numberTypeMessage;

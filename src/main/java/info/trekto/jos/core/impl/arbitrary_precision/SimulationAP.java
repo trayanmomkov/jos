@@ -274,10 +274,10 @@ public class SimulationAP implements CpuSimulation {
         }
         C.setVisualizer(C.createVisualizer(properties));
         long previousTime = System.nanoTime();
-        long previousVisualizationTime = previousTime;
         C.setRunning(true);
         C.setEndText("END.");
         try {
+            outerloop:
             while (C.getReaderWriter().hasMoreIterations()) {
                 if (C.hasToStop()) {
                     doStop();
@@ -286,6 +286,17 @@ public class SimulationAP implements CpuSimulation {
                 while (C.isPaused()) {
                     Thread.sleep(PAUSE_SLEEP_MILLISECONDS);
                 }
+                
+                int playingSpeed = properties.getPlayingSpeed();
+                
+                if (playingSpeed > 1) {
+                    for (int i = 0; i < playingSpeed - 1; i++) {
+                        if (!C.getReaderWriter().moveToNextIteration()) {
+                            break outerloop;
+                        }
+                    }
+                }
+
                 Iteration iteration = C.getReaderWriter().readNextIteration();
                 if (iteration == null) {
                     break;
@@ -296,15 +307,11 @@ public class SimulationAP implements CpuSimulation {
                     info(logger, "Cycle: " + iteration.getCycle() + ", number of objects: " + iteration.getNumberOfObjects());
                 }
 
-                if (properties.getPlayingSpeed() < 0) {
-                    /* Slow down */
-                    Thread.sleep(-properties.getPlayingSpeed());
-                    C.getVisualizer().visualize(iteration);
-                    previousVisualizationTime = System.nanoTime();
-                } else if ((System.nanoTime() - previousVisualizationTime) / NANOSECONDS_IN_ONE_MILLISECOND >= properties.getPlayingSpeed()) {
-                    C.getVisualizer().visualize(iteration);
-                    previousVisualizationTime = System.nanoTime();
+                if (playingSpeed < 0) {
+                    Thread.sleep(-playingSpeed);
                 }
+
+                C.getVisualizer().visualize(iteration);
             }
             info(logger, "End.");
             C.getVisualizer().end();

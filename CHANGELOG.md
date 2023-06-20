@@ -1,4 +1,4 @@
-###v.3.1.0 - 2023-Jun-11
+###v.3.1.0 - 2023-Jun-20
 - Fix scaling.
 - Improve visualization.
 - Add option to change the background color.
@@ -7,6 +7,7 @@
 - Add checkbox to control console auto-scrolling.
 - Add checkbox for rounding number of objects.
 - Print simulation time in the console.
+- Add functionallity to skip iterations on playing.
 
 ###v.3.0.0 - 2023-May-21
 - Dramatically improve performance by moving collision processing on GPU.
