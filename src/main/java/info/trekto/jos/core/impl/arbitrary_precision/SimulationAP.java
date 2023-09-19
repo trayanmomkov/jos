@@ -223,6 +223,7 @@ public class SimulationAP implements CpuSimulation {
         Set<String> ids = new HashSet<>();
         for (String objectId : id) {
             if (!ids.add(objectId)) {
+                logger.error("Duplicate id: " + objectId);
                 return true;
             }
         }

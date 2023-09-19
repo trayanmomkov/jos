@@ -459,6 +459,7 @@ public enum Controller {
         setPrecisionFieldVisibility();
         setExecutionModeFieldVisibilityAndValue();
         setCpuGpuThresholdVisibility();
+        setCorVisibility();
     }
 
     public void refreshProperties(SimulationProperties prop) {
