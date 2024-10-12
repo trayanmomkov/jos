@@ -171,23 +171,22 @@ public class Utils {
     }
 
     public static String milliToHumanReadable(long milliseconds) {
-        long years = milliseconds / MILLI_IN_YEAR;
-        long days = (milliseconds - (years * MILLI_IN_YEAR)) / MILLI_IN_DAY;
-        long hours = (milliseconds - (years * MILLI_IN_YEAR + days * MILLI_IN_DAY)) / MILLI_IN_HOUR;
-        long minutes = (milliseconds - (years * MILLI_IN_YEAR + days * MILLI_IN_DAY + hours * MILLI_IN_HOUR)) / MILLI_IN_MINUTE;
-        long seconds = (milliseconds - (years * MILLI_IN_YEAR + days * MILLI_IN_DAY + hours * MILLI_IN_HOUR + minutes * MILLI_IN_MINUTE)) / MILLISECONDS_IN_ONE_SECOND;
-        milliseconds = milliseconds - (years * MILLI_IN_YEAR + days * MILLI_IN_DAY + hours * MILLI_IN_HOUR + minutes * MILLI_IN_MINUTE + seconds * MILLISECONDS_IN_ONE_SECOND);
+        long years = milliseconds / MILLI_IN_YEAR; milliseconds %= MILLI_IN_YEAR;
+        long days = milliseconds / MILLI_IN_DAY; milliseconds %= MILLI_IN_DAY;
+        long hours = milliseconds / MILLI_IN_HOUR; milliseconds %= MILLI_IN_HOUR;
+        long minutes = milliseconds / MILLI_IN_MINUTE; milliseconds %= MILLI_IN_MINUTE;
+        long seconds = milliseconds / MILLISECONDS_IN_ONE_SECOND; milliseconds %= MILLISECONDS_IN_ONE_SECOND;
 
         if (years > 0) {
             return years + " y. "
-                    + (days > 0 ? days + " d. " : "")
+                + (days > 0 ? days + " d. " : "")
                     + (hours > 0 && years < 10 ? hours + " h. " : "");
         }
 
         return (days > 0 ? days + " d. " : "")
                 + (hours > 0 ? hours + " h. " : "")
                 + (minutes > 0 ? minutes + " m. " : "")
-                + seconds + "." + milliseconds + " s.";
+                + seconds + "." + String.format("%03d", milliseconds) + " s.";
     }
 
     public static String calculateAverageFileSize(String numberOfObjectsString, String numberOfIterationsString, String numberTypeString,
