@@ -1,3 +1,12 @@
+###v.3.2.0 - 2026-Jun-11
+- Fix objects sticking together and losing speed on inelastic collisions.
+- Conserve momentum exactly when one object collides with several others simultaneously.
+- Push overlapping objects apart (de-penetration) instead of leaving them interpenetrated.
+- Place the merged object at the common center of mass.
+- Fix mass duplication and loss when three or more objects merge in the same iteration.
+- Fix crash on switching from GPU to CPU in AUTO mode when merging is off.
+- Implement many missing tests (collisions, gravity, movement) and re-enable disabled ones.
+
 ###v.3.1.0 - 2023-Jun-20
 - Fix scaling.
 - Improve visualization.
