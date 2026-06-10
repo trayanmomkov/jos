@@ -13,6 +13,8 @@ import static info.trekto.jos.util.Utils.deepCopy;
 public class ProcessCollisionsLogicDouble extends Kernel implements ProcessCollisionsLogic {
     private static final double RATIO_FOUR_THREE = 4 / 3.0;
     private static final double PI = Math.PI;
+    /* The part of the overlap between two objects which is resolved per iteration. */
+    private static final double DEPENETRATION_RATE = 0.5;
 
     private final double[] positionX;
     private final double[] positionY;
@@ -96,8 +98,24 @@ public class ProcessCollisionsLogicDouble extends Kernel implements ProcessColli
                 double distance = calculateDistance(readOnlyPositionX[i], readOnlyPositionY[i], readOnlyPositionX[j], readOnlyPositionY[j]);
                 if (distance < readOnlyRadius[i] + readOnlyRadius[j]) {    // If collide
                     processElasticCollision(i, j, coefficientOfRestitution);
+                    pushOutOfOverlap(i, j, distance);
                 }
             }
+        }
+    }
+
+    /**
+     * Solid objects cannot interpenetrate, so an overlap is resolved by moving the objects apart.
+     * Each object of the pair moves out by its inverse-mass share of the overlap (the pair's center
+     * of mass stays in place), DEPENETRATION_RATE-th part per iteration to avoid sudden jumps.
+     * Only positions change; the velocities and so the kinetic energy are not affected.
+     */
+    private void pushOutOfOverlap(final int i, final int j, final double distance) {
+        if (distance > 0) {
+            final double overlap = readOnlyRadius[i] + readOnlyRadius[j] - distance;
+            final double push = overlap * (readOnlyMass[j] / (readOnlyMass[i] + readOnlyMass[j])) * DEPENETRATION_RATE;
+            positionX[i] = positionX[i] + push * (readOnlyPositionX[i] - readOnlyPositionX[j]) / distance;
+            positionY[i] = positionY[i] + push * (readOnlyPositionY[i] - readOnlyPositionY[j]) / distance;
         }
     }
 

@@ -5,6 +5,7 @@ import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.model.impl.TripleNumber;
 import info.trekto.jos.core.numbers.Number;
 
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.HALF;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.IGNORED;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.PI;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.RATIO_FOUR_THREE;
@@ -95,8 +96,24 @@ public class ProcessCollisionsLogicAP implements ProcessCollisionsLogic {
                 Number distance = calculateDistance(readOnlyPositionX[i], readOnlyPositionY[i], readOnlyPositionX[j], readOnlyPositionY[j]);
                 if (distance.compareTo(readOnlyRadius[i].add(readOnlyRadius[j])) < 0) {    // If collide
                     processElasticCollision(i, j, coefficientOfRestitution);
+                    pushOutOfOverlap(i, j, distance);
                 }
             }
+        }
+    }
+
+    /**
+     * Solid objects cannot interpenetrate, so an overlap is resolved by moving the objects apart.
+     * Each object of the pair moves out by its inverse-mass share of the overlap (the pair's center
+     * of mass stays in place), a HALF (the de-penetration rate) per iteration to avoid sudden jumps.
+     * Only positions change; the velocities and so the kinetic energy are not affected.
+     */
+    private void pushOutOfOverlap(final int i, final int j, final Number distance) {
+        if (distance.compareTo(ZERO) > 0) {
+            final Number overlap = readOnlyRadius[i].add(readOnlyRadius[j]).subtract(distance);
+            final Number push = overlap.multiply(readOnlyMass[j].divide(readOnlyMass[i].add(readOnlyMass[j]))).multiply(HALF);
+            positionX[i] = positionX[i].add(push.multiply(readOnlyPositionX[i].subtract(readOnlyPositionX[j])).divide(distance));
+            positionY[i] = positionY[i].add(push.multiply(readOnlyPositionY[i].subtract(readOnlyPositionY[j])).divide(distance));
         }
     }
 
