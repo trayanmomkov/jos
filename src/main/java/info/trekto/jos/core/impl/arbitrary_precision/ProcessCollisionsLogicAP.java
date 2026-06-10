@@ -8,7 +8,6 @@ import info.trekto.jos.core.numbers.Number;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.IGNORED;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.PI;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.RATIO_FOUR_THREE;
-import static info.trekto.jos.core.numbers.NumberFactoryProxy.TWO;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
 import static info.trekto.jos.util.Utils.deepCopy;
 
@@ -190,10 +189,12 @@ public class ProcessCollisionsLogicAP implements ProcessCollisionsLogic {
         final Number distanceX = positionX[bigger].subtract(readOnlyPositionX[smaller]);
         final Number distanceY = positionY[bigger].subtract(readOnlyPositionY[smaller]);
 
-        final Number massRatio = readOnlyMass[smaller].divide(mass[bigger]);
+        /* Place the merged object at the common center of mass. mass[bigger] does not
+         * include the mass of the smaller object yet - it is added at the end of the merge. */
+        final Number massRatio = readOnlyMass[smaller].divide(mass[bigger].add(readOnlyMass[smaller]));
 
-        positionX[bigger] = positionX[bigger].subtract(distanceX.multiply(massRatio).divide(TWO));
-        positionY[bigger] = positionY[bigger].subtract(distanceY.multiply(massRatio).divide(TWO));
+        positionX[bigger] = positionX[bigger].subtract(distanceX.multiply(massRatio));
+        positionY[bigger] = positionY[bigger].subtract(distanceY.multiply(massRatio));
     }
 
     private void changeVelocityOnMerging(final int smaller, final int bigger) {

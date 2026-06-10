@@ -11,7 +11,6 @@ import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
 import static info.trekto.jos.util.Utils.deepCopy;
 
 public class ProcessCollisionsLogicDouble extends Kernel implements ProcessCollisionsLogic {
-    private static final double TWO = 2.0;
     private static final double RATIO_FOUR_THREE = 4 / 3.0;
     private static final double PI = Math.PI;
 
@@ -191,10 +190,12 @@ public class ProcessCollisionsLogicDouble extends Kernel implements ProcessColli
         final double distanceX = positionX[bigger] - readOnlyPositionX[smaller];
         final double distanceY = positionY[bigger] - readOnlyPositionY[smaller];
 
-        final double massRatio = readOnlyMass[smaller] / mass[bigger];
+        /* Place the merged object at the common center of mass. mass[bigger] does not
+         * include the mass of the smaller object yet - it is added at the end of the merge. */
+        final double massRatio = readOnlyMass[smaller] / (mass[bigger] + readOnlyMass[smaller]);
 
-        positionX[bigger] = positionX[bigger] - distanceX * massRatio / TWO;
-        positionY[bigger] = positionY[bigger] - distanceY * massRatio / TWO;
+        positionX[bigger] = positionX[bigger] - distanceX * massRatio;
+        positionY[bigger] = positionY[bigger] - distanceY * massRatio;
     }
 
     private void changeVelocityOnMerging(final int smaller, final int bigger) {
