@@ -102,24 +102,64 @@ public class ProcessCollisionsLogicFloat extends Kernel implements ProcessCollis
     }
 
     public void processMergeCollisions(int i) {
-        if (!deleted[i]) {
-            for (int j = 0; j < n; j++) {
-                if (!deleted[i]) {
-                    if (i != j) {
-                        if (!readOnlyDeleted[j]) {
-                            float distance = calculateDistance(positionX[i], positionY[i], readOnlyPositionX[j], readOnlyPositionY[j]);
-                            if (distance < radius[i] + readOnlyRadius[j]) {    // If collide
-                                if (mass[i] > readOnlyMass[j] || mass[i] == readOnlyMass[j] && i <= j) { //  || mass[i] == readOnlyMass[j] && i < j
-                                    mergeObjectsChangeBigger(j, i);
-                                } else {
-                                    deleted[i] = true;
-                                }
-                            }
-                        }
+        if (!readOnlyDeleted[i]) {
+            /* All decisions are made from the read-only snapshots, so every thread reaches the
+             * same conclusions, and the mass of an absorbed object is added exactly once. */
+            int winnerOverMe = findWinnerOver(i);
+            if (winnerOverMe >= 0) {
+                /* This object is being absorbed, so it must not absorb anything itself - the winner
+                 * reads this object's mass from the snapshot, and everything eaten now would be lost.
+                 * It is deleted only if its winner survives; otherwise it lives on and the chain of
+                 * overlapping objects is resolved in the next iterations. */
+                if (findWinnerOver(winnerOverMe) < 0) {
+                    deleted[i] = true;
+                }
+            } else {
+                for (int j = 0; j < n; j++) {
+                    if (i != j && !readOnlyDeleted[j] && overlaps(i, j) == 1 && isBigger(i, j) == 1
+                            && findWinnerOver(j) == i) {
+                        mergeObjectsChangeBigger(j, i);
                     }
                 }
             }
         }
+    }
+
+    /**
+     * The winner over an object is the single object which absorbs it on merging: the most massive
+     * (with the smaller index on equal masses) of the alive objects which overlap it and are bigger
+     * than it. Returns -1 if there is no such object.
+     */
+    private int findWinnerOver(int x) {
+        int winner = -1;
+        for (int l = 0; l < n; l++) {
+            if (l != x && !readOnlyDeleted[l] && overlaps(l, x) == 1 && isBigger(l, x) == 1
+                    && (winner < 0 || isBigger(l, winner) == 1)) {
+                winner = l;
+            }
+        }
+        return winner;
+    }
+
+    /**
+     * Strict deterministic order: by mass, the smaller index wins on equal masses.
+     * Returns 1/0 instead of boolean, like the mergeOnCollision field, for Aparapi.
+     */
+    private int isBigger(int a, int b) {
+        int result = 0;
+        if (readOnlyMass[a] > readOnlyMass[b] || readOnlyMass[a] == readOnlyMass[b] && a < b) {
+            result = 1;
+        }
+        return result;
+    }
+
+    private int overlaps(int a, int b) {
+        int result = 0;
+        float distance = calculateDistance(readOnlyPositionX[a], readOnlyPositionY[a], readOnlyPositionX[b], readOnlyPositionY[b]);
+        if (distance < readOnlyRadius[a] + readOnlyRadius[b]) {
+            result = 1;
+        }
+        return result;
     }
 
     private void mergeObjectsChangeBigger(int smaller, int bigger) {
