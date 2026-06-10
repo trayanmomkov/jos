@@ -94,8 +94,8 @@ public class ProcessCollisionsLogicFloat extends Kernel implements ProcessCollis
     public void processElasticCollisions(int i) {
         for (int j = 0; j < n; j++) {
             if (i != j) {
-                float distance = calculateDistance(positionX[i], positionY[i], readOnlyPositionX[j], readOnlyPositionY[j]);
-                if (distance < radius[i] + readOnlyRadius[j]) {    // If collide
+                float distance = calculateDistance(readOnlyPositionX[i], readOnlyPositionY[i], readOnlyPositionX[j], readOnlyPositionY[j]);
+                if (distance < readOnlyRadius[i] + readOnlyRadius[j]) {    // If collide
                     processElasticCollision(i, j, coefficientOfRestitution);
                 }
             }
@@ -230,17 +230,21 @@ public class ProcessCollisionsLogicFloat extends Kernel implements ProcessCollis
     }
 
     private void processElasticCollision(final int o1, final int o2, final float cor) {
-        final float v1x = velocityX[o1];
-        final float v1y = velocityY[o1];
+        /* All inputs are read from the read-only snapshots. The two threads of a colliding pair
+         * then compute exactly opposite impulses, and the velocity deltas of simultaneous
+         * collisions with several objects add up independently of the processing order,
+         * so the total momentum is conserved exactly. */
+        final float v1x = readOnlyVelocityX[o1];
+        final float v1y = readOnlyVelocityY[o1];
         final float v2x = readOnlyVelocityX[o2];
         final float v2y = readOnlyVelocityY[o2];
 
-        final float o1x = positionX[o1];
-        final float o1y = positionY[o1];
+        final float o1x = readOnlyPositionX[o1];
+        final float o1y = readOnlyPositionY[o1];
         final float o2x = readOnlyPositionX[o2];
         final float o2y = readOnlyPositionY[o2];
 
-        final float o1m = mass[o1];
+        final float o1m = readOnlyMass[o1];
         final float o2m = readOnlyMass[o2];
 
         /* Apply the impulse only if the objects are moving towards each other: <v1 - v2, x1 - x2> < 0.
@@ -249,27 +253,21 @@ public class ProcessCollisionsLogicFloat extends Kernel implements ProcessCollis
          * opposite sign, pushes the objects back into each other and they remain stuck together,
          * losing velocity on every iteration. */
         if (dotProduct2D(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y) < 0) {
-            // v'1y = v1y - 2*m2/(m1+m2) * dotProduct(o1, o2) / dotProduct(o1y, o1x, o2y, o2x) * (o1y-o2y)
-            // v'2x = v2x - 2*m2/(m1+m2) * dotProduct(o2, o1) / dotProduct(o2x, o2y, o1x, o1y) * (o2x-o1x)
-            // v'2y = v2y - 2*m2/(m1+m2) * dotProduct(o2, o1) / dotProduct(o2y, o2x, o1y, o1x) * (o2y-o1y)
-            // v'1x = v1x - 2*m2/(m1+m2) * dotProduct(o1, o2) / dotProduct(o1x, o1y, o2x, o2y) * (o1x-o2x)
-            velocityX[o1] = calculateVelocity(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y, o1m, o2m, cor);
-            velocityY[o1] = calculateVelocity(v1y, v1x, v2y, v2x, o1y, o1x, o2y, o2x, o1m, o2m, cor);
+            velocityX[o1] = velocityX[o1] + calculateVelocityDelta(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y, o1m, o2m, cor);
+            velocityY[o1] = velocityY[o1] + calculateVelocityDelta(v1y, v1x, v2y, v2x, o1y, o1x, o2y, o2x, o1m, o2m, cor);
         }
 
         // Here we change only o1. o2 will be changed when main iteration, getGlobalId(), pass through it.
-//        velocityX[o2] = calculateVelocity(v2x, v2y, v1x, v1y, o2x, o2y, o1x, o1y, o2m, o1m, cor);
-//        velocityY[o2] = calculateVelocity(v2y, v2x, v1y, v1x, o2y, o2x, o1y, o1x, o2m, o1m, cor);
     }
 
-    private static float calculateVelocity(final float v1x, final float v1y, final float v2x, final float v2y,
-                                           final float o1x, final float o1y, final float o2x, final float o2y,
-                                           final float o1m, final float o2m, final float cor) {
-        // v'1x = v1x - 2*o2m/(o1m+o2m) * dotProduct(o1, o2) / dotProduct(o1x, o1y, o2x, o2y) * (o1x-o2x)
-        return v1x - (cor * o2m + o2m) / (o1m + o2m)
+    private static float calculateVelocityDelta(final float v1x, final float v1y, final float v2x, final float v2y,
+                                                final float o1x, final float o1y, final float o2x, final float o2y,
+                                                final float o1m, final float o2m, final float cor) {
+        // delta v1x = -(cor*o2m + o2m)/(o1m+o2m) * dotProduct(o1, o2) / dotProduct(o1x, o1y, o2x, o2y) * (o1x-o2x)
+        return -((cor * o2m + o2m) / (o1m + o2m)
                 * dotProduct2D(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y)
                 / dotProduct2D(o1x, o1y, o2x, o2y, o1x, o1y, o2x, o2y)
-                * (o1x - o2x);
+                * (o1x - o2x));
     }
 
     private static float dotProduct2D(final float ax, final float ay, final float bx, final float by, final float cx, final float cy, final float dx,

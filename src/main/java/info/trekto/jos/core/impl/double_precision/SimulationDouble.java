@@ -331,14 +331,11 @@ public class SimulationDouble implements Simulation {
             dataAp.accelerationX[i] = New.num(data.accelerationX[i]);
             dataAp.accelerationY[i] = New.num(data.accelerationY[i]);
             dataAp.mass[i] = New.num(data.mass[i]);
-
-            dataAp.mass[i] = New.num(data.mass[i]);
-            dataAp.positionX[i] = New.num(data.positionX[i]);
-            dataAp.positionY[i] = New.num(data.positionY[i]);
-            dataAp.radius[i] = New.num(data.radius[i]);
-            dataAp.velocityX[i] = New.num(data.velocityX[i]);
-            dataAp.velocityY[i] = New.num(data.velocityY[i]);
         }
+
+        /* When merging is off, copyToReadOnly() does not refresh the mass snapshot because
+         * the mass never changes. It has to be initialized here, like initArrays() does. */
+        deepCopy(dataAp.mass, dataAp.readOnlyMass);
 
         return dataAp;
     }
