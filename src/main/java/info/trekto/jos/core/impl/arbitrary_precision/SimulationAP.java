@@ -64,9 +64,9 @@ public class SimulationAP implements CpuSimulation {
         data = new DataAP(n);
 
         moveObjectsLogic = new MoveObjectsLogicAP(data, properties.getSecondsPerIteration(), properties.getMinDistance(),
-                                                  screenWidth, screenHeight);
+                                                  properties.getBarnesHutTheta(), screenWidth, screenHeight);
         processCollisionsLogic = new ProcessCollisionsLogicAP(data, properties.isMergeOnCollision(), properties.getCoefficientOfRestitution(),
-                                                              beforeMovePositionX, beforeMovePositionY);
+                                                              properties.getBarnesHutTheta(), beforeMovePositionX, beforeMovePositionY);
     }
 
     @Override
@@ -345,9 +345,9 @@ public class SimulationAP implements CpuSimulation {
         beforeMovePositionX = new Number[data.n];
         beforeMovePositionY = new Number[data.n];
         moveObjectsLogic = new MoveObjectsLogicAP(data, properties.getSecondsPerIteration(), properties.getMinDistance(),
-                                                  moveObjectsLogic.getScreenWidth(), moveObjectsLogic.getScreenHeight());
+                                                  properties.getBarnesHutTheta(), moveObjectsLogic.getScreenWidth(), moveObjectsLogic.getScreenHeight());
         processCollisionsLogic = new ProcessCollisionsLogicAP(data, properties.isMergeOnCollision(), properties.getCoefficientOfRestitution(),
-                                                              beforeMovePositionX, beforeMovePositionY);
+                                                              properties.getBarnesHutTheta(), beforeMovePositionX, beforeMovePositionY);
     }
 
     private void captureBeforeMovePositions() {

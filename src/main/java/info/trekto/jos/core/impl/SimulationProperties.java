@@ -32,6 +32,8 @@ public class SimulationProperties {
     private boolean mergeOnCollision = true;
     private Number coefficientOfRestitution;
     private Number minDistance;
+    /* Barnes-Hut approximation parameter. 0 (or null): exact brute force calculation. */
+    private Number barnesHutTheta;
     private double scale;
     private Color backgroundColor;
 
@@ -65,6 +67,7 @@ public class SimulationProperties {
         this.mergeOnCollision = properties.mergeOnCollision;
         this.coefficientOfRestitution = properties.coefficientOfRestitution;
         this.minDistance = properties.minDistance;
+        this.barnesHutTheta = properties.barnesHutTheta;
         this.scale = properties.scale;
         this.backgroundColor = properties.backgroundColor;
     }
@@ -223,6 +226,14 @@ public class SimulationProperties {
 
     public void setMinDistance(Number minDistance) {
         this.minDistance = minDistance;
+    }
+
+    public Number getBarnesHutTheta() {
+        return barnesHutTheta;
+    }
+
+    public void setBarnesHutTheta(Number barnesHutTheta) {
+        this.barnesHutTheta = barnesHutTheta;
     }
 
     public double getScale() {

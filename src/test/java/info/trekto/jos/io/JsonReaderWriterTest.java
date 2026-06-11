@@ -7,12 +7,16 @@ import org.testng.annotations.Test;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 
+import static info.trekto.jos.core.impl.arbitrary_precision.ElasticCollision1DTest.areEqual;
 import static info.trekto.jos.core.numbers.NumberFactory.NumberType.ARBITRARY_PRECISION;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.ONE;
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumberFactory;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
 public class JsonReaderWriterTest {
@@ -21,6 +25,59 @@ public class JsonReaderWriterTest {
     @BeforeClass
     public void init() {
         createNumberFactory(ARBITRARY_PRECISION, PRECISION);
+    }
+
+    @Test
+    public void barnesHutThetaRoundTripsThroughThePropertiesFile() throws Exception {
+        SimulationProperties properties = new SimulationProperties();
+        properties.setNumberType(ARBITRARY_PRECISION);
+        properties.setPrecision(PRECISION);
+        properties.setNumberOfIterations(10);
+        properties.setSecondsPerIteration(New.num("0.01"));
+        properties.setNumberOfObjects(0);
+        properties.setOutputFile("out.json.gz");
+        properties.setCoefficientOfRestitution(ONE);
+        properties.setMinDistance(New.num(10));
+        properties.setBarnesHutTheta(New.num("0.7"));
+        properties.setScale(1);
+        properties.setBackgroundColor(Color.WHITE);
+        properties.setInitialObjects(new ArrayList<>());
+
+        File file = File.createTempFile("jos-properties", ".json");
+        file.deleteOnExit();
+        new JsonReaderWriter().writeProperties(properties, file.getAbsolutePath());
+
+        SimulationProperties read = new JsonReaderWriter().readPropertiesAndCreateNumberFactory(file.getAbsolutePath());
+
+        assertTrue(areEqual(read.getBarnesHutTheta(), New.num("0.7"), PRECISION - 2),
+                   "Theta should round trip: " + read.getBarnesHutTheta());
+    }
+
+    @Test
+    public void propertiesFileWithoutBarnesHutThetaLoadsAsExactCalculation() throws Exception {
+        /* A file from an older version of the application - no barnesHutTheta key. */
+        String json = "{\"properties\":{"
+                + "\"numberOfIterations\":1,"
+                + "\"secondsPerIteration\":\"0.01\","
+                + "\"numberOfObjects\":0,"
+                + "\"saveToFile\":false,"
+                + "\"numberType\":\"ARBITRARY_PRECISION\","
+                + "\"interactingLaw\":\"NEWTON_LAW_OF_GRAVITATION\","
+                + "\"precision\":16,"
+                + "\"realTimeVisualization\":false,"
+                + "\"playingSpeed\":0,"
+                + "\"initialObjects\":[]"
+                + "}}";
+        File file = File.createTempFile("jos-old-properties", ".json");
+        file.deleteOnExit();
+        try (FileWriter writer = new FileWriter(file)) {
+            writer.write(json);
+        }
+
+        SimulationProperties read = new JsonReaderWriter().readPropertiesAndCreateNumberFactory(file.getAbsolutePath());
+
+        assertNotNull(read.getBarnesHutTheta(), "Theta should get a default value");
+        assertEquals(read.getBarnesHutTheta().compareTo(ZERO), 0, "A missing key should mean exact calculation");
     }
 
     /**

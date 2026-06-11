@@ -118,6 +118,7 @@ public class Utils {
         info(logger, "Number of objects: " + properties.getNumberOfObjects());
         info(logger, "Number of iterations: " + properties.getNumberOfIterations());
         info(logger, "'Number' implementation: " + properties.getNumberType());
+        info(logger, "Barnes-Hut theta: " + (properties.getBarnesHutTheta() == null ? "0 (exact)" : properties.getBarnesHutTheta()));
         info(logger, "'Simulation' implementation: " + simulation.getClass().getSimpleName());
     }
 

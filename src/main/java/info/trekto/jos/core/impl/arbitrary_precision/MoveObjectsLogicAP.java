@@ -26,9 +26,19 @@ public class MoveObjectsLogicAP {
     private final int screenWidth;
     private final int screenHeight;
 
+    /* Barnes-Hut approximation. theta = 0: exact brute force calculation. */
+    private final Number thetaSquared;
+    private final boolean barnesHut;
+    private BarnesHutTree tree;
+
     private final int n;
 
     public MoveObjectsLogicAP(DataAP data, Number secondsPerIteration, Number minDistance, int screenWidth, int screenHeight) {
+        this(data, secondsPerIteration, minDistance, null, screenWidth, screenHeight);
+    }
+
+    public MoveObjectsLogicAP(DataAP data, Number secondsPerIteration, Number minDistance, Number barnesHutTheta,
+                              int screenWidth, int screenHeight) {
         gravity = New.num("0.000000000066743"); // 6.6743×10^−11 N⋅m2/kg2
         n = data.n;
 
@@ -50,16 +60,29 @@ public class MoveObjectsLogicAP {
 
         this.secondsPerIteration = secondsPerIteration;
         this.minDistance = minDistance;
+
+        Number theta = barnesHutTheta == null ? ZERO : barnesHutTheta;
+        this.thetaSquared = theta.multiply(theta);
+        this.barnesHut = theta.compareTo(ZERO) > 0;
     }
 
     public void runOnCpu() {
+        prepareTree();
         for (int i = 0; i < n; i++) {
             calculateNewValues(i);
         }
     }
 
     public void run() {
+        prepareTree();
         new MoveObjectsRecursiveAction(0, n, this).compute();
+    }
+
+    /* The tree is built before the threads start and is only read by them. */
+    private void prepareTree() {
+        if (barnesHut) {
+            tree = BarnesHutTree.build(readOnlyPositionX, readOnlyPositionY, readOnlyMass, readOnlyDeleted, n);
+        }
     }
 
     public void calculateNewValues(int fromIndex, int toIndex) {
@@ -93,29 +116,68 @@ public class MoveObjectsLogicAP {
         /* Calculate acceleration */
         /* For the time T, forces have accelerated the objects (changed their velocities).
          * Forces are calculated having the positions of the objects at the beginning of the period. */
-        Number newAccelerationX = ZERO;
-        Number newAccelerationY = ZERO;
-        for (int j = 0; j < n; j++) {
-            if (i != j && !readOnlyDeleted[j]) {
-                /* Calculate force */
-                Number distance = calculateDistance(positionX[i], positionY[i], readOnlyPositionX[j], readOnlyPositionY[j]);
-                if (distance.compareTo(minDistance) < 0) {
-                    distance = minDistance;
+        Number[] newAcceleration = {ZERO, ZERO};
+        if (barnesHut) {
+            if (tree != null && tree.getRoot() != null) {
+                addAcceleration(tree.getRoot(), i, newAcceleration);
+            }
+        } else {
+            for (int j = 0; j < n; j++) {
+                if (i != j && !readOnlyDeleted[j]) {
+                    addAccelerationFromPointMass(i, readOnlyPositionX[j], readOnlyPositionY[j], readOnlyMass[j], newAcceleration);
                 }
-                Number force = calculateForce(mass[i], readOnlyMass[j], distance);
-                //       Fx = F*x/r;
-                Number forceX = force.multiply(readOnlyPositionX[j].subtract(positionX[i])).divide(distance);
-                Number forceY = force.multiply(readOnlyPositionY[j].subtract(positionY[i])).divide(distance);
-
-                /* Add to current acceleration */
-                // ax = Fx / m
-                newAccelerationX = newAccelerationX.add(forceX.divide(mass[i]));
-                newAccelerationY = newAccelerationY.add(forceY.divide(mass[i]));
             }
         }
 
-        velocityX[i] = velocityX[i].add(newAccelerationX.multiply(secondsPerIteration));
-        velocityY[i] = velocityY[i].add(newAccelerationY.multiply(secondsPerIteration));
+        velocityX[i] = velocityX[i].add(newAcceleration[0].multiply(secondsPerIteration));
+        velocityY[i] = velocityY[i].add(newAcceleration[1].multiply(secondsPerIteration));
+    }
+
+    /* Adds the gravity of a tree node to the acceleration of object i. A node which is far enough
+     * (side / distance < theta) acts as one object at its center of mass. Otherwise its children are visited. */
+    private void addAcceleration(BarnesHutTree.Node node, int i, Number[] acceleration) {
+        if (node.children != null) {
+            Number dx = node.centerOfMassX.subtract(positionX[i]);
+            Number dy = node.centerOfMassY.subtract(positionY[i]);
+            Number distanceSquared = dx.multiply(dx).add(dy.multiply(dy));
+            /* side / distance < theta, compared with squared values to avoid sqrt */
+            if (node.sideSquared.compareTo(thetaSquared.multiply(distanceSquared)) < 0) {
+                addAccelerationFromPointMass(i, node.centerOfMassX, node.centerOfMassY, node.mass, acceleration);
+            } else {
+                for (BarnesHutTree.Node child : node.children) {
+                    if (child != null) {
+                        addAcceleration(child, i, acceleration);
+                    }
+                }
+            }
+        } else if (node.bucket != null) {
+            for (int k = 0; k < node.bucket.size(); k++) {
+                int j = node.bucket.get(k);
+                if (j != i) {
+                    addAccelerationFromPointMass(i, readOnlyPositionX[j], readOnlyPositionY[j], readOnlyMass[j], acceleration);
+                }
+            }
+        } else if (node.objectIndex != i) {
+            int j = node.objectIndex;
+            addAccelerationFromPointMass(i, readOnlyPositionX[j], readOnlyPositionY[j], readOnlyMass[j], acceleration);
+        }
+    }
+
+    private void addAccelerationFromPointMass(int i, Number objectX, Number objectY, Number objectMass, Number[] acceleration) {
+        /* Calculate force */
+        Number distance = calculateDistance(positionX[i], positionY[i], objectX, objectY);
+        if (distance.compareTo(minDistance) < 0) {
+            distance = minDistance;
+        }
+        Number force = calculateForce(mass[i], objectMass, distance);
+        //       Fx = F*x/r;
+        Number forceX = force.multiply(objectX.subtract(positionX[i])).divide(distance);
+        Number forceY = force.multiply(objectY.subtract(positionY[i])).divide(distance);
+
+        /* Add to current acceleration */
+        // ax = Fx / m
+        acceleration[0] = acceleration[0].add(forceX.divide(mass[i]));
+        acceleration[1] = acceleration[1].add(forceY.divide(mass[i]));
     }
 
     private void bounceFromScreenBorders(int i) {

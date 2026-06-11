@@ -69,6 +69,7 @@ public enum Controller {
 
     public static final int CPU_DEFAULT_THRESHOLD = 384;
     public static final int DEFAULT_MIN_DISTANCE = 10;
+    public static final int DEFAULT_BARNES_HUT_THETA = 0;
     public static final double DEFAULT_SCALE = 1;
     public static final String JSON_FILE_EXTENSION = ".json";
     public static final String JSON_GZIP_FILE_EXTENSION = ".json.gz";
@@ -123,6 +124,12 @@ public enum Controller {
                                               + "ARBITRARY_PRECISION - Arbitrary precision.");
                                               
         mainForm.setMinDistanceMessage("If distance < minDistance, minDistane will be used when calculating acceleration.");
+        mainForm.setBarnesHutThetaMessage("Barnes-Hut approximation of the gravity. Applies on the CPU only.\n"
+                                                  + "0: exact brute force calculation.\n"
+                                                  + "Bigger values: faster but less accurate. Typical value: 0.5 - 0.7.\n"
+                                                  + "Theta > 0 also speeds up the collision detection using the same tree\n"
+                                                  + "(the detection itself stays exact).\n"
+                                                  + "Note: with theta > 0 the total momentum is not exactly conserved.");
         mainForm.setCpuGpuThresholdMessage("If the objects are fewer than this threshold\n"
                                                    + "the execution will continue on the CPU.");
         mainForm.init();
@@ -363,6 +370,14 @@ public enum Controller {
             properties.setMinDistance(New.num(minDistanceText));
         }
 
+        String barnesHutThetaText = gui.getBarnesHutThetaField().getText();
+        if (isNullOrBlank(barnesHutThetaText) || !isNumeric(barnesHutThetaText) || New.num(barnesHutThetaText).compareTo(ZERO) < 0) {
+            properties.setBarnesHutTheta(New.num(DEFAULT_BARNES_HUT_THETA));
+            gui.getBarnesHutThetaField().setText(String.valueOf(DEFAULT_BARNES_HUT_THETA));
+        } else {
+            properties.setBarnesHutTheta(New.num(barnesHutThetaText));
+        }
+
         String scaleText = gui.getScaleField().getText();
         if (isNullOrBlank(scaleText) || !isNumeric(scaleText) || Double.parseDouble(scaleText) <= 0) {
             properties.setScale(DEFAULT_SCALE);
@@ -502,6 +517,7 @@ public enum Controller {
             gui.getMergeObjectsWhenCollideCheckBox().setSelected(prop.isMergeOnCollision());
             gui.getCorTextField().setText(String.valueOf(prop.getCoefficientOfRestitution()));
             gui.getMinDistanceField().setText(String.valueOf(prop.getMinDistance()));
+            gui.getBarnesHutThetaField().setText(String.valueOf(prop.getBarnesHutTheta()));
             gui.getScaleField().setText(String.valueOf(prop.getScale()));
             gui.setBackgroundColor(prop.getBackgroundColor());
 

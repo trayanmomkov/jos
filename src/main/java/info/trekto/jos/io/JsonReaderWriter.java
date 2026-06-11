@@ -41,6 +41,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import static info.trekto.jos.core.Controller.C;
+import static info.trekto.jos.core.Controller.DEFAULT_BARNES_HUT_THETA;
 import static info.trekto.jos.core.Controller.DEFAULT_MIN_DISTANCE;
 import static info.trekto.jos.core.Controller.DEFAULT_SCALE;
 import static info.trekto.jos.core.model.impl.SimulationObjectImpl.DEFAULT_COLOR;
@@ -113,6 +114,8 @@ public class JsonReaderWriter implements ReaderWriter {
         json.addProperty("mergeOnCollision", properties.isMergeOnCollision());
         json.addProperty("coefficientOfRestitution", properties.getCoefficientOfRestitution().toString());
         json.addProperty("minimumDistance", properties.getMinDistance().toString());
+        json.addProperty("barnesHutTheta", properties.getBarnesHutTheta() == null
+                ? String.valueOf(DEFAULT_BARNES_HUT_THETA) : properties.getBarnesHutTheta().toString());
         json.addProperty("scale", properties.getScale());
         json.addProperty("backgroundColor", colorToString(properties.getBackgroundColor()));
         return json;
@@ -251,7 +254,10 @@ public class JsonReaderWriter implements ReaderWriter {
         
         JsonElement minDistance = json.get("minimumDistance");
         properties.setMinDistance(minDistance != null ? New.num(minDistance.getAsString()) : New.num(DEFAULT_MIN_DISTANCE));
-        
+
+        JsonElement barnesHutTheta = json.get("barnesHutTheta");
+        properties.setBarnesHutTheta(barnesHutTheta != null ? New.num(barnesHutTheta.getAsString()) : New.num(DEFAULT_BARNES_HUT_THETA));
+
         JsonElement scale = json.get("scale");
         properties.setScale(scale != null ? Double.parseDouble(scale.getAsString()) : DEFAULT_SCALE);
 

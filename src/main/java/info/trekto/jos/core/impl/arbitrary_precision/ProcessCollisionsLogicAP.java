@@ -5,6 +5,8 @@ import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.model.impl.TripleNumber;
 import info.trekto.jos.core.numbers.Number;
 
+import java.util.List;
+
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.HALF;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.IGNORED;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.PI;
@@ -40,6 +42,11 @@ public class ProcessCollisionsLogicAP implements ProcessCollisionsLogic {
     private final int mergeOnCollision;
     private final Number coefficientOfRestitution;
 
+    /* When the Barnes-Hut approximation is on, the same tree narrows the collision candidates.
+     * The detection itself stays exact - the tree only skips objects which cannot overlap. */
+    private final boolean useTree;
+    private BarnesHutTree tree;
+
     private final int n;
 
     public ProcessCollisionsLogicAP(int n, boolean mergeOnCollision, Number coefficientOfRestitution) {
@@ -47,10 +54,14 @@ public class ProcessCollisionsLogicAP implements ProcessCollisionsLogic {
     }
 
     public ProcessCollisionsLogicAP(DataAP data, boolean mergeOnCollision, Number coefficientOfRestitution) {
-        this(data, mergeOnCollision, coefficientOfRestitution, data.readOnlyPositionX, data.readOnlyPositionY);
+        this(data, mergeOnCollision, coefficientOfRestitution, null);
     }
 
-    public ProcessCollisionsLogicAP(DataAP data, boolean mergeOnCollision, Number coefficientOfRestitution,
+    public ProcessCollisionsLogicAP(DataAP data, boolean mergeOnCollision, Number coefficientOfRestitution, Number barnesHutTheta) {
+        this(data, mergeOnCollision, coefficientOfRestitution, barnesHutTheta, data.readOnlyPositionX, data.readOnlyPositionY);
+    }
+
+    public ProcessCollisionsLogicAP(DataAP data, boolean mergeOnCollision, Number coefficientOfRestitution, Number barnesHutTheta,
                                     Number[] beforeMovePositionX, Number[] beforeMovePositionY) {
         n = data.n;
         this.beforeMovePositionX = beforeMovePositionX;
@@ -76,9 +87,11 @@ public class ProcessCollisionsLogicAP implements ProcessCollisionsLogic {
 
         this.mergeOnCollision = mergeOnCollision ? 1 : 0;
         this.coefficientOfRestitution = coefficientOfRestitution;
+        this.useTree = barnesHutTheta != null && barnesHutTheta.compareTo(ZERO) > 0;
     }
 
     public void runOnSingleThread() {
+        prepareTree();
         for (int i = 0; i < n; i++) {
             if (mergeOnCollision == 1) {
                 processMergeCollisions(i);
@@ -89,7 +102,15 @@ public class ProcessCollisionsLogicAP implements ProcessCollisionsLogic {
     }
 
     public void run() {
+        prepareTree();
         new CheckCollisionsRecursiveAction(0, n, this).compute();
+    }
+
+    /* The tree is built before the threads start and is only read by them. */
+    private void prepareTree() {
+        if (useTree) {
+            tree = BarnesHutTree.build(readOnlyPositionX, readOnlyPositionY, readOnlyMass, readOnlyRadius, readOnlyDeleted, n);
+        }
     }
 
     public void processCollisions(int fromIndex, int toIndex) {
@@ -103,13 +124,24 @@ public class ProcessCollisionsLogicAP implements ProcessCollisionsLogic {
     }
 
     public void processElasticCollisions(int i) {
-        for (int j = 0; j < n; j++) {
-            if (i != j) {
-                Number distance = calculateDistance(readOnlyPositionX[i], readOnlyPositionY[i], readOnlyPositionX[j], readOnlyPositionY[j]);
-                if (distance.compareTo(readOnlyRadius[i].add(readOnlyRadius[j])) < 0) {    // If collide
-                    processElasticCollision(i, j, coefficientOfRestitution);
-                    pushOutOfOverlap(i, j, distance);
-                }
+        if (tree != null) {
+            List<Integer> candidates = tree.findOverlapCandidates(i);
+            for (int k = 0; k < candidates.size(); k++) {
+                detectAndProcessElasticCollision(i, candidates.get(k));
+            }
+        } else {
+            for (int j = 0; j < n; j++) {
+                detectAndProcessElasticCollision(i, j);
+            }
+        }
+    }
+
+    private void detectAndProcessElasticCollision(int i, int j) {
+        if (i != j) {
+            Number distance = calculateDistance(readOnlyPositionX[i], readOnlyPositionY[i], readOnlyPositionX[j], readOnlyPositionY[j]);
+            if (distance.compareTo(readOnlyRadius[i].add(readOnlyRadius[j])) < 0) {    // If collide
+                processElasticCollision(i, j, coefficientOfRestitution);
+                pushOutOfOverlap(i, j, distance);
             }
         }
     }
@@ -137,13 +169,24 @@ public class ProcessCollisionsLogicAP implements ProcessCollisionsLogic {
                     deleted[i] = true;
                 }
             } else {
-                for (int j = 0; j < n; j++) {
-                    if (i != j && !readOnlyDeleted[j] && overlaps(i, j) == 1 && isBigger(i, j) == 1
-                            && findWinnerOver(j) == i) {
-                        mergeObjectsChangeBigger(j, i);
+                if (tree != null) {
+                    List<Integer> candidates = tree.findOverlapCandidates(i);
+                    for (int k = 0; k < candidates.size(); k++) {
+                        absorbIfWinner(i, candidates.get(k));
+                    }
+                } else {
+                    for (int j = 0; j < n; j++) {
+                        absorbIfWinner(i, j);
                     }
                 }
             }
+        }
+    }
+
+    private void absorbIfWinner(int i, int j) {
+        if (i != j && !readOnlyDeleted[j] && overlaps(i, j) == 1 && isBigger(i, j) == 1
+                && findWinnerOver(j) == i) {
+            mergeObjectsChangeBigger(j, i);
         }
     }
 
@@ -151,11 +194,23 @@ public class ProcessCollisionsLogicAP implements ProcessCollisionsLogic {
      * which overlap x and are bigger than it. -1 if there is no such object. */
     private int findWinnerOver(int x) {
         int winner = -1;
-        for (int l = 0; l < n; l++) {
-            if (l != x && !readOnlyDeleted[l] && overlaps(l, x) == 1 && isBigger(l, x) == 1
-                    && (winner < 0 || isBigger(l, winner) == 1)) {
-                winner = l;
+        if (tree != null) {
+            List<Integer> candidates = tree.findOverlapCandidates(x);
+            for (int k = 0; k < candidates.size(); k++) {
+                winner = strongerOverlappingNeighbour(winner, candidates.get(k), x);
             }
+        } else {
+            for (int l = 0; l < n; l++) {
+                winner = strongerOverlappingNeighbour(winner, l, x);
+            }
+        }
+        return winner;
+    }
+
+    private int strongerOverlappingNeighbour(int winner, int l, int x) {
+        if (l != x && !readOnlyDeleted[l] && overlaps(l, x) == 1 && isBigger(l, x) == 1
+                && (winner < 0 || isBigger(l, winner) == 1)) {
+            return l;
         }
         return winner;
     }

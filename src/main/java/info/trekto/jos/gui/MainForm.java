@@ -38,6 +38,7 @@ public class MainForm {
             "When playing: If x < 0: every iteration sleep x milliseconds; If x >= 0: skip every x-1 iterations";
     private String aboutMessage;
     private String minDistanceMessage;
+    private String barnesHutThetaMessage;
     private String numberTypeMessage;
     private BufferedImage icon;
 
@@ -107,6 +108,8 @@ public class MainForm {
     private JLabel corLabel;
     private JLabel minDistanceLabel;
     private JTextField minDistanceField;
+    private JLabel barnesHutThetaLabel;
+    private JTextField barnesHutThetaField;
     private JTextField scaleField;
     private JTextField backgroundColorField;
     private JCheckBox autoscrollCheckBox;
@@ -177,7 +180,8 @@ public class MainForm {
                 initialObjectsTable, initialObjectsPanel, generateObjectsButton, numberTypeComboBox, precisionTextField,
                 precisionTextField, executionModeLabel, executionModeComboBox, cpuGpuThresholdLabel, cpuGpuThresholdField,
                 cpuGpuThresholdLabel2, detectCpuGpuThresholdButton, bounceFromScreenBordersCheckBox, mergeObjectsWhenCollideCheckBox,
-                corLabel, corTextField, roundCheckBox, minDistanceLabel, minDistanceField);
+                corLabel, corTextField, barnesHutThetaLabel, barnesHutThetaField,
+                roundCheckBox, minDistanceLabel, minDistanceField);
 
         playingComponents = Arrays.asList(playFileLabel, playFromLabel, browsePlayingFileButton, playButton);
 
@@ -222,6 +226,12 @@ public class MainForm {
             }
         });
 
+        barnesHutThetaLabel.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                JOptionPane.showMessageDialog(mainPanel, barnesHutThetaMessage, "Barnes-Hut theta", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
         playingSpeedLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 JOptionPane.showMessageDialog(mainPanel, PLAYING_SPEED_TIP, "Playing speed", JOptionPane.INFORMATION_MESSAGE);
@@ -244,6 +254,7 @@ public class MainForm {
         numberTypeLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         playingSpeedLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         cpuGpuThresholdLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        barnesHutThetaLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
         backgroundColorField.addActionListener(e -> {
             backgroundColorField.setBackground(stringToColor(backgroundColorField.getText()));
@@ -310,6 +321,10 @@ public class MainForm {
 
     public void setMinDistanceMessage(String message) {
         this.minDistanceMessage = message;
+    }
+
+    public void setBarnesHutThetaMessage(String message) {
+        this.barnesHutThetaMessage = message;
     }
 
     public void setIcon(BufferedImage icon) {
@@ -610,6 +625,14 @@ public class MainForm {
 
     public JLabel getMinDistanceLabel() {
         return minDistanceLabel;
+    }
+
+    public JTextField getBarnesHutThetaField() {
+        return barnesHutThetaField;
+    }
+
+    public JLabel getBarnesHutThetaLabel() {
+        return barnesHutThetaLabel;
     }
 
     public JLabel getCorLabel() {
@@ -966,6 +989,23 @@ public class MainForm {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(0, 4, 0, 5);
         panel2.add(minDistanceLabel, gbc);
+        barnesHutThetaField = new JTextField();
+        barnesHutThetaField.setColumns(3);
+        barnesHutThetaField.setText("0");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 7;
+        gbc.anchor = GridBagConstraints.WEST;
+        panel2.add(barnesHutThetaField, gbc);
+        barnesHutThetaLabel = new JLabel();
+        barnesHutThetaLabel.setForeground(new Color(-16776961));
+        barnesHutThetaLabel.setText("B-H theta");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 7;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(0, 4, 0, 5);
+        panel2.add(barnesHutThetaLabel, gbc);
         saveToFileCheckBox = new JCheckBox();
         saveToFileCheckBox.setHorizontalTextPosition(10);
         saveToFileCheckBox.setText("Save to file");
