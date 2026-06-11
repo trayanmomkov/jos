@@ -17,3 +17,6 @@ compiler.xml
 /.classpath
 /.project
 /src/main/java/jos.ucls
+*.class
+/out/
+/*.jar
