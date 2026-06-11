@@ -124,11 +124,13 @@ public enum Controller {
                                               + "ARBITRARY_PRECISION - Arbitrary precision.");
                                               
         mainForm.setMinDistanceMessage("If distance < minDistance, minDistane will be used when calculating acceleration.");
-        mainForm.setBarnesHutThetaMessage("Barnes-Hut approximation of the gravity. Applies on the CPU only.\n"
+        mainForm.setBarnesHutThetaMessage("Barnes-Hut approximation of the gravity. Applies on the CPU and the GPU.\n"
                                                   + "0: exact brute force calculation.\n"
                                                   + "Bigger values: faster but less accurate. Typical value: 0.5 - 0.7.\n"
                                                   + "Theta > 0 also speeds up the collision detection using the same tree\n"
                                                   + "(the detection itself stays exact).\n"
+                                                  + "On the GPU the approximation pays off for very large numbers of objects\n"
+                                                  + "(tens of thousands); below that the exact GPU kernels are usually faster.\n"
                                                   + "Note: with theta > 0 the total momentum is not exactly conserved.");
         mainForm.setCpuGpuThresholdMessage("If the objects are fewer than this threshold\n"
                                                    + "the execution will continue on the CPU.");

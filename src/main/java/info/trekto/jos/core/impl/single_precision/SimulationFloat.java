@@ -5,6 +5,7 @@ import info.trekto.jos.core.CpuSimulation;
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.impl.Data;
+import info.trekto.jos.core.impl.FlatBarnesHutTree;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.impl.arbitrary_precision.DataAP;
 import info.trekto.jos.core.model.SimulationObject;
@@ -59,6 +60,20 @@ public class SimulationFloat implements Simulation {
     private final DataFloat data;
     private final SimulationProperties properties;
 
+    /* Barnes-Hut (theta > 0): the tree is built on the CPU every iteration (in double, from
+     * widened snapshots), narrowed to float and traversed by the Barnes-Hut kernels.
+     * The exact kernels remain the fallback when the tree does not fit. */
+    private final boolean barnesHut;
+    private final FlatBarnesHutTree tree;
+    private final FloatBarnesHutTreeArrays treeArrays;
+    private final BarnesHutMoveObjectsLogicFloat barnesHutMoveObjectsLogic;
+    private final BarnesHutProcessCollisionsLogicFloat barnesHutProcessCollisionsLogic;
+    private final double[] scratchPositionX;
+    private final double[] scratchPositionY;
+    private final double[] scratchMass;
+    private final double[] scratchRadius;
+    private boolean treeOverflowWarned;
+
     public SimulationFloat(SimulationProperties properties, CpuSimulation cpuSimulation) {
         this.properties = properties;
         final int n = properties.getNumberOfObjects();
@@ -87,22 +102,86 @@ public class SimulationFloat implements Simulation {
         processCollisionsRange = createRange(n);
         processCollisionsLogic.setExecutionMode(GPU);
 
+        Number theta = properties.getBarnesHutTheta();
+        barnesHut = theta != null && theta.doubleValue() > 0;
+        if (barnesHut) {
+            tree = new FlatBarnesHutTree(n);
+            treeArrays = new FloatBarnesHutTreeArrays(tree);
+            scratchPositionX = new double[n];
+            scratchPositionY = new double[n];
+            scratchMass = new double[n];
+            scratchRadius = new double[n];
+            float thetaSquared = (float) (theta.doubleValue() * theta.doubleValue());
+            barnesHutMoveObjectsLogic = new BarnesHutMoveObjectsLogicFloat(data, tree, treeArrays, thetaSquared,
+                                                                           properties.getSecondsPerIteration().floatValue(),
+                                                                           properties.getMinDistance().floatValue(),
+                                                                           screenWidth, screenHeight);
+            barnesHutMoveObjectsLogic.setExecutionMode(GPU);
+            barnesHutProcessCollisionsLogic = new BarnesHutProcessCollisionsLogicFloat(data, tree, treeArrays,
+                                                                                       properties.isMergeOnCollision(),
+                                                                                       coefficientOfRestitution,
+                                                                                       beforeMovePositionX, beforeMovePositionY);
+            barnesHutProcessCollisionsLogic.setExecutionMode(GPU);
+        } else {
+            tree = null;
+            treeArrays = null;
+            barnesHutMoveObjectsLogic = null;
+            barnesHutProcessCollisionsLogic = null;
+            scratchPositionX = null;
+            scratchPositionY = null;
+            scratchMass = null;
+            scratchRadius = null;
+        }
+
         this.cpuSimulation = cpuSimulation;
+    }
+
+    /* Builds the tree in double and copies it to float for the kernels. Returns false when it does not fit;
+     * the exact kernels are used then. */
+    private boolean buildTree() {
+        for (int i = 0; i < data.n; i++) {
+            scratchPositionX[i] = data.readOnlyPositionX[i];
+            scratchPositionY[i] = data.readOnlyPositionY[i];
+            scratchMass[i] = data.readOnlyMass[i];
+            scratchRadius[i] = data.readOnlyRadius[i];
+        }
+        boolean fitted = tree.build(scratchPositionX, scratchPositionY, scratchMass, scratchRadius,
+                                    data.readOnlyDeleted, data.n);
+        if (fitted) {
+            treeArrays.refresh(tree);
+        } else if (!treeOverflowWarned) {
+            treeOverflowWarned = true;
+            warn(logger, "Barnes-Hut tree capacity exceeded. Using the exact kernels for the affected iterations.");
+        }
+        return fitted;
     }
 
     @Override
     public void doIteration(boolean saveCurrentIterationToFile, long iterationCounter) {
         data.copyToReadOnly(properties.isMergeOnCollision());
         captureBeforeMovePositions();
+        /* One tree per iteration: the collision phase reuses the tree of the move phase. */
+        boolean treeFitted = barnesHut && buildTree();
+        if (treeFitted) {
+            barnesHutMoveObjectsLogic.execute(moveObjectsRange); /* Execute in parallel on GPU if available */
+            checkExecutionMode(iterationCounter, barnesHutMoveObjectsLogic);
+            barnesHutProcessCollisionsLogic.setSlack(maxMoveSinceSnapshot());
+        } else {
 //        moveObjectsLogic.runOnCpu();
-        moveObjectsLogic.execute(moveObjectsRange); /* Execute in parallel on GPU if available */
-        checkExecutionMode(iterationCounter, moveObjectsLogic);
+            moveObjectsLogic.execute(moveObjectsRange); /* Execute in parallel on GPU if available */
+            checkExecutionMode(iterationCounter, moveObjectsLogic);
+        }
 
         warnIfFastMotion();
         data.copyToReadOnly(properties.isMergeOnCollision());
+        if (treeFitted) {
+            barnesHutProcessCollisionsLogic.execute(processCollisionsRange); /* Collisions - Execute in parallel on GPU if available */
+            checkExecutionMode(iterationCounter, barnesHutProcessCollisionsLogic);
+        } else {
 //        processCollisionsLogic.runOnCpu();
-        processCollisionsLogic.execute(processCollisionsRange); /* Collisions - Execute in parallel on GPU if available */
-        checkExecutionMode(iterationCounter, processCollisionsLogic);
+            processCollisionsLogic.execute(processCollisionsRange); /* Collisions - Execute in parallel on GPU if available */
+            checkExecutionMode(iterationCounter, processCollisionsLogic);
+        }
 
         if (properties.isSaveToFile() && saveCurrentIterationToFile) {
             C.getReaderWriter().appendObjectsToFile(properties, iterationCounter, data.positionX, data.positionY, zeroArray, data.velocityX,
@@ -133,6 +212,23 @@ public class SimulationFloat implements Simulation {
                 }
             }
         }
+    }
+
+    /* The biggest distance an object has moved since the tree was built. The collision kernel
+     * widens its search by it. Rounded up. */
+    private float maxMoveSinceSnapshot() {
+        double maxSquared = 0;
+        for (int i = 0; i < data.n; i++) {
+            if (!data.deleted[i]) {
+                double dx = (double) data.positionX[i] - data.readOnlyPositionX[i];
+                double dy = (double) data.positionY[i] - data.readOnlyPositionY[i];
+                double distanceSquared = dx * dx + dy * dy;
+                if (distanceSquared > maxSquared) {
+                    maxSquared = distanceSquared;
+                }
+            }
+        }
+        return Math.nextUp((float) Math.sqrt(maxSquared));
     }
 
     @Override

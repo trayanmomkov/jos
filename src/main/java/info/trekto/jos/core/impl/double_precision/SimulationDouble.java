@@ -5,6 +5,7 @@ import info.trekto.jos.core.CpuSimulation;
 import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.impl.Data;
+import info.trekto.jos.core.impl.FlatBarnesHutTree;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.impl.arbitrary_precision.DataAP;
 import info.trekto.jos.core.model.SimulationObject;
@@ -58,6 +59,14 @@ public class SimulationDouble implements Simulation {
     private final DataDouble data;
     private final SimulationProperties properties;
 
+    /* Barnes-Hut (theta > 0): the tree is built on the CPU every iteration and traversed by the
+     * Barnes-Hut kernels. The exact kernels remain the fallback when the tree does not fit. */
+    private final boolean barnesHut;
+    private final FlatBarnesHutTree tree;
+    private final BarnesHutMoveObjectsLogicDouble barnesHutMoveObjectsLogic;
+    private final BarnesHutProcessCollisionsLogicDouble barnesHutProcessCollisionsLogic;
+    private boolean treeOverflowWarned;
+
     public SimulationDouble(SimulationProperties properties, CpuSimulation cpuSimulation) {
         this.properties = properties;
         final int n = properties.getNumberOfObjects();
@@ -86,22 +95,70 @@ public class SimulationDouble implements Simulation {
         processCollisionsRange = createRange(n);
         processCollisionsLogic.setExecutionMode(GPU);
 
+        Number theta = properties.getBarnesHutTheta();
+        barnesHut = theta != null && theta.doubleValue() > 0;
+        if (barnesHut) {
+            tree = new FlatBarnesHutTree(n);
+            double thetaSquared = theta.doubleValue() * theta.doubleValue();
+            barnesHutMoveObjectsLogic = new BarnesHutMoveObjectsLogicDouble(data, tree, thetaSquared,
+                                                                            properties.getSecondsPerIteration().doubleValue(),
+                                                                            properties.getMinDistance().doubleValue(),
+                                                                            screenWidth, screenHeight);
+            barnesHutMoveObjectsLogic.setExecutionMode(GPU);
+            barnesHutProcessCollisionsLogic = new BarnesHutProcessCollisionsLogicDouble(data, tree,
+                                                                                        properties.isMergeOnCollision(),
+                                                                                        coefficientOfRestitution,
+                                                                                        beforeMovePositionX, beforeMovePositionY);
+            barnesHutProcessCollisionsLogic.setExecutionMode(GPU);
+        } else {
+            tree = null;
+            barnesHutMoveObjectsLogic = null;
+            barnesHutProcessCollisionsLogic = null;
+        }
+
         this.cpuSimulation = cpuSimulation;
+    }
+
+    /**
+     * Builds the Barnes-Hut tree from the read-only snapshots. Returns false when the tree
+     * does not fit in the preallocated arrays - the caller then uses the exact kernel.
+     */
+    private boolean buildTree() {
+        boolean fitted = tree.build(data.readOnlyPositionX, data.readOnlyPositionY, data.readOnlyMass,
+                                    data.readOnlyRadius, data.readOnlyDeleted, data.n);
+        if (!fitted && !treeOverflowWarned) {
+            treeOverflowWarned = true;
+            warn(logger, "Barnes-Hut tree capacity exceeded. Using the exact kernels for the affected iterations.");
+        }
+        return fitted;
     }
 
     @Override
     public void doIteration(boolean saveCurrentIterationToFile, long iterationCounter) {
         data.copyToReadOnly(properties.isMergeOnCollision());
         captureBeforeMovePositions();
+        /* One tree per iteration: the collision phase reuses the tree of the move phase. */
+        boolean treeFitted = barnesHut && buildTree();
+        if (treeFitted) {
+            barnesHutMoveObjectsLogic.execute(moveObjectsRange); /* Execute in parallel on GPU if available */
+            checkExecutionMode(iterationCounter, barnesHutMoveObjectsLogic);
+            barnesHutProcessCollisionsLogic.setSlack(maxMoveSinceSnapshot());
+        } else {
 //        moveObjectsLogic.runOnCpu();
-        moveObjectsLogic.execute(moveObjectsRange); /* Execute in parallel on GPU if available */
-        checkExecutionMode(iterationCounter, moveObjectsLogic);
+            moveObjectsLogic.execute(moveObjectsRange); /* Execute in parallel on GPU if available */
+            checkExecutionMode(iterationCounter, moveObjectsLogic);
+        }
 
         warnIfFastMotion();
         data.copyToReadOnly(properties.isMergeOnCollision());
+        if (treeFitted) {
+            barnesHutProcessCollisionsLogic.execute(processCollisionsRange); /* Collisions - Execute in parallel on GPU if available */
+            checkExecutionMode(iterationCounter, barnesHutProcessCollisionsLogic);
+        } else {
 //        processCollisionsLogic.runOnCpu();
-        processCollisionsLogic.execute(processCollisionsRange); /* Collisions - Execute in parallel on GPU if available */
-        checkExecutionMode(iterationCounter, processCollisionsLogic);
+            processCollisionsLogic.execute(processCollisionsRange); /* Collisions - Execute in parallel on GPU if available */
+            checkExecutionMode(iterationCounter, processCollisionsLogic);
+        }
 
         if (properties.isSaveToFile() && saveCurrentIterationToFile) {
             C.getReaderWriter().appendObjectsToFile(properties, iterationCounter, data.positionX, data.positionY, zeroArray, data.velocityX,
@@ -132,6 +189,23 @@ public class SimulationDouble implements Simulation {
                 }
             }
         }
+    }
+
+    /* The biggest distance an object has moved since the tree was built. The collision kernel
+     * widens its search by it. Rounded up. */
+    private double maxMoveSinceSnapshot() {
+        double maxSquared = 0;
+        for (int i = 0; i < data.n; i++) {
+            if (!data.deleted[i]) {
+                double dx = data.positionX[i] - data.readOnlyPositionX[i];
+                double dy = data.positionY[i] - data.readOnlyPositionY[i];
+                double distanceSquared = dx * dx + dy * dy;
+                if (distanceSquared > maxSquared) {
+                    maxSquared = distanceSquared;
+                }
+            }
+        }
+        return Math.nextUp(Math.sqrt(maxSquared));
     }
 
     @Override

@@ -98,13 +98,22 @@ There are three **execution modes**: CPU, GPU and Auto.
  - GPU runs on video card. Most decent video cards support OpenCL and at least float.
  - AUTO mode switches from GPU to CPU when the number of objects drops (on merging) below particular threshold.
 
-On the CPU the gravity can be approximated with the **Barnes-Hut** algorithm (a quadtree), which
-makes the calculation roughly O(n·log n) instead of O(n²). It is controlled by the **barnesHutTheta**
+The gravity can be approximated with the **Barnes-Hut** algorithm (a quadtree), which makes the
+calculation roughly O(n·log n) instead of O(n²). It is controlled by the **barnesHutTheta**
 parameter: 0 (the default) uses the exact brute force calculation, bigger values are faster but less
 accurate. Typical value: 0.5 - 0.7. When theta > 0 the collision detection also uses the tree to
 find the overlapping objects - this speeds it up in the same way, without affecting its precision.
-Note that with theta > 0 the total momentum is not exactly conserved. The GPU always uses the
-exact calculation.
+Note that with theta > 0 the total momentum is not exactly conserved.
+
+The approximation applies on the CPU and on the GPU. On the GPU the tree is built on the CPU once
+per iteration (using all CPU cores for big scenes), shared by the gravity and the collision kernels
+and traversed by them on the GPU; this pays off for very large numbers of objects
+(tens of thousands and above) - below that the exact GPU kernels are usually faster. Measured on an
+NVIDIA GeForce RTX 3070 with 102 400 objects (float): about 7 times more iterations per second
+with theta 0.7 than with the exact calculation (~32 against ~4.6 iterations per second), and the
+advantage grows with the number of objects. In the rare case when the tree does not fit in its preallocated arrays, the affected
+iterations automatically use the exact kernels. With theta > 0 the measured CPU/GPU threshold of
+the AUTO mode is usually higher, because the CPU calculation gets faster.
 
 Current version **does not use Z coordinate** of the objects. This is done
 for faster calculations but can be easily changed.
@@ -147,7 +156,7 @@ a particular iteration and object.
     "mergeOnCollision": false,
     "coefficientOfRestitution": "0.8",            # Coefficient of restitution. 1: elastic, 0: perfectly inelastic, above 1: objects will gain energy on collision.
     "minimumDistance": "10.0",                    # If distance between objects centers < minimumDistance, minimumDistance will be used on acceleration calculating.,
-    "barnesHutTheta": "0.7",                      # Barnes-Hut approximation of the gravity (CPU only). 0: exact calculation. Bigger: faster but less accurate. Typical: 0.5-0.7.
+    "barnesHutTheta": "0.7",                      # Barnes-Hut approximation of the gravity. 0: exact calculation. Bigger: faster but less accurate. Typical: 0.5-0.7.
     "scale": 1.0,                                 # Visual scale/zoom of the scene.
     "backgroundColor": "FFFFFF",                  # Background color of the simulaiton.
     "initialObjects":[
