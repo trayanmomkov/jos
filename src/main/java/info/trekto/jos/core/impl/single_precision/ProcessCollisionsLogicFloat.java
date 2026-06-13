@@ -34,6 +34,14 @@ public class ProcessCollisionsLogicFloat extends Kernel implements ProcessCollis
     private final float[] readOnlyRadius;
     private final int[] readOnlyColor;
 
+    /* Positions at the START of the iteration (before the move phase), used only by the elastic
+     * approach test. A fast pair can cross centers within one move, so the post-move relative
+     * position has flipped sign and the pair would wrongly read as separating; the pre-move
+     * position keeps the test correct. Aliased to the post-move snapshot when no separate
+     * pre-move snapshot is supplied, so direct callers behave exactly as before. */
+    private final float[] beforeMovePositionX;
+    private final float[] beforeMovePositionY;
+
     private final int mergeOnCollision;
     private final float coefficientOfRestitution;
 
@@ -44,7 +52,14 @@ public class ProcessCollisionsLogicFloat extends Kernel implements ProcessCollis
     }
 
     public ProcessCollisionsLogicFloat(DataFloat data, boolean mergeOnCollision, float coefficientOfRestitution) {
+        this(data, mergeOnCollision, coefficientOfRestitution, data.readOnlyPositionX, data.readOnlyPositionY);
+    }
+
+    public ProcessCollisionsLogicFloat(DataFloat data, boolean mergeOnCollision, float coefficientOfRestitution,
+                                       float[] beforeMovePositionX, float[] beforeMovePositionY) {
         n = data.n;
+        this.beforeMovePositionX = beforeMovePositionX;
+        this.beforeMovePositionY = beforeMovePositionY;
 
         positionX = data.positionX;
         positionY = data.positionY;
@@ -306,12 +321,19 @@ public class ProcessCollisionsLogicFloat extends Kernel implements ProcessCollis
         final float o1m = readOnlyMass[o1];
         final float o2m = readOnlyMass[o2];
 
+        /* The approach test uses the positions from the start of the iteration (before the move),
+         * so a pair that crossed centers within one move still reads as approaching and bounces. */
+        final float b1x = beforeMovePositionX[o1];
+        final float b1y = beforeMovePositionY[o1];
+        final float b2x = beforeMovePositionX[o2];
+        final float b2y = beforeMovePositionY[o2];
+
         /* Apply the impulse only if the objects are moving towards each other: <v1 - v2, x1 - x2> < 0.
          * An overlapping pair which is already separating (it bounced in a previous iteration, but the
          * overlap is not yet cleared) must be left alone. Otherwise the impulse is applied with an
          * opposite sign, pushes the objects back into each other and they remain stuck together,
          * losing velocity on every iteration. */
-        if (dotProduct2D(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y) < 0) {
+        if (dotProduct2D(v1x, v1y, v2x, v2y, b1x, b1y, b2x, b2y) < 0) {
             velocityX[o1] = velocityX[o1] + calculateVelocityDelta(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y, o1m, o2m, cor);
             velocityY[o1] = velocityY[o1] + calculateVelocityDelta(v1y, v1x, v2y, v2x, o1y, o1x, o2y, o2x, o1m, o2m, cor);
         }

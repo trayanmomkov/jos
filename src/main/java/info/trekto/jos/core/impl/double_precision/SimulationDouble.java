@@ -31,6 +31,7 @@ import static info.trekto.jos.util.Utils.error;
 import static info.trekto.jos.util.Utils.info;
 import static info.trekto.jos.util.Utils.nanoToHumanReadable;
 import static info.trekto.jos.util.Utils.showRemainingTime;
+import static info.trekto.jos.util.Utils.warn;
 
 /**
  * This implementation uses Aparapi library and runs on GPU if possible.
@@ -48,6 +49,11 @@ public class SimulationDouble implements Simulation {
     private final ProcessCollisionsLogicDouble processCollisionsLogic;
     private final Range processCollisionsRange;
     private final double[] zeroArray;
+    /* Positions captured at the start of each iteration (before the move), for the elastic approach
+     * test - so a pair that crosses centers in one step still bounces - and the fast-motion warning. */
+    private final double[] beforeMovePositionX;
+    private final double[] beforeMovePositionY;
+    private boolean fastMotionWarned;
     private final CpuSimulation cpuSimulation;
     private boolean executingOnCpu;
     private final DataDouble data;
@@ -66,6 +72,8 @@ public class SimulationDouble implements Simulation {
             screenHeight = C.getVisualizer().getVisualizationPanel().getHeight();
         }
         zeroArray = new double[n];
+        beforeMovePositionX = new double[n];
+        beforeMovePositionY = new double[n];
         data = new DataDouble(n);
         double coefficientOfRestitution = properties.getCoefficientOfRestitution().doubleValue();
 
@@ -74,7 +82,8 @@ public class SimulationDouble implements Simulation {
         moveObjectsRange = createRange(n);
         moveObjectsLogic.setExecutionMode(GPU);
 
-        processCollisionsLogic = new ProcessCollisionsLogicDouble(data, properties.isMergeOnCollision(), coefficientOfRestitution);
+        processCollisionsLogic = new ProcessCollisionsLogicDouble(data, properties.isMergeOnCollision(), coefficientOfRestitution,
+                                                                  beforeMovePositionX, beforeMovePositionY);
         processCollisionsRange = createRange(n);
         processCollisionsLogic.setExecutionMode(GPU);
 
@@ -84,10 +93,14 @@ public class SimulationDouble implements Simulation {
     @Override
     public void doIteration(boolean saveCurrentIterationToFile, long iterationCounter) {
         data.copyToReadOnly(properties.isMergeOnCollision());
+        /* Remember where every object was before the move, so the collision phase can test approach
+         * in the pre-move frame (a pair that crossed centers in one step still reads as approaching). */
+        captureBeforeMovePositions();
 //        moveObjectsLogic.runOnCpu();
         moveObjectsLogic.execute(moveObjectsRange); /* Execute in parallel on GPU if available */
         checkExecutionMode(iterationCounter, moveObjectsLogic);
 
+        warnIfFastMotion();
         data.copyToReadOnly(properties.isMergeOnCollision());
 //        processCollisionsLogic.runOnCpu();
         processCollisionsLogic.execute(processCollisionsRange); /* Collisions - Execute in parallel on GPU if available */
@@ -97,6 +110,35 @@ public class SimulationDouble implements Simulation {
             C.getReaderWriter().appendObjectsToFile(properties, iterationCounter, data.positionX, data.positionY, zeroArray, data.velocityX,
                                                     data.velocityY, zeroArray, data.mass, data.radius, data.id, data.color, data.deleted,
                                                     data.accelerationX, data.accelerationY, zeroArray);
+        }
+    }
+
+    private void captureBeforeMovePositions() {
+        deepCopy(data.positionX, beforeMovePositionX);
+        deepCopy(data.positionY, beforeMovePositionY);
+    }
+
+    /**
+     * Warns once if any object moved more than its own radius during the move phase. Such an object
+     * can pass through another within a single iteration (tunneling), because the pair is only ever
+     * sampled overlapping after their centers have crossed - or not sampled overlapping at all.
+     * Reducing the seconds per iteration keeps every step shorter than the radii.
+     */
+    private void warnIfFastMotion() {
+        if (fastMotionWarned) {
+            return;
+        }
+        for (int i = 0; i < data.n; i++) {
+            if (!data.deleted[i]) {
+                double dx = data.positionX[i] - beforeMovePositionX[i];
+                double dy = data.positionY[i] - beforeMovePositionY[i];
+                if (dx * dx + dy * dy > data.radius[i] * data.radius[i]) {
+                    fastMotionWarned = true;
+                    warn(logger, "An object moved more than its radius in one iteration. Fast objects can pass "
+                            + "through each other (tunneling). Reduce 'seconds per iteration' to avoid it.");
+                    return;
+                }
+            }
         }
     }
 

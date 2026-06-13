@@ -32,6 +32,12 @@ public class ProcessCollisionsLogicAP implements ProcessCollisionsLogic {
     private final Number[] readOnlyRadius;
     private final int[] readOnlyColor;
 
+    /* Positions at the START of the iteration (before the move phase), used only by the elastic
+     * approach test, so a pair that crossed centers within one move still reads as approaching.
+     * Aliased to the post-move snapshot when none is supplied, so direct callers are unchanged. */
+    private final Number[] beforeMovePositionX;
+    private final Number[] beforeMovePositionY;
+
     private final int mergeOnCollision;
     private final Number coefficientOfRestitution;
 
@@ -42,7 +48,14 @@ public class ProcessCollisionsLogicAP implements ProcessCollisionsLogic {
     }
 
     public ProcessCollisionsLogicAP(DataAP data, boolean mergeOnCollision, Number coefficientOfRestitution) {
+        this(data, mergeOnCollision, coefficientOfRestitution, data.readOnlyPositionX, data.readOnlyPositionY);
+    }
+
+    public ProcessCollisionsLogicAP(DataAP data, boolean mergeOnCollision, Number coefficientOfRestitution,
+                                    Number[] beforeMovePositionX, Number[] beforeMovePositionY) {
         n = data.n;
+        this.beforeMovePositionX = beforeMovePositionX;
+        this.beforeMovePositionY = beforeMovePositionY;
 
         positionX = data.positionX;
         positionY = data.positionY;
@@ -299,12 +312,19 @@ public class ProcessCollisionsLogicAP implements ProcessCollisionsLogic {
         final Number o1m = readOnlyMass[o1];
         final Number o2m = readOnlyMass[o2];
 
+        /* The approach test uses the positions from the start of the iteration (before the move),
+         * so a pair that crossed centers within one move still reads as approaching and bounces. */
+        final Number b1x = beforeMovePositionX[o1];
+        final Number b1y = beforeMovePositionY[o1];
+        final Number b2x = beforeMovePositionX[o2];
+        final Number b2y = beforeMovePositionY[o2];
+
         /* Apply the impulse only if the objects are moving towards each other: <v1 - v2, x1 - x2> < 0.
          * An overlapping pair which is already separating (it bounced in a previous iteration, but the
          * overlap is not yet cleared) must be left alone. Otherwise the impulse is applied with an
          * opposite sign, pushes the objects back into each other and they remain stuck together,
          * losing velocity on every iteration. */
-        if (dotProduct2D(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y).compareTo(ZERO) < 0) {
+        if (dotProduct2D(v1x, v1y, v2x, v2y, b1x, b1y, b2x, b2y).compareTo(ZERO) < 0) {
             velocityX[o1] = velocityX[o1].add(calculateVelocityDelta(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y, o1m, o2m, cor));
             velocityY[o1] = velocityY[o1].add(calculateVelocityDelta(v1y, v1x, v2y, v2x, o1y, o1x, o2y, o2x, o1m, o2m, cor));
         }
