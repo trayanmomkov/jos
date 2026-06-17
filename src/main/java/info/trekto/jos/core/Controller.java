@@ -668,6 +668,14 @@ public enum Controller {
 
     public void saveToFileCheckBoxEvent() {
         gui.getSavingToFileComponents().forEach(c -> c.setEnabled(gui.getSaveToFileCheckBox().isSelected()));
+        /* When saving is switched on and no output file has been chosen yet, default it to the loaded
+         * input file path with .gz appended (e.g. /path/scene.json -> /path/scene.json.gz). */
+        if (gui.getSaveToFileCheckBox().isSelected() && isNullOrBlank(gui.getOutputFileTextField().getText())) {
+            String inputFilePath = gui.getInputFilePathLabel().getText();
+            if (!isNullOrBlank(inputFilePath)) {
+                gui.getOutputFileTextField().setText(inputFilePath + ".gz");
+            }
+        }
     }
 
     public void pauseButtonEvent() {
