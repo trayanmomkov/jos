@@ -162,6 +162,16 @@ public enum Controller {
         NumberFactory.NumberType numberType = properties.getNumberType();
         int n = properties.getNumberOfObjects();
 
+        /* The initial-objects list is the source of truth for the count. numberOfObjects can arrive
+         * smaller than the list (e.g. floored to a GPU work-group multiple, or a stale value from the
+         * GUI field), which would under-size the data arrays in the simulation constructor while
+         * initArrays still loads every object - ArrayIndexOutOfBoundsException. Keep them in sync. */
+        if (properties.getInitialObjects() != null && !properties.getInitialObjects().isEmpty()
+                && properties.getInitialObjects().size() != n) {
+            n = properties.getInitialObjects().size();
+            properties.setNumberOfObjects(n);
+        }
+
         if (numberType == ARBITRARY_PRECISION
                 || executionMode == CPU
                 || (numberType == DOUBLE && !gpuDoubleAvailable)
