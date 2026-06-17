@@ -178,6 +178,11 @@ public enum Controller {
 
     /* This method is static for testing purposes */
     static Simulation createSimulation(SimulationProperties properties, ExecutionMode executionMode) {
+        return createSimulation(properties, executionMode, false);
+    }
+
+    /* Playing a saved file needs a CpuSimulation, so the soft contact is not used for it. */
+    static Simulation createSimulation(SimulationProperties properties, ExecutionMode executionMode, boolean forPlayback) {
         NumberFactory.NumberType numberType = properties.getNumberType();
         int n = properties.getNumberOfObjects();
 
@@ -186,6 +191,15 @@ public enum Controller {
                 && properties.getInitialObjects().size() != n) {
             n = properties.getInitialObjects().size();
             properties.setNumberOfObjects(n);
+        }
+
+        /* The soft contact exists only in the float and double simulations. Float runs it on the GPU,
+         * double on the CPU cores, because double is slow on most video cards. */
+        if (!forPlayback && properties.isSoftContact() && !properties.isMergeOnCollision()) {
+            if (numberType == FLOAT) {
+                return new SimulationFloat(properties, null);
+            }
+            return new SimulationDouble(properties, null);
         }
 
         if (numberType == ARBITRARY_PRECISION
@@ -235,7 +249,7 @@ public enum Controller {
     }
 
     public void play() {
-        simulation = createSimulation(fetchPropertiesFromGuiAndCreateNumberFactory(), CPU);
+        simulation = createSimulation(fetchPropertiesFromGuiAndCreateNumberFactory(), CPU, true);
         paused = false;
         new Thread(() -> {
             try {
@@ -394,6 +408,7 @@ public enum Controller {
         properties.setRealTimeVisualization(gui.getRealTimeVisualizationCheckBox().isSelected());
         properties.setInteractingLaw(ForceCalculator.InteractingLaw.valueOf(String.valueOf(gui.getInteractingLawComboBox().getSelectedItem())));
         properties.setMergeOnCollision(gui.getMergeObjectsWhenCollideCheckBox().isSelected());
+        properties.setSoftContact(gui.getSoftContactCheckBox().isSelected());
     }
 
     public void onVisualizationWindowClosed() {
@@ -520,6 +535,7 @@ public enum Controller {
             gui.getCorTextField().setText(String.valueOf(prop.getCoefficientOfRestitution()));
             gui.getMinDistanceField().setText(String.valueOf(prop.getMinDistance()));
             gui.getBarnesHutThetaField().setText(String.valueOf(prop.getBarnesHutTheta()));
+            gui.getSoftContactCheckBox().setSelected(prop.isSoftContact());
             gui.getScaleField().setText(String.valueOf(prop.getScale()));
             gui.setBackgroundColor(prop.getBackgroundColor());
 

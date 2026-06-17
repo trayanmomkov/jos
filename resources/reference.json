@@ -20,6 +20,7 @@
     "coefficientOfRestitution": "0.8",            # Coefficient of restitution. 1: elastic, 0: perfectly inelastic, above 1: objects will gain energy on collision.
     "minimumDistance": "10.0",                    # If distance between objects centers < minimumDistance, minimumDistance will be used on acceleration calculating.,
     "barnesHutTheta": "0.7",                      # Barnes-Hut approximation of the gravity. 0: exact calculation. Bigger: faster but less accurate. Typical: 0.5-0.7.
+    "softContact": false,                         # Soft contact (DEM) instead of the bounce. Keeps a body made of touching particles together.
     "scale": 1.0,                                 # Visual scale/zoom of the scene.
     "backgroundColor": "FFFFFF",                  # Background color of the simulaiton.
     "initialObjects":[

@@ -9,6 +9,8 @@ public class MoveObjectsLogicDouble extends Kernel {
     private final double[] positionY;
     private final double[] velocityX;
     private final double[] velocityY;
+    private final double[] accelerationX;
+    private final double[] accelerationY;
     private final double[] mass;
     private final double[] radius;
     private final boolean[] deleted;
@@ -18,10 +20,16 @@ public class MoveObjectsLogicDouble extends Kernel {
     private final double[] readOnlyMass;
     private final boolean[] readOnlyDeleted;
 
-    private final double secondsPerIteration;
+    /* Not final: the soft contact uses smaller steps. */
+    private double secondsPerIteration;
     private final int screenWidth;
     private final int screenHeight;
     private final double minDistance;
+
+    /* Soft contact (DEM). Switched on by SimulationDouble; then there is no separate collision phase. */
+    private int contactEnabled = 0;
+    private double contactStiffness = 0;
+    private double contactDampingFactor = 0;
 
     private final int n;
 
@@ -32,6 +40,8 @@ public class MoveObjectsLogicDouble extends Kernel {
         positionY = data.positionY;
         velocityX = data.velocityX;
         velocityY = data.velocityY;
+        accelerationX = data.accelerationX;
+        accelerationY = data.accelerationY;
         mass = data.mass;
         radius = data.radius;
         deleted = data.deleted;
@@ -48,6 +58,17 @@ public class MoveObjectsLogicDouble extends Kernel {
         this.minDistance = minDistance;
     }
 
+    /** Enable the soft-sphere contact force with the given auto-derived stiffness and damping factor. */
+    public void enableSoftContact(double stiffness, double dampingFactor) {
+        this.contactEnabled = 1;
+        this.contactStiffness = stiffness;
+        this.contactDampingFactor = dampingFactor;
+    }
+
+    public void setSecondsPerIteration(double secondsPerIteration) {
+        this.secondsPerIteration = secondsPerIteration;
+    }
+
     public void runOnCpu() {
         for (int i = 0; i < n; i++) {
             calculateNewValues(i);
@@ -57,6 +78,68 @@ public class MoveObjectsLogicDouble extends Kernel {
     @Override
     public void run() {
         calculateNewValues(getGlobalId());
+    }
+
+    /* Soft contact, first pass: calculates the acceleration of object i from the gravity and the contacts.
+     * Nothing else is changed, so the result does not depend on the order of the threads. */
+    public void computeContactAcceleration(int i) {
+        if (!deleted[i]) {
+            double newAccelerationX = 0;
+            double newAccelerationY = 0;
+            for (int j = 0; j < n; j++) {
+                if (i != j && !deleted[j]) {
+                    double diffX = positionX[j] - positionX[i];
+                    double diffY = positionY[j] - positionY[i];
+                    double actualDistance = sqrt(diffX * diffX + diffY * diffY);
+                    double distance = actualDistance;
+                    if (distance < minDistance) {
+                        distance = minDistance;
+                    }
+                    double force = calculateForce(mass[i], mass[j], distance);
+                    double forceX = force * diffX / distance;
+                    double forceY = force * diffY / distance;
+                    newAccelerationX = newAccelerationX + forceX / mass[i];
+                    newAccelerationY = newAccelerationY + forceY / mass[i];
+
+                    if (contactEnabled == 1 && actualDistance > 0) {
+                        double overlap = radius[i] + radius[j] - actualDistance;
+                        if (overlap > 0) {
+                            double normalX = -diffX / actualDistance;   // unit normal i <- j (away from j)
+                            double normalY = -diffY / actualDistance;
+                            double relativeVelocityX = velocityX[i] - velocityX[j];
+                            double relativeVelocityY = velocityY[i] - velocityY[j];
+                            double normalSpeed = relativeVelocityX * normalX + relativeVelocityY * normalY;
+                            double sumMass = mass[i] + mass[j];
+                            if (sumMass > 0) {
+                                double effectiveMass = mass[i] * mass[j] / sumMass;
+                                double damping = contactDampingFactor * sqrt(effectiveMass * contactStiffness);
+                                double contactForce = contactStiffness * overlap - damping * normalSpeed;
+                                if (contactForce < 0) {
+                                    contactForce = 0;   // contacts push apart, never pull together
+                                }
+                                newAccelerationX = newAccelerationX + contactForce * normalX / mass[i];
+                                newAccelerationY = newAccelerationY + contactForce * normalY / mass[i];
+                            }
+                        }
+                    }
+                }
+            }
+            accelerationX[i] = newAccelerationX;
+            accelerationY[i] = newAccelerationY;
+        }
+    }
+
+    /* Soft contact, second pass: changes the velocity and then moves the object. */
+    public void integrateContact(int i) {
+        if (!deleted[i]) {
+            velocityX[i] = velocityX[i] + accelerationX[i] * secondsPerIteration;
+            velocityY[i] = velocityY[i] + accelerationY[i] * secondsPerIteration;
+            positionX[i] = positionX[i] + velocityX[i] * secondsPerIteration;
+            positionY[i] = positionY[i] + velocityY[i] * secondsPerIteration;
+            if (screenWidth != 0 && screenHeight != 0) {
+                bounceFromScreenBorders(i);
+            }
+        }
     }
 
     /**

@@ -7,6 +7,7 @@ import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.impl.Data;
 import info.trekto.jos.core.impl.FlatBarnesHutTree;
 import info.trekto.jos.core.impl.SimulationProperties;
+import info.trekto.jos.core.impl.SoftContactParameters;
 import info.trekto.jos.core.impl.arbitrary_precision.DataAP;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.numbers.New;
@@ -19,6 +20,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 import static com.aparapi.Kernel.EXECUTION_MODE.GPU;
 import static info.trekto.jos.core.Controller.C;
@@ -66,6 +68,12 @@ public class SimulationDouble implements Simulation {
     private final BarnesHutMoveObjectsLogicDouble barnesHutMoveObjectsLogic;
     private final BarnesHutProcessCollisionsLogicDouble barnesHutProcessCollisionsLogic;
     private boolean treeOverflowWarned;
+
+    /* Soft contact (DEM): the contact force is applied in the move phase, in several small steps per iteration. */
+    private final boolean softContactRequested;
+    private boolean softContactActive;
+    private int softContactSubSteps = 1;
+    private double softContactStiffness = 0;
 
     public SimulationDouble(SimulationProperties properties, CpuSimulation cpuSimulation) {
         this.properties = properties;
@@ -116,6 +124,8 @@ public class SimulationDouble implements Simulation {
             barnesHutProcessCollisionsLogic = null;
         }
 
+        this.softContactRequested = properties.isSoftContact() && !properties.isMergeOnCollision();
+
         this.cpuSimulation = cpuSimulation;
     }
 
@@ -135,6 +145,10 @@ public class SimulationDouble implements Simulation {
 
     @Override
     public void doIteration(boolean saveCurrentIterationToFile, long iterationCounter) {
+        if (softContactActive) {
+            doSoftContactIteration(saveCurrentIterationToFile, iterationCounter);
+            return;
+        }
         data.copyToReadOnly(properties.isMergeOnCollision());
         captureBeforeMovePositions();
         /* One tree per iteration: the collision phase reuses the tree of the move phase. */
@@ -165,6 +179,71 @@ public class SimulationDouble implements Simulation {
                                                     data.velocityY, zeroArray, data.mass, data.radius, data.id, data.color, data.deleted,
                                                     data.accelerationX, data.accelerationY, zeroArray);
         }
+    }
+
+    /* One iteration with the soft contact: gravity and contact force together, in softContactSubSteps small steps. */
+    private void doSoftContactIteration(boolean saveCurrentIterationToFile, long iterationCounter) {
+        captureBeforeMovePositions();   // frame-start positions, for the fast-motion warning over the whole step
+        runSoftContactSubStepsOnCpu();
+        warnIfFastMotion();
+
+        if (properties.isSaveToFile() && saveCurrentIterationToFile) {
+            C.getReaderWriter().appendObjectsToFile(properties, iterationCounter, data.positionX, data.positionY, zeroArray, data.velocityX,
+                                                    data.velocityY, zeroArray, data.mass, data.radius, data.id, data.color, data.deleted,
+                                                    data.accelerationX, data.accelerationY, zeroArray);
+        }
+    }
+
+    /* Every small step has two passes over all objects: calculate the accelerations, then move. */
+    private void runSoftContactSubStepsOnCpu() {
+        final MoveObjectsLogicDouble logic = moveObjectsLogic;
+        final int count = data.n;
+        for (int subStep = 0; subStep < softContactSubSteps; subStep++) {
+            IntStream.range(0, count).parallel().forEach(logic::computeContactAcceleration);
+            IntStream.range(0, count).parallel().forEach(logic::integrateContact);
+        }
+    }
+
+    /* Calculates the contact parameters from the scene. Without them the bounce is used. */
+    private void configureSoftContact() {
+        softContactActive = false;
+        if (!softContactRequested) {
+            return;
+        }
+        SoftContactParameters params = SoftContactParameters.derive(
+                data.n, data.positionX, data.positionY, data.velocityX, data.velocityY, data.mass, data.radius,
+                data.deleted, properties.getSecondsPerIteration().doubleValue(),
+                properties.getCoefficientOfRestitution().doubleValue(), properties.getMinDistance().doubleValue());
+        if (params.stiffness <= 0) {
+            warn(logger, "Soft contact requested but the stiffness could not be derived (no colliding objects?). "
+                    + "Using the classic impulse model.");
+            return;
+        }
+        moveObjectsLogic.enableSoftContact(params.stiffness, params.dampingFactor);
+        moveObjectsLogic.setSecondsPerIteration(params.subStepSeconds);
+        softContactSubSteps = params.subSteps;
+        softContactStiffness = params.stiffness;
+        softContactActive = true;
+        info(logger, "Soft-sphere contact enabled (multi-core CPU, double). " + params);
+        if (params.subSteps > 1) {
+            info(logger, "Soft contact sub-steps per iteration: " + params.subSteps
+                    + " (sub-step " + params.subStepSeconds + " s) for a stable contact integration.");
+        }
+    }
+
+    /** The auto-derived contact stiffness k (N/m), or 0 if soft contact is inactive. For tests/diagnostics. */
+    public double getSoftContactStiffness() {
+        return softContactStiffness;
+    }
+
+    /** Whether the soft-sphere contact model is active for this run. For tests/diagnostics. */
+    public boolean isSoftContactActive() {
+        return softContactActive;
+    }
+
+    /** Number of internal sub-steps per visible iteration under soft contact. For tests/diagnostics. */
+    public int getSoftContactSubSteps() {
+        return softContactSubSteps;
     }
 
     private void captureBeforeMovePositions() {
@@ -363,6 +442,8 @@ public class SimulationDouble implements Simulation {
         if (collisionExists(data.positionX, data.positionY, data.radius)) {
             throw new SimulationException("Initial collision exists!");
         }
+
+        configureSoftContact();
 
         executingOnCpu = false;
 

@@ -7,6 +7,7 @@ import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.impl.Data;
 import info.trekto.jos.core.impl.FlatBarnesHutTree;
 import info.trekto.jos.core.impl.SimulationProperties;
+import info.trekto.jos.core.impl.SoftContactParameters;
 import info.trekto.jos.core.impl.arbitrary_precision.DataAP;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.numbers.New;
@@ -24,6 +25,7 @@ import static com.aparapi.Kernel.EXECUTION_MODE.GPU;
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.GpuChecker.checkExecutionMode;
 import static info.trekto.jos.core.GpuChecker.createRange;
+import static info.trekto.jos.core.GpuChecker.gpuFloatAvailable;
 import static info.trekto.jos.core.impl.Data.countObjects;
 import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_MILLISECOND;
 import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_SECOND;
@@ -73,6 +75,13 @@ public class SimulationFloat implements Simulation {
     private final double[] scratchMass;
     private final double[] scratchRadius;
     private boolean treeOverflowWarned;
+
+    /* Soft contact (DEM), see SimulationDouble. Here the small steps run on the GPU when there is one. */
+    private final boolean softContactRequested;
+    private boolean softContactActive;
+    private boolean softContactOnGpu;
+    private int softContactSubSteps = 1;
+    private float softContactStiffness = 0;
 
     public SimulationFloat(SimulationProperties properties, CpuSimulation cpuSimulation) {
         this.properties = properties;
@@ -133,6 +142,8 @@ public class SimulationFloat implements Simulation {
             scratchRadius = null;
         }
 
+        this.softContactRequested = properties.isSoftContact() && !properties.isMergeOnCollision();
+
         this.cpuSimulation = cpuSimulation;
     }
 
@@ -158,6 +169,10 @@ public class SimulationFloat implements Simulation {
 
     @Override
     public void doIteration(boolean saveCurrentIterationToFile, long iterationCounter) {
+        if (softContactActive) {
+            doSoftContactIteration(saveCurrentIterationToFile, iterationCounter);
+            return;
+        }
         data.copyToReadOnly(properties.isMergeOnCollision());
         captureBeforeMovePositions();
         /* One tree per iteration: the collision phase reuses the tree of the move phase. */
@@ -188,6 +203,103 @@ public class SimulationFloat implements Simulation {
                                                     data.velocityY, zeroArray, data.mass, data.radius, data.id, data.color, data.deleted,
                                                     data.accelerationX, data.accelerationY, zeroArray);
         }
+    }
+
+    /* One iteration with the soft contact - see SimulationDouble. */
+    private void doSoftContactIteration(boolean saveCurrentIterationToFile, long iterationCounter) {
+        captureBeforeMovePositions();
+        if (softContactOnGpu) {
+            runSoftContactSubStepsOnGpu(iterationCounter);
+        } else {
+            runSoftContactSubStepsOnCpu();
+        }
+        warnIfFastMotion();
+
+        if (properties.isSaveToFile() && saveCurrentIterationToFile) {
+            C.getReaderWriter().appendObjectsToFile(properties, iterationCounter, data.positionX, data.positionY, zeroArray, data.velocityX,
+                                                    data.velocityY, zeroArray, data.mass, data.radius, data.id, data.color, data.deleted,
+                                                    data.accelerationX, data.accelerationY, zeroArray);
+        }
+    }
+
+    private void runSoftContactSubStepsOnCpu() {
+        final MoveObjectsLogicFloat logic = moveObjectsLogic;
+        final int count = data.n;
+        for (int subStep = 0; subStep < softContactSubSteps; subStep++) {
+            range(0, count).parallel().forEach(logic::computeContactAcceleration);
+            range(0, count).parallel().forEach(logic::integrateContact);
+        }
+    }
+
+    private void runSoftContactSubStepsOnGpu(long iterationCounter) {
+        try {
+            moveObjectsLogic.uploadSoftContactState();
+            for (int subStep = 0; subStep < softContactSubSteps; subStep++) {
+                moveObjectsLogic.setContactPhase(0);   // first pass: accelerations
+                moveObjectsLogic.execute(moveObjectsRange);
+                moveObjectsLogic.setContactPhase(1);   // second pass: move
+                moveObjectsLogic.execute(moveObjectsRange);
+            }
+            moveObjectsLogic.downloadSoftContactState();
+            moveObjectsLogic.setContactPhase(-1);
+            checkExecutionMode(iterationCounter, moveObjectsLogic);
+        } catch (Exception e) {
+            warn(logger, "Soft-contact GPU execution failed; using the multi-core CPU path for the rest of the run.", e);
+            softContactOnGpu = false;
+            moveObjectsLogic.setExplicit(false);
+            moveObjectsLogic.setContactPhase(-1);
+            runSoftContactSubStepsOnCpu();
+        }
+    }
+
+    /* Calculates the contact parameters from the scene. Without them the bounce is used. */
+    private void configureSoftContact() {
+        softContactActive = false;
+        if (!softContactRequested) {
+            return;
+        }
+        int count = data.n;
+        double[] x = new double[count], y = new double[count], vx = new double[count], vy = new double[count],
+                 m = new double[count], r = new double[count];
+        for (int i = 0; i < count; i++) {
+            x[i] = data.positionX[i];
+            y[i] = data.positionY[i];
+            vx[i] = data.velocityX[i];
+            vy[i] = data.velocityY[i];
+            m[i] = data.mass[i];
+            r[i] = data.radius[i];
+        }
+        SoftContactParameters params = SoftContactParameters.derive(count, x, y, vx, vy, m, r, data.deleted,
+                properties.getSecondsPerIteration().doubleValue(), properties.getCoefficientOfRestitution().doubleValue(),
+                properties.getMinDistance().doubleValue());
+        if (params.stiffness <= 0) {
+            warn(logger, "Soft contact requested but the stiffness could not be derived (no colliding objects?). "
+                    + "Using the classic impulse model.");
+            return;
+        }
+        moveObjectsLogic.enableSoftContact((float) params.stiffness, (float) params.dampingFactor);
+        moveObjectsLogic.setSecondsPerIteration((float) params.subStepSeconds);
+        softContactSubSteps = params.subSteps;
+        softContactStiffness = (float) params.stiffness;
+        softContactOnGpu = gpuFloatAvailable;
+        softContactActive = true;
+        info(logger, "Soft-sphere contact enabled (" + (softContactOnGpu ? "GPU, device-resident" : "multi-core CPU") + ", float). " + params);
+        if (params.subSteps > 1) {
+            info(logger, "Soft contact sub-steps per iteration: " + params.subSteps
+                    + " (sub-step " + params.subStepSeconds + " s) for a stable contact integration.");
+        }
+    }
+
+    public float getSoftContactStiffness() {
+        return softContactStiffness;
+    }
+
+    public boolean isSoftContactActive() {
+        return softContactActive;
+    }
+
+    public int getSoftContactSubSteps() {
+        return softContactSubSteps;
     }
 
     private void captureBeforeMovePositions() {
@@ -386,9 +498,14 @@ public class SimulationFloat implements Simulation {
             throw new SimulationException("Objects with duplicate IDs exist!");
         }
 
-        if (collisionExists(data.positionX, data.positionY, data.radius)) {
+        /* The soft-sphere (DEM) contact model handles interpenetration by design, so a settled soft body -
+         * or a run resumed from a saved state - legitimately starts with particles in contact. The hard
+         * "no initial overlap" precondition is only needed by the merge/elastic response, so skip it here. */
+        if (!properties.isSoftContact() && collisionExists(data.positionX, data.positionY, data.radius)) {
             throw new SimulationException("Initial collision exists!");
         }
+
+        configureSoftContact();
 
         executingOnCpu = false;
 

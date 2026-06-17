@@ -116,6 +116,7 @@ public class JsonReaderWriter implements ReaderWriter {
         json.addProperty("minimumDistance", properties.getMinDistance().toString());
         json.addProperty("barnesHutTheta", properties.getBarnesHutTheta() == null
                 ? String.valueOf(DEFAULT_BARNES_HUT_THETA) : properties.getBarnesHutTheta().toString());
+        json.addProperty("softContact", properties.isSoftContact());
         json.addProperty("scale", properties.getScale());
         json.addProperty("backgroundColor", colorToString(properties.getBackgroundColor()));
         return json;
@@ -257,6 +258,9 @@ public class JsonReaderWriter implements ReaderWriter {
 
         JsonElement barnesHutTheta = json.get("barnesHutTheta");
         properties.setBarnesHutTheta(barnesHutTheta != null ? New.num(barnesHutTheta.getAsString()) : New.num(DEFAULT_BARNES_HUT_THETA));
+
+        JsonElement softContact = json.get("softContact");
+        properties.setSoftContact(softContact != null && softContact.getAsBoolean());
 
         JsonElement scale = json.get("scale");
         properties.setScale(scale != null ? Double.parseDouble(scale.getAsString()) : DEFAULT_SCALE);

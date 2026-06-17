@@ -118,6 +118,13 @@ the AUTO mode is usually higher, because the CPU calculation gets faster.
 Current version **does not use Z coordinate** of the objects. This is done
 for faster calculations but can be easily changed.
 
+When two objects collide they either **merge** into one, or **bounce** off each other with the given
+coefficient of restitution. The bounce is exact for separate objects, but a body made of many touching
+particles slowly gains energy from it and falls apart. For such bodies there is the **soft contact**
+(DEM, the **softContact** property): a spring and a damper push the overlapping objects apart, so a
+collision cannot add energy. It needs several small steps per iteration and the exact gravity. Float
+scenes run it on the GPU, all other scenes on the CPU in double precision.
+
 Collision detection is **discrete**: a collision is processed only in an iteration in which the
 objects overlap. A **very fast object can pass through another one** when it moves so far in one
 iteration that the two never overlap. The simulation warns once when an object moves more than its
@@ -157,6 +164,7 @@ a particular iteration and object.
     "coefficientOfRestitution": "0.8",            # Coefficient of restitution. 1: elastic, 0: perfectly inelastic, above 1: objects will gain energy on collision.
     "minimumDistance": "10.0",                    # If distance between objects centers < minimumDistance, minimumDistance will be used on acceleration calculating.,
     "barnesHutTheta": "0.7",                      # Barnes-Hut approximation of the gravity. 0: exact calculation. Bigger: faster but less accurate. Typical: 0.5-0.7.
+    "softContact": false,                         # Soft contact (DEM) instead of the bounce. Keeps a body made of touching particles together.
     "scale": 1.0,                                 # Visual scale/zoom of the scene.
     "backgroundColor": "FFFFFF",                  # Background color of the simulaiton.
     "initialObjects":[

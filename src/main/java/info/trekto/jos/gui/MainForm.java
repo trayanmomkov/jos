@@ -36,6 +36,12 @@ import static info.trekto.jos.util.Utils.stringToColor;
 public class MainForm {
     private static final String PLAYING_SPEED_TIP = "When running: If x < 0: every iteration sleep x milliseconds; If x >= 0: visualize every x milliseconds\n" +
             "When playing: If x < 0: every iteration sleep x milliseconds; If x >= 0: skip every x-1 iterations";
+    private static final String SOFT_CONTACT_TIP =
+            "Colliding particles push apart through a brief soft-sphere spring + damper contact instead of an\n" +
+                    "instantaneous impulse, so they cannot gain energy and fly apart (\"explode\"). The stiffness and the\n" +
+                    "number of contact sub-steps are auto-tuned from the scene; \"Coef. of restitution\" sets how bouncy\n" +
+                    "that contact is (1 = fully elastic, 0 = no bounce). Best for accretion and stable resting piles;\n" +
+                    "somewhat slower. Has no effect when \"Merge on collision\" is on.";
     private String aboutMessage;
     private String minDistanceMessage;
     private String barnesHutThetaMessage;
@@ -110,6 +116,7 @@ public class MainForm {
     private JTextField minDistanceField;
     private JLabel barnesHutThetaLabel;
     private JTextField barnesHutThetaField;
+    private JCheckBox softContactCheckBox;
     private JTextField scaleField;
     private JTextField backgroundColorField;
     private JCheckBox autoscrollCheckBox;
@@ -181,7 +188,7 @@ public class MainForm {
                 precisionTextField, executionModeLabel, executionModeComboBox, cpuGpuThresholdLabel, cpuGpuThresholdField,
                 cpuGpuThresholdLabel2, detectCpuGpuThresholdButton, bounceFromScreenBordersCheckBox, mergeObjectsWhenCollideCheckBox,
                 corLabel, corTextField, barnesHutThetaLabel, barnesHutThetaField,
-                roundCheckBox, minDistanceLabel, minDistanceField);
+                softContactCheckBox, roundCheckBox, minDistanceLabel, minDistanceField);
 
         playingComponents = Arrays.asList(playFileLabel, playFromLabel, browsePlayingFileButton, playButton);
 
@@ -250,11 +257,18 @@ public class MainForm {
             }
         });
 
+        softContactCheckBox.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                JOptionPane.showMessageDialog(mainPanel, SOFT_CONTACT_TIP, "Realistic contact (DEM)", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
         aboutLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         numberTypeLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         playingSpeedLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         cpuGpuThresholdLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         barnesHutThetaLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        softContactCheckBox.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
         backgroundColorField.addActionListener(e -> {
             backgroundColorField.setBackground(stringToColor(backgroundColorField.getText()));
@@ -613,6 +627,10 @@ public class MainForm {
 
     public JCheckBox getMergeObjectsWhenCollideCheckBox() {
         return mergeObjectsWhenCollideCheckBox;
+    }
+
+    public JCheckBox getSoftContactCheckBox() {
+        return softContactCheckBox;
     }
 
     public JTextField getCorTextField() {
@@ -1006,6 +1024,18 @@ public class MainForm {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(0, 4, 0, 5);
         panel2.add(barnesHutThetaLabel, gbc);
+        softContactCheckBox = new JCheckBox();
+        softContactCheckBox.setForeground(new Color(-16776961));
+        softContactCheckBox.setHorizontalTextPosition(10);
+        softContactCheckBox.setSelected(false);
+        softContactCheckBox.setText("Realistic contact (DEM)");
+        softContactCheckBox.setToolTipText("Resolve elastic collisions as a soft-sphere spring+damper contact instead of an instantaneous impulse. Energy-conserving and auto-tuned from the scene; keeps colliding solid bodies stable. Ignored when 'Merge on collision' is on.");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 3;
+        gbc.gridy = 7;
+        gbc.gridwidth = 3;
+        gbc.anchor = GridBagConstraints.WEST;
+        panel2.add(softContactCheckBox, gbc);
         saveToFileCheckBox = new JCheckBox();
         saveToFileCheckBox.setHorizontalTextPosition(10);
         saveToFileCheckBox.setText("Save to file");

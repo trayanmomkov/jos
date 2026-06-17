@@ -24,6 +24,7 @@ import static info.trekto.jos.core.numbers.NumberFactoryProxy.ONE;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
 
 public class ControllerTest {
     public static final boolean DOUBLE_YES = true;
@@ -151,5 +152,61 @@ public class ControllerTest {
                 assertEquals(cpuSimulation.getClass(), expectedCpuSimulationClass);
             }
         }
+    }
+
+    /**
+     * A soft-contact DOUBLE RUN must route to SimulationDouble (multi-core CPU) even with no GPU / CPU
+     * mode. But PLAYBACK only replays saved frames and must stay a CpuSimulation (SimulationAP) -
+     * otherwise play() fails casting SimulationDouble to CpuSimulation.
+     */
+    @Test
+    public void softContactRunsOnDoubleButPlaysBackOnCpuSimulation() {
+        GpuChecker.gpuDoubleAvailable = false;
+        GpuChecker.gpuFloatAvailable = false;
+        C.cpuThreshold = 10;
+        SimulationProperties properties = new SimulationProperties();
+        properties.setNumberType(DOUBLE);
+        properties.setNumberOfObjects(4);
+        NumberFactoryProxy.createNumberFactory(DOUBLE, NumberFactory.DEFAULT_PRECISION);
+        properties.setSecondsPerIteration(ONE);
+        properties.setCoefficientOfRestitution(ONE);
+        properties.setMinDistance(New.num(DEFAULT_MIN_DISTANCE));
+        properties.setScale(DEFAULT_SCALE);
+        properties.setMergeOnCollision(false);
+        properties.setSoftContact(true);
+
+        /* RUN: must be the double path (where soft contact is implemented), even with no GPU. */
+        assertEquals(createSimulation(properties, CPU).getClass(), SimulationDouble.class);
+        assertEquals(createSimulation(properties, AUTO).getClass(), SimulationDouble.class);
+
+        /* PLAYBACK: must remain a CpuSimulation so play() can cast and replay it. */
+        Simulation playback = createSimulation(properties, CPU, true);
+        assertEquals(playback.getClass(), SimulationAP.class);
+        assertTrue(playback instanceof CpuSimulation, "Playback simulation must be a CpuSimulation");
+    }
+
+    /**
+     * A soft-contact FLOAT RUN must route to SimulationFloat (which runs the contact device-resident on
+     * the GPU when float-GPU is available - the fast path on consumer cards), regardless of execution mode.
+     */
+    @Test
+    public void softContactFloatSceneRoutesToSimulationFloat() {
+        GpuChecker.gpuDoubleAvailable = false;
+        GpuChecker.gpuFloatAvailable = true;
+        C.cpuThreshold = 10;
+        SimulationProperties properties = new SimulationProperties();
+        properties.setNumberType(FLOAT);
+        properties.setNumberOfObjects(4);
+        NumberFactoryProxy.createNumberFactory(FLOAT, NumberFactory.DEFAULT_PRECISION);
+        properties.setSecondsPerIteration(ONE);
+        properties.setCoefficientOfRestitution(ONE);
+        properties.setMinDistance(New.num(DEFAULT_MIN_DISTANCE));
+        properties.setScale(DEFAULT_SCALE);
+        properties.setMergeOnCollision(false);
+        properties.setSoftContact(true);
+
+        assertEquals(createSimulation(properties, GPU).getClass(), SimulationFloat.class);
+        assertEquals(createSimulation(properties, CPU).getClass(), SimulationFloat.class);
+        assertEquals(createSimulation(properties, AUTO).getClass(), SimulationFloat.class);
     }
 }

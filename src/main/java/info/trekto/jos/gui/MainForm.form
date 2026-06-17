@@ -377,6 +377,19 @@
                   <text value="B-H theta"/>
                 </properties>
               </component>
+              <component id="sct01" class="javax.swing.JCheckBox" binding="softContactCheckBox" default-binding="true">
+                <constraints>
+                  <grid row="7" column="3" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <foreground color="-16776961"/>
+                  <horizontalTextPosition value="10"/>
+                  <selected value="false"/>
+                  <text value="Realistic contact (DEM)"/>
+                  <toolTipText value="Resolve elastic collisions as a soft-sphere spring+damper contact instead of an instantaneous impulse. Energy-conserving and auto-tuned from the scene; keeps colliding solid bodies stable. Ignored when 'Merge on collision' is on."/>
+                </properties>
+              </component>
             </children>
           </grid>
           <component id="478cb" class="javax.swing.JCheckBox" binding="saveToFileCheckBox" default-binding="true">

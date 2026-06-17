@@ -34,6 +34,8 @@ public class SimulationProperties {
     private Number minDistance;
     /* Barnes-Hut approximation parameter. 0 (or null): exact brute force calculation. */
     private Number barnesHutTheta;
+    /* Soft contact (DEM) instead of the bounce: a spring and a damper push the overlapping objects apart. */
+    private boolean softContact = false;
     private double scale;
     private Color backgroundColor;
 
@@ -68,6 +70,7 @@ public class SimulationProperties {
         this.coefficientOfRestitution = properties.coefficientOfRestitution;
         this.minDistance = properties.minDistance;
         this.barnesHutTheta = properties.barnesHutTheta;
+        this.softContact = properties.softContact;
         this.scale = properties.scale;
         this.backgroundColor = properties.backgroundColor;
     }
@@ -234,6 +237,14 @@ public class SimulationProperties {
 
     public void setBarnesHutTheta(Number barnesHutTheta) {
         this.barnesHutTheta = barnesHutTheta;
+    }
+
+    public boolean isSoftContact() {
+        return softContact;
+    }
+
+    public void setSoftContact(boolean softContact) {
+        this.softContact = softContact;
     }
 
     public double getScale() {
