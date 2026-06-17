@@ -90,6 +90,19 @@ public enum Controller {
     private Color defaultButtonColor;
     private boolean hasToStopCpuGpuMeasuring = false;
 
+    /* Snapshot of the properties that influence object generation (number of objects, number type,
+     * precision), taken the last time objects were generated, loaded or saved. The "Generate objects"
+     * button is highlighted when nothing has been generated/loaded yet, or when the current GUI values
+     * differ from this snapshot - i.e. when the objects in the table are missing or stale relative to
+     * the settings. */
+    private boolean generationSnapshotTaken = false;
+    private String snapshotNumberOfObjects;
+    private NumberFactory.NumberType snapshotNumberType;
+    private String snapshotPrecision;
+    /* True while refreshProperties() is programmatically repopulating the GUI, so the field/combo
+     * listeners can tell a user-driven change apart from a programmatic one. */
+    private boolean refreshingProperties = false;
+
     public static void main(String[] args) {
         Properties applicationProperties = new Properties();
         JFrame jFrame = new JFrame();
@@ -143,6 +156,10 @@ public enum Controller {
         C.setExecutionModeFieldVisibilityAndValue();
         C.setCpuGpuThresholdVisibility();
         C.setReaderWriter(new JsonReaderWriter());
+
+        /* No objects have been generated or loaded yet, so highlight "Generate objects" to prompt the user
+         * to generate them as the first step. */
+        C.refreshGenerateObjectsButtonState();
     }
 
     public int getCpuThreshold() {
@@ -470,36 +487,42 @@ public enum Controller {
         setExecutionModeFieldVisibilityAndValue();
         setCpuGpuThresholdVisibility();
         setCorVisibility();
+        refreshGenerateObjectsButtonState();
     }
 
     public void refreshProperties(SimulationProperties prop) {
-        gui.getNumberOfObjectsTextField().setText(String.valueOf(prop.getNumberOfObjects()));
-        gui.getNumberOfIterationsTextField().setText(String.valueOf(prop.getNumberOfIterations()));
-        gui.getSecondsPerIterationTextField().setText(String.valueOf(prop.getSecondsPerIteration()));
-        gui.getNumberTypeComboBox().setSelectedItem(prop.getNumberType());
-        gui.getInteractingLawComboBox().setSelectedItem(prop.getInteractingLaw());
-        gui.getSaveToFileCheckBox().setSelected(prop.isSaveToFile());
-        gui.getSaveEveryNthIterationTextField().setText(String.valueOf(prop.getSaveEveryNthIteration()));
-        gui.getSaveMassCheckBox().setSelected(prop.isSaveMass());
-        gui.getSaveVelocityCheckBox().setSelected(prop.isSaveVelocity());
-        gui.getSaveAccelerationCheckBox().setSelected(prop.isSaveAcceleration());
-        gui.getOutputFileTextField().setText(prop.getOutputFile());
-        gui.getPrecisionTextField().setText(String.valueOf(prop.getPrecision()));
-        gui.getRealTimeVisualizationCheckBox().setSelected(prop.isRealTimeVisualization());
-        gui.getBounceFromScreenBordersCheckBox().setSelected(prop.isBounceFromScreenBorders());
-        gui.getPlayingSpeedTextField().setText(String.valueOf(prop.getPlayingSpeed()));
-        gui.getMergeObjectsWhenCollideCheckBox().setSelected(prop.isMergeOnCollision());
-        gui.getCorTextField().setText(String.valueOf(prop.getCoefficientOfRestitution()));
-        gui.getMinDistanceField().setText(String.valueOf(prop.getMinDistance()));
-        gui.getScaleField().setText(String.valueOf(prop.getScale()));
-        gui.setBackgroundColor(prop.getBackgroundColor());
+        refreshingProperties = true;
+        try {
+            gui.getNumberOfObjectsTextField().setText(String.valueOf(prop.getNumberOfObjects()));
+            gui.getNumberOfIterationsTextField().setText(String.valueOf(prop.getNumberOfIterations()));
+            gui.getSecondsPerIterationTextField().setText(String.valueOf(prop.getSecondsPerIteration()));
+            gui.getNumberTypeComboBox().setSelectedItem(prop.getNumberType());
+            gui.getInteractingLawComboBox().setSelectedItem(prop.getInteractingLaw());
+            gui.getSaveToFileCheckBox().setSelected(prop.isSaveToFile());
+            gui.getSaveEveryNthIterationTextField().setText(String.valueOf(prop.getSaveEveryNthIteration()));
+            gui.getSaveMassCheckBox().setSelected(prop.isSaveMass());
+            gui.getSaveVelocityCheckBox().setSelected(prop.isSaveVelocity());
+            gui.getSaveAccelerationCheckBox().setSelected(prop.isSaveAcceleration());
+            gui.getOutputFileTextField().setText(prop.getOutputFile());
+            gui.getPrecisionTextField().setText(String.valueOf(prop.getPrecision()));
+            gui.getRealTimeVisualizationCheckBox().setSelected(prop.isRealTimeVisualization());
+            gui.getBounceFromScreenBordersCheckBox().setSelected(prop.isBounceFromScreenBorders());
+            gui.getPlayingSpeedTextField().setText(String.valueOf(prop.getPlayingSpeed()));
+            gui.getMergeObjectsWhenCollideCheckBox().setSelected(prop.isMergeOnCollision());
+            gui.getCorTextField().setText(String.valueOf(prop.getCoefficientOfRestitution()));
+            gui.getMinDistanceField().setText(String.valueOf(prop.getMinDistance()));
+            gui.getScaleField().setText(String.valueOf(prop.getScale()));
+            gui.setBackgroundColor(prop.getBackgroundColor());
 
-        ((InitialObjectsTableModelAndListener) gui.getInitialObjectsTable().getModel()).setInitialObjects(prop.getInitialObjects());
+            ((InitialObjectsTableModelAndListener) gui.getInitialObjectsTable().getModel()).setInitialObjects(prop.getInitialObjects());
 
-        calculateAverageSize();
-        setPrecisionFieldVisibility();
-        setExecutionModeFieldVisibilityAndValue();
-        setCpuGpuThresholdVisibility();
+            calculateAverageSize();
+            setPrecisionFieldVisibility();
+            setExecutionModeFieldVisibilityAndValue();
+            setCpuGpuThresholdVisibility();
+        } finally {
+            refreshingProperties = false;
+        }
     }
 
     private void showError(Component parent, String message, Exception exception) {
@@ -608,7 +631,8 @@ public enum Controller {
             try {
                 SimulationGenerator.generateObjects(properties, true);
                 refreshProperties(properties);
-                unHighlightButtons(gui.getGenerateObjectsButton());
+                snapshotGenerationParams();
+                refreshGenerateObjectsButtonState();
             } catch (Exception ex) {
                 String message = "Error during object generation.";
                 error(logger, message, ex);
@@ -657,19 +681,57 @@ public enum Controller {
         }
     }
 
+    /* Highlights the "Generate objects" button when objects still need to be (re)generated: either nothing
+     * has been generated/loaded yet, or the current generation-affecting settings differ from the snapshot
+     * taken at the last generate/load/save (see isGenerationDirty / snapshotGenerationParams).
+     * Replaces the old per-keystroke highlight so reverting a value clears the highlight and a number type
+     * change is detected regardless of how it was made (mouse, keyboard or wheel). */
+    private void refreshGenerateObjectsButtonState() {
+        if (defaultButtonColor == null) {
+            defaultButtonColor = gui.getGenerateObjectsButton().getBackground();
+        }
+        boolean dirty = gui.getRunningRadioButton().isSelected() && isGenerationDirty();
+        gui.getGenerateObjectsButton().setBackground(
+                dirty ? PINK : (defaultButtonColor != null ? defaultButtonColor : new Color(238, 238, 238)));
+    }
+
+    private boolean isGenerationDirty() {
+        if (!generationSnapshotTaken) {
+            /* Nothing generated or loaded yet - the user must generate objects first. */
+            return true;
+        }
+        NumberFactory.NumberType currentNumberType = getSelectedNumberType();
+        if (currentNumberType != snapshotNumberType) {
+            return true;
+        }
+        if (!gui.getNumberOfObjectsTextField().getText().trim().equals(snapshotNumberOfObjects)) {
+            return true;
+        }
+        /* Precision influences generation only for arbitrary precision numbers. */
+        return currentNumberType == ARBITRARY_PRECISION
+                && !gui.getPrecisionTextField().getText().trim().equals(snapshotPrecision);
+    }
+
+    private void snapshotGenerationParams() {
+        generationSnapshotTaken = true;
+        snapshotNumberOfObjects = gui.getNumberOfObjectsTextField().getText().trim();
+        snapshotNumberType = getSelectedNumberType();
+        snapshotPrecision = gui.getPrecisionTextField().getText().trim();
+    }
+
     public void precisionTextFieldEvent() {
+        refreshGenerateObjectsButtonState();
         if (!isNullOrBlank(gui.getPrecisionTextField().getText())) {
-            highlightButton(gui.getGenerateObjectsButton());
             calculateAverageSize();
         }
     }
 
     public void numberTypeComboBoxEvent(ActionEvent actionEvent) {
-        if (actionEvent.getModifiers() != 0) {
+        if (!refreshingProperties) {
             setPrecisionFieldVisibility();
             setExecutionModeFieldVisibilityAndValue();
             setCpuGpuThresholdVisibility();
-            highlightButton(gui.getGenerateObjectsButton());
+            refreshGenerateObjectsButtonState();
             calculateAverageSize();
         }
     }
@@ -699,7 +761,9 @@ public enum Controller {
             gui.getInputFilePathLabel().setText(filename);
             properties = loadProperties(filename);
             refreshProperties(properties);
-            unHighlightButtons(gui.getGenerateObjectsButton(), gui.getDetectCpuGpuThresholdButton());
+            unHighlightButtons(gui.getDetectCpuGpuThresholdButton());
+            snapshotGenerationParams();
+            refreshGenerateObjectsButtonState();
         }
     }
 
@@ -712,7 +776,8 @@ public enum Controller {
             gui.getInputFilePathLabel().setText(file.getAbsolutePath());
             String numberOfObjectsBefore = gui.getNumberOfObjectsTextField().getText();
             refreshProperties(loadProperties(file.getAbsolutePath()));
-            unHighlightButtons(gui.getGenerateObjectsButton());
+            snapshotGenerationParams();
+            refreshGenerateObjectsButtonState();
             if (gui.getNumberOfObjectsTextField().getText().equals(numberOfObjectsBefore)
                     || getSelectedExecutionMode() != AUTO) {
                 unHighlightButtons(gui.getDetectCpuGpuThresholdButton());
@@ -729,8 +794,8 @@ public enum Controller {
     }
 
     public void numberOfObjectsTextFieldEvent() {
+        refreshGenerateObjectsButtonState();
         if (!isNullOrBlank(gui.getNumberOfObjectsTextField().getText())) {
-            highlightButton(gui.getGenerateObjectsButton());
             if (getSelectedExecutionMode() == AUTO) {
                 highlightButton(gui.getDetectCpuGpuThresholdButton());
             }
