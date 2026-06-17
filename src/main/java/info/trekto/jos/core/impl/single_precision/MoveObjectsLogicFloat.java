@@ -70,18 +70,16 @@ public class MoveObjectsLogicFloat extends Kernel {
 
             /* Time T has passed */
 
-            /* Move objects */
-            /* For the time T, velocities have moved the objects (changed their positions).
-             * New objects positions are calculated having the velocity at the beginning of the period,
-             * and these velocities are applied for time T. */
+            /* Semi-implicit (symplectic) Euler: update the velocity from the acceleration FIRST, then
+             * move with that updated velocity. Forward Euler (moving with the old velocity before the
+             * velocity update) is not symplectic and pumps energy into orbital motion, so bound
+             * systems spiral apart over time. The acceleration uses the start-of-iteration positions
+             * (the read-only snapshot), so the order of the two updates is the only change. */
+            calculateAccelerationAndChangeVelocity(i);
+
+            /* Move objects with the just-updated velocity. */
             positionX[i] = positionX[i] + velocityX[i] * secondsPerIteration;
             positionY[i] = positionY[i] + velocityY[i] * secondsPerIteration;
-
-            /* Change velocity */
-            /* For the time T, accelerations have changed the velocities.
-             * Velocities are calculated having the accelerations of the objects at the beginning of the period,
-             * and these accelerations are applied for time T. */
-            calculateAccelerationAndChangeVelocity(i);
 
             /* Bounce from screen borders */
             if (screenWidth != 0 && screenHeight != 0) {
