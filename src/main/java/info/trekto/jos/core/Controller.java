@@ -617,6 +617,12 @@ public enum Controller {
         return gui.getShowObjectIDsCheckBox().isSelected();
     }
 
+    /** Whether the visualization should antialias (smooth) the drawn objects. Read by the renderer each
+     * paint, so toggling the checkbox takes effect on the next frame. Off by default for speed. */
+    public boolean isAntialiasing() {
+        return gui != null && gui.getAntialiasingCheckBox().isSelected();
+    }
+
     public boolean isShowTrail() {
         return gui.getShowTrailCheckBox().isSelected();
     }

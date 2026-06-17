@@ -7,15 +7,16 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.Controller.DEFAULT_SCALE;
 import static info.trekto.jos.util.Utils.info;
 import static java.awt.RenderingHints.KEY_ANTIALIASING;
 import static java.awt.RenderingHints.KEY_RENDERING;
+import static java.awt.RenderingHints.VALUE_ANTIALIAS_OFF;
 import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
 import static java.awt.RenderingHints.VALUE_RENDER_QUALITY;
+import static java.awt.RenderingHints.VALUE_RENDER_SPEED;
 
 /**
  * @author Trayan Momkov
@@ -51,9 +52,11 @@ public class VisualizationPanel extends JPanel {
         g.setColor(backgroundColor);
         g.fillRect(0, 0, getWidth(), getHeight());
 
-        /* High quality */
-        g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
-        g.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
+        /* Antialiasing is the dominant playback cost with thousands of objects, so it is a toggle
+         * (the "Antialiasing" checkbox, read each paint). Off (default) = harder edges but far faster. */
+        boolean antialiasing = C.isAntialiasing();
+        g.setRenderingHint(KEY_ANTIALIASING, antialiasing ? VALUE_ANTIALIAS_ON : VALUE_ANTIALIAS_OFF);
+        g.setRenderingHint(KEY_RENDERING, antialiasing ? VALUE_RENDER_QUALITY : VALUE_RENDER_SPEED);
 
         paintByScalingGraphics(g);
     }
@@ -63,8 +66,8 @@ public class VisualizationPanel extends JPanel {
             return;
         }
         
-        drawMetadata(g, shapes.stream().filter(ShapeWithColorAndText::isMetaData).collect(Collectors.toList()));
-        
+        drawMetadata(g, shapes);   // filters metadata inline - no per-paint stream/collect of 8000 shapes
+
         AffineTransform currentAffineTransform = g.getTransform();
         AffineTransform at = new AffineTransform();
         
@@ -81,12 +84,15 @@ public class VisualizationPanel extends JPanel {
         at.scale(scale, scale);
         
         g.setTransform(at);
-        drawObjects(g, shapes.stream().filter(e -> !e.isMetaData()).collect(Collectors.toList()));
+        drawObjects(g, shapes);    // filters non-metadata inline
         g.setTransform(currentAffineTransform);
     }
 
     private void drawObjects(final Graphics2D g, List<ShapeWithColorAndText> shapesList) {
         for (ShapeWithColorAndText shape : shapesList) {
+            if (shape.isMetaData()) {
+                continue;
+            }
             g.setColor(shape.getColor());
             if (shape.getText() != null) {
                 drawString(g, shape, (int) Math.round(C.getFontSize() / scale));
@@ -98,6 +104,9 @@ public class VisualizationPanel extends JPanel {
 
     private void drawMetadata(final Graphics2D g, List<ShapeWithColorAndText> shapesList) {
         for (ShapeWithColorAndText shape : shapesList) {
+            if (!shape.isMetaData()) {
+                continue;
+            }
             g.setColor(shape.getColor());
             drawString(g, shape, C.getFontSize());
         }

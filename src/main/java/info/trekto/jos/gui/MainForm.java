@@ -117,6 +117,7 @@ public class MainForm {
     private JLabel barnesHutThetaLabel;
     private JTextField barnesHutThetaField;
     private JCheckBox softContactCheckBox;
+    private JCheckBox antialiasingCheckBox;
     private JTextField scaleField;
     private JTextField backgroundColorField;
     private JCheckBox autoscrollCheckBox;
@@ -631,6 +632,10 @@ public class MainForm {
 
     public JCheckBox getSoftContactCheckBox() {
         return softContactCheckBox;
+    }
+
+    public JCheckBox getAntialiasingCheckBox() {
+        return antialiasingCheckBox;
     }
 
     public JTextField getCorTextField() {
@@ -1375,6 +1380,17 @@ public class MainForm {
         gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.WEST;
         playingPanel.add(autoscrollCheckBox, gbc);
+        antialiasingCheckBox = new JCheckBox();
+        antialiasingCheckBox.setHorizontalTextPosition(10);
+        antialiasingCheckBox.setSelected(false);
+        antialiasingCheckBox.setText("Antialiasing");
+        antialiasingCheckBox.setToolTipText("Smooth circle edges (higher quality, slower). Off is much faster when many objects are on screen.");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 3;
+        gbc.anchor = GridBagConstraints.WEST;
+        playingPanel.add(antialiasingCheckBox, gbc);
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new GridBagLayout());
         gbc = new GridBagConstraints();
