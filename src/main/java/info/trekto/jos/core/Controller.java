@@ -487,6 +487,7 @@ public enum Controller {
         setExecutionModeFieldVisibilityAndValue();
         setCpuGpuThresholdVisibility();
         setCorVisibility();
+        setMinDistanceVisibility();
         refreshGenerateObjectsButtonState();
     }
 
@@ -988,13 +989,15 @@ public enum Controller {
     }
 
     private void setCorVisibility() {
-        gui.getCorLabel().setEnabled(!gui.getMergeObjectsWhenCollideCheckBox().isSelected());
-        gui.getCorTextField().setEnabled(!gui.getMergeObjectsWhenCollideCheckBox().isSelected());
+        boolean elastic = gui.getRunningRadioButton().isSelected() && !gui.getMergeObjectsWhenCollideCheckBox().isSelected();
+        gui.getCorLabel().setEnabled(elastic);
+        gui.getCorTextField().setEnabled(elastic);
     }
 
     private void setMinDistanceVisibility() {
-        gui.getMinDistanceLabel().setEnabled(!gui.getMergeObjectsWhenCollideCheckBox().isSelected());
-        gui.getMinDistanceField().setEnabled(!gui.getMergeObjectsWhenCollideCheckBox().isSelected());
+        boolean enabled = gui.getRunningRadioButton().isSelected() && !gui.getMergeObjectsWhenCollideCheckBox().isSelected();
+        gui.getMinDistanceLabel().setEnabled(enabled);
+        gui.getMinDistanceField().setEnabled(enabled);
     }
     
     public void updateScaleLabel(double scale) {
