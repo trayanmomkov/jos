@@ -91,6 +91,12 @@ public enum Controller {
     private Color defaultButtonColor;
     private boolean hasToStopCpuGpuMeasuring = false;
 
+    /* PNG-frame export during playback. exportDir != null means an export is active for this playback. */
+    private File exportDir;
+    private int exportWidth;
+    private int exportHeight;
+    private int exportFrameCounter;
+
     /* The settings with which the current objects were generated or loaded.
      * The "Generate objects" button is highlighted when the settings in the GUI differ from them. */
     private boolean generationSnapshotTaken = false;
@@ -621,6 +627,57 @@ public enum Controller {
      * paint, so toggling the checkbox takes effect on the next frame. Off by default for speed. */
     public boolean isAntialiasing() {
         return gui != null && gui.getAntialiasingCheckBox().isSelected();
+    }
+
+    public boolean isExportFrames() {
+        return gui != null && gui.getExportFramesCheckBox().isSelected();
+    }
+
+    /* Creates a new folder for the PNG frames next to the played file, named after the file and the resolution. */
+    public void prepareExport() {
+        exportDir = null;
+        if (!isExportFrames() || playFile == null) {
+            return;
+        }
+        String res = String.valueOf(gui.getExportResolutionComboBox().getSelectedItem());
+        if (res.matches("\\d+x\\d+")) {                  // "WxH" - the current monitor's native resolution
+            exportWidth = Integer.parseInt(res.substring(0, res.indexOf('x')));
+            exportHeight = Integer.parseInt(res.substring(res.indexOf('x') + 1));
+        } else if (res.startsWith("1440")) {
+            exportWidth = 2560;
+            exportHeight = 1440;
+        } else if (res.startsWith("4")) {
+            exportWidth = 3840;
+            exportHeight = 2160;
+        } else {
+            exportWidth = 1920;
+            exportHeight = 1080;
+        }
+        String resTag = res.replaceAll("[^A-Za-z0-9]+", "");   // folder-friendly (e.g. "Screen (1920x1080)" -> "Screen1920x1080")
+        String base = playFile.getName().replaceFirst("\\.gz$", "").replaceFirst("\\.json$", "") + "-" + resTag;
+        File parent = playFile.getParentFile();
+        File dir = new File(parent, base);
+        for (int suffix = 2; dir.exists(); suffix++) {
+            dir = new File(parent, base + "-" + suffix);
+        }
+        dir.mkdirs();
+        exportDir = dir;
+        exportFrameCounter = 1;   // frame_000001.png upward, so ffmpeg's default start number works
+        info(logger, "Exporting PNG frames " + exportWidth + "x" + exportHeight + " to: " + exportDir.getAbsolutePath()
+                + " (assemble with: ffmpeg -framerate 60 -i frame_%06d.png -c:v libx264 -crf 18 -pix_fmt yuv420p out.mp4)");
+    }
+
+    /** Writes the currently visualized frame to a numbered PNG at the export resolution, if export is on. */
+    public void exportFrameIfEnabled() {
+        if (exportDir == null) {
+            return;
+        }
+        try {
+            BufferedImage image = getVisualizer().getVisualizationPanel().renderToImage(exportWidth, exportHeight);
+            ImageIO.write(image, "png", new File(exportDir, String.format("frame_%06d.png", exportFrameCounter++)));
+        } catch (Exception e) {
+            error(logger, "Could not export frame " + exportFrameCounter, e);
+        }
     }
 
     public boolean isShowTrail() {

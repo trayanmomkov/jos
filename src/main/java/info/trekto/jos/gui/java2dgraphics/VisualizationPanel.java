@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.util.List;
 
 import static info.trekto.jos.core.Controller.C;
@@ -58,34 +59,41 @@ public class VisualizationPanel extends JPanel {
         g.setRenderingHint(KEY_ANTIALIASING, antialiasing ? VALUE_ANTIALIAS_ON : VALUE_ANTIALIAS_OFF);
         g.setRenderingHint(KEY_RENDERING, antialiasing ? VALUE_RENDER_QUALITY : VALUE_RENDER_SPEED);
 
-        paintByScalingGraphics(g);
+        drawShapes(g);
     }
 
-    private void paintByScalingGraphics(Graphics2D g) {
+    /* Draws on top of the transform which g already has, so the same code serves the screen and the PNG export. */
+    private void drawShapes(Graphics2D g) {
         if (shapes == null) {
             return;
         }
-        
+
         drawMetadata(g, shapes);   // filters metadata inline - no per-paint stream/collect of 8000 shapes
 
-        AffineTransform currentAffineTransform = g.getTransform();
-        AffineTransform at = new AffineTransform();
-        
-        double width = getWidth();
-        double height = getHeight();
-
-        double zoomWidth = width * scale;
-        double zoomHeight = height * scale;
-
-        double anchorX = (width - zoomWidth) / 2.0;
-        double anchorY = (height - zoomHeight) / 2.0;
-
-        at.translate(anchorX + translateX, anchorY + translateY);
-        at.scale(scale, scale);
-        
-        g.setTransform(at);
+        AffineTransform saved = g.getTransform();
+        g.translate(getWidth() * (1 - scale) / 2.0 + translateX, getHeight() * (1 - scale) / 2.0 + translateY);
+        g.scale(scale, scale);
         drawObjects(g, shapes);    // filters non-metadata inline
-        g.setTransform(currentAffineTransform);
+        g.setTransform(saved);
+    }
+
+    /* Draws the current view, with antialiasing, in an image of the given size. The whole view is fitted
+     * inside the image and centred, so nothing is cut. */
+    public BufferedImage renderToImage(int width, int height) {
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image.createGraphics();
+        g.setColor(backgroundColor);
+        g.fillRect(0, 0, width, height);
+        g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
+        if (getWidth() > 0 && getHeight() > 0) {
+            double k = Math.min((double) width / getWidth(), (double) height / getHeight());  // fit the whole view in - never clip
+            g.translate((width - getWidth() * k) / 2.0, (height - getHeight() * k) / 2.0);    // centre it both ways
+            g.scale(k, k);
+            drawShapes(g);                                    // same drawing code as the screen, now scaled
+        }
+        g.dispose();
+        return image;
     }
 
     private void drawObjects(final Graphics2D g, List<ShapeWithColorAndText> shapesList) {

@@ -140,6 +140,19 @@ You can also save/load the **simulation run** itself and play it later. This is 
 JSON but the file is **GZipped** to be smaller. You can unzip it with any archiver supporting gzip and read the values for
 a particular iteration and object.
 
+### Creating a movie from a simulation run
+When playing back a saved simulation run you can enable **PNG frame export**. Each visualized frame is written as a
+numbered image (`frame_000001.png`, `frame_000002.png`, ...) into a new folder created next to the play file
+(named `<playfile>-<resolution>`). The destination folder and the exact assembly command are also printed to the log
+when the export starts.
+
+Once you have the frames, turn them into a movie with [ffmpeg](https://ffmpeg.org/):
+```sh
+ffmpeg -framerate 60 -i frame_%06d.png -c:v libx264 -crf 18 -pix_fmt yuv420p out.mp4
+```
+Run it from inside the exported frames folder. Adjust `-framerate` for the playback speed and `-crf` for the quality
+(lower means better quality and a larger file).
+
 ### Simulation properties (input) file format
 ```json
 {
@@ -244,7 +257,7 @@ You should be able to import it as a maven project in your favorite IDE.
 - Implement simulation generator using formula for placing objects in more
 complex structures or create GUI for that.
 - Implement tests.
-- Implement video recording of the simulation.
+- ~~Implement video recording of the simulation.~~ (PNG frame export + ffmpeg — see [Creating a movie from a simulation run](#creating-a-movie-from-a-simulation-run))
 - Implement 3D visualization.
 
  If you can implement anything from the TODO list, or you want to fix a bug

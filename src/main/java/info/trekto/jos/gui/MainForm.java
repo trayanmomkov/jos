@@ -118,6 +118,8 @@ public class MainForm {
     private JTextField barnesHutThetaField;
     private JCheckBox softContactCheckBox;
     private JCheckBox antialiasingCheckBox;
+    private JCheckBox exportFramesCheckBox;
+    private JComboBox exportResolutionComboBox;
     private JTextField scaleField;
     private JTextField backgroundColorField;
     private JCheckBox autoscrollCheckBox;
@@ -160,6 +162,14 @@ public class MainForm {
         }
 
         cpuGpuThresholdField.setText(String.valueOf(CORES));
+
+        {
+            /* Add the current screen's native resolution as an export option, computed at run time. Done
+             * here (not in the generated $$$setupUI$$$) so it reflects the actual monitor and survives
+             * GUI-designer regeneration. The static 1080p/1440p/4K items are added by the form. */
+            DisplayMode dm = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode();
+            exportResolutionComboBox.addItem(dm.getWidth() + "x" + dm.getHeight());
+        }
 
         numberTypeComboBox.addActionListener(C::numberTypeComboBoxEvent);
         interactingLawComboBox.addActionListener(actionEvent -> C.interactingLawComboBoxEvent());
@@ -319,7 +329,7 @@ public class MainForm {
         consoleTextArea.setCaretPosition(consoleTextArea.getDocument().getLength());
     }
 
-    /////////////////////////////////////////
+    /// //////////////////////////////////////
 
     private static class ExecutionModeRenderer extends BasicComboBoxRenderer {
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -638,6 +648,14 @@ public class MainForm {
         return antialiasingCheckBox;
     }
 
+    public JCheckBox getExportFramesCheckBox() {
+        return exportFramesCheckBox;
+    }
+
+    public JComboBox getExportResolutionComboBox() {
+        return exportResolutionComboBox;
+    }
+
     public JTextField getCorTextField() {
         return corTextField;
     }
@@ -839,7 +857,6 @@ public class MainForm {
         gbc = new GridBagConstraints();
         gbc.gridx = 6;
         gbc.gridy = 1;
-        gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
         simulationPropertiesPanel.add(panel2, gbc);
@@ -847,7 +864,7 @@ public class MainForm {
         generateObjectsButton.setText("Generate objects");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
-        gbc.gridy = 6;
+        gbc.gridy = 8;
         gbc.gridwidth = 5;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
@@ -1015,17 +1032,19 @@ public class MainForm {
         barnesHutThetaField = new JTextField();
         barnesHutThetaField.setColumns(3);
         barnesHutThetaField.setText("0");
+        barnesHutThetaField.setToolTipText("Barnes-Hut gravity approximation: 0 = exact (brute force), larger = faster but approximate (typical 0.5-0.7). Click the label for details.");
         gbc = new GridBagConstraints();
-        gbc.gridx = 2;
-        gbc.gridy = 7;
+        gbc.gridx = 4;
+        gbc.gridy = 6;
         gbc.anchor = GridBagConstraints.WEST;
         panel2.add(barnesHutThetaField, gbc);
         barnesHutThetaLabel = new JLabel();
         barnesHutThetaLabel.setForeground(new Color(-16776961));
         barnesHutThetaLabel.setText("B-H theta");
+        barnesHutThetaLabel.setToolTipText("Barnes-Hut gravity approximation: 0 = exact (brute force), larger = faster but approximate (typical 0.5-0.7). Click for details.");
         gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 7;
+        gbc.gridx = 3;
+        gbc.gridy = 6;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(0, 4, 0, 5);
         panel2.add(barnesHutThetaLabel, gbc);
@@ -1232,7 +1251,7 @@ public class MainForm {
         gbc.gridy = 0;
         gbc.gridwidth = 2;
         gbc.weighty = 1.0;
-        gbc.anchor = GridBagConstraints.EAST;
+        gbc.anchor = GridBagConstraints.WEST;
         playingPanel.add(playingSpeedTextField, gbc);
         playFromLabel = new JLabel();
         playFromLabel.setEnabled(false);
@@ -1250,7 +1269,7 @@ public class MainForm {
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
         gbc.gridy = 1;
-        gbc.gridwidth = 10;
+        gbc.gridwidth = 11;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         playingPanel.add(playFileLabel, gbc);
@@ -1291,7 +1310,6 @@ public class MainForm {
         gbc = new GridBagConstraints();
         gbc.gridx = 4;
         gbc.gridy = 0;
-        gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.EAST;
         playingPanel.add(showTrailCheckBox, gbc);
@@ -1336,7 +1354,6 @@ public class MainForm {
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 0;
-        gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(0, 2, 0, 2);
@@ -1356,7 +1373,6 @@ public class MainForm {
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
         gbc.gridy = 0;
-        gbc.weightx = 10.0;
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.EAST;
         gbc.insets = new Insets(0, 0, 0, 4);
@@ -1376,9 +1392,10 @@ public class MainForm {
         autoscrollCheckBox.setSelected(true);
         autoscrollCheckBox.setText("Autoscroll");
         gbc = new GridBagConstraints();
-        gbc.gridx = 12;
-        gbc.gridy = 1;
+        gbc.gridx = 7;
+        gbc.gridy = 2;
         gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(0, 12, 0, 0);
         playingPanel.add(autoscrollCheckBox, gbc);
         antialiasingCheckBox = new JCheckBox();
         antialiasingCheckBox.setHorizontalTextPosition(10);
@@ -1388,18 +1405,48 @@ public class MainForm {
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 2;
-        gbc.gridwidth = 3;
         gbc.anchor = GridBagConstraints.WEST;
         playingPanel.add(antialiasingCheckBox, gbc);
+        exportFramesCheckBox = new JCheckBox();
+        exportFramesCheckBox.setHorizontalTextPosition(10);
+        exportFramesCheckBox.setSelected(false);
+        exportFramesCheckBox.setText("Export PNG frames (on play)");
+        exportFramesCheckBox.setToolTipText("During playback, save each frame as a numbered PNG (folder next to the played file) to assemble a video with FFmpeg.");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        gbc.gridwidth = 4;
+        gbc.anchor = GridBagConstraints.WEST;
+        playingPanel.add(exportFramesCheckBox, gbc);
+        exportResolutionComboBox = new JComboBox();
+        final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
+        defaultComboBoxModel1.addElement("1080p");
+        defaultComboBoxModel1.addElement("1440p");
+        defaultComboBoxModel1.addElement("4K");
+        exportResolutionComboBox.setModel(defaultComboBoxModel1);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 5;
+        gbc.gridy = 2;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.WEST;
+        playingPanel.add(exportResolutionComboBox, gbc);
         final JPanel panel4 = new JPanel();
-        panel4.setLayout(new GridBagLayout());
+        panel4.setOpaque(false);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 13;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        playingPanel.add(panel4, gbc);
+        final JPanel panel5 = new JPanel();
+        panel5.setLayout(new GridBagLayout());
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.weightx = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.VERTICAL;
-        mainPanel.add(panel4, gbc);
+        mainPanel.add(panel5, gbc);
         startButton = new JButton();
         startButton.setText("Start");
         gbc = new GridBagConstraints();
@@ -1408,7 +1455,7 @@ public class MainForm {
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(0, 2, 0, 2);
-        panel4.add(startButton, gbc);
+        panel5.add(startButton, gbc);
         stopButton = new JButton();
         stopButton.setEnabled(false);
         stopButton.setText("Stop");
@@ -1417,7 +1464,7 @@ public class MainForm {
         gbc.gridy = 0;
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
-        panel4.add(stopButton, gbc);
+        panel5.add(stopButton, gbc);
         runningRadioButton = new JRadioButton();
         runningRadioButton.setSelected(true);
         runningRadioButton.setText("Run simulation");
@@ -1427,7 +1474,7 @@ public class MainForm {
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(0, 2, 0, 0);
-        panel4.add(runningRadioButton, gbc);
+        panel5.add(runningRadioButton, gbc);
         pauseButton = new JButton();
         pauseButton.setEnabled(false);
         pauseButton.setText("Pause");
@@ -1437,17 +1484,19 @@ public class MainForm {
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(0, 2, 0, 0);
-        panel4.add(pauseButton, gbc);
+        panel5.add(pauseButton, gbc);
         showTimeAndIterationCheckBox = new JCheckBox();
         showTimeAndIterationCheckBox.setHorizontalAlignment(10);
         showTimeAndIterationCheckBox.setHorizontalTextPosition(10);
         showTimeAndIterationCheckBox.setSelected(true);
         showTimeAndIterationCheckBox.setText("Show time and iteration");
         gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 2;
+        gbc.gridx = 4;
+        gbc.gridy = 0;
+        gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
-        mainPanel.add(showTimeAndIterationCheckBox, gbc);
+        gbc.insets = new Insets(0, 12, 0, 0);
+        panel5.add(showTimeAndIterationCheckBox, gbc);
         numberTypeLabel.setLabelFor(numberTypeComboBox);
         executionModeLabel.setLabelFor(executionModeComboBox);
         cpuGpuThresholdLabel.setLabelFor(cpuGpuThresholdField);

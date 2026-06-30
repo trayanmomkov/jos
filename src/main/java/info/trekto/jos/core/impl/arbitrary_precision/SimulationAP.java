@@ -284,6 +284,7 @@ public class SimulationAP implements CpuSimulation {
             error(logger, "Cannot reset input file for playing.", e);
         }
         C.setVisualizer(C.createVisualizer(properties));
+        C.prepareExport();   // set up PNG-frame export (if the "Export PNG frames" checkbox is on)
         long previousTime = System.nanoTime();
         C.setRunning(true);
         C.setEndText("END.");
@@ -323,6 +324,7 @@ public class SimulationAP implements CpuSimulation {
                 }
 
                 C.getVisualizer().visualize(iteration);
+                C.exportFrameIfEnabled();   // save this frame as a PNG when exporting for video
             }
             info(logger, "End.");
             C.getVisualizer().end();
