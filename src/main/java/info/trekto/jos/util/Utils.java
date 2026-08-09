@@ -324,8 +324,16 @@ public class Utils {
         return new Color(255 - c.getRed(), 255 - c.getGreen(), 255 - c.getBlue());
     }
     
+    private static final char[] HEX_DIGITS = "0123456789ABCDEF".toCharArray();
+
+    /* RRGGBB. Written by hand: String.format is slow, and this is called for every object of every saved iteration. */
     public static String colorIntToString(int color) {
-        return String.format("%08X", color).substring(2);
+        char[] out = new char[6];
+        for (int i = 5; i >= 0; i--) {
+            out[i] = HEX_DIGITS[color & 0xF];
+            color >>>= 4;
+        }
+        return new String(out);
     }
 
     public static int stringToColorInt(String backgroundColor) {
@@ -333,7 +341,7 @@ public class Utils {
     }
     
     public static String colorToString(Color color) {
-        return String.format("%08X", color.getRGB()).substring(2);
+        return colorIntToString(color.getRGB());
     }
 
     public static Color stringToColor(String backgroundColor) {

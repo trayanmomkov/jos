@@ -6,6 +6,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonWriter;
 import info.trekto.jos.core.ForceCalculator;
 import info.trekto.jos.core.impl.Iteration;
 import info.trekto.jos.core.impl.SimulationProperties;
@@ -64,6 +65,8 @@ public class JsonReaderWriter implements ReaderWriter {
     private static final Logger logger = LoggerFactory.getLogger(JsonReaderWriter.class);
     private OutputStreamWriter writer;
     private org.codehaus.jackson.JsonParser parser;
+    /** Built once, not per saved frame: constructing a Gson builds its type-adapter caches. */
+    private Gson cachedGson;
     /* Whether the output file already holds a saved iteration. */
     private boolean anyCycleWritten;
 
@@ -367,19 +370,31 @@ public class JsonReaderWriter implements ReaderWriter {
                                     String[] id, int[] color, boolean[] deleted, float[] accelerationX, float[] accelerationY,
                                     float[] accelerationZ) {
         Gson gson = createGsonAndWriteFileHead(properties);
-
-        JsonArray objectsAsJsonArray = new JsonArray();
+        boolean saveMass = properties.isSaveMass();
+        boolean saveVelocity = properties.isSaveVelocity();
+        boolean saveAcceleration = properties.isSaveAcceleration();
+        int live = 0;
         for (int i = 0; i < positionX.length; i++) {
             if (!deleted[i]) {
-                objectsAsJsonArray.add(mapSimulationObjectToJson(gson, positionX[i], positionY[i], zeroToNull(positionZ[i]), velocityX[i],
-                                                                 velocityY[i], zeroToNull(velocityZ[i]), mass[i], radius[i], id[i], color[i],
-                                                                 accelerationX[i], accelerationY[i], zeroToNull(accelerationZ[i]),
-                                                                  properties.isSaveMass(), properties.isSaveVelocity(),
-                                                                  properties.isSaveAcceleration()));
+                live++;
             }
         }
-
-        writeFileTail(currentIterationNumber, objectsAsJsonArray, gson);
+        try {
+            writeCycleSeparator();
+            JsonWriter out = gson.newJsonWriter(writer);
+            writeCycleHead(out, currentIterationNumber, live);
+            for (int i = 0; i < positionX.length; i++) {
+                if (!deleted[i]) {
+                    writeObject(out, id[i], positionX[i], positionY[i], zeroToNull(positionZ[i]),
+                                velocityX[i], velocityY[i], zeroToNull(velocityZ[i]), mass[i], radius[i],
+                                accelerationX[i], accelerationY[i], zeroToNull(accelerationZ[i]), color[i],
+                                saveMass, saveVelocity, saveAcceleration);
+                }
+            }
+            writeCycleTail(out);
+        } catch (IOException e) {
+            error(logger, "Cannot write cycle " + currentIterationNumber + " to the output file.", e);
+        }
     }
 
     @Override
@@ -405,7 +420,7 @@ public class JsonReaderWriter implements ReaderWriter {
         writeFileTail(currentIterationNumber, objectsAsJsonArray, gson);
     }
 
-    private Object zeroToNull(float v) {
+    private java.lang.Number zeroToNull(float v) {
         return v == 0 ? null : v;
     }
 
@@ -413,7 +428,7 @@ public class JsonReaderWriter implements ReaderWriter {
         return ZERO.compareTo(v) == 0 ? null : v;
     }
 
-    private Object zeroToNull(double v) {
+    private java.lang.Number zeroToNull(double v) {
         return v == 0 ? null : v;
     }
 
@@ -423,19 +438,31 @@ public class JsonReaderWriter implements ReaderWriter {
                                     String[] id, int[] color, boolean[] deleted, double[] accelerationX, double[] accelerationY,
                                     double[] accelerationZ) {
         Gson gson = createGsonAndWriteFileHead(properties);
-
-        JsonArray objectsAsJsonArray = new JsonArray();
+        boolean saveMass = properties.isSaveMass();
+        boolean saveVelocity = properties.isSaveVelocity();
+        boolean saveAcceleration = properties.isSaveAcceleration();
+        int live = 0;
         for (int i = 0; i < positionX.length; i++) {
             if (!deleted[i]) {
-                objectsAsJsonArray.add(mapSimulationObjectToJson(gson, positionX[i], positionY[i], zeroToNull(positionZ[i]), velocityX[i],
-                                                                 velocityY[i], zeroToNull(velocityZ[i]), mass[i], radius[i], id[i], color[i],
-                                                                 accelerationX[i], accelerationY[i], zeroToNull(accelerationZ[i]),
-                                                                 properties.isSaveMass(), properties.isSaveVelocity(),
-                                                                 properties.isSaveAcceleration()));
+                live++;
             }
         }
-
-        writeFileTail(currentIterationNumber, objectsAsJsonArray, gson);
+        try {
+            writeCycleSeparator();
+            JsonWriter out = gson.newJsonWriter(writer);
+            writeCycleHead(out, currentIterationNumber, live);
+            for (int i = 0; i < positionX.length; i++) {
+                if (!deleted[i]) {
+                    writeObject(out, id[i], positionX[i], positionY[i], zeroToNull(positionZ[i]),
+                                velocityX[i], velocityY[i], zeroToNull(velocityZ[i]), mass[i], radius[i],
+                                accelerationX[i], accelerationY[i], zeroToNull(accelerationZ[i]), color[i],
+                                saveMass, saveVelocity, saveAcceleration);
+                }
+            }
+            writeCycleTail(out);
+        } catch (IOException e) {
+            error(logger, "Cannot write cycle " + currentIterationNumber + " to the output file.", e);
+        }
     }
 
     @Override
@@ -484,8 +511,60 @@ public class JsonReaderWriter implements ReaderWriter {
         anyCycleWritten = true;
     }
 
+    /* An iteration is written directly to the file, object by object. Building a JSON tree in memory first
+     * was the slowest part of a run. value(Number) writes a float as 0.6 and not as 0.6000000238418579. */
+    private void writeCycleHead(JsonWriter out, long currentIterationNumber, int objectCount) throws IOException {
+        out.beginObject();
+        out.name("cycle").value(currentIterationNumber);
+        out.name("numberOfObjects").value(objectCount);
+        out.name("objects").beginArray();
+    }
+
+    private void writeObject(JsonWriter out, String id, java.lang.Number x, java.lang.Number y, java.lang.Number z,
+                             java.lang.Number velocityX, java.lang.Number velocityY, java.lang.Number velocityZ,
+                             java.lang.Number mass, java.lang.Number radius,
+                             java.lang.Number accelerationX, java.lang.Number accelerationY,
+                             java.lang.Number accelerationZ, int color,
+                             boolean saveMass, boolean saveVelocity, boolean saveAcceleration) throws IOException {
+        out.beginObject();
+        out.name("id").value(id);
+        out.name("x").value(x);
+        out.name("y").value(y);
+        if (z != null) {
+            out.name("z").value(z);
+        }
+        if (saveMass) {
+            out.name("mass").value(mass);
+        }
+        if (saveVelocity) {
+            out.name("velocityX").value(velocityX);
+            out.name("velocityY").value(velocityY);
+            if (velocityZ != null) {
+                out.name("velocityZ").value(velocityZ);
+            }
+        }
+        if (saveAcceleration) {
+            out.name("accelerationX").value(accelerationX);
+            out.name("accelerationY").value(accelerationY);
+            if (accelerationZ != null) {
+                out.name("accelerationZ").value(accelerationZ);
+            }
+        }
+        out.name("radius").value(radius);
+        if (color != DEFAULT_COLOR && color != DEFAULT_COLOR_SIMPLIFIED) {
+            out.name("color").value(colorIntToString(color));
+        }
+        out.endObject();
+    }
+
+    private void writeCycleTail(JsonWriter out) throws IOException {
+        out.endArray();
+        out.endObject();
+        out.flush();
+    }
+
     private Gson createGsonAndWriteFileHead(SimulationProperties properties) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Gson gson = cachedGson != null ? cachedGson : (cachedGson = new GsonBuilder().setPrettyPrinting().create());
         if (writer == null) {
             initWriter(properties.getOutputFile());
             anyCycleWritten = false;
