@@ -6,6 +6,7 @@ import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.impl.Data;
 import info.trekto.jos.core.impl.FlatBarnesHutTree;
+import info.trekto.jos.core.impl.ResumeScene;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.impl.SoftContactParameters;
 import info.trekto.jos.core.impl.arbitrary_precision.DataAP;
@@ -352,6 +353,7 @@ public class SimulationDouble implements Simulation {
             for (long i = 0; properties.isInfiniteSimulation() || i < properties.getNumberOfIterations(); i++) {
                 try {
                     if (C.hasToStop()) {
+                        ResumeScene.write(properties, executingOnCpu ? cpuSimulation.getData() : convertToDataAP());
                         doStop();
                         break;
                     }

@@ -140,6 +140,16 @@ You can also save/load the **simulation run** itself and play it later. This is 
 JSON but the file is **GZipped** to be smaller. You can unzip it with any archiver supporting gzip and read the values for
 a particular iteration and object.
 
+### Running without GUI
+```sh
+java -jar jos.jar --headless scene.json [--iterations N] [--save-every N] [--output FILE]
+```
+The simulation runs without a window and is always saved to a file - by default the scene file name
+plus `.gz`. With 0 iterations it runs until it is stopped with Ctrl+C.
+
+When a run which is being saved is stopped, a second file is written: `<output>_resume.json`. It is a
+scene with the exact current state of all objects - load it to continue the run.
+
 ### Creating a movie from a simulation run
 When playing back a saved simulation run you can enable **PNG frame export**. Each visualized frame is written as a
 numbered image (`frame_000001.png`, `frame_000002.png`, ...) into a new folder created next to the play file

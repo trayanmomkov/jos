@@ -3,6 +3,7 @@ package info.trekto.jos.core.impl.arbitrary_precision;
 import info.trekto.jos.core.CpuSimulation;
 import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.impl.Iteration;
+import info.trekto.jos.core.impl.ResumeScene;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.model.SimulationObject;
 import info.trekto.jos.core.numbers.Number;
@@ -153,6 +154,7 @@ public class SimulationAP implements CpuSimulation {
             for (long i = 0; properties.isInfiniteSimulation() || i < properties.getNumberOfIterations(); i++) {
                 try {
                     if (C.hasToStop()) {
+                        ResumeScene.write(properties, data);
                         doStop();
                         break;
                     }

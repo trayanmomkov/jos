@@ -107,6 +107,10 @@ public enum Controller {
     private boolean refreshingProperties = false;
 
     public static void main(String[] args) {
+        if (args.length > 0 && "--headless".equals(args[0])) {
+            runHeadless(args);
+            return;
+        }
         Properties applicationProperties = new Properties();
         JFrame jFrame = new JFrame();
         MainForm mainForm = new MainForm();
@@ -168,6 +172,107 @@ public enum Controller {
         C.setCpuGpuThresholdVisibility();
         C.setReaderWriter(new JsonReaderWriter());
         C.refreshGenerateObjectsButtonState();
+    }
+
+    /**
+     * Runs a simulation without GUI and always saves it to a file:
+     * java -jar jos.jar --headless input.json [--iterations N] [--save-every N] [--output FILE]
+     * The default output is the input file plus ".gz". With 0 iterations it runs until it is stopped (Ctrl+C).
+     */
+    private static void runHeadless(String[] args) {
+        System.setProperty("java.awt.headless", "true");
+        String input = null, output = null;
+        Integer saveEvery = null;
+        Long iterations = null;
+        for (int i = 1; i < args.length; i++) {
+            switch (args[i]) {
+                case "--iterations": iterations = Long.parseLong(args[++i]); break;
+                case "--save-every": saveEvery = Integer.parseInt(args[++i]); break;
+                case "--output":     output = args[++i]; break;
+                default:
+                    if (args[i].startsWith("--")) { System.err.println("Unknown option: " + args[i]); System.exit(2); }
+                    else if (input == null) { input = args[i]; }   // first positional = the scene file
+                    else { System.err.println("Unexpected argument: " + args[i]); System.exit(2); }
+            }
+        }
+        if (input == null) {
+            System.err.println("Usage: --headless <input.json> [--iterations N] [--save-every N] [--output FILE]");
+            System.exit(2);
+        }
+        if (iterations != null && iterations < 0) {
+            System.err.println("--iterations must be 0 (run until stopped) or more, got " + iterations);
+            System.exit(2);
+        }
+        if (saveEvery != null && saveEvery < 1) {
+            System.err.println("--save-every must be at least 1, got " + saveEvery);
+            System.exit(2);
+        }
+
+        C.setReaderWriter(new JsonReaderWriter());
+        try {
+            checkGpu();                                    // probe GPU availability - no display needed
+        } catch (Throwable t) {
+            error(logger, "GPU check failed; continuing on the CPU.", t);
+        }
+        SimulationProperties properties = C.loadProperties(input);
+        if (properties == null) {
+            System.err.println("Could not load scene: " + input);
+            System.exit(1);
+        }
+
+        /* Headless is always: run a simulation, no real-time visualization, always save to file. */
+        properties.setRealTimeVisualization(false);
+        properties.setSaveToFile(true);
+        if (iterations != null) {
+            properties.setNumberOfIterations(iterations);
+        }
+        if (saveEvery != null) {
+            properties.setSaveEveryNthIteration(saveEvery);
+        }
+        /* Output file: --output, else the scene's own outputFile, else auto-generate (input + ".gz", like the GUI). */
+        if (isNullOrBlank(output)) {
+            output = properties.getOutputFile();
+        }
+        if (isNullOrBlank(output)) {
+            output = input + ".gz";
+        }
+        properties.setOutputFile(output);
+
+        final Simulation simulation = createSimulation(properties, AUTO);
+        C.setSimulation(simulation);
+        info(logger, "Headless run: " + input
+                + " | " + (properties.isInfiniteSimulation() ? "infinite - stop with Ctrl+C"
+                                                             : properties.getNumberOfIterations() + " iterations")
+                + " | save every " + properties.getSaveEveryNthIteration()
+                + " | " + properties.getNumberType() + (properties.isSoftContact() ? " | soft contact" : "")
+                + " | -> " + output);
+
+        /* The simulation runs in its own thread, so Ctrl+C can stop it and the output file is closed properly. */
+        final boolean[] failed = {false};
+        Thread simThread = new Thread(() -> {
+            try {
+                simulation.startSimulation();
+            } catch (Exception e) {
+                error(logger, "Headless simulation failed.", e);
+                failed[0] = true;
+            }
+        }, "headless-sim");
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            C.setHasToStop(true);                          // break the loop; its stop path closes the output file
+            try {
+                simThread.join();                          // wait for the flush before the JVM halts
+            } catch (InterruptedException ignored) {
+                Thread.currentThread().interrupt();
+            }
+        }));
+        simThread.start();
+        try {
+            simThread.join();
+        } catch (InterruptedException ignored) {
+            Thread.currentThread().interrupt();
+        }
+        info(logger, "Headless run finished. Output: " + output);
+        System.exit(failed[0] ? 1 : 0);                    // Aparapi / AWT threads can linger; exit cleanly
     }
 
     public int getCpuThreshold() {
@@ -1014,6 +1119,9 @@ public enum Controller {
     }
     
     public ExecutionMode getSelectedExecutionMode() {
+        if (gui == null) {                    // headless: no combo box - use a GPU if one is available, else CPU
+            return (gpuFloatAvailable || gpuDoubleAvailable) ? AUTO : CPU;
+        }
         return ((AbstractMap.SimpleEntry<ExecutionMode, String>) gui.getExecutionModeComboBox().getSelectedItem()).getKey();
     }
 
