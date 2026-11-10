@@ -35,6 +35,9 @@ import java.util.AbstractMap;
 import java.util.Date;
 import java.util.Properties;
 
+import static info.trekto.jos.core.CollisionMode.BOUNCE;
+import static info.trekto.jos.core.CollisionMode.MERGE;
+import static info.trekto.jos.core.CollisionMode.SOFT_CONTACT;
 import static info.trekto.jos.core.ExecutionMode.AUTO;
 import static info.trekto.jos.core.ExecutionMode.CPU;
 import static info.trekto.jos.core.ExecutionMode.GPU;
@@ -518,9 +521,7 @@ public enum Controller {
         properties.setBounceFromScreenBorders(gui.getBounceFromScreenBordersCheckBox().isSelected());
         properties.setRealTimeVisualization(gui.getRealTimeVisualizationCheckBox().isSelected());
         properties.setInteractingLaw(ForceCalculator.InteractingLaw.valueOf(String.valueOf(gui.getInteractingLawComboBox().getSelectedItem())));
-        properties.setCollisionsEnabled(gui.getCollisionsCheckBox().isSelected());
-        properties.setMergeOnCollision(gui.getMergeObjectsWhenCollideCheckBox().isSelected());
-        properties.setSoftContact(gui.getSoftContactCheckBox().isSelected());
+        selectedCollisionMode().applyTo(properties);
     }
 
     public void onVisualizationWindowClosed() {
@@ -643,12 +644,10 @@ public enum Controller {
             gui.getRealTimeVisualizationCheckBox().setSelected(prop.isRealTimeVisualization());
             gui.getBounceFromScreenBordersCheckBox().setSelected(prop.isBounceFromScreenBorders());
             gui.getPlayingSpeedTextField().setText(String.valueOf(prop.getPlayingSpeed()));
-            gui.getCollisionsCheckBox().setSelected(prop.isCollisionsEnabled());
-            gui.getMergeObjectsWhenCollideCheckBox().setSelected(prop.isMergeOnCollision());
+            gui.getCollisionComboBox().setSelectedItem(CollisionMode.of(prop));
             gui.getCorTextField().setText(String.valueOf(prop.getCoefficientOfRestitution()));
             gui.getMinDistanceField().setText(String.valueOf(prop.getMinDistance()));
             gui.getBarnesHutThetaField().setText(String.valueOf(prop.getBarnesHutTheta()));
-            gui.getSoftContactCheckBox().setSelected(prop.isSoftContact());
             gui.getScaleField().setText(String.valueOf(prop.getScale()));
             gui.setBackgroundColor(prop.getBackgroundColor());
 
@@ -1185,26 +1184,25 @@ public enum Controller {
         calculateAverageSize();
     }
 
-    public void mergeObjectsWhenCollideCheckBoxEvent() {
+    public void collisionComboBoxEvent() {
         setCollisionFieldsEnabled();
         setMinDistanceVisibility();
     }
 
-    public void collisionsCheckBoxEvent() {
-        setCollisionFieldsEnabled();
+    private CollisionMode selectedCollisionMode() {
+        return (CollisionMode) gui.getCollisionComboBox().getSelectedItem();
     }
 
+    /* The coefficient of restitution is used only when the objects bounce. */
     private void setCollisionFieldsEnabled() {
-        boolean collisions = gui.getRunningRadioButton().isSelected() && gui.getCollisionsCheckBox().isSelected();
-        boolean bounce = collisions && !gui.getMergeObjectsWhenCollideCheckBox().isSelected();
-        gui.getMergeObjectsWhenCollideCheckBox().setEnabled(collisions);
-        gui.getSoftContactCheckBox().setEnabled(bounce);
+        CollisionMode mode = selectedCollisionMode();
+        boolean bounce = gui.getRunningRadioButton().isSelected() && (mode == BOUNCE || mode == SOFT_CONTACT);
         gui.getCorLabel().setEnabled(bounce);
         gui.getCorTextField().setEnabled(bounce);
     }
 
     private void setMinDistanceVisibility() {
-        boolean enabled = gui.getRunningRadioButton().isSelected() && !gui.getMergeObjectsWhenCollideCheckBox().isSelected();
+        boolean enabled = gui.getRunningRadioButton().isSelected() && selectedCollisionMode() != MERGE;
         gui.getMinDistanceLabel().setEnabled(enabled);
         gui.getMinDistanceField().setEnabled(enabled);
     }

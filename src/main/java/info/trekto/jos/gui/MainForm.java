@@ -1,5 +1,6 @@
 package info.trekto.jos.gui;
 
+import info.trekto.jos.core.CollisionMode;
 import info.trekto.jos.core.ExecutionMode;
 import info.trekto.jos.core.ForceCalculator;
 import info.trekto.jos.core.GpuChecker;
@@ -36,12 +37,13 @@ import static info.trekto.jos.util.Utils.stringToColor;
 public class MainForm {
     private static final String PLAYING_SPEED_TIP = "When running: If x < 0: every iteration sleep x milliseconds; If x >= 0: visualize every x milliseconds\n" +
             "When playing: If x < 0: every iteration sleep x milliseconds; If x >= 0: skip every x-1 iterations";
-    private static final String SOFT_CONTACT_TIP =
-            "Colliding particles push apart through a brief soft-sphere spring + damper contact instead of an\n" +
-                    "instantaneous impulse, so they cannot gain energy and fly apart (\"explode\"). The stiffness and the\n" +
-                    "number of contact sub-steps are auto-tuned from the scene; \"Coef. of restitution\" sets how bouncy\n" +
-                    "that contact is (1 = fully elastic, 0 = no bounce). Best for accretion and stable resting piles;\n" +
-                    "somewhat slower. Has no effect when \"Merge on collision\" is on.";
+    private static final String COLLISION_TIP =
+            "Merge: the two objects become one.\n" +
+                    "Bounce: the objects bounce off each other. \"Coef. of restitution\" sets how much\n" +
+                    "(1 = fully elastic, 0 = no bounce).\n" +
+                    "Soft contact (DEM): a spring and a damper push the overlapping objects apart, so a collision\n" +
+                    "cannot add energy. It keeps a body made of many touching particles together, but it is slower.\n" +
+                    "Pass through: no collisions.";
     private String aboutMessage;
     private String minDistanceMessage;
     private String barnesHutThetaMessage;
@@ -109,15 +111,14 @@ public class MainForm {
     private JCheckBox saveMassCheckBox;
     private JCheckBox saveVelocityCheckBox;
     private JCheckBox saveAccelerationCheckBox;
-    private JCheckBox mergeObjectsWhenCollideCheckBox;
+    private JLabel collisionLabel;
+    private JComboBox collisionComboBox;
     private JTextField corTextField;
     private JLabel corLabel;
     private JLabel minDistanceLabel;
     private JTextField minDistanceField;
     private JLabel barnesHutThetaLabel;
     private JTextField barnesHutThetaField;
-    private JCheckBox softContactCheckBox;
-    private JCheckBox collisionsCheckBox;
     private JCheckBox antialiasingCheckBox;
     private JCheckBox exportFramesCheckBox;
     private JComboBox exportResolutionComboBox;
@@ -151,6 +152,8 @@ public class MainForm {
             Collections.addAll(comboBoxItems, ForceCalculator.InteractingLaw.values());
             interactingLawComboBox.setModel(new DefaultComboBoxModel<>(comboBoxItems));
         }
+
+        collisionComboBox.setModel(new DefaultComboBoxModel<>(CollisionMode.values()));
 
         {
             Vector<AbstractMap.SimpleEntry<ExecutionMode, String>> model = new Vector();
@@ -198,9 +201,9 @@ public class MainForm {
                 secondsPerIterationLabel, numberTypeLabel, interactingLawLabel, outputFileLabel, precisionLabel,
                 initialObjectsTable, initialObjectsPanel, generateObjectsButton, numberTypeComboBox, precisionTextField,
                 precisionTextField, executionModeLabel, executionModeComboBox, cpuGpuThresholdLabel, cpuGpuThresholdField,
-                cpuGpuThresholdLabel2, detectCpuGpuThresholdButton, bounceFromScreenBordersCheckBox, mergeObjectsWhenCollideCheckBox,
-                corLabel, corTextField, barnesHutThetaLabel, barnesHutThetaField,
-                softContactCheckBox, collisionsCheckBox, roundCheckBox, minDistanceLabel, minDistanceField);
+                cpuGpuThresholdLabel2, detectCpuGpuThresholdButton, bounceFromScreenBordersCheckBox, collisionLabel,
+                collisionComboBox, corLabel, corTextField, barnesHutThetaLabel, barnesHutThetaField,
+                roundCheckBox, minDistanceLabel, minDistanceField);
 
         playingComponents = Arrays.asList(playFileLabel, playFromLabel, browsePlayingFileButton, playButton);
 
@@ -223,8 +226,7 @@ public class MainForm {
         saveMassCheckBox.addActionListener(actionEvent -> C.saveMassCheckBoxEvent());
         saveVelocityCheckBox.addActionListener(actionEvent -> C.saveVelocityCheckBoxEvent());
         saveAccelerationCheckBox.addActionListener(actionEvent -> C.saveAccelerationCheckBoxEvent());
-        mergeObjectsWhenCollideCheckBox.addActionListener(actionEvent -> C.mergeObjectsWhenCollideCheckBoxEvent());
-        collisionsCheckBox.addActionListener(actionEvent -> C.collisionsCheckBoxEvent());
+        collisionComboBox.addActionListener(actionEvent -> C.collisionComboBoxEvent());
         executionModeComboBox.addActionListener(actionEvent -> {
             C.executionModeComboBoxEvent();
             roundNumberOfObjects();
@@ -270,9 +272,9 @@ public class MainForm {
             }
         });
 
-        softContactCheckBox.addMouseListener(new MouseAdapter() {
+        collisionLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                JOptionPane.showMessageDialog(mainPanel, SOFT_CONTACT_TIP, "Realistic contact (DEM)", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(mainPanel, COLLISION_TIP, "On collision", JOptionPane.INFORMATION_MESSAGE);
             }
         });
 
@@ -281,7 +283,7 @@ public class MainForm {
         playingSpeedLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         cpuGpuThresholdLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         barnesHutThetaLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        softContactCheckBox.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        collisionLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
         backgroundColorField.addActionListener(e -> {
             backgroundColorField.setBackground(stringToColor(backgroundColorField.getText()));
@@ -638,16 +640,8 @@ public class MainForm {
         return saveAccelerationCheckBox;
     }
 
-    public JCheckBox getMergeObjectsWhenCollideCheckBox() {
-        return mergeObjectsWhenCollideCheckBox;
-    }
-
-    public JCheckBox getSoftContactCheckBox() {
-        return softContactCheckBox;
-    }
-
-    public JCheckBox getCollisionsCheckBox() {
-        return collisionsCheckBox;
+    public JComboBox getCollisionComboBox() {
+        return collisionComboBox;
     }
 
     public JCheckBox getAntialiasingCheckBox() {
@@ -870,7 +864,7 @@ public class MainForm {
         generateObjectsButton.setText("Generate objects");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
-        gbc.gridy = 8;
+        gbc.gridy = 7;
         gbc.gridwidth = 5;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
@@ -1005,16 +999,22 @@ public class MainForm {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(0, 7, 0, 0);
         panel2.add(corLabel, gbc);
-        mergeObjectsWhenCollideCheckBox = new JCheckBox();
-        mergeObjectsWhenCollideCheckBox.setHorizontalTextPosition(10);
-        mergeObjectsWhenCollideCheckBox.setSelected(true);
-        mergeObjectsWhenCollideCheckBox.setText("Merge on collision");
+        collisionLabel = new JLabel();
+        collisionLabel.setForeground(new Color(-16776961));
+        collisionLabel.setText("On collision");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 5;
-        gbc.gridwidth = 3;
         gbc.anchor = GridBagConstraints.WEST;
-        panel2.add(mergeObjectsWhenCollideCheckBox, gbc);
+        gbc.insets = new Insets(0, 4, 0, 5);
+        panel2.add(collisionLabel, gbc);
+        collisionComboBox = new JComboBox();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 5;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.WEST;
+        panel2.add(collisionComboBox, gbc);
         minDistanceField = new JTextField();
         minDistanceField.setColumns(3);
         minDistanceField.setEditable(true);
@@ -1054,29 +1054,6 @@ public class MainForm {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(0, 4, 0, 5);
         panel2.add(barnesHutThetaLabel, gbc);
-        softContactCheckBox = new JCheckBox();
-        softContactCheckBox.setForeground(new Color(-16776961));
-        softContactCheckBox.setHorizontalTextPosition(10);
-        softContactCheckBox.setSelected(false);
-        softContactCheckBox.setText("Realistic contact (DEM)");
-        softContactCheckBox.setToolTipText("Resolve elastic collisions as a soft-sphere spring+damper contact instead of an instantaneous impulse. Energy-conserving and auto-tuned from the scene; keeps colliding solid bodies stable. Ignored when 'Merge on collision' is on.");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 3;
-        gbc.gridy = 7;
-        gbc.gridwidth = 3;
-        gbc.anchor = GridBagConstraints.WEST;
-        panel2.add(softContactCheckBox, gbc);
-        collisionsCheckBox = new JCheckBox();
-        collisionsCheckBox.setHorizontalTextPosition(10);
-        collisionsCheckBox.setSelected(true);
-        collisionsCheckBox.setText("Collisions");
-        collisionsCheckBox.setToolTipText("Unchecked: the objects pass through each other.");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 7;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.WEST;
-        panel2.add(collisionsCheckBox, gbc);
         saveToFileCheckBox = new JCheckBox();
         saveToFileCheckBox.setHorizontalTextPosition(10);
         saveToFileCheckBox.setText("Save to file");

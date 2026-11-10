@@ -165,7 +165,7 @@
             <children>
               <component id="e1fe3" class="javax.swing.JButton" binding="generateObjectsButton" default-binding="true">
                 <constraints>
-                  <grid row="8" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="7" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
                   <gridbag weightx="1.0" weighty="1.0"/>
                 </constraints>
                 <properties>
@@ -318,16 +318,22 @@
                   <text value="Coef. of restitution"/>
                 </properties>
               </component>
-              <component id="ded8" class="javax.swing.JCheckBox" binding="mergeObjectsWhenCollideCheckBox" default-binding="true">
+              <component id="col02" class="javax.swing.JLabel" binding="collisionLabel">
                 <constraints>
-                  <grid row="5" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                  <gridbag weightx="0.0" weighty="0.0"/>
+                  <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <gridbag top="0" left="4" bottom="0" right="5" weightx="0.0" weighty="0.0"/>
                 </constraints>
                 <properties>
-                  <horizontalTextPosition value="10"/>
-                  <selected value="true"/>
-                  <text value="Merge on collision"/>
+                  <foreground color="-16776961"/>
+                  <text value="On collision"/>
                 </properties>
+              </component>
+              <component id="col03" class="javax.swing.JComboBox" binding="collisionComboBox">
+                <constraints>
+                  <grid row="5" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties/>
               </component>
               <component id="67488" class="javax.swing.JTextField" binding="minDistanceField">
                 <constraints>
@@ -377,31 +383,6 @@
                   <foreground color="-16776961"/>
                   <text value="B-H theta"/>
                   <toolTipText value="Barnes-Hut gravity approximation: 0 = exact (brute force), larger = faster but approximate (typical 0.5-0.7). Click for details."/>
-                </properties>
-              </component>
-              <component id="sct01" class="javax.swing.JCheckBox" binding="softContactCheckBox" default-binding="true">
-                <constraints>
-                  <grid row="7" column="3" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                  <gridbag weightx="0.0" weighty="0.0"/>
-                </constraints>
-                <properties>
-                  <foreground color="-16776961"/>
-                  <horizontalTextPosition value="10"/>
-                  <selected value="false"/>
-                  <text value="Realistic contact (DEM)"/>
-                  <toolTipText value="Resolve elastic collisions as a soft-sphere spring+damper contact instead of an instantaneous impulse. Energy-conserving and auto-tuned from the scene; keeps colliding solid bodies stable. Ignored when 'Merge on collision' is on."/>
-                </properties>
-              </component>
-              <component id="col01" class="javax.swing.JCheckBox" binding="collisionsCheckBox" default-binding="true">
-                <constraints>
-                  <grid row="7" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                  <gridbag weightx="0.0" weighty="0.0"/>
-                </constraints>
-                <properties>
-                  <horizontalTextPosition value="10"/>
-                  <selected value="true"/>
-                  <text value="Collisions"/>
-                  <toolTipText value="Unchecked: the objects pass through each other."/>
                 </properties>
               </component>
             </children>
