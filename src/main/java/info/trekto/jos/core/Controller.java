@@ -90,17 +90,13 @@ public enum Controller {
     private Color defaultButtonColor;
     private boolean hasToStopCpuGpuMeasuring = false;
 
-    /* Snapshot of the properties that influence object generation (number of objects, number type,
-     * precision), taken the last time objects were generated, loaded or saved. The "Generate objects"
-     * button is highlighted when nothing has been generated/loaded yet, or when the current GUI values
-     * differ from this snapshot - i.e. when the objects in the table are missing or stale relative to
-     * the settings. */
+    /* The settings with which the current objects were generated or loaded.
+     * The "Generate objects" button is highlighted when the settings in the GUI differ from them. */
     private boolean generationSnapshotTaken = false;
     private String snapshotNumberOfObjects;
     private NumberFactory.NumberType snapshotNumberType;
     private String snapshotPrecision;
-    /* True while refreshProperties() is programmatically repopulating the GUI, so the field/combo
-     * listeners can tell a user-driven change apart from a programmatic one. */
+    /* True while refreshProperties() fills the GUI, to tell its changes from the ones made by the user. */
     private boolean refreshingProperties = false;
 
     public static void main(String[] args) {
@@ -156,9 +152,6 @@ public enum Controller {
         C.setExecutionModeFieldVisibilityAndValue();
         C.setCpuGpuThresholdVisibility();
         C.setReaderWriter(new JsonReaderWriter());
-
-        /* No objects have been generated or loaded yet, so highlight "Generate objects" to prompt the user
-         * to generate them as the first step. */
         C.refreshGenerateObjectsButtonState();
     }
 
@@ -179,10 +172,7 @@ public enum Controller {
         NumberFactory.NumberType numberType = properties.getNumberType();
         int n = properties.getNumberOfObjects();
 
-        /* The initial-objects list is the source of truth for the count. numberOfObjects can arrive
-         * smaller than the list (e.g. floored to a GPU work-group multiple, or a stale value from the
-         * GUI field), which would under-size the data arrays in the simulation constructor while
-         * initArrays still loads every object - ArrayIndexOutOfBoundsException. Keep them in sync. */
+        /* The arrays are filled with all initial objects, so their count is the real number of objects. */
         if (properties.getInitialObjects() != null && !properties.getInitialObjects().isEmpty()
                 && properties.getInitialObjects().size() != n) {
             n = properties.getInitialObjects().size();
@@ -682,11 +672,7 @@ public enum Controller {
         }
     }
 
-    /* Highlights the "Generate objects" button when objects still need to be (re)generated: either nothing
-     * has been generated/loaded yet, or the current generation-affecting settings differ from the snapshot
-     * taken at the last generate/load/save (see isGenerationDirty / snapshotGenerationParams).
-     * Replaces the old per-keystroke highlight so reverting a value clears the highlight and a number type
-     * change is detected regardless of how it was made (mouse, keyboard or wheel). */
+    /* Highlights the "Generate objects" button when the objects have to be generated (again). */
     private void refreshGenerateObjectsButtonState() {
         if (defaultButtonColor == null) {
             defaultButtonColor = gui.getGenerateObjectsButton().getBackground();

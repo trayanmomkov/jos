@@ -38,8 +38,7 @@ public class SimulationAP implements CpuSimulation {
     private MoveObjectsLogicAP moveObjectsLogic;
     private ProcessCollisionsLogicAP processCollisionsLogic;
     private final Number[] zeroArray;
-    /* Positions captured at the start of each iteration (before the move), for the elastic approach
-     * test - so a pair that crosses centers in one step still bounces - and the fast-motion warning. */
+    /* Positions of the objects before the move. */
     private Number[] beforeMovePositionX;
     private Number[] beforeMovePositionY;
     private boolean fastMotionWarned;
@@ -73,8 +72,6 @@ public class SimulationAP implements CpuSimulation {
     @Override
     public void doIteration(boolean saveCurrentIterationToFile, long iterationCounter) {
         data.copyToReadOnly(properties.isMergeOnCollision());
-        /* Remember where every object was before the move, so the collision phase can test approach
-         * in the pre-move frame (a pair that crossed centers in one step still reads as approaching). */
         captureBeforeMovePositions();
 //        moveObjectsLogic.runOnSingleThread();
         moveObjectsLogic.run(); /* Execute in parallel */
@@ -358,11 +355,7 @@ public class SimulationAP implements CpuSimulation {
         deepCopy(data.positionY, beforeMovePositionY);
     }
 
-    /**
-     * Warns once if any object moved more than its own radius during the move phase - such an object
-     * can tunnel through another within one iteration. Reducing the seconds per iteration avoids it.
-     * The check is done in double, which is plenty for a warning.
-     */
+    /* An object which moves more than its radius per iteration can pass through another object. */
     private void warnIfFastMotion() {
         if (fastMotionWarned) {
             return;

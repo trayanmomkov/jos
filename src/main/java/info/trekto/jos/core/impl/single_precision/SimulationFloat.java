@@ -50,8 +50,7 @@ public class SimulationFloat implements Simulation {
     private final ProcessCollisionsLogicFloat processCollisionsLogic;
     private final Range processCollisionsRange;
     private final float[] zeroArray;
-    /* Positions captured at the start of each iteration (before the move), for the elastic approach
-     * test - so a pair that crosses centers in one step still bounces - and the fast-motion warning. */
+    /* Positions of the objects before the move. */
     private final float[] beforeMovePositionX;
     private final float[] beforeMovePositionY;
     private boolean fastMotionWarned;
@@ -94,8 +93,6 @@ public class SimulationFloat implements Simulation {
     @Override
     public void doIteration(boolean saveCurrentIterationToFile, long iterationCounter) {
         data.copyToReadOnly(properties.isMergeOnCollision());
-        /* Remember where every object was before the move, so the collision phase can test approach
-         * in the pre-move frame (a pair that crossed centers in one step still reads as approaching). */
         captureBeforeMovePositions();
 //        moveObjectsLogic.runOnCpu();
         moveObjectsLogic.execute(moveObjectsRange); /* Execute in parallel on GPU if available */
@@ -119,12 +116,7 @@ public class SimulationFloat implements Simulation {
         deepCopy(data.positionY, beforeMovePositionY);
     }
 
-    /**
-     * Warns once if any object moved more than its own radius during the move phase. Such an object
-     * can pass through another within a single iteration (tunneling), because the pair is only ever
-     * sampled overlapping after their centers have crossed - or not sampled overlapping at all.
-     * Reducing the seconds per iteration keeps every step shorter than the radii.
-     */
+    /* An object which moves more than its radius per iteration can pass through another object. */
     private void warnIfFastMotion() {
         if (fastMotionWarned) {
             return;

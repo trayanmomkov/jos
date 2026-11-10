@@ -74,14 +74,11 @@ public class MoveObjectsLogicAP {
 
             /* Time T has passed */
 
-            /* Semi-implicit (symplectic) Euler: update the velocity from the acceleration FIRST, then
-             * move with that updated velocity. Forward Euler (moving with the old velocity before the
-             * velocity update) is not symplectic and pumps energy into orbital motion, so bound
-             * systems spiral apart over time. The acceleration uses the start-of-iteration positions
-             * (the read-only snapshot), so the order of the two updates is the only change. */
+            /* Change velocity first and then move with the new velocity (semi-implicit Euler).
+             * Moving with the old velocity adds energy to the orbits on every iteration. */
             calculateAccelerationAndChangeVelocity(i);
 
-            /* Move objects with the just-updated velocity. */
+            /* Move objects */
             positionX[i] = positionX[i].add(velocityX[i].multiply(secondsPerIteration));
             positionY[i] = positionY[i].add(velocityY[i].multiply(secondsPerIteration));
 

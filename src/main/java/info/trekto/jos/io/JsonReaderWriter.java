@@ -63,7 +63,7 @@ public class JsonReaderWriter implements ReaderWriter {
     private static final Logger logger = LoggerFactory.getLogger(JsonReaderWriter.class);
     private OutputStreamWriter writer;
     private org.codehaus.jackson.JsonParser parser;
-    /** Whether this file already holds a frame, i.e. whether the next one needs a comma before it. */
+    /* Whether the output file already holds a saved iteration. */
     private boolean anyCycleWritten;
 
     public void writeProperties(SimulationProperties properties, String outputFilePath) {
@@ -466,15 +466,7 @@ public class JsonReaderWriter implements ReaderWriter {
         gson.toJson(cycleJson, writer);
     }
 
-    /**
-     * Writes the comma between two saved frames - BEFORE the frame, for every frame but the first.
-     * <p>It used to be written after each frame instead, skipped on the one predicted to be last.
-     * That prediction cannot be made for a run with {@code numberOfIterations = 0} ("run until
-     * stopped"), because nothing knows which frame is last until the run is already over: every
-     * frame got a trailing comma, so the file ended {@code "},\n ] }"} - invalid JSON, and the
-     * final frame was unreadable. Emitting the separator before the next frame needs no such
-     * prediction and cannot leave a dangling comma however the run ends.
-     */
+    /* The comma is written before every iteration but the first, so the file is valid however the run ends. */
     private void writeCycleSeparator() throws IOException {
         if (anyCycleWritten) {
             writer.write(",\n");

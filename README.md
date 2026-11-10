@@ -101,13 +101,10 @@ There are three **execution modes**: CPU, GPU and Auto.
 Current version **does not use Z coordinate** of the objects. This is done
 for faster calculations but can be easily changed.
 
-Collision detection is **discrete**: a collision is processed only on an iteration in which the
-objects overlap. The approach test is taken in the pre-move frame, so a pair that crosses centers
-within one iteration (ending overlapped but past each other) still bounces. A **very fast object
-can still tunnel** when it moves so far in one iteration that the pair never overlaps on any frame.
-The simulation logs a one-time warning when an object moves more than its radius in a step; keep
-the time per iteration small enough that no object moves more than its radius per step to avoid
-tunneling entirely.
+Collision detection is **discrete**: a collision is processed only in an iteration in which the
+objects overlap. A **very fast object can pass through another one** when it moves so far in one
+iteration that the two never overlap. The simulation warns once when an object moves more than its
+radius in one iteration - use a smaller time per iteration to avoid it.
 
 For GUI the application uses **Swing** and **Java 2D Graphics**. Current visualization is 2D only.
 

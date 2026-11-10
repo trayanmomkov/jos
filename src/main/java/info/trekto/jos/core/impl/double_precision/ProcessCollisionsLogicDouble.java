@@ -34,11 +34,8 @@ public class ProcessCollisionsLogicDouble extends Kernel implements ProcessColli
     private final double[] readOnlyRadius;
     private final int[] readOnlyColor;
 
-    /* Positions at the START of the iteration (before the move phase), used only by the elastic
-     * approach test. A fast pair can cross centers within one move, so the post-move relative
-     * position has flipped sign and the pair would wrongly read as separating; the pre-move
-     * position keeps the test correct. Aliased to the post-move snapshot when no separate
-     * pre-move snapshot is supplied, so direct callers behave exactly as before. */
+    /* Positions before the move. Used to tell whether two objects approach each other,
+     * so fast objects which crossed each other within one iteration still collide. */
     private final double[] beforeMovePositionX;
     private final double[] beforeMovePositionY;
 
@@ -119,12 +116,8 @@ public class ProcessCollisionsLogicDouble extends Kernel implements ProcessColli
         }
     }
 
-    /**
-     * Solid objects cannot interpenetrate, so an overlap is resolved by moving the objects apart.
-     * Each object of the pair moves out by its inverse-mass share of the overlap (the pair's center
-     * of mass stays in place), DEPENETRATION_RATE-th part per iteration to avoid sudden jumps.
-     * Only positions change; the velocities and so the kinetic energy are not affected.
-     */
+    /* Moves the overlapping objects apart, keeping their center of mass in place.
+     * Only a part of the overlap is resolved per iteration, to avoid sudden jumps. */
     private void pushOutOfOverlap(final int i, final int j, final double distance) {
         if (distance > 0) {
             final double overlap = readOnlyRadius[i] + readOnlyRadius[j] - distance;
@@ -140,10 +133,8 @@ public class ProcessCollisionsLogicDouble extends Kernel implements ProcessColli
              * same conclusions, and the mass of an absorbed object is added exactly once. */
             int winnerOverMe = findWinnerOver(i);
             if (winnerOverMe >= 0) {
-                /* This object is being absorbed, so it must not absorb anything itself - the winner
-                 * reads this object's mass from the snapshot, and everything eaten now would be lost.
-                 * It is deleted only if its winner survives; otherwise it lives on and the chain of
-                 * overlapping objects is resolved in the next iterations. */
+                /* An object which is being absorbed must not absorb others - their mass would be lost.
+                 * It is deleted only if its winner survives this iteration. */
                 if (findWinnerOver(winnerOverMe) < 0) {
                     deleted[i] = true;
                 }
@@ -158,11 +149,8 @@ public class ProcessCollisionsLogicDouble extends Kernel implements ProcessColli
         }
     }
 
-    /**
-     * The winner over an object is the single object which absorbs it on merging: the most massive
-     * (with the smaller index on equal masses) of the alive objects which overlap it and are bigger
-     * than it. Returns -1 if there is no such object.
-     */
+    /* The object which absorbs x on merging: the biggest of the alive objects
+     * which overlap x and are bigger than it. -1 if there is no such object. */
     private int findWinnerOver(int x) {
         int winner = -1;
         for (int l = 0; l < n; l++) {
@@ -174,10 +162,7 @@ public class ProcessCollisionsLogicDouble extends Kernel implements ProcessColli
         return winner;
     }
 
-    /**
-     * Strict deterministic order: by mass, the smaller index wins on equal masses.
-     * Returns 1/0 instead of boolean, like the mergeOnCollision field, for Aparapi.
-     */
+    /* By mass. On equal masses the smaller index wins. Returns 1/0 instead of boolean, for Aparapi. */
     private int isBigger(int a, int b) {
         int result = 0;
         if (readOnlyMass[a] > readOnlyMass[b] || readOnlyMass[a] == readOnlyMass[b] && a < b) {
@@ -304,10 +289,8 @@ public class ProcessCollisionsLogicDouble extends Kernel implements ProcessColli
     }
 
     private void processElasticCollision(final int o1, final int o2, final double cor) {
-        /* All inputs are read from the read-only snapshots. The two threads of a colliding pair
-         * then compute exactly opposite impulses, and the velocity deltas of simultaneous
-         * collisions with several objects add up independently of the processing order,
-         * so the total momentum is conserved exactly. */
+        /* Only the read-only snapshots are used. This way both objects of a pair calculate
+         * opposite impulses and the total momentum is conserved. */
         final double v1x = readOnlyVelocityX[o1];
         final double v1y = readOnlyVelocityY[o1];
         final double v2x = readOnlyVelocityX[o2];
@@ -321,18 +304,13 @@ public class ProcessCollisionsLogicDouble extends Kernel implements ProcessColli
         final double o1m = readOnlyMass[o1];
         final double o2m = readOnlyMass[o2];
 
-        /* The approach test uses the positions from the start of the iteration (before the move),
-         * so a pair that crossed centers within one move still reads as approaching and bounces. */
         final double b1x = beforeMovePositionX[o1];
         final double b1y = beforeMovePositionY[o1];
         final double b2x = beforeMovePositionX[o2];
         final double b2y = beforeMovePositionY[o2];
 
-        /* Apply the impulse only if the objects are moving towards each other: <v1 - v2, x1 - x2> < 0.
-         * An overlapping pair which is already separating (it bounced in a previous iteration, but the
-         * overlap is not yet cleared) must be left alone. Otherwise the impulse is applied with an
-         * opposite sign, pushes the objects back into each other and they remain stuck together,
-         * losing velocity on every iteration. */
+        /* Collide only if the objects approach each other: <v1 - v2, x1 - x2> < 0.
+         * Otherwise a pair which has already bounced, but still overlaps, sticks together. */
         if (dotProduct2D(v1x, v1y, v2x, v2y, b1x, b1y, b2x, b2y) < 0) {
             velocityX[o1] = velocityX[o1] + calculateVelocityDelta(v1x, v1y, v2x, v2y, o1x, o1y, o2x, o2y, o1m, o2m, cor);
             velocityY[o1] = velocityY[o1] + calculateVelocityDelta(v1y, v1x, v2y, v2x, o1y, o1x, o2y, o2x, o1m, o2m, cor);
