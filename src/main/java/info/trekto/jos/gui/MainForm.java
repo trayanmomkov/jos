@@ -117,6 +117,7 @@ public class MainForm {
     private JLabel barnesHutThetaLabel;
     private JTextField barnesHutThetaField;
     private JCheckBox softContactCheckBox;
+    private JCheckBox collisionsCheckBox;
     private JCheckBox antialiasingCheckBox;
     private JCheckBox exportFramesCheckBox;
     private JComboBox exportResolutionComboBox;
@@ -199,7 +200,7 @@ public class MainForm {
                 precisionTextField, executionModeLabel, executionModeComboBox, cpuGpuThresholdLabel, cpuGpuThresholdField,
                 cpuGpuThresholdLabel2, detectCpuGpuThresholdButton, bounceFromScreenBordersCheckBox, mergeObjectsWhenCollideCheckBox,
                 corLabel, corTextField, barnesHutThetaLabel, barnesHutThetaField,
-                softContactCheckBox, roundCheckBox, minDistanceLabel, minDistanceField);
+                softContactCheckBox, collisionsCheckBox, roundCheckBox, minDistanceLabel, minDistanceField);
 
         playingComponents = Arrays.asList(playFileLabel, playFromLabel, browsePlayingFileButton, playButton);
 
@@ -223,6 +224,7 @@ public class MainForm {
         saveVelocityCheckBox.addActionListener(actionEvent -> C.saveVelocityCheckBoxEvent());
         saveAccelerationCheckBox.addActionListener(actionEvent -> C.saveAccelerationCheckBoxEvent());
         mergeObjectsWhenCollideCheckBox.addActionListener(actionEvent -> C.mergeObjectsWhenCollideCheckBoxEvent());
+        collisionsCheckBox.addActionListener(actionEvent -> C.collisionsCheckBoxEvent());
         executionModeComboBox.addActionListener(actionEvent -> {
             C.executionModeComboBoxEvent();
             roundNumberOfObjects();
@@ -644,6 +646,10 @@ public class MainForm {
         return softContactCheckBox;
     }
 
+    public JCheckBox getCollisionsCheckBox() {
+        return collisionsCheckBox;
+    }
+
     public JCheckBox getAntialiasingCheckBox() {
         return antialiasingCheckBox;
     }
@@ -1060,6 +1066,17 @@ public class MainForm {
         gbc.gridwidth = 3;
         gbc.anchor = GridBagConstraints.WEST;
         panel2.add(softContactCheckBox, gbc);
+        collisionsCheckBox = new JCheckBox();
+        collisionsCheckBox.setHorizontalTextPosition(10);
+        collisionsCheckBox.setSelected(true);
+        collisionsCheckBox.setText("Collisions");
+        collisionsCheckBox.setToolTipText("Unchecked: the objects pass through each other.");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 7;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.WEST;
+        panel2.add(collisionsCheckBox, gbc);
         saveToFileCheckBox = new JCheckBox();
         saveToFileCheckBox.setHorizontalTextPosition(10);
         saveToFileCheckBox.setText("Save to file");

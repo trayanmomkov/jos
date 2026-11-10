@@ -124,6 +124,8 @@ particles slowly gains energy from it and falls apart. For such bodies there is 
 (DEM, the **softContact** property): a spring and a damper push the overlapping objects apart, so a
 collision cannot add energy. It needs several small steps per iteration and the exact gravity. Float
 scenes run it on the GPU, all other scenes on the CPU in double precision.
+The collisions can also be switched off (the **collisions** property): then the objects pass through
+each other.
 
 Collision detection is **discrete**: a collision is processed only in an iteration in which the
 objects overlap. A **very fast object can pass through another one** when it moves so far in one
@@ -185,6 +187,7 @@ rendition of a 4K upload looks better than a native 1080p upload.
     "playingSpeed":0,                             # If playingSpeed < 0: every iteration sleep playingSpeed milliseconds.
                                                   # If playingSpeed >= 0: visualize every playingSpeed milliseconds.
     "bounceFromScreenBorders": false,             # If true, objects will bounce from the screen borders.
+    "collisions": true,                           # If false, the objects pass through each other.
     "mergeOnCollision": false,
     "coefficientOfRestitution": "0.8",            # Coefficient of restitution. 1: elastic, 0: perfectly inelastic, above 1: objects will gain energy on collision.
     "minimumDistance": "10.0",                    # If distance between objects centers < minimumDistance, minimumDistance will be used on acceleration calculating.,

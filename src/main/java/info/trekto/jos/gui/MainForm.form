@@ -392,6 +392,18 @@
                   <toolTipText value="Resolve elastic collisions as a soft-sphere spring+damper contact instead of an instantaneous impulse. Energy-conserving and auto-tuned from the scene; keeps colliding solid bodies stable. Ignored when 'Merge on collision' is on."/>
                 </properties>
               </component>
+              <component id="col01" class="javax.swing.JCheckBox" binding="collisionsCheckBox" default-binding="true">
+                <constraints>
+                  <grid row="7" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <horizontalTextPosition value="10"/>
+                  <selected value="true"/>
+                  <text value="Collisions"/>
+                  <toolTipText value="Unchecked: the objects pass through each other."/>
+                </properties>
+              </component>
             </children>
           </grid>
           <component id="478cb" class="javax.swing.JCheckBox" binding="saveToFileCheckBox" default-binding="true">

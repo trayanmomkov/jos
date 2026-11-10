@@ -114,6 +114,7 @@ public class JsonReaderWriter implements ReaderWriter {
         json.addProperty("realTimeVisualization", properties.isRealTimeVisualization());
         json.addProperty("playingSpeed", properties.getPlayingSpeed());
         json.addProperty("bounceFromScreenBorders", properties.isBounceFromScreenBorders());
+        json.addProperty("collisions", properties.isCollisionsEnabled());
         json.addProperty("mergeOnCollision", properties.isMergeOnCollision());
         json.addProperty("coefficientOfRestitution", properties.getCoefficientOfRestitution().toString());
         json.addProperty("minimumDistance", properties.getMinDistance().toString());
@@ -250,6 +251,9 @@ public class JsonReaderWriter implements ReaderWriter {
         }
         properties.setBounceFromScreenBorders(bounceFromScreenBorders != null && bounceFromScreenBorders.getAsBoolean());
         
+        JsonElement collisions = json.get("collisions");
+        properties.setCollisionsEnabled(collisions == null || collisions.getAsBoolean());
+
         JsonElement mergeOnCollision = json.get("mergeOnCollision");
         properties.setMergeOnCollision(mergeOnCollision == null || mergeOnCollision.getAsBoolean());
         

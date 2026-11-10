@@ -125,7 +125,7 @@ public class SimulationDouble implements Simulation {
             barnesHutProcessCollisionsLogic = null;
         }
 
-        this.softContactRequested = properties.isSoftContact() && !properties.isMergeOnCollision();
+        this.softContactRequested = properties.useSoftContact();
 
         this.cpuSimulation = cpuSimulation;
     }
@@ -164,15 +164,17 @@ public class SimulationDouble implements Simulation {
             checkExecutionMode(iterationCounter, moveObjectsLogic);
         }
 
-        warnIfFastMotion();
-        data.copyToReadOnly(properties.isMergeOnCollision());
-        if (treeFitted) {
-            barnesHutProcessCollisionsLogic.execute(processCollisionsRange); /* Collisions - Execute in parallel on GPU if available */
-            checkExecutionMode(iterationCounter, barnesHutProcessCollisionsLogic);
-        } else {
+        if (properties.isCollisionsEnabled()) {
+            warnIfFastMotion();
+            data.copyToReadOnly(properties.isMergeOnCollision());
+            if (treeFitted) {
+                barnesHutProcessCollisionsLogic.execute(processCollisionsRange); /* Collisions - Execute in parallel on GPU if available */
+                checkExecutionMode(iterationCounter, barnesHutProcessCollisionsLogic);
+            } else {
 //        processCollisionsLogic.runOnCpu();
-            processCollisionsLogic.execute(processCollisionsRange); /* Collisions - Execute in parallel on GPU if available */
-            checkExecutionMode(iterationCounter, processCollisionsLogic);
+                processCollisionsLogic.execute(processCollisionsRange); /* Collisions - Execute in parallel on GPU if available */
+                checkExecutionMode(iterationCounter, processCollisionsLogic);
+            }
         }
 
         if (properties.isSaveToFile() && saveCurrentIterationToFile) {
@@ -441,7 +443,9 @@ public class SimulationDouble implements Simulation {
             throw new SimulationException("Objects with duplicate IDs exist!");
         }
 
-        if (collisionExists(data.positionX, data.positionY, data.radius)) {
+        /* The soft contact handles overlapping objects, and without collisions they do not matter. */
+        if (properties.isCollisionsEnabled() && !properties.useSoftContact()
+                && collisionExists(data.positionX, data.positionY, data.radius)) {
             throw new SimulationException("Initial collision exists!");
         }
 

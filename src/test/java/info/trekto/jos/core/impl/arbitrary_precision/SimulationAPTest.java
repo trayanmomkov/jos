@@ -1,11 +1,14 @@
 package info.trekto.jos.core.impl.arbitrary_precision;
 
 import info.trekto.jos.core.exceptions.SimulationException;
+import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.numbers.New;
 import info.trekto.jos.core.numbers.Number;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+
+import java.util.Arrays;
 
 import static info.trekto.jos.core.numbers.NumberFactory.NumberType.ARBITRARY_PRECISION;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.FOUR;
@@ -19,6 +22,7 @@ import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumberFactor
 import static info.trekto.jos.util.UtilsTest.createObject;
 import static info.trekto.jos.util.UtilsTest.createAPSimulation;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 
 public class SimulationAPTest {
     public static final int PRECISION = 16;
@@ -73,5 +77,32 @@ public class SimulationAPTest {
         simulation.getData().deleted[1] = true;
         simulation.getData().deleted[3] = true;
         assertEquals(simulation.calculateTotalMomentum(), New.num(26).doubleValue());
+    }
+
+    @Test(expectedExceptions = SimulationException.class)
+    public void overlappingObjectsAreRefusedAtTheStart() throws SimulationException {
+        twoOverlappingObjects(true).init(false);
+    }
+
+    @Test
+    public void objectsPassThroughEachOtherWhenTheCollisionsAreOff() throws Exception {
+        SimulationAP simulation = twoOverlappingObjects(false);
+        simulation.init(false);
+        simulation.doIteration(false, 1);
+
+        /* Merging is on by default: with collisions the two would have become one. */
+        assertFalse(simulation.getData().deleted[0]);
+        assertFalse(simulation.getData().deleted[1]);
+    }
+
+    private static SimulationAP twoOverlappingObjects(boolean collisionsEnabled) {
+        SimulationProperties properties = new SimulationProperties();
+        properties.setCoefficientOfRestitution(ONE);
+        properties.setSecondsPerIteration(ONE);
+        properties.setMinDistance(ONE);
+        properties.setCollisionsEnabled(collisionsEnabled);
+        properties.setNumberOfObjects(2);
+        properties.setInitialObjects(Arrays.asList(createObject(ZERO, ZERO, ONE, TWO), createObject(ONE, ZERO, ONE, TWO)));
+        return new SimulationAP(properties);
     }
 }

@@ -306,7 +306,7 @@ public enum Controller {
 
         /* The soft contact exists only in the float and double simulations. Float runs it on the GPU,
          * double on the CPU cores, because double is slow on most video cards. */
-        if (!forPlayback && properties.isSoftContact() && !properties.isMergeOnCollision()) {
+        if (!forPlayback && properties.useSoftContact()) {
             if (numberType == FLOAT) {
                 return new SimulationFloat(properties, null);
             }
@@ -518,6 +518,7 @@ public enum Controller {
         properties.setBounceFromScreenBorders(gui.getBounceFromScreenBordersCheckBox().isSelected());
         properties.setRealTimeVisualization(gui.getRealTimeVisualizationCheckBox().isSelected());
         properties.setInteractingLaw(ForceCalculator.InteractingLaw.valueOf(String.valueOf(gui.getInteractingLawComboBox().getSelectedItem())));
+        properties.setCollisionsEnabled(gui.getCollisionsCheckBox().isSelected());
         properties.setMergeOnCollision(gui.getMergeObjectsWhenCollideCheckBox().isSelected());
         properties.setSoftContact(gui.getSoftContactCheckBox().isSelected());
     }
@@ -533,7 +534,7 @@ public enum Controller {
             setPrecisionFieldVisibility();
             setExecutionModeFieldVisibilityAndValue();
             setCpuGpuThresholdVisibility();
-            setCorVisibility();
+            setCollisionFieldsEnabled();
             setMinDistanceVisibility();
         } else {
             gui.getPlayingComponents().forEach(c -> c.setEnabled(true));
@@ -619,7 +620,7 @@ public enum Controller {
         setPrecisionFieldVisibility();
         setExecutionModeFieldVisibilityAndValue();
         setCpuGpuThresholdVisibility();
-        setCorVisibility();
+        setCollisionFieldsEnabled();
         setMinDistanceVisibility();
         refreshGenerateObjectsButtonState();
     }
@@ -642,6 +643,7 @@ public enum Controller {
             gui.getRealTimeVisualizationCheckBox().setSelected(prop.isRealTimeVisualization());
             gui.getBounceFromScreenBordersCheckBox().setSelected(prop.isBounceFromScreenBorders());
             gui.getPlayingSpeedTextField().setText(String.valueOf(prop.getPlayingSpeed()));
+            gui.getCollisionsCheckBox().setSelected(prop.isCollisionsEnabled());
             gui.getMergeObjectsWhenCollideCheckBox().setSelected(prop.isMergeOnCollision());
             gui.getCorTextField().setText(String.valueOf(prop.getCoefficientOfRestitution()));
             gui.getMinDistanceField().setText(String.valueOf(prop.getMinDistance()));
@@ -656,6 +658,7 @@ public enum Controller {
             setPrecisionFieldVisibility();
             setExecutionModeFieldVisibilityAndValue();
             setCpuGpuThresholdVisibility();
+            setCollisionFieldsEnabled();
         } finally {
             refreshingProperties = false;
         }
@@ -1183,14 +1186,21 @@ public enum Controller {
     }
 
     public void mergeObjectsWhenCollideCheckBoxEvent() {
-        setCorVisibility();
+        setCollisionFieldsEnabled();
         setMinDistanceVisibility();
     }
 
-    private void setCorVisibility() {
-        boolean elastic = gui.getRunningRadioButton().isSelected() && !gui.getMergeObjectsWhenCollideCheckBox().isSelected();
-        gui.getCorLabel().setEnabled(elastic);
-        gui.getCorTextField().setEnabled(elastic);
+    public void collisionsCheckBoxEvent() {
+        setCollisionFieldsEnabled();
+    }
+
+    private void setCollisionFieldsEnabled() {
+        boolean collisions = gui.getRunningRadioButton().isSelected() && gui.getCollisionsCheckBox().isSelected();
+        boolean bounce = collisions && !gui.getMergeObjectsWhenCollideCheckBox().isSelected();
+        gui.getMergeObjectsWhenCollideCheckBox().setEnabled(collisions);
+        gui.getSoftContactCheckBox().setEnabled(bounce);
+        gui.getCorLabel().setEnabled(bounce);
+        gui.getCorTextField().setEnabled(bounce);
     }
 
     private void setMinDistanceVisibility() {

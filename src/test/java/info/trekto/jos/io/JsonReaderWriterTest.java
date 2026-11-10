@@ -16,6 +16,7 @@ import static info.trekto.jos.core.numbers.NumberFactoryProxy.ONE;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumberFactory;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
@@ -39,6 +40,7 @@ public class JsonReaderWriterTest {
         properties.setCoefficientOfRestitution(ONE);
         properties.setMinDistance(New.num(10));
         properties.setBarnesHutTheta(New.num("0.7"));
+        properties.setCollisionsEnabled(false);
         properties.setScale(1);
         properties.setBackgroundColor(Color.WHITE);
         properties.setInitialObjects(new ArrayList<>());
@@ -51,6 +53,7 @@ public class JsonReaderWriterTest {
 
         assertTrue(areEqual(read.getBarnesHutTheta(), New.num("0.7"), PRECISION - 2),
                    "Theta should round trip: " + read.getBarnesHutTheta());
+        assertFalse(read.isCollisionsEnabled(), "Switched off collisions should round trip");
     }
 
     @Test
@@ -78,6 +81,7 @@ public class JsonReaderWriterTest {
 
         assertNotNull(read.getBarnesHutTheta(), "Theta should get a default value");
         assertEquals(read.getBarnesHutTheta().compareTo(ZERO), 0, "A missing key should mean exact calculation");
+        assertTrue(read.isCollisionsEnabled(), "A missing key should mean that the objects collide");
     }
 
     /**

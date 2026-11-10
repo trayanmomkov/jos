@@ -16,6 +16,7 @@
     "playingSpeed":0,                             # If playingSpeed < 0: every iteration sleep playingSpeed milliseconds.
                                                   # If playingSpeed >= 0: visualize every playingSpeed milliseconds.
     "bounceFromScreenBorders": false,             # If true, objects will bounce from the screen borders.
+    "collisions": true,                           # If false, the objects pass through each other.
     "mergeOnCollision": false,
     "coefficientOfRestitution": "0.8",            # Coefficient of restitution. 1: elastic, 0: perfectly inelastic, above 1: objects will gain energy on collision.
     "minimumDistance": "10.0",                    # If distance between objects centers < minimumDistance, minimumDistance will be used on acceleration calculating.,

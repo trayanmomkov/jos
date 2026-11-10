@@ -36,6 +36,8 @@ public class SimulationProperties {
     private Number barnesHutTheta;
     /* Soft contact (DEM) instead of the bounce: a spring and a damper push the overlapping objects apart. */
     private boolean softContact = false;
+    /* false: the objects pass through each other. */
+    private boolean collisionsEnabled = true;
     private double scale;
     private Color backgroundColor;
 
@@ -71,6 +73,7 @@ public class SimulationProperties {
         this.minDistance = properties.minDistance;
         this.barnesHutTheta = properties.barnesHutTheta;
         this.softContact = properties.softContact;
+        this.collisionsEnabled = properties.collisionsEnabled;
         this.scale = properties.scale;
         this.backgroundColor = properties.backgroundColor;
     }
@@ -245,6 +248,19 @@ public class SimulationProperties {
 
     public void setSoftContact(boolean softContact) {
         this.softContact = softContact;
+    }
+
+    public boolean isCollisionsEnabled() {
+        return collisionsEnabled;
+    }
+
+    public void setCollisionsEnabled(boolean collisionsEnabled) {
+        this.collisionsEnabled = collisionsEnabled;
+    }
+
+    /* The soft contact replaces the bounce. It is not used when the objects merge or do not collide. */
+    public boolean useSoftContact() {
+        return softContact && collisionsEnabled && !mergeOnCollision;
     }
 
     public double getScale() {

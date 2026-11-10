@@ -77,10 +77,12 @@ public class SimulationAP implements CpuSimulation {
 //        moveObjectsLogic.runOnSingleThread();
         moveObjectsLogic.run(); /* Execute in parallel */
 
-        warnIfFastMotion();
-        data.copyToReadOnly(properties.isMergeOnCollision());
+        if (properties.isCollisionsEnabled()) {
+            warnIfFastMotion();
+            data.copyToReadOnly(properties.isMergeOnCollision());
 //        processCollisionsLogic.runOnSingleThread();
-        processCollisionsLogic.run(); /* Collisions - Execute in parallel */
+            processCollisionsLogic.run(); /* Collisions - Execute in parallel */
+        }
 
         if (properties.isSaveToFile() && saveCurrentIterationToFile) {
             C.getReaderWriter().appendObjectsToFile(properties, iterationCounter, data.positionX, data.positionY, zeroArray, data.velocityX,
@@ -221,7 +223,7 @@ public class SimulationAP implements CpuSimulation {
             throw new SimulationException("Objects with duplicate IDs exist!");
         }
 
-        if (collisionExists(data.positionX, data.positionY, data.radius)) {
+        if (properties.isCollisionsEnabled() && collisionExists(data.positionX, data.positionY, data.radius)) {
             throw new SimulationException("Initial collision exists!");
         }
 
