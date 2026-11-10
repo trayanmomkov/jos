@@ -2,155 +2,100 @@ package info.trekto.jos.core.impl;
 
 /**
  * Calculates the parameters of the soft contact (DEM) from the scene.
- * The force between two overlapping objects is: stiffness * overlap - damping * approachSpeed (never negative).
- * The stiffness is chosen so that neither the fastest object nor the weight of the whole body
+ * The force between two overlapping objects is:
+ * effectiveMass * (stiffness * overlap - damping * approachSpeed), never negative,
+ * where effectiveMass = m1 * m2 / (m1 + m2). The spring of a pair is proportional to its masses,
+ * so a contact lasts equally long for light and for heavy objects.
+ * The stiffness is chosen so that neither the fastest object nor the weight of a pile of objects
  * presses two objects into each other deeper than a small part of the radius.
  * A stiff contact needs small steps, so one iteration is split into subSteps.
  */
 public class SoftContactParameters {
-    /** Contacts deeper than this fraction of a radius are considered too soft (sets the stiffness). */
-    public static final double DEFAULT_OVERLAP_FRACTION = 0.05;
-    /** Internal steps per contact oscillation period - the integrator must resolve the spring. */
+    /* A contact deeper than this part of the smallest radius is too soft. */
+    private static final double OVERLAP_FRACTION = 0.05;
+    /* Small steps per oscillation of the contact spring. */
     private static final double CONTACT_RESOLUTION = 30.0;
-    /** An object is "real" (not count padding) if its mass is at least this fraction of the largest. */
-    private static final double PADDING_MASS_FRACTION = 1e-9;
     private static final double GRAVITY = 0.000000000066743; // 6.6743e-11
 
-    /** Spring stiffness k (N/m). Zero means the model is inert (nothing can collide). */
+    /** Stiffness of the spring for a unit of effective mass (1/s^2). */
     public final double stiffness;
-    /** Damping factor d such that the damping coefficient of a pair is {@code d*sqrt(mEff*k)}. */
-    public final double dampingFactor;
-    /** Number of internal integration steps per visible iteration. At least 1. */
+    /** Damping for a unit of effective mass (1/s). */
+    public final double damping;
+    /** Number of small steps per iteration. At least 1. */
     public final int subSteps;
-    /** Seconds advanced per internal step ({@code secondsPerIteration / subSteps}). */
     public final double subStepSeconds;
-    /** The overlap fraction the stiffness was sized for (for logging). */
-    public final double overlapFraction;
-    /** Whether the impact or the self-gravity criterion set the stiffness (for logging). */
+    /** Whether the weight of a pile, and not the fastest object, has set the stiffness (for logging). */
     public final boolean gravityLimited;
-    /** Number of real (non-padding) objects the derivation used (for logging). */
-    public final int realCount;
 
-    private SoftContactParameters(double stiffness, double dampingFactor, int subSteps, double subStepSeconds,
-                                  double overlapFraction, boolean gravityLimited, int realCount) {
+    private SoftContactParameters(double stiffness, double damping, int subSteps, double subStepSeconds,
+                                  boolean gravityLimited) {
         this.stiffness = stiffness;
-        this.dampingFactor = dampingFactor;
+        this.damping = damping;
         this.subSteps = subSteps;
         this.subStepSeconds = subStepSeconds;
-        this.overlapFraction = overlapFraction;
         this.gravityLimited = gravityLimited;
-        this.realCount = realCount;
     }
 
-    /** Convenience: derive with the default overlap fraction. */
     public static SoftContactParameters derive(int n, double[] x, double[] y, double[] vx, double[] vy,
                                                double[] mass, double[] radius, boolean[] deleted,
                                                double secondsPerIteration, double coefficientOfRestitution,
                                                double minDistance) {
-        return derive(n, x, y, vx, vy, mass, radius, deleted, secondsPerIteration, coefficientOfRestitution,
-                      minDistance, DEFAULT_OVERLAP_FRACTION);
-    }
-
-    public static SoftContactParameters derive(int n, double[] x, double[] y, double[] vx, double[] vy,
-                                               double[] mass, double[] radius, boolean[] deleted,
-                                               double secondsPerIteration, double coefficientOfRestitution,
-                                               double minDistance, double overlapFraction) {
-        double dt = secondsPerIteration > 0 ? secondsPerIteration : 0;
-
-        /* Largest mass, to tell real objects from the near-massless count padding. */
-        double maxMass = 0;
-        for (int i = 0; i < n; i++) {
-            if (!deleted[i] && mass[i] > maxMass) {
-                maxMass = mass[i];
-            }
-        }
-        if (maxMass <= 0) {
-            return inert(dt);
-        }
-        double realThreshold = maxMass * PADDING_MASS_FRACTION;
-
-        /* Representative particle = the smallest real one (hardest to hold apart); characteristic
-         * speed = the fastest real one (worst-case impact). */
-        double minMass = Double.MAX_VALUE;
         double minRadius = Double.MAX_VALUE;
         double maxSpeed = 0;
-        int real = 0;
+        int count = 0;
         for (int i = 0; i < n; i++) {
-            if (deleted[i] || mass[i] < realThreshold) {
-                continue;
-            }
-            real++;
-            if (mass[i] < minMass) {
-                minMass = mass[i];
-            }
-            if (radius[i] > 0 && radius[i] < minRadius) {
-                minRadius = radius[i];
-            }
-            double speed = Math.sqrt(vx[i] * vx[i] + vy[i] * vy[i]);
-            if (speed > maxSpeed) {
-                maxSpeed = speed;
+            if (!deleted[i]) {
+                count++;
+                minRadius = Math.min(minRadius, radius[i]);
+                maxSpeed = Math.max(maxSpeed, Math.sqrt(vx[i] * vx[i] + vy[i] * vy[i]));
             }
         }
-        if (real == 0 || minRadius == Double.MAX_VALUE || minRadius <= 0) {
-            return inert(dt);
-        }
+        double overlap = OVERLAP_FRACTION * minRadius;
 
-        double mEff = minMass / 2.0;
-        double overlapLength = overlapFraction * minRadius;
+        /* The spring stops the fastest object within the overlap: speed^2 = stiffness * overlap^2. */
+        double impactStiffness = maxSpeed * maxSpeed / (overlap * overlap);
 
-        double kImpact = mEff * maxSpeed * maxSpeed / (overlapLength * overlapLength);
+        /* An object under a pile of about sqrt(count) others does not sink deeper than the overlap. */
+        double gravityStiffness = 2 * maxGravity(n, x, y, mass, radius, deleted, minDistance, minRadius) * Math.sqrt(count) / overlap;
 
-        /* Self-gravity floor: the largest gravitational force on any single real object, times the
-         * estimated pile depth (~sqrt of the real count), must not crush a contact past the overlap. */
-        double maxGravityForce = maxGravityForce(n, x, y, mass, deleted, realThreshold, minDistance);
-        double depth = Math.sqrt(real);
-        double kGravity = maxGravityForce * depth / overlapLength;
+        boolean gravityLimited = gravityStiffness > impactStiffness;
+        double stiffness = gravityLimited ? gravityStiffness : impactStiffness;
 
-        boolean gravityLimited = kGravity > kImpact;
-        double k = gravityLimited ? kGravity : kImpact;
-        if (k <= 0) {
-            return inert(dt);
-        }
-
-        /* Damping coefficient for the target restitution: c = -2 ln(e) sqrt(mEff k)/sqrt(pi^2+ln(e)^2).
-         * Stored as the per-pair factor d = -2 ln(e)/sqrt(pi^2+ln(e)^2); the pair multiplies by sqrt(mEff k). */
+        /* The damping which gives the coefficient of restitution e: -2 ln(e) / sqrt(pi^2 + ln(e)^2) * sqrt(stiffness). */
         double le = Math.log(Math.max(coefficientOfRestitution, 1e-4));
-        double dampingFactor = -2.0 * le / Math.sqrt(Math.PI * Math.PI + le * le);
+        double damping = -2.0 * le / Math.sqrt(Math.PI * Math.PI + le * le) * Math.sqrt(stiffness);
 
+        double dt = Math.max(secondsPerIteration, 0);
         int subSteps = 1;
-        double subStepSeconds = dt;
-        if (dt > 0) {
-            double contactPeriod = 2.0 * Math.PI * Math.sqrt(mEff / k);
-            double safeStep = contactPeriod / CONTACT_RESOLUTION;
-            if (safeStep > 0 && dt > safeStep) {
-                subSteps = (int) Math.ceil(dt / safeStep);
-            }
-            subStepSeconds = dt / subSteps;
+        double contactPeriod = 2.0 * Math.PI / Math.sqrt(stiffness);
+        double safeStep = contactPeriod / CONTACT_RESOLUTION;
+        if (dt > safeStep) {
+            subSteps = (int) Math.ceil(dt / safeStep);
         }
 
-        return new SoftContactParameters(k, dampingFactor, subSteps, subStepSeconds, overlapFraction, gravityLimited, real);
+        return new SoftContactParameters(stiffness, damping, subSteps, dt / subSteps, gravityLimited);
     }
 
-    /** The largest gravitational force magnitude on any single real object, with softening. O(real^2). */
-    private static double maxGravityForce(int n, double[] x, double[] y, double[] mass, boolean[] deleted,
-                                          double realThreshold, double minDistance) {
-        double maxForce = 0;
+    /* The strongest gravity an object can feel: where it is now, or lying on the surface of another object. */
+    private static double maxGravity(int n, double[] x, double[] y, double[] mass, double[] radius, boolean[] deleted,
+                                     double minDistance, double minRadius) {
+        double maxGravity = 0;
         for (int i = 0; i < n; i++) {
-            if (deleted[i] || mass[i] < realThreshold) {
+            if (deleted[i]) {
                 continue;
             }
+            double surface = Math.max(radius[i] + minRadius, minDistance);
+            maxGravity = Math.max(maxGravity, GRAVITY * mass[i] / (surface * surface));
+
             double ax = 0;
             double ay = 0;
             for (int j = 0; j < n; j++) {
-                if (i == j || deleted[j] || mass[j] < realThreshold) {
+                if (i == j || deleted[j]) {
                     continue;
                 }
                 double dx = x[j] - x[i];
                 double dy = y[j] - y[i];
-                double distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < minDistance) {
-                    distance = minDistance;
-                }
+                double distance = Math.max(Math.sqrt(dx * dx + dy * dy), minDistance);
                 if (distance <= 0) {
                     continue;
                 }
@@ -158,22 +103,15 @@ public class SoftContactParameters {
                 ax += a * dx / distance;
                 ay += a * dy / distance;
             }
-            double force = mass[i] * Math.sqrt(ax * ax + ay * ay);
-            if (force > maxForce) {
-                maxForce = force;
-            }
+            maxGravity = Math.max(maxGravity, Math.sqrt(ax * ax + ay * ay));
         }
-        return maxForce;
-    }
-
-    private static SoftContactParameters inert(double dt) {
-        return new SoftContactParameters(0, 0, 1, dt, DEFAULT_OVERLAP_FRACTION, false, 0);
+        return maxGravity;
     }
 
     @Override
     public String toString() {
-        return String.format("SoftContact[k=%.3e damping=%.3f subSteps=%d subStepSeconds=%.3e %s realObjects=%d]",
-                             stiffness, dampingFactor, subSteps, subStepSeconds,
-                             gravityLimited ? "gravity-limited" : "impact-limited", realCount);
+        return String.format("SoftContact[stiffness=%.3e damping=%.3e subSteps=%d subStepSeconds=%.3e %s]",
+                             stiffness, damping, subSteps, subStepSeconds,
+                             gravityLimited ? "gravity-limited" : "impact-limited");
     }
 }

@@ -207,7 +207,7 @@ public class SimulationDouble implements Simulation {
         }
     }
 
-    /* Calculates the contact parameters from the scene. Without them the bounce is used. */
+    /* Calculates the contact parameters from the scene. */
     private void configureSoftContact() {
         softContactActive = false;
         if (!softContactRequested) {
@@ -217,12 +217,7 @@ public class SimulationDouble implements Simulation {
                 data.n, data.positionX, data.positionY, data.velocityX, data.velocityY, data.mass, data.radius,
                 data.deleted, properties.getSecondsPerIteration().doubleValue(),
                 properties.getCoefficientOfRestitution().doubleValue(), properties.getMinDistance().doubleValue());
-        if (params.stiffness <= 0) {
-            warn(logger, "Soft contact requested but the stiffness could not be derived (no colliding objects?). "
-                    + "Using the classic impulse model.");
-            return;
-        }
-        moveObjectsLogic.enableSoftContact(params.stiffness, params.dampingFactor);
+        moveObjectsLogic.enableSoftContact(params.stiffness, params.damping);
         moveObjectsLogic.setSecondsPerIteration(params.subStepSeconds);
         softContactSubSteps = params.subSteps;
         softContactStiffness = params.stiffness;
@@ -234,7 +229,7 @@ public class SimulationDouble implements Simulation {
         }
     }
 
-    /** The auto-derived contact stiffness k (N/m), or 0 if soft contact is inactive. For tests/diagnostics. */
+    /** The stiffness of the contact spring for a unit of effective mass (1/s^2), or 0 without soft contact. For tests. */
     public double getSoftContactStiffness() {
         return softContactStiffness;
     }

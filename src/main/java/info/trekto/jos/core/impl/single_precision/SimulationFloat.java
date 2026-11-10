@@ -255,7 +255,7 @@ public class SimulationFloat implements Simulation {
         }
     }
 
-    /* Calculates the contact parameters from the scene. Without them the bounce is used. */
+    /* Calculates the contact parameters from the scene. */
     private void configureSoftContact() {
         softContactActive = false;
         if (!softContactRequested) {
@@ -275,12 +275,7 @@ public class SimulationFloat implements Simulation {
         SoftContactParameters params = SoftContactParameters.derive(count, x, y, vx, vy, m, r, data.deleted,
                 properties.getSecondsPerIteration().doubleValue(), properties.getCoefficientOfRestitution().doubleValue(),
                 properties.getMinDistance().doubleValue());
-        if (params.stiffness <= 0) {
-            warn(logger, "Soft contact requested but the stiffness could not be derived (no colliding objects?). "
-                    + "Using the classic impulse model.");
-            return;
-        }
-        moveObjectsLogic.enableSoftContact((float) params.stiffness, (float) params.dampingFactor);
+        moveObjectsLogic.enableSoftContact((float) params.stiffness, (float) params.damping);
         moveObjectsLogic.setSecondsPerIteration((float) params.subStepSeconds);
         softContactSubSteps = params.subSteps;
         softContactStiffness = (float) params.stiffness;

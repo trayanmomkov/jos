@@ -29,7 +29,7 @@ public class MoveObjectsLogicDouble extends Kernel {
     /* Soft contact (DEM). Switched on by SimulationDouble; then there is no separate collision phase. */
     private int contactEnabled = 0;
     private double contactStiffness = 0;
-    private double contactDampingFactor = 0;
+    private double contactDamping = 0;
 
     private final int n;
 
@@ -58,11 +58,11 @@ public class MoveObjectsLogicDouble extends Kernel {
         this.minDistance = minDistance;
     }
 
-    /** Enable the soft-sphere contact force with the given auto-derived stiffness and damping factor. */
-    public void enableSoftContact(double stiffness, double dampingFactor) {
+    /* Switches the soft contact on. The stiffness and the damping are for a unit of effective mass. */
+    public void enableSoftContact(double stiffness, double damping) {
         this.contactEnabled = 1;
         this.contactStiffness = stiffness;
-        this.contactDampingFactor = dampingFactor;
+        this.contactDamping = damping;
     }
 
     public void setSecondsPerIteration(double secondsPerIteration) {
@@ -109,16 +109,13 @@ public class MoveObjectsLogicDouble extends Kernel {
                             double relativeVelocityX = velocityX[i] - velocityX[j];
                             double relativeVelocityY = velocityY[i] - velocityY[j];
                             double normalSpeed = relativeVelocityX * normalX + relativeVelocityY * normalY;
-                            double sumMass = mass[i] + mass[j];
-                            if (sumMass > 0) {
-                                double effectiveMass = mass[i] * mass[j] / sumMass;
-                                double damping = contactDampingFactor * sqrt(effectiveMass * contactStiffness);
-                                double contactForce = contactStiffness * overlap - damping * normalSpeed;
-                                if (contactForce < 0) {
-                                    contactForce = 0;   // contacts push apart, never pull together
-                                }
-                                newAccelerationX = newAccelerationX + contactForce * normalX / mass[i];
-                                newAccelerationY = newAccelerationY + contactForce * normalY / mass[i];
+                            /* The spring of a pair is proportional to its effective mass m1 * m2 / (m1 + m2).
+                             * Force / mass[i] leaves only the share of the other object in the mass of the pair. */
+                            double contactAcceleration = (contactStiffness * overlap - contactDamping * normalSpeed)
+                                    * (mass[j] / (mass[i] + mass[j]));
+                            if (contactAcceleration > 0) {   // contacts push apart, never pull together
+                                newAccelerationX = newAccelerationX + contactAcceleration * normalX;
+                                newAccelerationY = newAccelerationY + contactAcceleration * normalY;
                             }
                         }
                     }

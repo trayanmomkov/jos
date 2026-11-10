@@ -141,7 +141,7 @@ public class SoftContactEnergyTest {
         assertTrue(params.stiffness > 0, "Stiffness should be derived for " + label);
 
         MoveObjectsLogicDouble move = new MoveObjectsLogicDouble(data, params.subStepSeconds, MIN_DISTANCE, 0, 0);
-        move.enableSoftContact(params.stiffness, params.dampingFactor);
+        move.enableSoftContact(params.stiffness, params.damping);
 
         List<Double> samples = new ArrayList<>();
         double e0 = energy(data, params.stiffness);
@@ -201,7 +201,8 @@ public class SoftContactEnergyTest {
                 potential -= G * data.mass[i] * data.mass[j] / softened;
                 double overlap = data.radius[i] + data.radius[j] - distance;
                 if (overlap > 0) {
-                    spring += 0.5 * stiffness * overlap * overlap;
+                    double effectiveMass = data.mass[i] * data.mass[j] / (data.mass[i] + data.mass[j]);
+                    spring += 0.5 * stiffness * effectiveMass * overlap * overlap;
                 }
             }
         }

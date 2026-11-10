@@ -29,7 +29,7 @@ public class MoveObjectsLogicFloat extends Kernel {
     /* Soft contact (DEM), see MoveObjectsLogicDouble. Switched on by SimulationFloat. */
     private int contactEnabled = 0;
     private float contactStiffness = 0;
-    private float contactDampingFactor = 0;
+    private float contactDamping = 0;
     /* What run() does on the GPU: 0 - first pass of the soft contact, 1 - second pass, -1 - gravity only. */
     private int contactPhase = -1;
 
@@ -60,11 +60,11 @@ public class MoveObjectsLogicFloat extends Kernel {
         this.minDistance = minDistance;
     }
 
-    /** Enable the soft-sphere contact force with the given auto-derived stiffness and damping factor. */
-    public void enableSoftContact(float stiffness, float dampingFactor) {
+    /* Switches the soft contact on. The stiffness and the damping are for a unit of effective mass. */
+    public void enableSoftContact(float stiffness, float damping) {
         this.contactEnabled = 1;
         this.contactStiffness = stiffness;
-        this.contactDampingFactor = dampingFactor;
+        this.contactDamping = damping;
     }
 
     public void setSecondsPerIteration(float secondsPerIteration) {
@@ -121,16 +121,11 @@ public class MoveObjectsLogicFloat extends Kernel {
                             float relativeVelocityX = velocityX[i] - velocityX[j];
                             float relativeVelocityY = velocityY[i] - velocityY[j];
                             float normalSpeed = relativeVelocityX * normalX + relativeVelocityY * normalY;
-                            float sumMass = mass[i] + mass[j];
-                            if (sumMass > 0) {
-                                float effectiveMass = mass[i] * mass[j] / sumMass;
-                                float damping = contactDampingFactor * sqrt(effectiveMass * contactStiffness);
-                                float contactForce = contactStiffness * overlap - damping * normalSpeed;
-                                if (contactForce < 0) {
-                                    contactForce = 0;
-                                }
-                                newAccelerationX = newAccelerationX + contactForce * normalX / mass[i];
-                                newAccelerationY = newAccelerationY + contactForce * normalY / mass[i];
+                            float contactAcceleration = (contactStiffness * overlap - contactDamping * normalSpeed)
+                                    * (mass[j] / (mass[i] + mass[j]));
+                            if (contactAcceleration > 0) {
+                                newAccelerationX = newAccelerationX + contactAcceleration * normalX;
+                                newAccelerationY = newAccelerationY + contactAcceleration * normalY;
                             }
                         }
                     }
