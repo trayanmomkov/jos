@@ -23,4 +23,8 @@ public interface Simulation {
     double calculateTotalMomentum();
     
     Data getData();
+
+    /* Gives back what was taken from the video card. The driver allows only a limited number of kernels per process. */
+    default void dispose() {
+    }
 }

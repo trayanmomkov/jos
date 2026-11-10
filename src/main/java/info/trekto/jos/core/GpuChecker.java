@@ -45,6 +45,7 @@ public class GpuChecker {
                 gpuDoubleAvailable = false;
                 info(logger, "Double GPU is not compatible. Will try float.");
             }
+            testKernel.dispose();
         } catch (Exception tr) {
             gpuDoubleAvailable = false;
             warn(logger, "Double GPU is not compatible. Will try float.", tr);
@@ -62,6 +63,7 @@ public class GpuChecker {
                 gpuFloatAvailable = false;
                 info(logger, "Float GPU is not compatible. Will use CPU.");
             }
+            testKernel.dispose();
         } catch (Exception tr) {
             gpuFloatAvailable = false;
             warn(logger, "Float GPU is not compatible. Will use CPU. Try to restart your computer for GPU.", tr);
@@ -197,16 +199,20 @@ public class GpuChecker {
     }
 
     private static double measureIteration(Simulation simulation, long numberOfIterations) throws SimulationException, InterruptedException {
-        simulation.init(false);
+        try {
+            simulation.init(false);
 
-        long startTime = System.nanoTime();
-        for (long i = 0; i < numberOfIterations; i++) {
-            if (C.isHasToStopCpuGpuMeasuring()) {
-                return 0;
+            long startTime = System.nanoTime();
+            for (long i = 0; i < numberOfIterations; i++) {
+                if (C.isHasToStopCpuGpuMeasuring()) {
+                    return 0;
+                }
+                simulation.doIteration(false, i + 1);
             }
-            simulation.doIteration(false, i + 1);
-        }
 
-        return (System.nanoTime() - startTime) / (double)numberOfIterations;
+            return (System.nanoTime() - startTime) / (double)numberOfIterations;
+        } finally {
+            simulation.dispose();
+        }
     }
 }

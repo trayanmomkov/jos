@@ -424,12 +424,23 @@ public class SimulationDouble implements Simulation {
             endTime = System.nanoTime();
         } finally {
             C.setRunning(false);
+            dispose();
             if (properties.isSaveToFile()) {
                 C.getReaderWriter().endFile();
             }
         }
 
         info(logger, "End of simulation. Time: " + nanoToHumanReadable(endTime - startTime));
+    }
+
+    @Override
+    public void dispose() {
+        moveObjectsLogic.dispose();
+        processCollisionsLogic.dispose();
+        if (barnesHut) {
+            barnesHutMoveObjectsLogic.dispose();
+            barnesHutProcessCollisionsLogic.dispose();
+        }
     }
 
     public void init(boolean printInfo) throws SimulationException {
@@ -475,6 +486,7 @@ public class SimulationDouble implements Simulation {
 
         data.copyToReadOnly(true);
         tempCollisionLogic.execute(tempRange);
+        tempCollisionLogic.dispose();
         for (int i = 0; i < data.n; i++) {
             if (data.deleted[i]) {
                 info(logger, String.format("Collision with object A(x:%f, y:%f, r:%f)", positionX[i], positionY[i], radius[i]));
