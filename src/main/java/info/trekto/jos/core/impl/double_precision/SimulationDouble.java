@@ -447,6 +447,7 @@ public class SimulationDouble implements Simulation {
         if (printInfo) {
             info(logger, "Initialize simulation...");
         }
+        Simulation.checkMassAndRadius(properties.getInitialObjects());
 
         initArrays(properties.getInitialObjects());
 

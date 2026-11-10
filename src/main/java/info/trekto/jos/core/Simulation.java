@@ -3,6 +3,11 @@ package info.trekto.jos.core;
 import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.impl.Data;
 import info.trekto.jos.core.impl.SimulationProperties;
+import info.trekto.jos.core.model.SimulationObject;
+
+import java.util.List;
+
+import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
 
 /**
  * @author Trayan Momkov
@@ -26,5 +31,15 @@ public interface Simulation {
 
     /* Gives back what was taken from the video card. The driver allows only a limited number of kernels per process. */
     default void dispose() {
+    }
+
+    /* The acceleration is force / mass and a merge needs the density, so every object needs a mass and a radius. */
+    static void checkMassAndRadius(List<SimulationObject> objects) throws SimulationException {
+        for (SimulationObject object : objects) {
+            if (object.getMass().compareTo(ZERO) <= 0 || object.getRadius().compareTo(ZERO) <= 0) {
+                throw new SimulationException("Object '" + object.getId() + "' has mass " + object.getMass()
+                                                      + " and radius " + object.getRadius() + ". Both must be above zero.");
+            }
+        }
     }
 }

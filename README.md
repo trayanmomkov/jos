@@ -207,8 +207,8 @@ rendition of a 4K upload looks better than a native 1080p upload.
         "accelerationX": "-8.003695",             # Current acceleration
         "accelerationY": "34.10966",
         "accelerationZ": "0",
-        "mass":1E17,                              # Kilogram (kg)
-        "radius":80                               # Metre (m)
+        "mass":1E17,                              # Kilogram (kg). Must be above zero.
+        "radius":80                               # Metre (m). Must be above zero.
         "color":"0000FF",                         # Blue
       },
       {

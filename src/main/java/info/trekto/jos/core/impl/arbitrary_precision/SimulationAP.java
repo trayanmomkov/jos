@@ -1,6 +1,7 @@
 package info.trekto.jos.core.impl.arbitrary_precision;
 
 import info.trekto.jos.core.CpuSimulation;
+import info.trekto.jos.core.Simulation;
 import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.impl.Iteration;
 import info.trekto.jos.core.impl.ResumeScene;
@@ -217,6 +218,7 @@ public class SimulationAP implements CpuSimulation {
         if (printInfo) {
             info(logger, "Initialize simulation...");
         }
+        Simulation.checkMassAndRadius(properties.getInitialObjects());
         initArrays(properties.getInitialObjects());
         
         if (duplicateIdExists(data.id)) {
