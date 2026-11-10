@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
@@ -28,6 +30,16 @@ public class VisualizationPanel extends JPanel {
 
     private static final double SCALE_STEP = 1.25;
     private static final double TRANSLATE_STEP = 50;
+
+    /* With antialiasing a shape of one or two pixels is mixed with the background and loses its colour.
+     * Without it a shape which covers no pixel centre is not drawn at all. So small shapes are drawn
+     * bigger and without antialiasing. Both sizes are diameters in device pixels. */
+
+    /* A smaller antialiased circle does not cover any pixel fully. */
+    private static final double ANTIALIASING_SAFE_DEVICE_DIAMETER = 2 * Math.sqrt(2);
+
+    /* A circle of this size always covers at least one pixel centre. Nothing is drawn smaller. */
+    private static final double MIN_DEVICE_DIAMETER = Math.sqrt(2);
     public static final int DEFAULT_FONT_SIZE = 18;
     public static final Font DEFAULT_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, DEFAULT_FONT_SIZE);
     private List<ShapeWithColorAndText> shapes;
@@ -97,6 +109,14 @@ public class VisualizationPanel extends JPanel {
     }
 
     private void drawObjects(final Graphics2D g, List<ShapeWithColorAndText> shapesList) {
+        /* g is already scaled - by the panel zoom, and on export by the fit-to-frame factor on top of it -
+         * so the device-pixel thresholds are converted back into the user space the shapes live in. */
+        double deviceScale = Math.abs(g.getTransform().getScaleX());
+        double antialiasingSafe = deviceScale > 0 ? ANTIALIASING_SAFE_DEVICE_DIAMETER / deviceScale : 0;
+        double minDiameter = deviceScale > 0 ? MIN_DEVICE_DIAMETER / deviceScale : 0;
+        Object requestedAntialiasing = g.getRenderingHint(KEY_ANTIALIASING);
+        boolean antialiasingOff = false;
+        Ellipse2D.Double enlarged = new Ellipse2D.Double();   // scratch, reused only within this call (g.fill does not retain it)
         for (ShapeWithColorAndText shape : shapesList) {
             if (shape.isMetaData()) {
                 continue;
@@ -104,9 +124,27 @@ public class VisualizationPanel extends JPanel {
             g.setColor(shape.getColor());
             if (shape.getText() != null) {
                 drawString(g, shape, (int) Math.round(C.getFontSize() / scale));
-            } else {
-                g.fill(shape.getShape());
+                continue;
             }
+            Shape toFill = shape.getShape();
+            Rectangle2D bounds = toFill.getBounds2D();
+            double w = Math.max(bounds.getWidth(), minDiameter);
+            double h = Math.max(bounds.getHeight(), minDiameter);
+            if (w > bounds.getWidth() || h > bounds.getHeight()) {
+                enlarged.setFrame(bounds.getCenterX() - w / 2, bounds.getCenterY() - h / 2, w, h);
+                toFill = enlarged;
+            }
+            /* Decided on the FINAL size: an object raised above the threshold keeps its smooth edges.
+             * The hint is flipped only when it actually changes, so a field of uniform particles pays once. */
+            boolean small = w < antialiasingSafe || h < antialiasingSafe;
+            if (small != antialiasingOff) {
+                antialiasingOff = small;
+                g.setRenderingHint(KEY_ANTIALIASING, small ? VALUE_ANTIALIAS_OFF : requestedAntialiasing);
+            }
+            g.fill(toFill);
+        }
+        if (antialiasingOff) {
+            g.setRenderingHint(KEY_ANTIALIASING, requestedAntialiasing);
         }
     }
 

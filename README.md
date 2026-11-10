@@ -158,10 +158,12 @@ when the export starts.
 
 Once you have the frames, turn them into a movie with [ffmpeg](https://ffmpeg.org/):
 ```sh
-ffmpeg -framerate 60 -i frame_%06d.png -c:v libx264 -crf 18 -pix_fmt yuv420p out.mp4
+ffmpeg -framerate 30 -i frame_%06d.png -vf "eq=saturation=1.2,format=yuv420p" -c:v libx264 -preset slow -crf 16 -movflags +faststart out.mp4
 ```
 Run it from inside the exported frames folder. Adjust `-framerate` for the playback speed and `-crf` for the quality
-(lower means better quality and a larger file).
+(lower means better quality and a larger file). The small saturation boost compensates for the colour that tiny
+particles lose when the video is downscaled for playback. For YouTube, export and upload in 4K: even its 1080p
+rendition of a 4K upload looks better than a native 1080p upload.
 
 ### Simulation properties (input) file format
 ```json
