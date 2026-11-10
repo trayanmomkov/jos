@@ -1,3 +1,15 @@
+###v.3.3.0 - 2026-Nov-10
+- Add the Barnes-Hut approximation of the gravity, on the CPU and on the GPU. It is controlled by the new "B-H theta" field (0 means exact calculation) and also speeds up the collision detection.
+- Add a soft contact model for collisions (DEM). It keeps a body made of many touching particles together.
+- Add a "Collisions" checkbox. Without collisions the objects pass through each other.
+- Add a mode without GUI: java -jar jos.jar --headless scene.json
+- Write a scene for continuing the run when a run which is being saved is stopped.
+- Export the played frames as PNG images for making a video.
+- Speed up the drawing, add an "Antialiasing" checkbox and keep small objects bright.
+- Write the saved iterations faster.
+- Propose an output file name when "Save to file" is switched on.
+- Give back the video card resources when a simulation ends. Before, after about 16 simulations in one session the GPU was not used any more.
+
 ###v.3.2.1 - 2026-Nov-10
 - Fix fast objects passing through each other when they cross within one iteration.
 - Warn when an object moves more than its radius in one iteration.
