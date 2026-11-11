@@ -23,6 +23,7 @@ import java.util.stream.IntStream;
 
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.impl.Data.countObjects;
+import static info.trekto.jos.core.numbers.NumberFactory.NumberType.ARBITRARY_PRECISION;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.ONE;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.ZERO;
 import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_MILLISECOND;
@@ -95,6 +96,7 @@ public class SimulationAP implements CpuSimulation {
 //        processCollisionsLogic.runOnSingleThread();
             processCollisionsLogic.run(); /* Collisions - Execute in parallel */
         }
+        renewPrecision();
 
         if (properties.isSaveToFile() && saveCurrentIterationToFile) {
             C.getReaderWriter().appendObjectsToFile(properties, iterationCounter, data.positionX, data.positionY, zeroArray, data.velocityX,
@@ -110,6 +112,7 @@ public class SimulationAP implements CpuSimulation {
         for (int subStep = 0; subStep < softContactSubSteps; subStep++) {
             IntStream.range(0, data.n).parallel().forEach(logic::computeContactAcceleration);
             IntStream.range(0, data.n).parallel().forEach(logic::integrateContact);
+            renewPrecision();
         }
         warnIfFastMotion();
 
@@ -117,6 +120,20 @@ public class SimulationAP implements CpuSimulation {
             C.getReaderWriter().appendObjectsToFile(properties, iterationCounter, data.positionX, data.positionY, zeroArray, data.velocityX,
                                                     data.velocityY, zeroArray, data.mass, data.radius, data.id, data.color, data.deleted,
                                                     data.accelerationX, data.accelerationY, zeroArray);
+        }
+    }
+
+    /* Apfloat cuts digits off the numbers in every calculation. The positions and the velocities get them back.
+     * Float and double keep all their digits. */
+    private void renewPrecision() {
+        if (properties.getNumberType() != ARBITRARY_PRECISION) {
+            return;
+        }
+        for (int i = 0; i < data.n; i++) {
+            data.positionX[i] = New.num(data.positionX[i]);
+            data.positionY[i] = New.num(data.positionY[i]);
+            data.velocityX[i] = New.num(data.velocityX[i]);
+            data.velocityY[i] = New.num(data.velocityY[i]);
         }
     }
 

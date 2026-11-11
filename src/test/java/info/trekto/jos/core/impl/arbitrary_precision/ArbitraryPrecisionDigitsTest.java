@@ -47,6 +47,30 @@ public class ArbitraryPrecisionDigitsTest {
         assertEquals(digits(simulation), 40);
     }
 
+    /* Apfloat cuts digits off the results. Without their renewal 4 digits of 32 are left here and the momentum is wrong. */
+    @Test
+    public void digitsStayWhileObjectsBounce() throws SimulationException {
+        createNumberFactory(ARBITRARY_PRECISION, PRECISION);
+        SimulationAP simulation = new SimulationAP(properties(planetAndParticles(2, false), false, "0.005"));
+        double momentumAtStart = momentumY(simulation.getProperties().getInitialObjects());
+
+        run(simulation, 300);
+
+        assertEquals(digits(simulation), PRECISION);
+        assertEquals(simulation.getData().velocityY[0].doubleValue() * 5e13 + particlesMomentumY(simulation), momentumAtStart, 1e-3);
+    }
+
+    /* The same with the soft contact. A fast object far away makes the spring stiff. Without the renewal 11 digits are left. */
+    @Test
+    public void digitsStayWithTheSoftContact() throws SimulationException {
+        createNumberFactory(ARBITRARY_PRECISION, PRECISION);
+        SimulationAP simulation = new SimulationAP(properties(planetAndParticles(3, true), true, "0.05"));
+
+        run(simulation, 40);
+
+        assertEquals(digits(simulation), PRECISION);
+    }
+
     /* A planet and a square block of particles above it. With the soft contact the particles touch. */
     private static List<SimulationObject> planetAndParticles(int side, boolean softContact) {
         List<SimulationObject> objects = new ArrayList<>();
@@ -91,5 +115,22 @@ public class ArbitraryPrecisionDigitsTest {
             digits = Math.min(digits, Math.min(ap(data.positionX[i]).precision(), ap(data.positionY[i]).precision()));
         }
         return digits;
+    }
+
+    private static double momentumY(List<SimulationObject> objects) {
+        double momentum = 0;
+        for (SimulationObject object : objects) {
+            momentum += object.getMass().doubleValue() * object.getVelocity().getY().doubleValue();
+        }
+        return momentum;
+    }
+
+    private static double particlesMomentumY(SimulationAP simulation) {
+        DataAP data = simulation.getData();
+        double momentum = 0;
+        for (int i = 1; i < data.n; i++) {
+            momentum += data.mass[i].doubleValue() * data.velocityY[i].doubleValue();
+        }
+        return momentum;
     }
 }
