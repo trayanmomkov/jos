@@ -4,6 +4,7 @@ import com.aparapi.Kernel;
 import com.aparapi.Range;
 import com.aparapi.device.Device;
 import com.aparapi.device.OpenCLDevice;
+import com.aparapi.internal.opencl.OpenCLPlatform;
 import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.impl.SimulationGenerator;
 import info.trekto.jos.core.impl.SimulationProperties;
@@ -67,6 +68,19 @@ public class GpuChecker {
         } catch (Exception tr) {
             gpuFloatAvailable = false;
             warn(logger, "Float GPU is not compatible. Will use CPU. Try to restart your computer for GPU.", tr);
+        }
+        warnAboutPocl();
+    }
+
+    /* pocl is an OpenCL driver for the CPU. It loads LLVM, which replaces the signal handlers of Java. */
+    private static void warnAboutPocl() {
+        for (OpenCLPlatform platform : new OpenCLPlatform().getOpenCLPlatforms()) {
+            if ("Portable Computing Language".equals(platform.getName())) {
+                warn(logger, "The OpenCL driver pocl is installed. It replaces the signal handlers of Java, and the program "
+                        + "can die with \"Segmentation fault\" while it calculates on the CPU cores. Remove the package "
+                        + "pocl-opencl-icd, or start the program with only the driver of your video card, for example: "
+                        + "OCL_ICD_VENDORS=/etc/OpenCL/vendors/nvidia.icd java -jar jos.jar");
+            }
         }
     }
 

@@ -16,6 +16,9 @@ It offers **arbitrary precision** (alongside float and double) and three executi
 - JOS should be able to run on every system with **Java 1.8** or later installed, including Linux, Mac OS and Windows.
 - If you want to use the GPU execution mode, be sure you have installed the **latest driver for your video card**.
  It should include OpenCL needed for the GPU.
+- On Linux the OpenCL driver **pocl** (package `pocl-opencl-icd`) replaces the signal handlers of Java, and JOS can die with "Segmentation fault".
+ JOS warns at start when it finds it. Remove the package, or start JOS with only the driver of your video card,
+ for example: `OCL_ICD_VENDORS=/etc/OpenCL/vendors/nvidia.icd java -jar jos.jar`
 
 ## Sample simulations
 [Accretion](samples/accretion.zip)
