@@ -22,6 +22,7 @@ import static info.trekto.jos.core.numbers.NumberFactory.NumberType.DOUBLE;
 import static info.trekto.jos.core.numbers.NumberFactory.NumberType.FLOAT;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.ONE;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
@@ -245,6 +246,22 @@ public class ControllerTest {
 
         assertEquals(createSimulation(properties, CPU).getClass(), SimulationAP.class);
         assertEquals(createSimulation(properties, AUTO).getClass(), SimulationAP.class);
+    }
+
+    /* Without GUI the soft contact goes to the GPU, unless "--mode cpu" was given. */
+    @Test
+    public void headlessExecutionModeChoosesWhereSoftContactRuns() {
+        GpuChecker.gpuDoubleAvailable = true;
+        GpuChecker.gpuFloatAvailable = true;
+        C.cpuThreshold = 0;                                // as without GUI
+        SimulationProperties properties = softContactProperties(DOUBLE, 16);
+        try {
+            assertTrue(((SimulationDouble) createSimulation(properties, C.getSelectedExecutionMode())).isSoftContactOnGpu());
+            C.headlessExecutionMode = CPU;
+            assertFalse(((SimulationDouble) createSimulation(properties, C.getSelectedExecutionMode())).isSoftContactOnGpu());
+        } finally {
+            C.headlessExecutionMode = AUTO;
+        }
     }
 
     private static SimulationProperties softContactProperties(NumberFactory.NumberType numberType, int numberOfObjects) {

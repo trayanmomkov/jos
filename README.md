@@ -147,10 +147,14 @@ a particular iteration and object.
 
 ### Running without GUI
 ```sh
-java -jar jos.jar --headless scene.json [--iterations N] [--save-every N] [--output FILE]
+java -jar jos.jar --headless scene.json [--iterations N] [--save-every N] [--output FILE] [--mode cpu|gpu|auto]
 ```
 The simulation runs without a window and is always saved to a file - by default the scene file name
 plus `.gz`. With 0 iterations it runs until it is stopped with Ctrl+C.
+
+`--mode` chooses where the simulation runs, like "Execution mode" in the window. Without it the video card
+is used when there is one. A small scene in double precision with the soft contact can run several times
+faster with `--mode cpu`.
 
 When a run which is being saved is stopped, a second file is written: `<output>_resume.json`. It is a
 scene with the exact current state of all objects - load it to continue the run.

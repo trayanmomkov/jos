@@ -78,6 +78,8 @@ public enum Controller {
     public static final String JSON_FILE_EXTENSION = ".json";
     public static final String JSON_GZIP_FILE_EXTENSION = ".json.gz";
     int cpuThreshold;
+    /* The "--mode" of a run without GUI. */
+    ExecutionMode headlessExecutionMode = AUTO;
     private static final Logger logger = LoggerFactory.getLogger(Controller.class);
     public static final String PROGRAM_NAME = "JOS";
 
@@ -181,12 +183,13 @@ public enum Controller {
 
     /**
      * Runs a simulation without GUI and always saves it to a file:
-     * java -jar jos.jar --headless input.json [--iterations N] [--save-every N] [--output FILE]
+     * java -jar jos.jar --headless input.json [--iterations N] [--save-every N] [--output FILE] [--mode cpu|gpu|auto]
      * The default output is the input file plus ".gz". With 0 iterations it runs until it is stopped (Ctrl+C).
+     * Without --mode the GPU is used when there is one.
      */
     private static void runHeadless(String[] args) {
         System.setProperty("java.awt.headless", "true");
-        String input = null, output = null;
+        String input = null, output = null, mode = null;
         Integer saveEvery = null;
         Long iterations = null;
         for (int i = 1; i < args.length; i++) {
@@ -194,6 +197,7 @@ public enum Controller {
                 case "--iterations": iterations = Long.parseLong(args[++i]); break;
                 case "--save-every": saveEvery = Integer.parseInt(args[++i]); break;
                 case "--output":     output = args[++i]; break;
+                case "--mode":       mode = args[++i]; break;
                 default:
                     if (args[i].startsWith("--")) { System.err.println("Unknown option: " + args[i]); System.exit(2); }
                     else if (input == null) { input = args[i]; }   // first positional = the scene file
@@ -201,7 +205,7 @@ public enum Controller {
             }
         }
         if (input == null) {
-            System.err.println("Usage: --headless <input.json> [--iterations N] [--save-every N] [--output FILE]");
+            System.err.println("Usage: --headless <input.json> [--iterations N] [--save-every N] [--output FILE] [--mode cpu|gpu|auto]");
             System.exit(2);
         }
         if (iterations != null && iterations < 0) {
@@ -211,6 +215,14 @@ public enum Controller {
         if (saveEvery != null && saveEvery < 1) {
             System.err.println("--save-every must be at least 1, got " + saveEvery);
             System.exit(2);
+        }
+        if (mode != null) {
+            try {
+                C.headlessExecutionMode = ExecutionMode.valueOf(mode.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                System.err.println("--mode must be cpu, gpu or auto, got " + mode);
+                System.exit(2);
+            }
         }
 
         C.setReaderWriter(new JsonReaderWriter());
@@ -243,7 +255,7 @@ public enum Controller {
         }
         properties.setOutputFile(output);
 
-        final Simulation simulation = createSimulation(properties, AUTO);
+        final Simulation simulation = createSimulation(properties, C.getSelectedExecutionMode());
         C.setSimulation(simulation);
         info(logger, "Headless run: " + input
                 + " | " + (properties.isInfiniteSimulation() ? "infinite - stop with Ctrl+C"
@@ -1165,8 +1177,8 @@ public enum Controller {
     }
     
     public ExecutionMode getSelectedExecutionMode() {
-        if (gui == null) {                    // headless: no combo box - use a GPU if one is available, else CPU
-            return (gpuFloatAvailable || gpuDoubleAvailable) ? AUTO : CPU;
+        if (gui == null) {                    // headless: no combo box - use --mode if there is a GPU, else CPU
+            return (gpuFloatAvailable || gpuDoubleAvailable) ? headlessExecutionMode : CPU;
         }
         return ((AbstractMap.SimpleEntry<ExecutionMode, String>) gui.getExecutionModeComboBox().getSelectedItem()).getKey();
     }
