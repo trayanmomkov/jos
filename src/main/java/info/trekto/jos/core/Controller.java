@@ -436,12 +436,14 @@ public enum Controller {
             showWarn("There are no objects. Push \"Generate objects\" or load a file.");
             return false;
         }
-        String changedSetting = changedGenerationSetting();
-        if (changedSetting == null) {
+        String change = changedGenerationSetting();
+        if (change == null) {
             return true;
         }
-        String question = "The " + changedSetting + " was changed after the objects were generated or loaded.\n\n"
-                + "Start with the " + objects + " objects from the table?";
+        String question = change + "\n"
+                + "The table \"Initial objects\" still has the " + objects + " old objects,\n"
+                + "because \"Generate objects\" was not pushed after the change.\n\n"
+                + "Start the simulation with the " + objects + " old objects?";
         return JOptionPane.showConfirmDialog(gui.getMainPanel(), question, "Start", YES_NO_OPTION) == YES_OPTION;
     }
 
@@ -921,22 +923,23 @@ public enum Controller {
         return !generationSnapshotTaken || changedGenerationSetting() != null;
     }
 
-    /* The name of the setting which was changed after the objects were generated or loaded, or null. */
+    /* A sentence about the setting which was changed after the objects were generated or loaded, or null. */
     private String changedGenerationSetting() {
         if (!generationSnapshotTaken) {
             return null;
         }
         NumberFactory.NumberType currentNumberType = getSelectedNumberType();
         if (currentNumberType != snapshotNumberType) {
-            return "number type";
+            return "\"Number type\" was changed from " + snapshotNumberType + " to " + currentNumberType + ".";
         }
-        if (!gui.getNumberOfObjectsTextField().getText().trim().equals(snapshotNumberOfObjects)) {
-            return "number of objects";
+        String numberOfObjects = gui.getNumberOfObjectsTextField().getText().trim();
+        if (!numberOfObjects.equals(snapshotNumberOfObjects)) {
+            return "\"Number of objects\" was changed from " + snapshotNumberOfObjects + " to " + numberOfObjects + ".";
         }
         /* Precision influences generation only for arbitrary precision numbers. */
-        if (currentNumberType == ARBITRARY_PRECISION
-                && !gui.getPrecisionTextField().getText().trim().equals(snapshotPrecision)) {
-            return "precision";
+        String precision = gui.getPrecisionTextField().getText().trim();
+        if (currentNumberType == ARBITRARY_PRECISION && !precision.equals(snapshotPrecision)) {
+            return "\"Precision\" was changed from " + snapshotPrecision + " to " + precision + ".";
         }
         return null;
     }
