@@ -1,3 +1,19 @@
+###v.3.4.0 - 2026-Nov-11
+- Replace the three collision checkboxes with one "On collision" drop-down: Merge, Bounce, Soft contact (DEM) or Pass through.
+- Make the soft contact work for light objects next to heavy ones, for example ring particles around a planet with a moon.
+- Run the soft contact where "Execution mode" says: on the CPU or on the GPU, for float and double. "Detect threshold" measures it too.
+- Add the soft contact for arbitrary precision.
+- Keep the digits of arbitrary precision numbers when objects collide. Before, such a run became wrong after a few hundred iterations.
+- Add the --mode option to the mode without GUI: cpu, gpu or auto.
+- Refuse objects without mass or radius when a simulation starts.
+- Ask before starting with objects which do not match a changed number of objects, number type or precision. Say when there are no objects.
+- Start with the selected number type and precision also when the objects were made with another one.
+- Show the error window also when a simulation runs without visualization.
+- Warn at start when the OpenCL driver pocl is installed. It can crash Java.
+- Align the fields of the main window in one grid and make the window narrower. Make the "Initial objects" table shorter and the output console taller.
+- Grey out "Barnes-Hut theta" when the soft contact is selected.
+- Do not turn "Detect threshold" red when the number of objects is not changed.
+
 ###v.3.3.0 - 2026-Nov-10
 - Add the Barnes-Hut approximation of the gravity, on the CPU and on the GPU. It is controlled by the new "B-H theta" field (0 means exact calculation) and also speeds up the collision detection.
 - Add a soft contact model for collisions (DEM). It keeps a body made of many touching particles together.
