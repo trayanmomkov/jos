@@ -845,10 +845,10 @@ public class MainForm {
         generateObjectsButton = new JButton();
         generateObjectsButton.setText("Generate objects");
         gbc = new GridBagConstraints();
-        gbc.gridx = 4;
+        gbc.gridx = 7;
         gbc.gridy = 8;
-        gbc.gridwidth = 5;
         gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(0, 12, 0, 0);
         panel1.add(generateObjectsButton, gbc);
         aboutLabel = new JLabel();
         aboutLabel.setForeground(new Color(-16776961));
@@ -872,7 +872,7 @@ public class MainForm {
         gbc = new GridBagConstraints();
         gbc.gridx = 4;
         gbc.gridy = 0;
-        gbc.gridwidth = 5;
+        gbc.gridwidth = 4;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel1.add(numberTypeComboBox, gbc);
@@ -888,7 +888,7 @@ public class MainForm {
         gbc = new GridBagConstraints();
         gbc.gridx = 4;
         gbc.gridy = 2;
-        gbc.gridwidth = 5;
+        gbc.gridwidth = 4;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel1.add(executionModeComboBox, gbc);
@@ -907,7 +907,7 @@ public class MainForm {
         gbc = new GridBagConstraints();
         gbc.gridx = 4;
         gbc.gridy = 1;
-        gbc.gridwidth = 5;
+        gbc.gridwidth = 4;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel1.add(precisionTextField, gbc);
@@ -925,7 +925,7 @@ public class MainForm {
         gbc = new GridBagConstraints();
         gbc.gridx = 6;
         gbc.gridy = 3;
-        gbc.gridwidth = 3;
+        gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.EAST;
         panel1.add(detectCpuGpuThresholdButton, gbc);
         cpuGpuThresholdField = new JTextField();
@@ -963,7 +963,7 @@ public class MainForm {
         gbc = new GridBagConstraints();
         gbc.gridx = 4;
         gbc.gridy = 4;
-        gbc.gridwidth = 5;
+        gbc.gridwidth = 4;
         gbc.anchor = GridBagConstraints.WEST;
         panel1.add(bounceFromScreenBordersCheckBox, gbc);
         corLabel = new JLabel();
@@ -990,6 +990,7 @@ public class MainForm {
         gbc = new GridBagConstraints();
         gbc.gridx = 6;
         gbc.gridy = 5;
+        gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.WEST;
         panel1.add(collisionComboBox, gbc);
         minDistanceField = new JTextField();
@@ -1018,8 +1019,8 @@ public class MainForm {
         barnesHutThetaField.setText("0");
         barnesHutThetaField.setToolTipText("Barnes-Hut gravity approximation: 0 = exact (brute force), larger = faster but approximate (typical 0.5-0.7). Click the label for details.");
         gbc = new GridBagConstraints();
-        gbc.gridx = 8;
-        gbc.gridy = 5;
+        gbc.gridx = 6;
+        gbc.gridy = 8;
         gbc.anchor = GridBagConstraints.WEST;
         panel1.add(barnesHutThetaField, gbc);
         barnesHutThetaLabel = new JLabel();
@@ -1027,10 +1028,11 @@ public class MainForm {
         barnesHutThetaLabel.setText("Barnes-Hut theta");
         barnesHutThetaLabel.setToolTipText("Barnes-Hut gravity approximation: 0 = exact (brute force), larger = faster but approximate (typical 0.5-0.7). Click for details.");
         gbc = new GridBagConstraints();
-        gbc.gridx = 7;
-        gbc.gridy = 5;
+        gbc.gridx = 4;
+        gbc.gridy = 8;
+        gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(0, 10, 0, 5);
+        gbc.insets = new Insets(0, 0, 0, 5);
         panel1.add(barnesHutThetaLabel, gbc);
         saveToFileCheckBox = new JCheckBox();
         saveToFileCheckBox.setHorizontalTextPosition(10);
