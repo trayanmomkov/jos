@@ -136,7 +136,8 @@ public enum Controller {
                                               + "FLOAT - Single precision. Fastest. (Uses GPU if possible)\n"
                                               + "ARBITRARY_PRECISION - Arbitrary precision.");
                                               
-        mainForm.setMinDistanceMessage("If distance < minDistance, minDistane will be used when calculating acceleration.");
+        mainForm.setMinDistanceMessage("If two objects are closer than the minimum distance, "
+                                               + "the minimum distance is used when calculating the acceleration.");
         mainForm.setBarnesHutThetaMessage("Barnes-Hut approximation of the gravity. Applies on the CPU and the GPU.\n"
                                                   + "0: exact brute force calculation.\n"
                                                   + "Bigger values: faster but less accurate. Typical value: 0.5 - 0.7.\n"
