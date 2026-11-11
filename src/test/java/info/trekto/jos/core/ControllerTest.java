@@ -185,10 +185,7 @@ public class ControllerTest {
         assertTrue(playback instanceof CpuSimulation, "Playback simulation must be a CpuSimulation");
     }
 
-    /**
-     * A soft-contact FLOAT RUN must route to SimulationFloat (which runs the contact device-resident on
-     * the GPU when float-GPU is available - the fast path on consumer cards), regardless of execution mode.
-     */
+    /* A soft-contact FLOAT run must route to SimulationFloat in every execution mode. */
     @Test
     public void softContactFloatSceneRoutesToSimulationFloat() {
         GpuChecker.gpuDoubleAvailable = false;
@@ -208,5 +205,54 @@ public class ControllerTest {
         assertEquals(createSimulation(properties, GPU).getClass(), SimulationFloat.class);
         assertEquals(createSimulation(properties, CPU).getClass(), SimulationFloat.class);
         assertEquals(createSimulation(properties, AUTO).getClass(), SimulationFloat.class);
+    }
+
+    @DataProvider(name = "soft_contact_execution")
+    public static Object[][] softContactExecution() {
+        return new Object[][]{
+                // number type, execution mode, GPU available, above the CPU threshold, on the GPU
+                {DOUBLE, CPU, true, true, false},
+                {DOUBLE, GPU, true, false, true},
+                {DOUBLE, AUTO, true, true, true},
+                {DOUBLE, AUTO, true, false, false},
+                {DOUBLE, GPU, false, true, false},
+                {FLOAT, CPU, true, true, false},
+                {FLOAT, GPU, true, false, true},
+                {FLOAT, AUTO, true, true, true},
+                {FLOAT, AUTO, true, false, false},
+                {FLOAT, GPU, false, true, false},
+        };
+    }
+
+    /* The soft contact runs on the GPU or on the CPU cores, as the execution mode and the CPU threshold say. */
+    @Test(dataProvider = "soft_contact_execution")
+    public void softContactFollowsExecutionMode(NumberFactory.NumberType numberType, ExecutionMode executionMode,
+                                                boolean gpuAvailable, boolean aboveCpuThreshold, boolean expectedOnGpu) {
+        GpuChecker.gpuDoubleAvailable = gpuAvailable;
+        GpuChecker.gpuFloatAvailable = gpuAvailable;
+        C.cpuThreshold = 10;
+        SimulationProperties properties = softContactProperties(numberType, C.cpuThreshold + (aboveCpuThreshold ? 1 : 0));
+
+        Simulation simulation = createSimulation(properties, executionMode);
+
+        if (numberType == FLOAT) {
+            assertEquals(((SimulationFloat) simulation).isSoftContactOnGpu(), expectedOnGpu);
+        } else {
+            assertEquals(((SimulationDouble) simulation).isSoftContactOnGpu(), expectedOnGpu);
+        }
+    }
+
+    private static SimulationProperties softContactProperties(NumberFactory.NumberType numberType, int numberOfObjects) {
+        SimulationProperties properties = new SimulationProperties();
+        properties.setNumberType(numberType);
+        properties.setNumberOfObjects(numberOfObjects);
+        NumberFactoryProxy.createNumberFactory(numberType, NumberFactory.DEFAULT_PRECISION);
+        properties.setSecondsPerIteration(ONE);
+        properties.setCoefficientOfRestitution(ONE);
+        properties.setMinDistance(New.num(DEFAULT_MIN_DISTANCE));
+        properties.setScale(DEFAULT_SCALE);
+        properties.setMergeOnCollision(false);
+        properties.setSoftContact(true);
+        return properties;
     }
 }

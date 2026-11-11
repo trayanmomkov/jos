@@ -30,6 +30,8 @@ public class MoveObjectsLogicDouble extends Kernel {
     private int contactEnabled = 0;
     private double contactStiffness = 0;
     private double contactDamping = 0;
+    /* What run() does on the GPU: 0 - first pass of the soft contact, 1 - second pass, -1 - gravity only. */
+    private int contactPhase = -1;
 
     private final int n;
 
@@ -69,6 +71,10 @@ public class MoveObjectsLogicDouble extends Kernel {
         this.secondsPerIteration = secondsPerIteration;
     }
 
+    public void setContactPhase(int contactPhase) {
+        this.contactPhase = contactPhase;
+    }
+
     public void runOnCpu() {
         for (int i = 0; i < n; i++) {
             calculateNewValues(i);
@@ -77,7 +83,14 @@ public class MoveObjectsLogicDouble extends Kernel {
 
     @Override
     public void run() {
-        calculateNewValues(getGlobalId());
+        int i = getGlobalId();
+        if (contactPhase == 0) {
+            computeContactAcceleration(i);
+        } else if (contactPhase == 1) {
+            integrateContact(i);
+        } else {
+            calculateNewValues(i);
+        }
     }
 
     /* Soft contact, first pass: calculates the acceleration of object i from the gravity and the contacts.
@@ -137,6 +150,20 @@ public class MoveObjectsLogicDouble extends Kernel {
                 bounceFromScreenBorders(i);
             }
         }
+    }
+
+    /* Copies the data to the GPU once. It stays there during all the small steps of an iteration. */
+    public void uploadSoftContactState() {
+        setExplicit(true);
+        put(positionX).put(positionY).put(velocityX).put(velocityY);
+        put(accelerationX).put(accelerationY);
+        put(mass).put(radius).put(deleted);
+        put(readOnlyPositionX).put(readOnlyPositionY).put(readOnlyMass).put(readOnlyDeleted);
+    }
+
+    /* Copies the new positions and velocities back from the GPU. */
+    public void downloadSoftContactState() {
+        get(positionX).get(positionY).get(velocityX).get(velocityY);
     }
 
     /**

@@ -26,7 +26,6 @@ import static com.aparapi.Kernel.EXECUTION_MODE.GPU;
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.GpuChecker.checkExecutionMode;
 import static info.trekto.jos.core.GpuChecker.createRange;
-import static info.trekto.jos.core.GpuChecker.gpuFloatAvailable;
 import static info.trekto.jos.core.impl.Data.countObjects;
 import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_MILLISECOND;
 import static info.trekto.jos.util.Utils.NANOSECONDS_IN_ONE_SECOND;
@@ -77,7 +76,7 @@ public class SimulationFloat implements Simulation {
     private final double[] scratchRadius;
     private boolean treeOverflowWarned;
 
-    /* Soft contact (DEM), see SimulationDouble. Here the small steps run on the GPU when there is one. */
+    /* Soft contact (DEM), see SimulationDouble. */
     private final boolean softContactRequested;
     private boolean softContactActive;
     private boolean softContactOnGpu;
@@ -279,7 +278,6 @@ public class SimulationFloat implements Simulation {
         moveObjectsLogic.setSecondsPerIteration((float) params.subStepSeconds);
         softContactSubSteps = params.subSteps;
         softContactStiffness = (float) params.stiffness;
-        softContactOnGpu = gpuFloatAvailable;
         softContactActive = true;
         info(logger, "Soft-sphere contact enabled (" + (softContactOnGpu ? "GPU, device-resident" : "multi-core CPU") + ", float). " + params);
         if (params.subSteps > 1) {
@@ -290,6 +288,15 @@ public class SimulationFloat implements Simulation {
 
     public float getSoftContactStiffness() {
         return softContactStiffness;
+    }
+
+    /* Set by Controller.createSimulation from the execution mode. */
+    public void setSoftContactOnGpu(boolean softContactOnGpu) {
+        this.softContactOnGpu = softContactOnGpu;
+    }
+
+    public boolean isSoftContactOnGpu() {
+        return softContactOnGpu;
     }
 
     public boolean isSoftContactActive() {

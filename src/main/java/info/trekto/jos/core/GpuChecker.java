@@ -8,16 +8,12 @@ import com.aparapi.internal.opencl.OpenCLPlatform;
 import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.impl.SimulationGenerator;
 import info.trekto.jos.core.impl.SimulationProperties;
-import info.trekto.jos.core.impl.arbitrary_precision.SimulationAP;
-import info.trekto.jos.core.impl.double_precision.SimulationDouble;
-import info.trekto.jos.core.impl.single_precision.SimulationFloat;
 import info.trekto.jos.core.numbers.New;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.aparapi.Kernel.EXECUTION_MODE.GPU;
 import static info.trekto.jos.core.Controller.C;
-import static info.trekto.jos.core.numbers.NumberFactory.NumberType.DOUBLE;
 import static info.trekto.jos.core.numbers.NumberFactoryProxy.createNumberFactory;
 import static info.trekto.jos.util.Utils.CORES;
 import static info.trekto.jos.util.Utils.info;
@@ -171,16 +167,12 @@ public class GpuChecker {
                 numberOfIterations = 25;
             }
             info(logger, "Range: " + bottom + " - " + top + " Objects: " + numberOfObjects + " Iterations: " + numberOfIterations);
-            double cpuTime = measureIteration(new SimulationAP(testProperties), numberOfIterations);
+            /* The same simulations as "Start" makes, so the soft contact is measured too. */
+            double cpuTime = measureIteration(Controller.createSimulation(testProperties, ExecutionMode.CPU), numberOfIterations);
             if (C.isHasToStopCpuGpuMeasuring()) {
                 return (top + bottom) / 2;
             }
-            double gpuTime;
-            if (testProperties.getNumberType() == DOUBLE) {
-                gpuTime = measureIteration(new SimulationDouble(testProperties, null), numberOfIterations);
-            } else {
-                gpuTime = measureIteration(new SimulationFloat(testProperties, null), numberOfIterations);
-            }
+            double gpuTime = measureIteration(Controller.createSimulation(testProperties, ExecutionMode.GPU), numberOfIterations);
             if (C.isHasToStopCpuGpuMeasuring()) {
                 return (top + bottom) / 2;
             }

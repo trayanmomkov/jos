@@ -309,13 +309,17 @@ public enum Controller {
             properties.setNumberOfObjects(n);
         }
 
-        /* The soft contact exists only in the float and double simulations. Float runs it on the GPU,
-         * double on the CPU cores, because double is slow on most video cards. */
+        /* The soft contact exists only in the float and double simulations. */
         if (!forPlayback && properties.useSoftContact()) {
+            boolean gpu = executionMode == GPU || (executionMode == AUTO && n > C.cpuThreshold);
             if (numberType == FLOAT) {
-                return new SimulationFloat(properties, null);
+                SimulationFloat simulation = new SimulationFloat(properties, null);
+                simulation.setSoftContactOnGpu(gpu && gpuFloatAvailable);
+                return simulation;
             }
-            return new SimulationDouble(properties, null);
+            SimulationDouble simulation = new SimulationDouble(properties, null);
+            simulation.setSoftContactOnGpu(gpu && gpuDoubleAvailable);
+            return simulation;
         }
 
         if (numberType == ARBITRARY_PRECISION

@@ -73,6 +73,7 @@ public class SimulationDouble implements Simulation {
     /* Soft contact (DEM): the contact force is applied in the move phase, in several small steps per iteration. */
     private final boolean softContactRequested;
     private boolean softContactActive;
+    private boolean softContactOnGpu;
     private int softContactSubSteps = 1;
     private double softContactStiffness = 0;
 
@@ -187,7 +188,11 @@ public class SimulationDouble implements Simulation {
     /* One iteration with the soft contact: gravity and contact force together, in softContactSubSteps small steps. */
     private void doSoftContactIteration(boolean saveCurrentIterationToFile, long iterationCounter) {
         captureBeforeMovePositions();   // frame-start positions, for the fast-motion warning over the whole step
-        runSoftContactSubStepsOnCpu();
+        if (softContactOnGpu) {
+            runSoftContactSubStepsOnGpu(iterationCounter);
+        } else {
+            runSoftContactSubStepsOnCpu();
+        }
         warnIfFastMotion();
 
         if (properties.isSaveToFile() && saveCurrentIterationToFile) {
@@ -207,6 +212,27 @@ public class SimulationDouble implements Simulation {
         }
     }
 
+    private void runSoftContactSubStepsOnGpu(long iterationCounter) {
+        try {
+            moveObjectsLogic.uploadSoftContactState();
+            for (int subStep = 0; subStep < softContactSubSteps; subStep++) {
+                moveObjectsLogic.setContactPhase(0);   // first pass: accelerations
+                moveObjectsLogic.execute(moveObjectsRange);
+                moveObjectsLogic.setContactPhase(1);   // second pass: move
+                moveObjectsLogic.execute(moveObjectsRange);
+            }
+            moveObjectsLogic.downloadSoftContactState();
+            moveObjectsLogic.setContactPhase(-1);
+            checkExecutionMode(iterationCounter, moveObjectsLogic);
+        } catch (Exception e) {
+            warn(logger, "Soft-contact GPU execution failed; using the multi-core CPU path for the rest of the run.", e);
+            softContactOnGpu = false;
+            moveObjectsLogic.setExplicit(false);
+            moveObjectsLogic.setContactPhase(-1);
+            runSoftContactSubStepsOnCpu();
+        }
+    }
+
     /* Calculates the contact parameters from the scene. */
     private void configureSoftContact() {
         softContactActive = false;
@@ -222,7 +248,7 @@ public class SimulationDouble implements Simulation {
         softContactSubSteps = params.subSteps;
         softContactStiffness = params.stiffness;
         softContactActive = true;
-        info(logger, "Soft-sphere contact enabled (multi-core CPU, double). " + params);
+        info(logger, "Soft-sphere contact enabled (" + (softContactOnGpu ? "GPU, device-resident" : "multi-core CPU") + ", double). " + params);
         if (params.subSteps > 1) {
             info(logger, "Soft contact sub-steps per iteration: " + params.subSteps
                     + " (sub-step " + params.subStepSeconds + " s) for a stable contact integration.");
@@ -232,6 +258,15 @@ public class SimulationDouble implements Simulation {
     /** The stiffness of the contact spring for a unit of effective mass (1/s^2), or 0 without soft contact. For tests. */
     public double getSoftContactStiffness() {
         return softContactStiffness;
+    }
+
+    /* Set by Controller.createSimulation from the execution mode. */
+    public void setSoftContactOnGpu(boolean softContactOnGpu) {
+        this.softContactOnGpu = softContactOnGpu;
+    }
+
+    public boolean isSoftContactOnGpu() {
+        return softContactOnGpu;
     }
 
     /** Whether the soft-sphere contact model is active for this run. For tests/diagnostics. */
