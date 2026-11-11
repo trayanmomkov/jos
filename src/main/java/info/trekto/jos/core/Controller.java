@@ -309,8 +309,8 @@ public enum Controller {
             properties.setNumberOfObjects(n);
         }
 
-        /* The soft contact exists only in the float and double simulations. */
-        if (!forPlayback && properties.useSoftContact()) {
+        /* The soft contact exists only in the float and double simulations. SimulationAP refuses it. */
+        if (!forPlayback && properties.useSoftContact() && numberType != ARBITRARY_PRECISION) {
             boolean gpu = executionMode == GPU || (executionMode == AUTO && n > C.cpuThreshold);
             if (numberType == FLOAT) {
                 SimulationFloat simulation = new SimulationFloat(properties, null);
@@ -438,6 +438,11 @@ public enum Controller {
         int objects = gui.getInitialObjectsTable().getRowCount();
         if (objects == 0) {
             showWarn("There are no objects. Push \"Generate objects\" or load a file.");
+            return false;
+        }
+        if (selectedCollisionMode() == SOFT_CONTACT && getSelectedNumberType() == ARBITRARY_PRECISION) {
+            showWarn("\"Soft contact (DEM)\" does not work with ARBITRARY_PRECISION yet.\n"
+                             + "Choose FLOAT or DOUBLE in \"Number type\" and push \"Generate objects\".");
             return false;
         }
         String change = changedGenerationSetting();

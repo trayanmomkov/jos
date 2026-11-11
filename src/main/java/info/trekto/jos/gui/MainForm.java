@@ -43,6 +43,7 @@ public class MainForm {
                     "(1 = fully elastic, 0 = no bounce).\n" +
                     "Soft contact (DEM): a spring and a damper push the overlapping objects apart, so a collision\n" +
                     "cannot add energy. It keeps a body made of many touching particles together, but it is slower.\n" +
+                    "It does not work with ARBITRARY_PRECISION yet.\n" +
                     "Pass through: no collisions.";
     private String aboutMessage;
     private String minDistanceMessage;

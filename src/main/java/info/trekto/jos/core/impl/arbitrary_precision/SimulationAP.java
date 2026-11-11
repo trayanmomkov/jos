@@ -218,6 +218,9 @@ public class SimulationAP implements CpuSimulation {
         if (printInfo) {
             info(logger, "Initialize simulation...");
         }
+        if (properties.useSoftContact()) {
+            throw new SimulationException("Soft contact (DEM) does not work with ARBITRARY_PRECISION yet. Use FLOAT or DOUBLE.");
+        }
         Simulation.checkMassAndRadius(properties.getInitialObjects());
         initArrays(properties.getInitialObjects());
         

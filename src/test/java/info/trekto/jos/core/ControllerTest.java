@@ -1,5 +1,6 @@
 package info.trekto.jos.core;
 
+import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.impl.SimulationProperties;
 import info.trekto.jos.core.impl.arbitrary_precision.SimulationAP;
 import info.trekto.jos.core.impl.double_precision.SimulationDouble;
@@ -24,6 +25,7 @@ import static info.trekto.jos.core.numbers.NumberFactoryProxy.ONE;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertThrows;
 import static org.testng.Assert.assertTrue;
 
 public class ControllerTest {
@@ -240,6 +242,19 @@ public class ControllerTest {
         } else {
             assertEquals(((SimulationDouble) simulation).isSoftContactOnGpu(), expectedOnGpu);
         }
+    }
+
+    /* The soft contact is not written for arbitrary precision, so such a run must not start. */
+    @Test
+    public void softContactWithArbitraryPrecisionIsRefused() {
+        GpuChecker.gpuDoubleAvailable = false;
+        GpuChecker.gpuFloatAvailable = false;
+        SimulationProperties properties = softContactProperties(ARBITRARY_PRECISION, 4);
+
+        Simulation simulation = createSimulation(properties, CPU);
+
+        assertEquals(simulation.getClass(), SimulationAP.class);
+        assertThrows(SimulationException.class, () -> simulation.init(false));
     }
 
     private static SimulationProperties softContactProperties(NumberFactory.NumberType numberType, int numberOfObjects) {
