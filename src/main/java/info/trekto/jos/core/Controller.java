@@ -449,7 +449,10 @@ public enum Controller {
 
     private void handleException(Exception ex, String message) {
         error(logger, message, ex);
-        visualizer.closeWindow();
+        /* There is no visualizer when the simulation runs without real time visualization. */
+        if (visualizer != null) {
+            visualizer.closeWindow();
+        }
         showError(message + "\n" + ex.getMessage());
     }
 
