@@ -1176,14 +1176,14 @@ public class MainForm {
         gbc.fill = GridBagConstraints.BOTH;
         gbc.insets = new Insets(0, 2, 0, 2);
         mainPanel.add(consolePanel, gbc);
-        consolePanel.setBorder(BorderFactory.createTitledBorder(null, "Output conosle", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
+        consolePanel.setBorder(BorderFactory.createTitledBorder(null, "Output console", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
         consoleTextArea = new JTextArea();
         consoleTextArea.setEditable(false);
         Font consoleTextAreaFont = this.$$$getFont$$$(null, -1, -1, consoleTextArea.getFont());
         if (consoleTextAreaFont != null) {
             consoleTextArea.setFont(consoleTextAreaFont);
         }
-        consoleTextArea.setRows(20);
+        consoleTextArea.setRows(36);
         consoleTextArea.setText("");
         consoleTextArea.setWrapStyleWord(false);
         consolePanel.setViewportView(consoleTextArea);
@@ -1200,6 +1200,7 @@ public class MainForm {
         initialObjectsPanel.setBorder(BorderFactory.createTitledBorder(null, "Initial objects", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
         initialObjectsTable = new JTable();
         initialObjectsTable.setEnabled(true);
+        initialObjectsTable.setPreferredScrollableViewportSize(new Dimension(450, 160));
         initialObjectsPanel.setViewportView(initialObjectsTable);
         playingPanel = new JPanel();
         playingPanel.setLayout(new GridBagLayout());
