@@ -6,7 +6,9 @@ import info.trekto.jos.core.exceptions.SimulationException;
 import info.trekto.jos.core.impl.Iteration;
 import info.trekto.jos.core.impl.ResumeScene;
 import info.trekto.jos.core.impl.SimulationProperties;
+import info.trekto.jos.core.impl.SoftContactParameters;
 import info.trekto.jos.core.model.SimulationObject;
+import info.trekto.jos.core.numbers.New;
 import info.trekto.jos.core.numbers.Number;
 import info.trekto.jos.util.Utils;
 import org.slf4j.Logger;
@@ -17,6 +19,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 import static info.trekto.jos.core.Controller.C;
 import static info.trekto.jos.core.impl.Data.countObjects;
@@ -48,6 +51,10 @@ public class SimulationAP implements CpuSimulation {
 
     private SimulationProperties properties;
 
+    /* Soft contact (DEM), see SimulationDouble. */
+    private boolean softContactActive;
+    private int softContactSubSteps = 1;
+
     public SimulationAP(SimulationProperties properties) {
         this.properties = properties;
         final int n = properties.getNumberOfObjects();
@@ -73,6 +80,10 @@ public class SimulationAP implements CpuSimulation {
 
     @Override
     public void doIteration(boolean saveCurrentIterationToFile, long iterationCounter) {
+        if (softContactActive) {
+            doSoftContactIteration(saveCurrentIterationToFile, iterationCounter);
+            return;
+        }
         data.copyToReadOnly(properties.isMergeOnCollision());
         captureBeforeMovePositions();
 //        moveObjectsLogic.runOnSingleThread();
@@ -90,6 +101,58 @@ public class SimulationAP implements CpuSimulation {
                                                     data.velocityY, zeroArray, data.mass, data.radius, data.id, data.color, data.deleted,
                                                     data.accelerationX, data.accelerationY, zeroArray);
         }
+    }
+
+    /* One iteration with the soft contact - see SimulationDouble. */
+    private void doSoftContactIteration(boolean saveCurrentIterationToFile, long iterationCounter) {
+        captureBeforeMovePositions();
+        final MoveObjectsLogicAP logic = moveObjectsLogic;
+        for (int subStep = 0; subStep < softContactSubSteps; subStep++) {
+            IntStream.range(0, data.n).parallel().forEach(logic::computeContactAcceleration);
+            IntStream.range(0, data.n).parallel().forEach(logic::integrateContact);
+        }
+        warnIfFastMotion();
+
+        if (properties.isSaveToFile() && saveCurrentIterationToFile) {
+            C.getReaderWriter().appendObjectsToFile(properties, iterationCounter, data.positionX, data.positionY, zeroArray, data.velocityX,
+                                                    data.velocityY, zeroArray, data.mass, data.radius, data.id, data.color, data.deleted,
+                                                    data.accelerationX, data.accelerationY, zeroArray);
+        }
+    }
+
+    /* Calculates the contact parameters from the scene. They are only settings, so double is enough for them. */
+    private void configureSoftContact() {
+        softContactActive = false;
+        if (!properties.useSoftContact()) {
+            return;
+        }
+        int count = data.n;
+        double[] x = new double[count], y = new double[count], vx = new double[count], vy = new double[count],
+                 m = new double[count], r = new double[count];
+        for (int i = 0; i < count; i++) {
+            x[i] = data.positionX[i].doubleValue();
+            y[i] = data.positionY[i].doubleValue();
+            vx[i] = data.velocityX[i].doubleValue();
+            vy[i] = data.velocityY[i].doubleValue();
+            m[i] = data.mass[i].doubleValue();
+            r[i] = data.radius[i].doubleValue();
+        }
+        SoftContactParameters params = SoftContactParameters.derive(count, x, y, vx, vy, m, r, data.deleted,
+                properties.getSecondsPerIteration().doubleValue(), properties.getCoefficientOfRestitution().doubleValue(),
+                properties.getMinDistance().doubleValue());
+        moveObjectsLogic.enableSoftContact(New.num(params.stiffness), New.num(params.damping));
+        moveObjectsLogic.setSecondsPerIteration(properties.getSecondsPerIteration().divide(New.num(params.subSteps)));
+        softContactSubSteps = params.subSteps;
+        softContactActive = true;
+        info(logger, "Soft-sphere contact enabled (multi-core CPU, " + properties.getNumberType() + "). " + params);
+        if (params.subSteps > 1) {
+            info(logger, "Soft contact sub-steps per iteration: " + params.subSteps
+                    + " (sub-step " + params.subStepSeconds + " s) for a stable contact integration.");
+        }
+    }
+
+    public boolean isSoftContactActive() {
+        return softContactActive;
     }
 
     @Override
@@ -218,9 +281,6 @@ public class SimulationAP implements CpuSimulation {
         if (printInfo) {
             info(logger, "Initialize simulation...");
         }
-        if (properties.useSoftContact()) {
-            throw new SimulationException("Soft contact (DEM) does not work with ARBITRARY_PRECISION yet. Use FLOAT or DOUBLE.");
-        }
         Simulation.checkMassAndRadius(properties.getInitialObjects());
         initArrays(properties.getInitialObjects());
         
@@ -228,9 +288,13 @@ public class SimulationAP implements CpuSimulation {
             throw new SimulationException("Objects with duplicate IDs exist!");
         }
 
-        if (properties.isCollisionsEnabled() && collisionExists(data.positionX, data.positionY, data.radius)) {
+        /* The soft contact handles overlapping objects. */
+        if (properties.isCollisionsEnabled() && !properties.useSoftContact()
+                && collisionExists(data.positionX, data.positionY, data.radius)) {
             throw new SimulationException("Initial collision exists!");
         }
+
+        configureSoftContact();
 
         if (printInfo) {
             info(logger, "Done.\n");

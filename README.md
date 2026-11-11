@@ -125,9 +125,8 @@ When two objects collide they either **merge** into one, or **bounce** off each 
 coefficient of restitution. The bounce is exact for separate objects, but a body made of many touching
 particles slowly gains energy from it and falls apart. For such bodies there is the **soft contact**
 (DEM, the **softContact** property): a spring and a damper push the overlapping objects apart, so a
-collision cannot add energy. It needs several small steps per iteration and the exact gravity. It runs
-in float or double precision, on the CPU or on the GPU as the execution mode says. It does not work with
-arbitrary precision yet.
+collision cannot add energy. It needs several small steps per iteration and the exact gravity. Float and
+double run it on the CPU or on the GPU as the execution mode says, arbitrary precision on the CPU.
 The collisions can also be switched off (the **collisions** property): then the objects pass through
 each other.
 

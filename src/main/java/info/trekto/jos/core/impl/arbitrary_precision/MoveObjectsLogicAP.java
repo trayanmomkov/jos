@@ -12,6 +12,8 @@ public class MoveObjectsLogicAP {
     private final Number[] positionY;
     private final Number[] velocityX;
     private final Number[] velocityY;
+    private final Number[] accelerationX;
+    private final Number[] accelerationY;
     private final Number[] mass;
     private final Number[] radius;
     private final boolean[] deleted;
@@ -21,7 +23,8 @@ public class MoveObjectsLogicAP {
     private final Number[] readOnlyMass;
     private final boolean[] readOnlyDeleted;
 
-    private final Number secondsPerIteration;
+    /* Not final: the soft contact uses smaller steps. */
+    private Number secondsPerIteration;
     private final Number minDistance;
     private final int screenWidth;
     private final int screenHeight;
@@ -30,6 +33,10 @@ public class MoveObjectsLogicAP {
     private final Number thetaSquared;
     private final boolean barnesHut;
     private BarnesHutTree tree;
+
+    /* Soft contact (DEM), see MoveObjectsLogicDouble. Switched on by SimulationAP. */
+    private Number contactStiffness;
+    private Number contactDamping;
 
     private final int n;
 
@@ -46,6 +53,8 @@ public class MoveObjectsLogicAP {
         positionY = data.positionY;
         velocityX = data.velocityX;
         velocityY = data.velocityY;
+        accelerationX = data.accelerationX;
+        accelerationY = data.accelerationY;
         mass = data.mass;
         radius = data.radius;
         deleted = data.deleted;
@@ -64,6 +73,16 @@ public class MoveObjectsLogicAP {
         Number theta = barnesHutTheta == null ? ZERO : barnesHutTheta;
         this.thetaSquared = theta.multiply(theta);
         this.barnesHut = theta.compareTo(ZERO) > 0;
+    }
+
+    /* Switches the soft contact on. The stiffness and the damping are for a unit of effective mass. */
+    public void enableSoftContact(Number stiffness, Number damping) {
+        this.contactStiffness = stiffness;
+        this.contactDamping = damping;
+    }
+
+    public void setSecondsPerIteration(Number secondsPerIteration) {
+        this.secondsPerIteration = secondsPerIteration;
     }
 
     public void runOnCpu() {
@@ -131,6 +150,57 @@ public class MoveObjectsLogicAP {
 
         velocityX[i] = velocityX[i].add(newAcceleration[0].multiply(secondsPerIteration));
         velocityY[i] = velocityY[i].add(newAcceleration[1].multiply(secondsPerIteration));
+    }
+
+    /* Soft contact, first pass: the acceleration of object i from the gravity and the contacts, see MoveObjectsLogicDouble. */
+    public void computeContactAcceleration(int i) {
+        if (!deleted[i]) {
+            Number[] acceleration = {ZERO, ZERO};
+            for (int j = 0; j < n; j++) {
+                if (i != j && !deleted[j]) {
+                    addAccelerationFromPointMass(i, positionX[j], positionY[j], mass[j], acceleration);
+                    addContactAcceleration(i, j, acceleration);
+                }
+            }
+            accelerationX[i] = acceleration[0];
+            accelerationY[i] = acceleration[1];
+        }
+    }
+
+    /* The spring pushes overlapping objects apart and the damper slows down their approach. */
+    private void addContactAcceleration(int i, int j, Number[] acceleration) {
+        Number diffX = positionX[j].subtract(positionX[i]);
+        Number diffY = positionY[j].subtract(positionY[i]);
+        Number distanceSquared = diffX.multiply(diffX).add(diffY.multiply(diffY));
+        Number touchingDistance = radius[i].add(radius[j]);
+        if (distanceSquared.compareTo(touchingDistance.multiply(touchingDistance)) >= 0 || distanceSquared.compareTo(ZERO) == 0) {
+            return;
+        }
+        Number distance = distanceSquared.sqrt();
+        Number normalX = diffX.negate().divide(distance);   // unit vector from j to i
+        Number normalY = diffY.negate().divide(distance);
+        Number normalSpeed = velocityX[i].subtract(velocityX[j]).multiply(normalX)
+                .add(velocityY[i].subtract(velocityY[j]).multiply(normalY));
+        Number contactAcceleration = contactStiffness.multiply(touchingDistance.subtract(distance))
+                .subtract(contactDamping.multiply(normalSpeed))
+                .multiply(mass[j].divide(mass[i].add(mass[j])));
+        if (contactAcceleration.compareTo(ZERO) > 0) {   // contacts push apart, never pull together
+            acceleration[0] = acceleration[0].add(contactAcceleration.multiply(normalX));
+            acceleration[1] = acceleration[1].add(contactAcceleration.multiply(normalY));
+        }
+    }
+
+    /* Soft contact, second pass: changes the velocity and then moves the object. */
+    public void integrateContact(int i) {
+        if (!deleted[i]) {
+            velocityX[i] = velocityX[i].add(accelerationX[i].multiply(secondsPerIteration));
+            velocityY[i] = velocityY[i].add(accelerationY[i].multiply(secondsPerIteration));
+            positionX[i] = positionX[i].add(velocityX[i].multiply(secondsPerIteration));
+            positionY[i] = positionY[i].add(velocityY[i].multiply(secondsPerIteration));
+            if (screenWidth != 0 && screenHeight != 0) {
+                bounceFromScreenBorders(i);
+            }
+        }
     }
 
     /* Adds the gravity of a tree node to the acceleration of object i. A node which is far enough
