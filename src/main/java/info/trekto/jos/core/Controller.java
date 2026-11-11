@@ -1233,12 +1233,17 @@ public enum Controller {
         return (CollisionMode) gui.getCollisionComboBox().getSelectedItem();
     }
 
-    /* The coefficient of restitution is used only when the objects bounce. */
+    /* The coefficient of restitution is used only when the objects bounce.
+     * The soft contact always uses the exact gravity, so the Barnes-Hut theta has no effect with it. */
     private void setCollisionFieldsEnabled() {
         CollisionMode mode = selectedCollisionMode();
-        boolean bounce = gui.getRunningRadioButton().isSelected() && (mode == BOUNCE || mode == SOFT_CONTACT);
+        boolean running = gui.getRunningRadioButton().isSelected();
+        boolean bounce = running && (mode == BOUNCE || mode == SOFT_CONTACT);
         gui.getCorLabel().setEnabled(bounce);
         gui.getCorTextField().setEnabled(bounce);
+        boolean barnesHut = running && mode != SOFT_CONTACT;
+        gui.getBarnesHutThetaLabel().setEnabled(barnesHut);
+        gui.getBarnesHutThetaField().setEnabled(barnesHut);
     }
 
     private void setMinDistanceVisibility() {
