@@ -177,17 +177,18 @@ public class SimulationAP implements CpuSimulation {
         return momentum.doubleValue();
     }
 
+    /* The objects can be made with another number type or precision than the selected one, so New.num() converts them. */
     public void initArrays(List<SimulationObject> initialObjects) {
         for (int i = 0; i < initialObjects.size(); i++) {
             SimulationObject o = initialObjects.get(i);
-            data.positionX[i] = o.getX();
-            data.positionY[i] = o.getY();
-            data.velocityX[i] = o.getVelocity().getX();
-            data.velocityY[i] = o.getVelocity().getY();
-            data.accelerationX[i] = o.getAcceleration().getX();
-            data.accelerationY[i] = o.getAcceleration().getY();
-            data.mass[i] = o.getMass();
-            data.radius[i] = o.getRadius();
+            data.positionX[i] = New.num(o.getX());
+            data.positionY[i] = New.num(o.getY());
+            data.velocityX[i] = New.num(o.getVelocity().getX());
+            data.velocityY[i] = New.num(o.getVelocity().getY());
+            data.accelerationX[i] = New.num(o.getAcceleration().getX());
+            data.accelerationY[i] = New.num(o.getAcceleration().getY());
+            data.mass[i] = New.num(o.getMass());
+            data.radius[i] = New.num(o.getRadius());
             data.id[i] = o.getId();
             data.color[i] = o.getColor();
             data.deleted[i] = false;

@@ -45,6 +45,15 @@ public class MassAndRadiusCheckTest {
         new SimulationAP(properties(DOUBLE, 1000, 5)).init(false);
     }
 
+    /* "Number type" can be changed after the objects were made. Then they are of another type than the run. */
+    @Test
+    public void objectsOfAnotherNumberTypeAreChecked() throws SimulationException {
+        createNumberFactory(DOUBLE, PRECISION);
+        List<SimulationObject> objects = properties(DOUBLE, 1000, 5).getInitialObjects();
+        createNumberFactory(FLOAT, PRECISION);
+        Simulation.checkMassAndRadius(objects);
+    }
+
     /* The second object of the scene has the given mass and radius. */
     private static void assertRefusedByAllSimulations(double mass, double radius) {
         createNumberFactory(DOUBLE, PRECISION);

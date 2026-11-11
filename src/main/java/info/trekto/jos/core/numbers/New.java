@@ -31,4 +31,9 @@ public class New {
     public static Number num(long val) {
         return NumberFactoryProxy.createNumber(val);
     }
+
+    /* The same value as a number of the selected number type, with its full precision. */
+    public static Number num(Number val) {
+        return num(val.toString());
+    }
 }
