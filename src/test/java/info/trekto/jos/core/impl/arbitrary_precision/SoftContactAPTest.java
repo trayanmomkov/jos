@@ -30,7 +30,7 @@ public class SoftContactAPTest {
     public void sameRunAsDouble() throws SimulationException {
         List<SimulationObject> objects = new ArrayList<>();
         objects.add(createObject(-6.0, 0.0, 1.0, 0.0, 1.0e6, 1.0));
-        objects.add(createObject(6.0, 0.3, -1.0, 0.0, 1.0e6, 1.0));
+        objects.add(createObject(6.0, 0.3, -1.0, 0.0, 1.5e6, 1.0));   // heavier than the left one: the two get different shares of the push
         objects.add(createObject(0.0, 9.0, 0.0, -0.5, 1.0e8, 2.0));
 
         SimulationAP arbitrary = new SimulationAP(properties(objects));

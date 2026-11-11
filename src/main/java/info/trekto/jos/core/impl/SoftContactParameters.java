@@ -3,7 +3,7 @@ package info.trekto.jos.core.impl;
 /**
  * Calculates the parameters of the soft contact (DEM) from the scene.
  * The force between two overlapping objects is:
- * effectiveMass * (stiffness * overlap - damping * approachSpeed), never negative,
+ * effectiveMass * (stiffness * overlap + damping * approachSpeed), never negative,
  * where effectiveMass = m1 * m2 / (m1 + m2). The spring of a pair is proportional to its masses,
  * so a contact lasts equally long for light and for heavy objects.
  * The stiffness is chosen so that neither the fastest object nor the weight of a pile of objects

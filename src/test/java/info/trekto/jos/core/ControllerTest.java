@@ -154,11 +154,7 @@ public class ControllerTest {
         }
     }
 
-    /**
-     * A soft-contact DOUBLE RUN must route to SimulationDouble (multi-core CPU) even with no GPU / CPU
-     * mode. But PLAYBACK only replays saved frames and must stay a CpuSimulation (SimulationAP) -
-     * otherwise play() fails casting SimulationDouble to CpuSimulation.
-     */
+    /* A soft-contact DOUBLE run goes to SimulationDouble also without a GPU. Playing a saved file needs a CpuSimulation. */
     @Test
     public void softContactRunsOnDoubleButPlaysBackOnCpuSimulation() {
         GpuChecker.gpuDoubleAvailable = false;
@@ -175,11 +171,9 @@ public class ControllerTest {
         properties.setMergeOnCollision(false);
         properties.setSoftContact(true);
 
-        /* RUN: must be the double path (where soft contact is implemented), even with no GPU. */
         assertEquals(createSimulation(properties, CPU).getClass(), SimulationDouble.class);
         assertEquals(createSimulation(properties, AUTO).getClass(), SimulationDouble.class);
 
-        /* PLAYBACK: must remain a CpuSimulation so play() can cast and replay it. */
         Simulation playback = createSimulation(properties, CPU, true);
         assertEquals(playback.getClass(), SimulationAP.class);
         assertTrue(playback instanceof CpuSimulation, "Playback simulation must be a CpuSimulation");
