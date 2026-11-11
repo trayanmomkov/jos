@@ -327,8 +327,12 @@ public class MainForm {
 
     private void roundNumberOfObjects() {
         if (roundCheckBox.isSelected()) {
-            numberOfObjectsTextField.setText(String.valueOf(
-                    GpuChecker.roundNumberOfObjects(Integer.parseInt(numberOfObjectsTextField.getText()))));
+            String rounded = String.valueOf(
+                    GpuChecker.roundNumberOfObjects(Integer.parseInt(numberOfObjectsTextField.getText())));
+            /* The same number is not written again, because that counts as a change of the number of objects. */
+            if (!rounded.equals(numberOfObjectsTextField.getText())) {
+                numberOfObjectsTextField.setText(rounded);
+            }
         }
     }
 

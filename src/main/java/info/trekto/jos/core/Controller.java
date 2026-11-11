@@ -655,7 +655,11 @@ public enum Controller {
     public void refreshProperties(SimulationProperties prop) {
         refreshingProperties = true;
         try {
-            gui.getNumberOfObjectsTextField().setText(String.valueOf(prop.getNumberOfObjects()));
+            /* The same number is not written again, because that counts as a change of the number of objects. */
+            String numberOfObjects = String.valueOf(prop.getNumberOfObjects());
+            if (!numberOfObjects.equals(gui.getNumberOfObjectsTextField().getText())) {
+                gui.getNumberOfObjectsTextField().setText(numberOfObjects);
+            }
             gui.getNumberOfIterationsTextField().setText(String.valueOf(prop.getNumberOfIterations()));
             gui.getSecondsPerIterationTextField().setText(String.valueOf(prop.getSecondsPerIteration()));
             gui.getNumberTypeComboBox().setSelectedItem(prop.getNumberType());
