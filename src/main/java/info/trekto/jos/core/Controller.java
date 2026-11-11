@@ -61,6 +61,7 @@ import static java.awt.Color.PINK;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
 import static javax.swing.JOptionPane.WARNING_MESSAGE;
+import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
@@ -389,6 +390,9 @@ public enum Controller {
     }
 
     public void start() {
+        if (!readyToStart()) {
+            return;
+        }
         simulation = createSimulation(fetchPropertiesFromGuiAndCreateNumberFactory());
         paused = false;
         if (simulation.getProperties() != null && simulation.getProperties().getInitialObjects() != null) {
@@ -423,6 +427,22 @@ public enum Controller {
             gui.getStopButton().setEnabled(true);
             gui.getPauseButton().setEnabled(true);
         }
+    }
+
+    /* Tells the user when there are no objects. Asks when a setting was changed after the objects were made. */
+    private boolean readyToStart() {
+        int objects = gui.getInitialObjectsTable().getRowCount();
+        if (objects == 0) {
+            showWarn("There are no objects. Push \"Generate objects\" or load a file.");
+            return false;
+        }
+        String changedSetting = changedGenerationSetting();
+        if (changedSetting == null) {
+            return true;
+        }
+        String question = "The " + changedSetting + " was changed after the objects were generated or loaded.\n\n"
+                + "Start with the " + objects + " objects from the table?";
+        return JOptionPane.showConfirmDialog(gui.getMainPanel(), question, "Start", YES_NO_OPTION) == YES_OPTION;
     }
 
     private void handleException(Exception ex, String message) {
@@ -817,6 +837,7 @@ public enum Controller {
             playFile = fileChooser.getSelectedFile();
             gui.getPlayFileLabel().setText(playFile.getAbsolutePath());
             refreshProperties(loadPropertiesForPlaying(playFile.getAbsolutePath()));
+            snapshotGenerationParams();
         }
     }
 
@@ -896,20 +917,28 @@ public enum Controller {
     }
 
     private boolean isGenerationDirty() {
+        /* Without a snapshot nothing is generated or loaded yet - the user must generate objects first. */
+        return !generationSnapshotTaken || changedGenerationSetting() != null;
+    }
+
+    /* The name of the setting which was changed after the objects were generated or loaded, or null. */
+    private String changedGenerationSetting() {
         if (!generationSnapshotTaken) {
-            /* Nothing generated or loaded yet - the user must generate objects first. */
-            return true;
+            return null;
         }
         NumberFactory.NumberType currentNumberType = getSelectedNumberType();
         if (currentNumberType != snapshotNumberType) {
-            return true;
+            return "number type";
         }
         if (!gui.getNumberOfObjectsTextField().getText().trim().equals(snapshotNumberOfObjects)) {
-            return true;
+            return "number of objects";
         }
         /* Precision influences generation only for arbitrary precision numbers. */
-        return currentNumberType == ARBITRARY_PRECISION
-                && !gui.getPrecisionTextField().getText().trim().equals(snapshotPrecision);
+        if (currentNumberType == ARBITRARY_PRECISION
+                && !gui.getPrecisionTextField().getText().trim().equals(snapshotPrecision)) {
+            return "precision";
+        }
+        return null;
     }
 
     private void snapshotGenerationParams() {
